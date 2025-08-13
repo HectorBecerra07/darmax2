@@ -1,45 +1,116 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCarrito } from "../context/CarritoContext";
 
+/* ================== CONSTANTES ================== */
+const LS_PROD = "productos";
+const LS_CAT = "categorias";
+const CATEGORIA_PURIFICADORES = "PurificadoresCaseros";
+
+/* ================== HELPERS ================== */
+const mxn = (n) =>
+  new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency: "MXN",
+    maximumFractionDigits: 0,
+  }).format(isNaN(n) ? 0 : n);
+
+const parseJSON = (raw, fallback) => {
+  try {
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const normaliza = (v) => (v || "").trim().toLowerCase();
+
+/* ================== COMPONENTE ================== */
 export default function PurificadoresCaseros() {
-  const [purificadores, setPurificadores] = useState([]);
   const navigate = useNavigate();
   const { agregarProducto } = useCarrito();
 
-  // --- Calculadora de ahorro (estado) ---
-  const [garrafonesPorSemana, setGarrafonesPorSemana] = useState(3);
-  const [precioGarrafon, setPrecioGarrafon] = useState(55); // MXN
-  const [costoFiltrosAnual, setCostoFiltrosAnual] = useState(1500); // MXN/año (ajustable)
-  const [costoEquipo, setCostoEquipo] = useState(3500); // MXN (ajustable)
+  const [purificadores, setPurificadores] = useState([]);
 
-  useEffect(() => {
-    const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
-    const filtrados = productosGuardados.filter(
-      (p) => p.categoria?.toLowerCase().includes("purificador")
+  // Calculadora de ahorro
+  const [garrafonesPorSemana, setGarrafonesPorSemana] = useState(3);
+  const [precioGarrafon, setPrecioGarrafon] = useState(55);
+  const [costoFiltrosAnual, setCostoFiltrosAnual] = useState(1500);
+  const [costoEquipo, setCostoEquipo] = useState(3500);
+
+  // Carga / recarga desde dashboard
+  const cargarDesdeDashboard = useCallback(() => {
+    const productosGuardados = parseJSON(localStorage.getItem(LS_PROD), []);
+    parseJSON(localStorage.getItem(LS_CAT), []); // reservado
+
+    // 1) Coincidencia exacta
+    let filtrados = productosGuardados.filter(
+      (p) => normaliza(p.categoria) === normaliza(CATEGORIA_PURIFICADORES)
     );
+
+    // 2) Fallback que contenga "purificador"
+    if (filtrados.length === 0) {
+      filtrados = productosGuardados.filter((p) =>
+        normaliza(p.categoria).includes("purificador")
+      );
+    }
+
     setPurificadores(filtrados);
   }, []);
 
+  useEffect(() => {
+    cargarDesdeDashboard();
+
+    const onStorage = (e) => {
+      if (e.key === LS_PROD || e.key === LS_CAT) cargarDesdeDashboard();
+    };
+    const onFocus = () => cargarDesdeDashboard();
+
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("visibilitychange", onFocus);
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("visibilitychange", onFocus);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [cargarDesdeDashboard]);
+
   const handleAgregar = (producto) => {
-    const productoConCantidad = { ...producto, cantidad: 1 };
+    const precioN = Number(producto.precio || 0);
+    const productoConCantidad = { ...producto, precio: precioN, cantidad: 1 };
     agregarProducto(productoConCantidad);
   };
 
-  // --- Utilidades ---
-  const mxn = (n) =>
-    (isNaN(n) ? 0 : n).toLocaleString("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 });
+  // Cálculos de ahorro (memo)
+  const {
+    gastoMensualGarrafon,
+    gastoAnualGarrafon,
+    gastoMensualPurificador,
+    ahorroMensual,
+    ahorroAnual,
+    mesesBreakEven,
+  } = useMemo(() => {
+    const mensualGarrafon = garrafonesPorSemana * precioGarrafon * 4.33; // semanas promedio
+    const anualGarrafon = mensualGarrafon * 12;
+    const mensualPurificador = costoFiltrosAnual / 12;
+    const ahorroM = Math.max(mensualGarrafon - mensualPurificador, 0);
+    const ahorroA = Math.max(anualGarrafon - costoFiltrosAnual, 0);
+    const me = ahorroM > 0 ? Math.ceil(costoEquipo / ahorroM) : null;
 
-  // --- Cálculos de ahorro ---
-  const gastoMensualGarrafon = garrafonesPorSemana * precioGarrafon * 4.33; // 4.33 semanas promedio
-  const gastoAnualGarrafon = gastoMensualGarrafon * 12;
-  const gastoMensualPurificador = costoFiltrosAnual / 12;
-  const ahorroMensual = Math.max(gastoMensualGarrafon - gastoMensualPurificador, 0);
-  const ahorroAnual = Math.max(gastoAnualGarrafon - costoFiltrosAnual, 0);
-  const mesesBreakEven = ahorroMensual > 0 ? Math.ceil(costoEquipo / ahorroMensual) : null;
+    return {
+      gastoMensualGarrafon: mensualGarrafon,
+      gastoAnualGarrafon: anualGarrafon,
+      gastoMensualPurificador: mensualPurificador,
+      ahorroMensual: ahorroM,
+      ahorroAnual: ahorroA,
+      mesesBreakEven: me,
+    };
+  }, [garrafonesPorSemana, precioGarrafon, costoFiltrosAnual, costoEquipo]);
 
   return (
-    <section className="px-4 md:px-16 pt-32 pb-16 min-h-screen bg-white text-gray-800">
+    <section className="px-4 md:px-16 pt-28 pb-16 min-h-screen bg-white text-gray-800">
       <h2 className="text-3xl md:text-5xl font-extrabold text-center mb-12 text-black">
         Purificadores Caseros
       </h2>
@@ -50,40 +121,67 @@ export default function PurificadoresCaseros() {
         </p>
       ) : (
         <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">
-          {purificadores.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white border border-gray-200 rounded-3xl shadow-xl p-6 flex flex-col items-center text-center transition hover:scale-[1.02]"
-            >
-              <img
-                src={item.imagen || "/placeholder.jpg"}
-                alt={item.nombre}
-                className="w-full h-48 object-cover rounded-2xl mb-4 shadow-sm"
-                loading="lazy"
-              />
-              <h3 className="text-xl font-semibold text-black mb-2">
-                {item.nombre}
-              </h3>
-              <p className="text-sm text-gray-700 mb-3">{item.descripcion}</p>
-              <p className="text-lg font-bold text-green-600 mb-4">
-                ${item.precio}
-              </p>
-
-              <button
-                onClick={() => handleAgregar(item)}
-                className="mb-2 px-6 py-2 rounded-xl font-semibold bg-[#ccff00] text-black hover:brightness-90 transition"
+          {purificadores.map((item) => {
+            const precioN = Number(item.precio || 0);
+            return (
+              <article
+                key={item.id}
+                className="bg-white border border-gray-200 rounded-3xl shadow-xl p-6 flex flex-col items-center text-center transition hover:scale-[1.02]"
               >
-                Agregar al carrito
-              </button>
+                <img
+                  src={item.imagen || "/placeholder.jpg"}
+                  alt={item.nombre}
+                  className="w-full h-48 object-cover rounded-2xl mb-4 shadow-sm"
+                  loading="lazy"
+                />
 
-              <button
-                onClick={() => navigate(`/videos/${item.id}`)}
-                className="text-blue-700 hover:underline text-sm font-medium"
-              >
-                Ver video y detalles
-              </button>
-            </div>
-          ))}
+                <h3 className="text-xl font-semibold text-black mb-2">
+                  {item.nombre}
+                </h3>
+
+                {item.descripcion && (
+                  <p className="text-sm text-gray-700 mb-3">{item.descripcion}</p>
+                )}
+
+                <p className="text-lg font-bold text-green-600 mb-4">
+                  {mxn(precioN)}
+                </p>
+
+                <button
+                  onClick={() => handleAgregar(item)}
+                  className="mb-2 px-6 py-2 rounded-xl font-semibold bg-[#ccff00] text-black hover:brightness-90 transition"
+                >
+                  Agregar al carrito
+                </button>
+
+                <button
+                  onClick={() => navigate(`/videos/${item.id}`)}
+                  className="text-blue-700 hover:underline text-sm font-medium"
+                >
+                  Ver video y detalles
+                </button>
+
+                {(item.pesoKg || item.dimensiones) && (
+                  <div className="mt-4 text-xs text-gray-600">
+                    {item.pesoKg ? <div>Peso: {item.pesoKg} kg</div> : null}
+                    {item.dimensiones && (
+                      <div>
+                        Dimensiones:{" "}
+                        {[item.dimensiones?.largoCm, item.dimensiones?.anchoCm, item.dimensiones?.altoCm]
+                          .filter((v) => v != null && v !== "")
+                          .join(" × ")}{" "}
+                        {item.dimensiones?.largoCm ||
+                        item.dimensiones?.anchoCm ||
+                        item.dimensiones?.altoCm
+                          ? "cm"
+                          : ""}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </article>
+            );
+          })}
         </div>
       )}
 
@@ -97,9 +195,9 @@ export default function PurificadoresCaseros() {
         </button>
       </div>
 
-      {/* --- Apartado informativo --- */}
+      {/* --------- Apartado informativo --------- */}
       <div className="max-w-6xl mx-auto mt-20 space-y-14">
-        {/* 1) Por qué comprarlos */}
+        {/* 1) Beneficios */}
         <section aria-labelledby="beneficios-title">
           <h3 id="beneficios-title" className="text-2xl md:text-3xl font-bold mb-6">
             ¿Por qué comprar un purificador casero?
@@ -126,7 +224,7 @@ export default function PurificadoresCaseros() {
           </div>
         </section>
 
-        {/* 2) Dónde colocarlos */}
+        {/* 2) Colocación */}
         <section aria-labelledby="colocacion-title">
           <h3 id="colocacion-title" className="text-2xl md:text-3xl font-bold mb-6">
             ¿Dónde colocarlo?
@@ -138,7 +236,7 @@ export default function PurificadoresCaseros() {
               bullets={[
                 "Queda oculto; grifo dedicado o 3 vías.",
                 "Ideal para cocinas con espacio en gabinete.",
-                "Opciones RO/UF con o sin bomba."
+                "Opciones RO/UF con o sin bomba.",
               ]}
             />
             <PlacementCard
@@ -147,7 +245,7 @@ export default function PurificadoresCaseros() {
               bullets={[
                 "Instalación rápida al grifo.",
                 "Movible; perfecto para rentas.",
-                "Carbón activado / UF compactos."
+                "Carbón activado / UF compactos.",
               ]}
             />
             <PlacementCard
@@ -156,7 +254,7 @@ export default function PurificadoresCaseros() {
               bullets={[
                 "Filtra justo donde bebes.",
                 "Accesible para niños y adultos mayores.",
-                "Compatible con garrafón o red."
+                "Compatible con garrafón o red.",
               ]}
             />
           </div>
@@ -169,7 +267,9 @@ export default function PurificadoresCaseros() {
           </h3>
           <ul className="grid sm:grid-cols-2 gap-3 text-gray-700">
             <Checklist>Calidad del agua en tu zona (TDS, dureza, sabor).</Checklist>
-            <Checklist>Tipo de filtración: Carbón (olor/sabor), UF (micro-impurezas), RO (sales/metales), UV (desinfección).</Checklist>
+            <Checklist>
+              Tipo de filtración: Carbón (olor/sabor), UF (micro-impurezas), RO (sales/metales), UV (desinfección).
+            </Checklist>
             <Checklist>Capacidad/flujo (GPD o L/h) acorde a tu familia.</Checklist>
             <Checklist>Espacio e instalación: bajo tarja vs encimera.</Checklist>
             <Checklist>Costos de consumibles y disponibilidad de repuestos.</Checklist>
@@ -237,15 +337,13 @@ export default function PurificadoresCaseros() {
             <Stat label="Ahorro estimado al mes" value={mxn(ahorroMensual)} />
           </div>
 
-          <div className="mt-4">
-            <p className="text-sm text-gray-700">
-              Ahorro estimado al año: <span className="font-semibold">{mxn(ahorroAnual)}</span>
-              {mesesBreakEven ? (
-                <> — Punto de equilibrio en <span className="font-semibold">{mesesBreakEven}</span> meses aprox.</>
-              ) : (
-                <> — Con los valores actuales no hay ahorro mensual.</>
-              )}
-            </p>
+          <div className="mt-4 text-sm text-gray-700">
+            Ahorro estimado al año: <span className="font-semibold">{mxn(ahorroAnual)}</span>
+            {mesesBreakEven ? (
+              <> — Punto de equilibrio en <span className="font-semibold">{mesesBreakEven}</span> meses aprox.</>
+            ) : (
+              <> — Con los valores actuales no hay ahorro mensual.</>
+            )}
             <p className="text-xs text-gray-500 mt-1">
               *Cálculo aproximado. Ajusta los valores a tus hábitos para un resultado más realista.
             </p>
@@ -290,7 +388,7 @@ export default function PurificadoresCaseros() {
   );
 }
 
-/* ---------------- Subcomponentes locales ---------------- */
+/* =============== Subcomponentes locales =============== */
 
 function InfoCard({ icon, title, children }) {
   return (

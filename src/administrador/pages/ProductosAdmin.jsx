@@ -1,40 +1,60 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ModalProductoForm from "../components/ModalProductoForm";
 
-const ProductosAdmin = () => {
+const LS_PROD = "productos";
+const LS_CAT = "categorias";
+
+export default function ProductosAdmin() {
   const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [productoEditando, setProductoEditando] = useState(null);
   const [filtro, setFiltro] = useState("todos");
 
+  // Carga inicial
   useEffect(() => {
-    const productosGuardados = JSON.parse(localStorage.getItem("productos")) || [];
-    setProductos(productosGuardados);
+    const ps = JSON.parse(localStorage.getItem(LS_PROD)) || [];
+    const cs = JSON.parse(localStorage.getItem(LS_CAT)) || [];
+    setProductos(ps);
+    setCategorias(cs);
   }, []);
 
-  const guardarEnLocalStorage = (nuevosProductos) => {
-    localStorage.setItem("productos", JSON.stringify(nuevosProductos));
+  const guardarProductos = (nuevos) => {
+    localStorage.setItem(LS_PROD, JSON.stringify(nuevos));
+    setProductos(nuevos);
+  };
+
+  const guardarCategorias = (nuevas) => {
+    const uniques = Array.from(new Set(nuevas.map((c) => c.trim()).filter(Boolean)));
+    localStorage.setItem(LS_CAT, JSON.stringify(uniques));
+    setCategorias(uniques);
+  };
+
+  const ensureCategoria = (cat) => {
+    if (!cat) return;
+    if (!categorias.includes(cat)) guardarCategorias([...categorias, cat]);
   };
 
   const handleAgregar = (nuevoProducto) => {
-    let nuevosProductos;
+    // Asegura la categoría en el catálogo
+    ensureCategoria(nuevoProducto.categoria);
+
+    let nuevos;
     if (productoEditando) {
-      nuevosProductos = productos.map((p) =>
+      nuevos = productos.map((p) =>
         p.id === productoEditando.id ? { ...nuevoProducto, id: productoEditando.id } : p
       );
     } else {
-      nuevosProductos = [...productos, { ...nuevoProducto, id: Date.now() }];
+      nuevos = [...productos, { ...nuevoProducto, id: Date.now() }];
     }
-    setProductos(nuevosProductos);
-    guardarEnLocalStorage(nuevosProductos);
+    guardarProductos(nuevos);
     setProductoEditando(null);
     setModalOpen(false);
   };
 
   const handleEliminar = (id) => {
-    const nuevosProductos = productos.filter((p) => p.id !== id);
-    setProductos(nuevosProductos);
-    guardarEnLocalStorage(nuevosProductos);
+    const nuevos = productos.filter((p) => p.id !== id);
+    guardarProductos(nuevos);
   };
 
   const handleEditar = (producto) => {
@@ -42,9 +62,21 @@ const ProductosAdmin = () => {
     setModalOpen(true);
   };
 
-  const productosFiltrados = filtro === "todos"
-    ? productos
-    : productos.filter((p) => p.categoria?.toLowerCase() === filtro.toLowerCase());
+  const productosFiltrados =
+    filtro === "todos"
+      ? productos
+      : productos.filter((p) => p.categoria?.toLowerCase() === filtro.toLowerCase());
+
+  const fmtMoney = (n) =>
+    new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" })
+      .format(Number(n || 0));
+
+  const fmtDims = (d) => {
+    if (!d) return "-";
+    const { largoCm, anchoCm, altoCm } = d;
+    if ([largoCm, anchoCm, altoCm].every((x) => x == null || x === "")) return "-";
+    return `${largoCm ?? "-"} × ${anchoCm ?? "-"} × ${altoCm ?? "-"} cm`;
+  };
 
   return (
     <div className="p-10">
@@ -64,62 +96,65 @@ const ProductosAdmin = () => {
         <select
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
-          className="border px-3 py-1 rounded"
+          className="border px-3 py-2 rounded"
         >
           <option value="todos">Todos</option>
-          <option value="purificador">Purificadores</option>
-          <option value="vending">Máquinas Vending</option>
-          <option value="limpieza">Limpieza</option>
+          {categorias.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
         </select>
       </div>
 
-      <table className="w-full border text-sm">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border p-2">Nombre</th>
-            <th className="border p-2">Precio</th>
-            <th className="border p-2">Categoría</th>
-            <th className="border p-2">Descripción</th>
-            <th className="border p-2">Stock</th>
-            <th className="border p-2">Imagen</th>
-            <th className="border p-2">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {productosFiltrados.map((producto) => (
-            <tr key={producto.id} className="text-center">
-              <td className="border p-2">{producto.nombre}</td>
-              <td className="border p-2">${producto.precio}</td>
-              <td className="border p-2">{producto.categoria}</td>
-              <td className="border p-2">{producto.descripcion}</td>
-              <td className="border p-2">{producto.stock}</td>
-              <td className="border p-2">
-                {producto.imagen && (
-                  <img
-                    src={producto.imagen}
-                    alt={producto.nombre}
-                    className="w-16 h-16 object-cover mx-auto"
-                  />
-                )}
-              </td>
-              <td className="border p-2 space-x-2">
-                <button
-                  onClick={() => handleEditar(producto)}
-                  className="text-blue-500 hover:underline"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleEliminar(producto.id)}
-                  className="text-red-500 hover:underline"
-                >
-                  Eliminar
-                </button>
-              </td>
+      <div className="w-full overflow-auto">
+        <table className="w-full min-w-[1000px] border text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="border p-2">Nombre</th>
+              <th className="border p-2">Precio</th>
+              <th className="border p-2">Categoría</th>
+              <th className="border p-2">Descripción</th>
+              <th className="border p-2">Stock</th>
+              <th className="border p-2">Peso (kg)</th>
+              <th className="border p-2">Dimensiones (L×A×H cm)</th>
+              <th className="border p-2">Imagen</th>
+              <th className="border p-2">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {productosFiltrados.map((p) => (
+              <tr key={p.id} className="text-center">
+                <td className="border p-2">{p.nombre}</td>
+                <td className="border p-2">{fmtMoney(p.precio)}</td>
+                <td className="border p-2">{p.categoria}</td>
+                <td className="border p-2 text-left">{p.descripcion}</td>
+                <td className="border p-2">{p.stock ?? "-"}</td>
+                <td className="border p-2">{p.pesoKg ?? "-"}</td>
+                <td className="border p-2">{fmtDims(p.dimensiones)}</td>
+                <td className="border p-2">
+                  {p.imagen ? (
+                    <img src={p.imagen} alt={p.nombre} className="mx-auto h-16 w-16 object-cover" />
+                  ) : ("-")}
+                </td>
+                <td className="space-x-2 border p-2">
+                  <button onClick={() => handleEditar(p)} className="text-blue-600 hover:underline">
+                    Editar
+                  </button>
+                  <button onClick={() => handleEliminar(p.id)} className="text-red-600 hover:underline">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {productosFiltrados.length === 0 && (
+              <tr>
+                <td className="p-6 text-center text-gray-500" colSpan={9}>
+                  No hay productos en esta vista.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <ModalProductoForm
         show={modalOpen}
@@ -129,6 +164,4 @@ const ProductosAdmin = () => {
       />
     </div>
   );
-};
-
-export default ProductosAdmin;
+}
