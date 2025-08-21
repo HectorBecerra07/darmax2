@@ -11,9 +11,6 @@ const buildWaUrl = ({ modeloId, modeloNombre }) => {
   return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
 };
 
-/* =========================
-   Datos y utilidades
-========================= */
 const modelos = [
   {
     id: "Purificadora",
