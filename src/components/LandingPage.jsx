@@ -83,7 +83,7 @@ export default function LandingPage() {
         <IniciaNegocio />
       </div>
 
-      <Carruselimg/>
+      
 
       <div ref={calculadoraRef} className="scroll-mt-1">
         <CalculadoraNegocio />
