@@ -33,7 +33,7 @@ export default function LandingPage() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 w-full max-w-7xl mx-auto">
           <div className="max-w-xl text-center md:text-left flex flex-col items-center md:items-start">
             <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-              IMPULSA TU {" "}
+              IMPULSA TU{" "}
               <span className="text-accent -skew-x-6 inline-block">NEGOCIO</span>
             </h2>
             <p className="text-white text-base md:text-lg mb-6">
@@ -84,6 +84,7 @@ export default function LandingPage() {
       </div>
 
       
+      <Carruselimg />
 
       <div ref={calculadoraRef} className="scroll-mt-1">
         <CalculadoraNegocio />
