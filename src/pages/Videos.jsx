@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const videos = [
   {
     id: "purificador-eco",
-    titulo: "Purificador Compacto Eco",
+    titulo: "Purificador DARMAX",
     thumbnail: "/imgs/purificador1.jpg",
     descripcion: "Detalles técnicos, instalación y mantenimiento del modelo Eco.",
   },

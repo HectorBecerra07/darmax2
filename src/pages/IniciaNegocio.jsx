@@ -16,7 +16,7 @@ const modelos = [
     id: "Purificadora",
     nombre: "PURIFICADORAS",
     imagen: "/img/vending/mostrador.png",
-    precio: 54957,
+    precio: 52950,
     descripcion: "Ideal para emprendedores. Capacidad 600 garrafones/mes.",
     rutaInfo: "/purificadora-info",
     badge: "Emprende hoy",
@@ -34,7 +34,7 @@ const modelos = [
     id: "Vending-Limpieza",
     nombre: "VENDING DE LIMPIEZA",
     imagen: "/img/vending/5productos.jpg",
-    precio: 23000,
+    precio: 34950,
     descripcion: "Automatizada para venta de productos de limpieza.",
     rutaInfo: "/vending-limpieza-info",
     badge: "Nuevo",
@@ -503,12 +503,7 @@ const IniciaNegocio = ({ inicioRef }) => {
               >
                 Cotizar por WhatsApp
               </a>
-              <button
-                onClick={() => navigate("/contacto")}
-                className="px-6 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 text-slate-900 transition"
-              >
-                Contacto
-              </button>
+              
             </div>
           </div>
         </section>

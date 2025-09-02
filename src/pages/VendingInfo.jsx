@@ -7,7 +7,7 @@ const HERO_IMG = "/img/vending/TOUCHAGUA.png";
 
 const highlights = [
   { titulo: "1200 garrafones/mes", desc: "Capacidad máxima estimada", icono: "⚡" },
-  { titulo: "Pago mixto", desc: "Efectivo, tarjeta y QR", icono: "💳" },
+  { titulo: "Pago ", desc: "Efectivo", icono: "💳" },
   { titulo: "Acero inoxidable", desc: "Construcción robusta", icono: "🛡️" },
   { titulo: "Operación 24/7", desc: "Automática y segura", icono: "🕛" },
 ];

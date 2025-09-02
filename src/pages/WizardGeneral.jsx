@@ -10,6 +10,9 @@ import Step3ExtrasConfigurator from "../components/Step3ExtrasConfigurator";
 import Step4Summary from "../components/Step4Summary";
 import CarouselImages from "../components/CarouselImages";
 
+// 🔒 Precio fijo para conversión a pantalla touch
+const TOUCH_UPGRADE_PRICE = 10000;
+
 const imagenesCarrusel = {
   Purificadora: [
     "/img/purificadoras/MOSTRADOR%20NEPTUNO/MOSTRADOR%20DE%20AGUA.jpg",
@@ -50,7 +53,7 @@ const imagenesCarruselPorModelo = {
     "/img/purificadoras/MOSTRADOR POSEIDON PRO/POSEIDONPRO.png",
   ],
 
-  // Las vending ya estaban bien
+  // Vending
   Atlantis: ["/img/imgvending/vending1.jpeg"],
   AtlantisMax: ["/img/imgvending/vending2.webp"],
   Megalodon: ["/img/imgvending/vending3.jpg"],
@@ -65,27 +68,20 @@ const imagenesCarruselPorModelo = {
   Vending8: ["/img/vending/vendinglimpieza8.jpg", "/img/limpieza3.png"]
 };
 
-
 const configuraciones = {
   Purificadora: [
-    { id: "Neptuno", nombre: "Mostrador Neptuno", descripcion: "Agua purificada", precio: 100000 },
-    { id: "NeptunoAPlus", nombre: "Mostrador Neptuno A-Plus", descripcion: "Agua purificada + alcalina", precio: 120000 },
-    { id: "PremiumOsmosis", nombre: "Mostrador Premium", descripcion: "Agua premium con ósmosis inversa", precio: 200000 },
-    { id: "PoseidonPro", nombre: "Mostrador Poseidón Pro", descripcion: "Ósmosis inversa + Alcalina", precio: 250000 },
+    { id: "Neptuno", nombre: "Mostrador Tardicional", descripcion: "Agua purificada", precio: 52950 },
+    { id: "NeptunoAPlus", nombre: "Mostrador Osmosis inversa", descripcion: "Osmosis inversa", precio: 80950 },
   ],
   Vending: [
-    { id: "Atlantis", nombre: "Atlantis", descripcion: "Agua purificada", precio: 50000 },
-    { id: "AtlantisMax", nombre: "Atlantis Max", descripcion: "Premium con osmosis inversa", precio: 65000 },
-    { id: "Megalodon", nombre: "Megalodon", descripcion: "Agua Purificada + Agua Alcalina", precio: 70000 },
-    { id: "MegalodonMax", nombre: "Megalodon Max", descripcion: "Premium osmosis inversa + Agua Alcalina", precio: 85000 },
-    { id: "AtlantisTouch", nombre: "Atlantis Touch", descripcion: "Agua purificada con pantalla táctil", precio: 53000 },
-    { id: "AtlantisMaxTouch", nombre: "Atlantis Max Touch", descripcion: "Premium con osmosis inversa y pantalla táctil", precio: 68000 },
-    { id: "MegalodonTouch", nombre: "Megalodon Touch", descripcion: "Purificada + Alcalina con pantalla táctil", precio: 73000 },
-    { id: "MegalodonMaxTouch", nombre: "Megalodon Max Touch", descripcion: "Ósmosis inversa + Alcalina con pantalla táctil", precio: 88000 },
+    { id: "Atlantis", nombre: "Atlantis", descripcion: "Agua purificada", precio: 54950 },
+    { id: "AtlantisMax", nombre: "Atlantis Max", descripcion: "Premium con osmosis inversa", precio: 82000 },
+    { id: "AtlantisTouch", nombre: "Atlantis Touch", descripcion: "Agua purificada con pantalla táctil", precio: 64950 },
+    { id: "AtlantisMaxTouch", nombre: "Atlantis Max Touch", descripcion: "Premium con osmosis inversa y pantalla táctil", precio: 92950 },
   ],
   "Vending-Limpieza": [
-    { id: "Vending5", nombre: "Darmax Clean", descripcion: "Limpieza de 5 productos", precio: 23000 },
-    { id: "Vending8", nombre: "Darmax Clean", descripcion: "Limpieza de 8 productos", precio: 50000 },
+    { id: "Vending5", nombre: "Darmax Clean", descripcion: "Limpieza de 5 productos", precio: 34950 },
+    { id: "Vending8", nombre: "Darmax Clean", descripcion: "Limpieza de 8 productos", precio: 44950 },
   ],
 };
 
@@ -123,7 +119,8 @@ export default function WizardGeneral() {
               setVendingType(type);
               setSelectedModel(null);
               setSelectedExtras([]);
-              setExtraTouchPrice(type === "Touch" ? 3000 : 0);
+              // 👇 Si eligen "Touch", fijamos el precio extra en 10,000
+              setExtraTouchPrice(type === "Touch" ? TOUCH_UPGRADE_PRICE : 0);
               setStep(1);
             }}
           />
@@ -153,8 +150,9 @@ export default function WizardGeneral() {
             <Step2ModelDetails
               modelo={selectedModel}
               vendingType={vendingType}
-              onNext={(extraTouch) => {
-                setExtraTouchPrice(extraTouch);
+              // 🔒 Al avanzar, reforzamos el precio fijo si es Touch
+              onNext={() => {
+                setExtraTouchPrice(vendingType === "Touch" ? TOUCH_UPGRADE_PRICE : 0);
                 nextStep();
               }}
               onBack={prevStep}

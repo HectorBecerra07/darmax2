@@ -243,56 +243,39 @@ export default function Nosotros() {
           </div>
         </section>
 
-        {/* VALORES */}
-        <section className="py-20 bg-white px-6">
-          <div className="max-w-7xl mx-auto">
-            <SectionTitle label="Nuestra cultura" title="Valores que vivimos diario" />
-            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { icon: "🎯", t: "Disciplina", d: "Enfoque riguroso y ordenado para garantizar resultados." },
-                { icon: "🔁", t: "Constancia", d: "Evolucionar a diario para mantenernos a la vanguardia." },
-                { icon: "♻️", t: "Responsabilidad", d: "Compromiso con clientes, colaboradores y medio ambiente." },
-                { icon: "🤝", t: "Integridad", d: "Actuar con honestidad, construyendo relaciones de confianza." },
-                { icon: "🚀", t: "Liderazgo", d: "Inspirar con visión hacia la innovación y excelencia." },
-                { icon: "📦", t: "Compromiso", d: "Productos y servicio que aportan valor real y duradero." },
-              ].map((v, i) => (
-                <motion.div
-                  key={i}
-                  {...fadeUp(0.05 * i)}
-                  className="group rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white p-6 shadow-sm hover:shadow-xl transition"
-                >
-                  <div className="text-2xl">{v.icon}</div>
-                  <h4 className="mt-2 font-semibold text-slate-900">{v.t}</h4>
-                  <p className="text-sm text-slate-600 mt-1">{v.d}</p>
-                  <div
-                    className="mt-4 h-1 w-10 rounded-full transition-all group-hover:w-16"
-                    style={{ backgroundColor: "#ccff00" }}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+{/* VALORES */}
+<section className="py-20 bg-white px-6">
+  <div className="max-w-7xl mx-auto">
+    <SectionTitle label="Nuestra cultura" title="Valores que vivimos diario" />
 
-        {/* MÉTRICAS / CONFIANZA */}
-        <section className="py-16 bg-gray-50 px-6">
-          <div className="max-w-7xl mx-auto grid sm:grid-cols-3 gap-6 text-center">
-            {[
-              { k: "4.8/5", v: "Satisfacción promedio" },
-              { k: "+7 años", v: "de experiencia" },
-              { k: "+50", v: "ciudades con presencia" },
-            ].map((m, i) => (
-              <motion.div
-                key={i}
-                {...fadeUp(0.05 * i)}
-                className="rounded-2xl bg-white p-6 border border-gray-100 shadow-sm"
-              >
-                <div className="text-3xl font-extrabold text-slate-900">{m.k}</div>
-                <div className="text-sm text-slate-600 mt-1">{m.v}</div>
-              </motion.div>
-            ))}
+    <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
+      {[
+        { img: "/img/valor/DISCIPLINA.png",       t: "DISCIPLINA",       d: "Enfoque riguroso y ordenado para garantizar resultados." },
+        { img: "/img/valor/CONSTANCIA.png",       t: "CONSTANCIA",       d: "Evolucionar a diario para mantenernos a la vanguardia." },
+        { img: "/img/valor/RESPONSABILIDAD.png",  t: "RESPONSABILIDAD",  d: "Compromiso con clientes, colaboradores y medio ambiente." },
+        { img: "/img/valor/INTEGRIDAD.png",       t: "INTEGRIDAD",       d: "Actuar con honestidad, construyendo relaciones de confianza." },
+        { img: "/img/valor/LIDERAZGO.png",        t: "LIDERAZGO",        d: "Inspirar con visión hacia la innovación y excelencia." },
+        { img: "/img/valor/COMPROMISO.png",       t: "COMPROMISO",       d: "Productos y servicio que aportan valor real y duradero." },
+      ].map((v, i) => (
+        <motion.div
+          key={i}
+          {...fadeUp(0.05 * i)}
+          className="relative rounded-xl p-6 pb-24 text-center text-white shadow-md overflow-visible"
+          style={{ backgroundColor: i % 2 === 0 ? "#5188C9" : "#03A4A4" }}
+        >
+          <h4 className="font-extrabold text-xl tracking-wide mb-3">{v.t}</h4>
+          <p className="text-sm leading-relaxed opacity-95">{v.d}</p>
+
+          {/* Ícono circular lleno */}
+          <div className="absolute left-1/2 -bottom-10 -translate-x-1/2 w-20 h-20 rounded-full bg-white shadow-lg overflow-hidden">
+            <img src={v.img} alt={v.t} className="w-full h-full object-contain" />
           </div>
-        </section>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</section>
+
 
         {/* CTA FINAL */}
         <section className="py-16 px-6">

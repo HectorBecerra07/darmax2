@@ -8,9 +8,18 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
 const promociones = [
-  { id: 1, titulo: "¡Llévate 2x1 en purificadoras!", descripcion: "Compra una purificadora y llévate otra gratis.", imagen: "/img/promos/promo1.jpg" },
-  { id: 2, titulo: "Hasta 30% en tu primer pedido", descripcion: "Para nuevos emprendedores. Aplica en modelos seleccionados.", imagen: "/img/promos/promo2.jpg" },
-  { id: 3, titulo: "Vending + Instalación GRATIS", descripcion: "Incluye asesoría, puesta en marcha y garantía extendida.", imagen: "/img/promos/promo3.jpg" },
+  {
+    id: 1,
+    titulo: "purificadoras!",
+    descripcion: "Compra una purificadora y llévate otra gratis.",
+    imagen: "/img/PROMOCIONES/PROMOCION1.png",
+  },
+  {
+    id: 2,
+    titulo: "primer pedido",
+    descripcion: "Para nuevos emprendedores. Aplica en modelos seleccionados.",
+    imagen: "/img/PROMOCIONES/PROMOCION2.png",
+  },
 ];
 
 const topSellers = [
@@ -31,21 +40,28 @@ const combo3en1 = {
   imagen: "/img/combos/3en1.jpg",
 };
 
+// WhatsApp helper
+const WA_NUMBER = "525519655369"; // +52 551 965 5369
+const waLink = (texto) =>
+  `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(texto)}`;
+
 export default function Promociones() {
   return (
     <>
       <Helmet>
         <title>Promociones | Darmax</title>
-        <meta name="description" content="Descubre nuestras promociones exclusivas para emprender con Darmax." />
+        <meta
+          name="description"
+          content="Descubre nuestras promociones exclusivas para emprender con Darmax."
+        />
         <link rel="canonical" href="https://tudominio.com/promociones" />
-        {/* HOTFIX: si por alguna razón no carga el CSS de effect-fade, evitamos que se vean varios slides a la vez */}
         <style>{`
           .swiper.swiper-fade .swiper-slide { opacity: 0; pointer-events: none; }
           .swiper.swiper-fade .swiper-slide-active { opacity: 1; pointer-events: auto; }
         `}</style>
       </Helmet>
 
-      {/* HERO (con fade y crossfade) */}
+      {/* HERO (mismo alto de antes, solo ajusta foto) */}
       <section className="mt-24">
         <Swiper
           modules={[Autoplay, Pagination, EffectFade]}
@@ -60,37 +76,15 @@ export default function Promociones() {
           {promociones.map((promo) => (
             <SwiperSlide key={promo.id}>
               <div className="relative h-full w-full">
-                <img src={promo.imagen} alt={promo.titulo} className="h-full w-full object-cover" loading="lazy" />
-                {/* Overlay sólido para que nunca “traspase” el slide anterior */}
+                <img
+                  src={promo.imagen}
+                  alt={promo.titulo}
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
-                <div className="absolute inset-0 flex items-center justify-center px-4">
-                  <div className="max-w-3xl text-center text-white">
-                    <span className="inline-block text-[11px] tracking-widest uppercase bg-white/10 border border-white/20 px-3 py-1 rounded-full backdrop-blur">
-                      Promoción limitada
-                    </span>
-                    <h1 className="mt-4 text-3xl md:text-5xl font-extrabold leading-tight">
-                      {promo.titulo}
-                    </h1>
-                    <p className="mt-3 md:mt-4 text-sm md:text-lg text-white/90">
-                      {promo.descripcion}
-                    </p>
-                    <div className="mt-6 flex items-center justify-center gap-3">
-                      <Link
-                        to="/cotizar"
-                        className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-90 transition shadow-lg"
-                        style={{ backgroundColor: "#ccff00" }}
-                      >
-                        Cotizar ahora
-                      </Link>
-                      <Link
-                        to="/productos"
-                        className="px-6 py-3 rounded-xl font-semibold bg-white/10 border border-white/20 text-white hover:bg-white/15 backdrop-blur transition"
-                      >
-                        Ver productos
-                      </Link>
-                    </div>
-                  </div>
-                </div>
               </div>
             </SwiperSlide>
           ))}
@@ -99,7 +93,11 @@ export default function Promociones() {
 
       {/* TOP SELLERS – Carrusel */}
       <section className="py-12 px-4 md:px-8 bg-gray-50">
-        <Header title="Top Sellers" subtitle="Los favoritos por rendimiento y retorno de inversión." kicker="Selección de clientes" />
+        <Header
+          title="Top Sellers"
+          subtitle="Los favoritos por rendimiento y retorno de inversión."
+          kicker="Selección de clientes"
+        />
         <Swiper
           modules={[Pagination, Autoplay]}
           pagination={{ clickable: true }}
@@ -116,19 +114,29 @@ export default function Promociones() {
             <SwiperSlide key={i}>
               <Card>
                 <div className="relative overflow-hidden rounded-2xl">
-                  <img src={item.imagen} alt={item.titulo} className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                  <img
+                    src={item.imagen}
+                    alt={item.titulo}
+                    className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
                   <Badge className="absolute left-4 top-4">Más vendido</Badge>
                 </div>
                 <div className="p-5">
-                  <h3 className="text-lg font-semibold text-slate-900 text-center">{item.titulo}</h3>
+                  <h3 className="text-lg font-semibold text-slate-900 text-center">
+                    {item.titulo}
+                  </h3>
                   <div className="mt-4 flex justify-center">
-                    <Link
-                      to="/productos"
+                    {/* ÚNICO BOTÓN: Cotizar por WhatsApp */}
+                    <a
+                      href={waLink(`Hola, me interesa "${item.titulo}". ¿Me cotizas?`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="px-5 py-2 rounded-xl font-semibold text-black hover:brightness-90 transition"
                       style={{ backgroundColor: "#ccff00" }}
                     >
-                      Ver detalles
-                    </Link>
+                      Cotizar por WhatsApp
+                    </a>
                   </div>
                 </div>
               </Card>
@@ -139,7 +147,11 @@ export default function Promociones() {
 
       {/* COMBOS 2 EN 1 – Carrusel */}
       <section className="py-12 px-4 md:px-8">
-        <Header title="Combos 2 en 1" subtitle="Combinaciones optimizadas para iniciar con el pie derecho." kicker="Arma tu negocio" />
+        <Header
+          title="Combos 2 en 1"
+          subtitle="Combinaciones optimizadas para iniciar con el pie derecho."
+          kicker="Arma tu negocio"
+        />
         <Swiper
           modules={[Pagination, Autoplay]}
           pagination={{ clickable: true }}
@@ -156,26 +168,29 @@ export default function Promociones() {
             <SwiperSlide key={idx}>
               <Card>
                 <div className="relative overflow-hidden rounded-2xl">
-                  <img src={combo.imagen} alt={combo.titulo} className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                  <img
+                    src={combo.imagen}
+                    alt={combo.titulo}
+                    className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
                   <Badge className="absolute left-4 top-4">2 en 1</Badge>
                 </div>
                 <div className="p-5 text-center">
-                  <h3 className="text-lg font-semibold text-slate-900">{combo.titulo}</h3>
-                  <p className="mt-1 text-sm text-slate-600">Incluye instalación básica y asesoría.</p>
-                  <div className="mt-4 flex justify-center gap-3">
-                    <Link
-                      to="/cotizar"
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    {combo.titulo}
+                  </h3>
+                  <div className="mt-4 flex justify-center">
+                    {/* ÚNICO BOTÓN: Cotizar por WhatsApp */}
+                    <a
+                      href={waLink(`Hola, quiero cotizar el combo "${combo.titulo}".`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="px-5 py-2 rounded-xl font-semibold text-black hover:brightness-90 transition"
                       style={{ backgroundColor: "#ccff00" }}
                     >
-                      Cotizar
-                    </Link>
-                    <Link
-                      to="/promociones"
-                      className="px-5 py-2 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 text-slate-800 transition"
-                    >
-                      Más info
-                    </Link>
+                      Cotizar por WhatsApp
+                    </a>
                   </div>
                 </div>
               </Card>
@@ -188,24 +203,43 @@ export default function Promociones() {
       <section className="py-12 px-4 md:px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center">
           <div className="overflow-hidden rounded-3xl shadow-lg">
-            <img src={combo3en1.imagen} alt={combo3en1.titulo} className="h-72 w-full object-cover md:h-[22rem] transition-transform duration-500 hover:scale-105" loading="lazy" />
+            <img
+              src={combo3en1.imagen}
+              alt={combo3en1.titulo}
+              className="h-72 w-full object-cover md:h-[22rem] transition-transform duration-500 hover:scale-105"
+              loading="lazy"
+            />
           </div>
           <div className="p-1">
-            <span className="inline-block text-xs tracking-widest uppercase bg-black text-white px-3 py-1 rounded-full">Combo estrella</span>
-            <h2 className="mt-3 text-2xl md:text-3xl font-extrabold text-slate-900">{combo3en1.titulo}</h2>
+            <span className="inline-block text-xs tracking-widest uppercase bg-black text-white px-3 py-1 rounded-full">
+              Combo estrella
+            </span>
+            <h2 className="mt-3 text-2xl md:text-3xl font-extrabold text-slate-900">
+              {combo3en1.titulo}
+            </h2>
             <p className="mt-2 text-slate-600">{combo3en1.descripcion}</p>
             <ul className="mt-4 space-y-2 text-sm text-slate-700">
-              <li className="flex items-start gap-2"><span className="mt-0.5">✔</span> Mayor capacidad y flujo para alta demanda.</li>
-              <li className="flex items-start gap-2"><span className="mt-0.5">✔</span> Instalación y puesta en marcha incluidas.</li>
-              <li className="flex items-start gap-2"><span className="mt-0.5">✔</span> Garantía extendida y soporte técnico.</li>
+              <li className="flex items-start gap-2">
+                <span className="mt-0.5">✔</span> Mayor capacidad y flujo para alta demanda.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-0.5">✔</span> Instalación y puesta en marcha incluidas.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="mt-0.5">✔</span> Garantía extendida y soporte técnico.
+              </li>
             </ul>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/cotizar" className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-90 transition shadow-lg" style={{ backgroundColor: "#ccff00" }}>
-                Cotizar combo
-              </Link>
-              <Link to="/productos" className="px-6 py-3 rounded-xl font-semibold bg-white border border-gray-200 hover:bg-gray-100 text-slate-900 transition">
-                Ver componentes
-              </Link>
+              {/* ÚNICO BOTÓN: Cotizar por WhatsApp */}
+              <a
+                href={waLink(`Hola, me interesa el "${combo3en1.titulo}". ¿Me compartes cotización?`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-90 transition shadow-lg"
+                style={{ backgroundColor: "#ccff00" }}
+              >
+                Cotizar por WhatsApp
+              </a>
             </div>
           </div>
         </div>
@@ -240,7 +274,9 @@ function Card({ children }) {
 
 function Badge({ children, className = "" }) {
   return (
-    <span className={`inline-flex items-center rounded-full bg-white/90 text-slate-900 text-xs font-semibold px-3 py-1 shadow ${className}`}>
+    <span
+      className={`inline-flex items-center rounded-full bg-white/90 text-slate-900 text-xs font-semibold px-3 py-1 shadow ${className}`}
+    >
       {children}
     </span>
   );

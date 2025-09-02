@@ -25,7 +25,7 @@ export default function NavBar() {
   return (
     <>
       <nav className="fixed top-0 left-0 w-full z-50 px-4 md:px-6 lg:px-8 py-3 bg-transparent">
-        <div className="max-w-7xl mx-auto flex items-center gap-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="shrink-0 flex items-center">
             <img
@@ -83,7 +83,6 @@ export default function NavBar() {
                 >
                   Mi Perfil
                 </button>
-                {/* Se retiró "Cerrar Sesión" aquí para evitar duplicado */}
               </div>
             ) : (
               <Link to="/login" className={`${textColor} hover:text-[#ccff00]`} aria-label="Iniciar sesión">
@@ -92,17 +91,17 @@ export default function NavBar() {
             )}
           </div>
 
-          {/* Botón menú móvil */}
+          {/* Botón menú móvil (alineado a la derecha) */}
           <button
             onClick={() => setNavOpen(!navOpen)}
-            className={`${textColor} md:hidden shrink-0`}
+            className={`${textColor} md:hidden shrink-0 ml-auto`}
             aria-label="Abrir menú"
           >
             {navOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
           </button>
         </div>
 
-        {/* Menú móvil */}
+        {/* Menú móvil que baja desde arriba */}
         <div
           className={`absolute top-0 right-0 w-full md:hidden transform transition-all duration-300 ${
             navOpen ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
@@ -144,7 +143,6 @@ export default function NavBar() {
                 NOSOTROS
               </Link>
             </li>
-           
           </ul>
         </div>
       </nav>

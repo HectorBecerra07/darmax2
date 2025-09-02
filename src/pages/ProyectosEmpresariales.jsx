@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion"; // ← animaciones
+import { motion } from "framer-motion"; // animaciones
 
 /* ========= Configuración de destino ========= */
 const GMAIL_TO = "darmaxagua@gmail.com";
@@ -12,7 +11,9 @@ const buildGmailUrl = ({ to, subject, body, cc, bcc }) => {
     body ? `body=${encodeURIComponent(body)}` : "",
     cc ? `cc=${encodeURIComponent(cc)}` : "",
     bcc ? `bcc=${encodeURIComponent(bcc)}` : "",
-  ].filter(Boolean).join("&");
+  ]
+    .filter(Boolean)
+    .join("&");
   return `${base}&${params}`;
 };
 const buildMailto = ({ to, subject, body, cc, bcc }) => {
@@ -56,21 +57,32 @@ export default function ProyectosEmpresariales() {
   }, []);
 
   const proyectosFiltrados = useMemo(() => {
-    const base = filtro === "Todos" ? proyectos : proyectos.filter((p) => p.industria === filtro);
+    const base =
+      filtro === "Todos" ? proyectos : proyectos.filter((p) => p.industria === filtro);
     if (sortBy === "az") {
       return [...base].sort((a, b) => a.titulo.localeCompare(b.titulo, "es"));
     }
     if (sortBy === "industria") {
-      return [...base].sort((a, b) => a.industria.localeCompare(b.industria, "es") || a.titulo.localeCompare(b.titulo, "es"));
+      return [...base].sort(
+        (a, b) =>
+          a.industria.localeCompare(b.industria, "es") ||
+          a.titulo.localeCompare(b.titulo, "es")
+      );
     }
     return base; // relevancia (orden original)
   }, [filtro, sortBy]);
 
   /* ======= Form ======= */
   const [form, setForm] = useState({
-    nombre: "", email: "", telefono: "", industria: "", proyecto: "", detalles: "",
+    nombre: "",
+    email: "",
+    telefono: "",
+    industria: "",
+    proyecto: "",
+    detalles: "",
   });
-  const onChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const onChange = (e) =>
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   const handleGmailSubmit = (e) => {
     e.preventDefault();
     const subject = `Cotización - ${form.proyecto || "Proyecto empresarial"}`;
@@ -116,8 +128,16 @@ export default function ProyectosEmpresariales() {
                   key={cat}
                   onClick={() => setFiltro(cat)}
                   className={`px-4 py-2 rounded-full text-sm font-medium border transition
-                    ${activo ? "text-black" : "bg-white text-slate-700 border-gray-300 hover:bg-gray-100"}`}
-                  style={activo ? { backgroundColor: "#ccff00", borderColor: "#ccff00" } : {}}
+                    ${
+                      activo
+                        ? "text-black"
+                        : "bg-white text-slate-700 border-gray-300 hover:bg-gray-100"
+                    }`}
+                  style={
+                    activo
+                      ? { backgroundColor: "#ccff00", borderColor: "#ccff00" }
+                      : {}
+                  }
                   aria-pressed={activo}
                 >
                   {cat} <span className="opacity-70">({conteo[cat] ?? 0})</span>
@@ -130,7 +150,11 @@ export default function ProyectosEmpresariales() {
           <div className="justify-self-end flex items-center gap-2">
             <button
               onClick={() => setView("grid")}
-              className={`px-3 py-2 rounded-xl border ${view === "grid" ? "bg-black text-white border-black" : "bg-white hover:bg-gray-100"}`}
+              className={`px-3 py-2 rounded-xl border ${
+                view === "grid"
+                  ? "bg-black text-white border-black"
+                  : "bg-white hover:bg-gray-100"
+              }`}
               aria-pressed={view === "grid"}
               title="Vista de cuadrícula"
             >
@@ -138,7 +162,11 @@ export default function ProyectosEmpresariales() {
             </button>
             <button
               onClick={() => setView("list")}
-              className={`px-3 py-2 rounded-xl border ${view === "list" ? "bg-black text-white border-black" : "bg-white hover:bg-gray-100"}`}
+              className={`px-3 py-2 rounded-xl border ${
+                view === "list"
+                  ? "bg-black text-white border-black"
+                  : "bg-white hover:bg-gray-100"
+              }`}
               aria-pressed={view === "list"}
               title="Vista de lista"
             >
@@ -198,24 +226,72 @@ export default function ProyectosEmpresariales() {
 
             <form onSubmit={handleGmailSubmit} className="mt-8 grid gap-5">
               <div className="grid md:grid-cols-2 gap-5">
-                <FormInput required label="Nombre*" name="nombre" value={form.nombre} onChange={onChange} />
-                <FormInput required type="email" label="Email*" name="email" value={form.email} onChange={onChange} placeholder="tucorreo@dominio.com" />
+                <FormInput
+                  required
+                  label="Nombre*"
+                  name="nombre"
+                  value={form.nombre}
+                  onChange={onChange}
+                />
+                <FormInput
+                  required
+                  type="email"
+                  label="Email*"
+                  name="email"
+                  value={form.email}
+                  onChange={onChange}
+                  placeholder="tucorreo@dominio.com"
+                />
               </div>
 
               <div className="grid md:grid-cols-3 gap-5">
-                <FormInput label="Teléfono" name="telefono" value={form.telefono} onChange={onChange} placeholder="55 1234 5678" />
-                <FormSelect label="Industria" name="industria" value={form.industria} onChange={onChange} options={industrias} />
-                <FormInput label="Proyecto" name="proyecto" value={form.proyecto} onChange={onChange} placeholder="Ej. Vending Touch + Purificadora" />
+                <FormInput
+                  label="Teléfono"
+                  name="telefono"
+                  value={form.telefono}
+                  onChange={onChange}
+                  placeholder="55 1234 5678"
+                />
+                <FormSelect
+                  label="Industria"
+                  name="industria"
+                  value={form.industria}
+                  onChange={onChange}
+                  options={industrias}
+                />
+                <FormInput
+                  label="Proyecto"
+                  name="proyecto"
+                  value={form.proyecto}
+                  onChange={onChange}
+                  placeholder="Ej. Vending Touch + Purificadora"
+                />
               </div>
 
-              <FormTextarea required label="Mensaje / Detalles*" name="detalles" rows={5} value={form.detalles} onChange={onChange} placeholder="Ubicación, capacidad requerida, tiempos, presupuesto…" />
+              <FormTextarea
+                required
+                label="Mensaje / Detalles*"
+                name="detalles"
+                rows={5}
+                value={form.detalles}
+                onChange={onChange}
+                placeholder="Ubicación, capacidad requerida, tiempos, presupuesto…"
+              />
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
-                <button type="submit" className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg" style={{ backgroundColor: "#ccff00" }}>
+                <button
+                  type="submit"
+                  className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
+                  style={{ backgroundColor: "#ccff00" }}
+                >
                   Abrir Gmail y enviar
                 </button>
                 <a
-                  href={buildMailto({ to: GMAIL_TO, subject: "Consulta desde Proyectos Empresariales", body: "" })}
+                  href={buildMailto({
+                    to: GMAIL_TO,
+                    subject: "Consulta desde Proyectos Empresariales",
+                    body: "",
+                  })}
                   className="px-6 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 text-slate-900 transition"
                 >
                   Usar cliente de correo
@@ -250,31 +326,55 @@ function MotionCard({ children, delay = 0 }) {
 /* ========= Cards ========= */
 function ProjectCard({ proyecto, setForm }) {
   const badge = getBadge(proyecto.industria, proyecto.titulo);
-  const imgSrc = proyecto.imagen?.trim() ? proyecto.imagen : "/img/placeholder-proyecto.jpg";
+  const imgSrc = proyecto.imagen?.trim()
+    ? proyecto.imagen
+    : "/img/placeholder-proyecto.jpg";
 
   return (
     <article className="group rounded-3xl border border-gray-100 bg-white shadow-sm hover:shadow-xl transition-all hover:-translate-y-0.5 hover:ring-1 hover:ring-gray-200 flex flex-col">
       <div className="relative isolate overflow-hidden rounded-t-3xl">
         <div className="aspect-[4/3] w-full">
-          <img src={imgSrc} alt={proyecto.titulo} className="h-full w-full object-cover will-change-transform transition-transform duration-500 group-hover:scale-[1.03]" loading="lazy" />
+          <img
+            src={imgSrc}
+            alt={proyecto.titulo}
+            className="h-full w-full object-cover will-change-transform transition-transform duration-500 group-hover:scale-[1.03]"
+            loading="lazy"
+          />
         </div>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/25 to-transparent" />
-        {badge && <span className="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-white/90 text-slate-900 text-xs font-semibold px-3 py-1 shadow">{badge}</span>}
-        <h3 className="absolute left-5 bottom-4 z-10 text-xl font-bold text-white drop-shadow">{proyecto.titulo}</h3>
+        {badge && (
+          <span className="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-white/90 text-slate-900 text-xs font-semibold px-3 py-1 shadow">
+            {badge}
+          </span>
+        )}
+        <h3 className="absolute left-5 bottom-4 z-10 text-xl font-bold text-white drop-shadow">
+          {proyecto.titulo}
+        </h3>
       </div>
 
       <div className="p-6 flex flex-col flex-1">
-        <p className="text-slate-700 text-sm leading-relaxed">{proyecto.descripcion}</p>
+        <p className="text-slate-700 text-sm leading-relaxed">
+          {proyecto.descripcion}
+        </p>
         <div className="mt-6 flex items-center gap-2">
-          <span className="inline-flex items-center rounded-full bg-gray-100 text-slate-700 text-xs px-2.5 py-1">{proyecto.industria}</span>
+          <span className="inline-flex items-center rounded-full bg-gray-100 text-slate-700 text-xs px-2.5 py-1">
+            {proyecto.industria}
+          </span>
         </div>
+
+        {/* Un único botón: Cotizar por Email */}
         <div className="mt-auto pt-6 flex flex-wrap gap-3">
-          <Link to={`/proyectos/${proyecto.id ?? ""}`} className="px-5 py-2 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 text-slate-800 transition">Ver detalles</Link>
           <a
             href="#formulario-proyectos"
             className="px-5 py-2 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-sm"
             style={{ backgroundColor: "#ccff00" }}
-            onClick={() => setForm((prev) => ({ ...prev, proyecto: proyecto.titulo, industria: proyecto.industria }))}
+            onClick={() =>
+              setForm((prev) => ({
+                ...prev,
+                proyecto: proyecto.titulo,
+                industria: proyecto.industria,
+              }))
+            }
           >
             Cotizar por Email
           </a>
@@ -287,33 +387,53 @@ function ProjectCard({ proyecto, setForm }) {
 /* Vista Lista (fila) */
 function ProjectRow({ proyecto, setForm }) {
   const badge = getBadge(proyecto.industria, proyecto.titulo);
-  const imgSrc = proyecto.imagen?.trim() ? proyecto.imagen : "/img/placeholder-proyecto.jpg";
+  const imgSrc = proyecto.imagen?.trim()
+    ? proyecto.imagen
+    : "/img/placeholder-proyecto.jpg";
 
   return (
     <article className="group grid md:grid-cols-[320px_1fr] gap-5 items-stretch rounded-3xl border border-gray-100 bg-white shadow-sm hover:shadow-xl hover:ring-1 hover:ring-gray-200 transition-all overflow-hidden">
       {/* Media */}
       <div className="relative isolate">
-        <img src={imgSrc} alt={proyecto.titulo} className="h-full w-full object-cover md:h-full aspect-[16/10] md:aspect-auto" loading="lazy" />
+        <img
+          src={imgSrc}
+          alt={proyecto.titulo}
+          className="h-full w-full object-cover md:h-full aspect-[16/10] md:aspect-auto"
+          loading="lazy"
+        />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent md:hidden" />
-        {badge && <span className="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-white/90 text-slate-900 text-xs font-semibold px-3 py-1 shadow">{badge}</span>}
+        {badge && (
+          <span className="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-white/90 text-slate-900 text-xs font-semibold px-3 py-1 shadow">
+            {badge}
+          </span>
+        )}
       </div>
 
       {/* Body */}
       <div className="p-5 md:p-6 flex flex-col">
-        <h3 className="text-xl md:text-2xl font-bold text-slate-900">{proyecto.titulo}</h3>
+        <h3 className="text-xl md:text-2xl font-bold text-slate-900">
+          {proyecto.titulo}
+        </h3>
         <p className="mt-2 text-slate-700">{proyecto.descripcion}</p>
         <div className="mt-4">
           <span className="inline-flex items-center rounded-full bg-gray-100 text-slate-700 text-xs px-2.5 py-1">
             {proyecto.industria}
           </span>
         </div>
+
+        {/* Un único botón: Cotizar por Email */}
         <div className="mt-auto pt-5 flex flex-wrap gap-3">
-          <Link to={`/proyectos/${proyecto.id ?? ""}`} className="px-5 py-2 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 text-slate-800 transition">Ver detalles</Link>
           <a
             href="#formulario-proyectos"
             className="px-5 py-2 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-sm"
             style={{ backgroundColor: "#ccff00" }}
-            onClick={() => setForm((prev) => ({ ...prev, proyecto: proyecto.titulo, industria: proyecto.industria }))}
+            onClick={() =>
+              setForm((prev) => ({
+                ...prev,
+                proyecto: proyecto.titulo,
+                industria: proyecto.industria,
+              }))
+            }
           >
             Cotizar por Email
           </a>
@@ -327,18 +447,32 @@ function ProjectRow({ proyecto, setForm }) {
 function FormInput({ label, ...props }) {
   return (
     <label className="block">
-      {label && <span className="text-sm font-medium text-slate-800">{label}</span>}
-      <input {...props} className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-[#ccff00]" />
+      {label && (
+        <span className="text-sm font-medium text-slate-800">{label}</span>
+      )}
+      <input
+        {...props}
+        className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-[#ccff00]"
+      />
     </label>
   );
 }
 function FormSelect({ label, options = [], ...props }) {
   return (
     <label className="block">
-      {label && <span className="text-sm font-medium text-slate-800">{label}</span>}
-      <select {...props} className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-[#ccff00]">
+      {label && (
+        <span className="text-sm font-medium text-slate-800">{label}</span>
+      )}
+      <select
+        {...props}
+        className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-[#ccff00]"
+      >
         <option value="">Selecciona…</option>
-        {options.map((i) => (<option key={i} value={i}>{i}</option>))}
+        {options.map((i) => (
+          <option key={i} value={i}>
+            {i}
+          </option>
+        ))}
         <option value="Otra">Otra</option>
       </select>
     </label>
@@ -347,8 +481,14 @@ function FormSelect({ label, options = [], ...props }) {
 function FormTextarea({ label, rows = 4, ...props }) {
   return (
     <label className="block">
-      {label && <span className="text-sm font-medium text-slate-800">{label}</span>}
-      <textarea rows={rows} {...props} className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-[#ccff00]" />
+      {label && (
+        <span className="text-sm font-medium text-slate-800">{label}</span>
+      )}
+      <textarea
+        rows={rows}
+        {...props}
+        className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-[#ccff00]"
+      />
     </label>
   );
 }
@@ -359,8 +499,10 @@ function getBadge(industria = "", titulo = "") {
   const t = titulo.toLowerCase();
   if (i.includes("franquicia") || t.includes("franquicia")) return "Nuevo";
   if (i.includes("hotel") || t.includes("hotel")) return "24/7";
-  if (i.includes("centro") || i.includes("comercial") || t.includes("comercial")) return "Alta demanda";
-  if (i.includes("presurización") || i.includes("presurizacion")) return "Caudal estable";
+  if (i.includes("centro") || i.includes("comercial") || t.includes("comercial"))
+    return "Alta demanda";
+  if (i.includes("presurización") || i.includes("presurizacion"))
+    return "Caudal estable";
   if (i.includes("aguas residuales")) return "Robusto";
   if (i.includes("sumergibles")) return "Profundidad";
   return null;
