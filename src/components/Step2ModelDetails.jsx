@@ -5,7 +5,7 @@ const BRAND_BLUE = "#5188C9";
 const BRAND_TEAL = "#03A4A4";
 
 const caracteristicasPorModelo = {
-  // ⬇️ deja aquí tu objeto exactamente como lo pusiste (no lo toqué)
+  
   Atlantis: [
     "500 garrafones por mes",
     "Filtrado por carbón activado",
