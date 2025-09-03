@@ -1,7 +1,6 @@
-// Archivo: WizardGeneral.jsx
-
+// WizardGeneral.jsx
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Step0SelectVendingType from "../components/Step0SelectVendingType";
 import Step1SelectModel from "../components/Step1SelectModel";
@@ -10,62 +9,58 @@ import Step3ExtrasConfigurator from "../components/Step3ExtrasConfigurator";
 import Step4Summary from "../components/Step4Summary";
 import CarouselImages from "../components/CarouselImages";
 
-// 🔒 Precio fijo para conversión a pantalla touch
-const TOUCH_UPGRADE_PRICE = 10000;
-
+/* =========================
+   IMÁGENES BASE POR CATEGORÍA
+   (Purificadora y Vending-Limpieza se quedan igual)
+========================= */
 const imagenesCarrusel = {
   Purificadora: [
     "/img/purificadoras/MOSTRADOR%20NEPTUNO/MOSTRADOR%20DE%20AGUA.jpg",
     "/img/purificadoras/MOSTRADOR%20NEPTUNO%20A-PLUS/PURI%20MAS%20ALCALINA%20PROCS.jpg",
-    "/img/purificadoras/MOSTRADOR%20POSEIDON%20PRO/OSMOSIS%20MAS%20ALCALINA%20PROCS.jpg"
-  ],
-  Vending: [
-    "/img/imgvending/vending1.jpeg",
-    "/img/imgvending/vending2.webp",
-    "/img/imgvending/vending3.jpg"
+    "/img/purificadoras/MOSTRADOR%20POSEIDON%20PRO/OSMOSIS%20MAS%20ALCALINA%20PROCS.jpg",
   ],
   "Vending-Limpieza": [
-    "/img/vending/vendinglimpieza.jpg",
-    "/img/vending/vendinglimpieza8.jpg",
-    "/img/limpieza3.png"
+    "/img/vending/5productos.jpg",
+    "/img/vending/9productos.jpeg",
+    "/img/limpieza3.png",
   ],
 };
 
+
+
+const VENDING_IMAGES = {
+  Tradicional: [
+    "/img/vending/ATLANTIS300MAX.png",       // Atlantis / AtlantisMax tradicionales
+    "/img/vending/ATLANTIS300MAX.png",
+  ],
+  Touch: [
+    "/img/vending/atlantistouchvending.jpg",  // AtlantisTouch
+    "/img/vending/TOUCHAGUA.png",             // AtlantisMaxTouch (o genérica touch)
+    "/img/vending/TOUCHAGUA.png", 
+  ],
+};
+
+
 const imagenesCarruselPorModelo = {
-  Neptuno: [
-    "/img/purificadoras/MOSTRADOR NEPTUNO/MOSTRADORDEAGUA.jpg",
-    "/img/purificadoras/MOSTRADOR NEPTUNO/AGUAPURIFICADAPROCS.jpg",
-    "/img/purificadoras/MOSTRADOR NEPTUNO/neptuno.png",
+  // Tradicionales
+  Atlantis: [
+    "/img/vending/ATLANTIS300MAX.png",
   ],
-  NeptunoAPlus: [
-    "/img/purificadoras/MOSTRADOR NEPTUNO A-PLUS/MOSTRADORDEAGUA2.jpg",
-    "/img/purificadoras/MOSTRADOR NEPTUNO A-PLUS/PURIMASALCALINAPROCS.jpg",
-    "/img/purificadoras/MOSTRADOR NEPTUNO A-PLUS/NEPTUNOAPLUS.png",
+  AtlantisMax: [
+    "/img/vending/ATLANTIS300MAX.png",
   ],
-  PremiumOsmosis: [
-    "/img/purificadoras/MOSTRADOR POSEIDON/AGUAOSMOSISPROCS.jpg",
-    "/img/purificadoras/MOSTRADOR POSEIDON/MOSTRADORDEAGUA22.jpg",
-    "/img/purificadoras/MOSTRADOR POSEIDON/poseidon.png",
+  // Touch
+  AtlantisTouch: [
+    "/img/vending/atlantistouchvending.jpg",
+    "/img/vending/TOUCHAGUA.png",
   ],
-  PoseidonPro: [
-    "/img/purificadoras/MOSTRADOR POSEIDON PRO/MOSTRADORDEAGUA23.jpg",
-    "/img/purificadoras/MOSTRADOR POSEIDON PRO/OSMOSISMASALCALINAPROCS.jpg",
-    "/img/purificadoras/MOSTRADOR POSEIDON PRO/POSEIDONPRO.png",
+  AtlantisMaxTouch: [
+    "/img/vending/TOUCHAGUA.png",
+    "/img/vending/atlantistouchvending.jpg",
   ],
-
-  // Vending
-  Atlantis: ["/img/imgvending/vending1.jpeg"],
-  AtlantisMax: ["/img/imgvending/vending2.webp"],
-  Megalodon: ["/img/imgvending/vending3.jpg"],
-  MegalodonMax: ["/img/imgvending/vending2.webp"],
-  AtlantisTouch: ["/img/imgvending/vending1.jpeg"],
-  AtlantisMaxTouch: ["/img/imgvending/vending2.webp"],
-  MegalodonTouch: ["/img/imgvending/vending3.jpg"],
-  MegalodonMaxTouch: ["/img/imgvending/vending2.webp"],
-
-  // Limpieza
-  Vending5: ["/img/vending/vendinglimpieza.jpg"],
-  Vending8: ["/img/vending/vendinglimpieza8.jpg", "/img/limpieza3.png"]
+  // Limpieza (por si usas estos ids de modelo)
+  Vending5: ["/img/vending/5productos.jpg"],
+  Vending8: ["/img/vending/9productos.jpeg", "/img/limpieza3.png"],
 };
 
 const configuraciones = {
@@ -87,9 +82,8 @@ const configuraciones = {
 
 export default function WizardGeneral() {
   const { id } = useParams();
-  const imagenes = imagenesCarrusel[id] || [];
   const [step, setStep] = useState(id === "Vending" ? 0 : 1);
-  const [vendingType, setVendingType] = useState(id !== "Vending" ? "None" : null);
+  const [vendingType, setVendingType] = useState(id !== "Vending" ? "None" : null); // "Tradicional" | "Touch" | null
   const [selectedModel, setSelectedModel] = useState(null);
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [extraTouchPrice, setExtraTouchPrice] = useState(0);
@@ -98,11 +92,28 @@ export default function WizardGeneral() {
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => Math.max(0, prev - 1));
 
-  const modelos = configuraciones[id]?.filter((modelo) => {
-    if (id !== "Vending") return true;
-    const esTouch = modelo.id.toLowerCase().includes("touch");
-    return vendingType === "Touch" ? esTouch : !esTouch;
-  }) || [];
+  const modelos =
+    configuraciones[id]?.filter((m) => {
+      if (id !== "Vending") return true;
+      const esTouch = m.id.toLowerCase().includes("touch");
+      return vendingType === "Touch" ? esTouch : !esTouch;
+    }) || [];
+
+  /* =========================
+     IMÁGENES PARA EL PASO 1
+     - Si NO es Vending: usa categoria normal
+     - Si es Vending:
+        * antes de elegir tipo → muestra una mezcla (Tradicional + Touch)
+        * si eligen Tradicional → solo tradicionales
+        * si eligen Touch → solo touch
+  ========================= */
+  const landingImages = useMemo(() => {
+    if (id !== "Vending") return imagenesCarrusel[id] || [];
+    if (vendingType === "Tradicional") return VENDING_IMAGES.Tradicional;
+    if (vendingType === "Touch") return VENDING_IMAGES.Touch;
+    // antes de elegir: muestra algo de ambos
+    return [...VENDING_IMAGES.Tradicional, ...VENDING_IMAGES.Touch];
+  }, [id, vendingType]);
 
   return (
     <motion.div
@@ -116,11 +127,10 @@ export default function WizardGeneral() {
         <div className="col-span-2">
           <Step0SelectVendingType
             onSelect={(type) => {
-              setVendingType(type);
+              setVendingType(type);          // "Tradicional" | "Touch"
               setSelectedModel(null);
               setSelectedExtras([]);
-              // 👇 Si eligen "Touch", fijamos el precio extra en 10,000
-              setExtraTouchPrice(type === "Touch" ? TOUCH_UPGRADE_PRICE : 0);
+              setExtraTouchPrice(type === "Touch" ? 10000 : 0); // tu lógica existente
               setStep(1);
             }}
           />
@@ -130,7 +140,8 @@ export default function WizardGeneral() {
       {step === 1 && (
         <>
           <div className="space-y-10">
-            <CarouselImages images={imagenes} />
+            {/* ⬇️ Aquí ya se respeta touch vs tradicional */}
+            <CarouselImages images={landingImages} />
           </div>
           <div>
             <Step1SelectModel
@@ -145,14 +156,16 @@ export default function WizardGeneral() {
 
       {step === 2 && selectedModel && (
         <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-          <CarouselImages images={imagenesCarruselPorModelo[selectedModel.id] || imagenes} />
+          {/* ⬇️ Por modelo: si no hay, usa lo que se mostró en landing */}
+          <CarouselImages
+            images={imagenesCarruselPorModelo[selectedModel.id] || landingImages}
+          />
           <div>
             <Step2ModelDetails
               modelo={selectedModel}
               vendingType={vendingType}
-              // 🔒 Al avanzar, reforzamos el precio fijo si es Touch
-              onNext={() => {
-                setExtraTouchPrice(vendingType === "Touch" ? TOUCH_UPGRADE_PRICE : 0);
+              onNext={(extraTouch) => {
+                setExtraTouchPrice(extraTouch);
                 nextStep();
               }}
               onBack={prevStep}
@@ -167,7 +180,10 @@ export default function WizardGeneral() {
             selectedModelId={selectedModel.id}
             onSelect={(extrasSeleccionados) => {
               setSelectedExtras(extrasSeleccionados);
-              const totalExtras = extrasSeleccionados.reduce((acc, curr) => acc + (curr.precio || 0), 0);
+              const totalExtras = extrasSeleccionados.reduce(
+                (acc, curr) => acc + (curr.precio || 0),
+                0
+              );
               setExtrasPrice(totalExtras);
             }}
             onNext={nextStep}

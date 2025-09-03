@@ -4,8 +4,15 @@ const TOUCH_UPGRADE_PRICE = 10000;
 const BRAND_BLUE = "#5188C9";
 const BRAND_TEAL = "#03A4A4";
 
+// Modelos que YA son touch
+const TOUCH_MODEL_IDS = new Set([
+  "AtlantisTouch",
+  "AtlantisMaxTouch",
+  "MegalodonTouch",
+  "MegalodonMaxTouch",
+]);
+
 const caracteristicasPorModelo = {
-  
   Atlantis: [
     "500 garrafones por mes",
     "Filtrado por carbón activado",
@@ -109,7 +116,6 @@ const caracteristicasPorModelo = {
     "Luz interna",
     "Asesoría por videollamada para instalación (no incluye instalación)"
   ],
-
   Vending8: [
     "Para 8 productos de limpieza",
     "Estructura 100% acero inoxidable calibre 18",
@@ -127,24 +133,39 @@ const caracteristicasPorModelo = {
     "Luz interna",
     "Asesoría por videollamada para instalación (no incluye instalación)"
   ],
-  
 };
 
 export default function Step2ModelDetails({ modelo, vendingType, onNext, onBack }) {
   const [isTouch, setIsTouch] = useState(false);
 
-  // 🔐 Descripción: acepta varias claves y solo muestra si existe
   const descripcionModelo =
     modelo?.descripcion ??
-    modelo?.descripción ?? // por si quedó con tilde en algún lado
+    modelo?.descripción ??
     modelo?.desc ??
     "";
 
   const precioBase = Number(modelo?.precio ?? 0);
-  const touchIncrement =
-    vendingType === "Touch" ? TOUCH_UPGRADE_PRICE : isTouch ? TOUCH_UPGRADE_PRICE : 0;
-  const precioFinal = precioBase + touchIncrement;
 
+  // ¿El modelo YA es touch?
+  const isTouchModel =
+    TOUCH_MODEL_IDS.has(modelo?.id) || /touch/i.test(modelo?.id || "");
+
+  // ¿Mostrar checkbox de upgrade?
+  const allowTouchUpgrade = vendingType === "Tradicional" && !isTouchModel;
+
+  // Incremento por touch (solo si NO es un modelo touch)
+  let touchIncrement = 0;
+  if (!isTouchModel) {
+    if (vendingType === "Touch") {
+      // Eligieron la variante touch de un modelo tradicional
+      touchIncrement = TOUCH_UPGRADE_PRICE;
+    } else if (allowTouchUpgrade && isTouch) {
+      // Tradicional + checkbox activado
+      touchIncrement = TOUCH_UPGRADE_PRICE;
+    }
+  }
+
+  const precioFinal = precioBase + touchIncrement;
   const caracteristicas = caracteristicasPorModelo[modelo?.id] || [];
 
   return (
@@ -180,7 +201,6 @@ export default function Step2ModelDetails({ modelo, vendingType, onNext, onBack 
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-gray-800">
           {caracteristicas.map((c, i) => (
             <li key={i} className="flex items-start gap-2">
-              {/* Check bonito sin dependencias */}
               <svg
                 className="mt-[2px] w-5 h-5 shrink-0"
                 viewBox="0 0 20 20"
@@ -194,8 +214,8 @@ export default function Step2ModelDetails({ modelo, vendingType, onNext, onBack 
           ))}
         </ul>
 
-        {/* Conversión a Touch (solo si es Tradicional) */}
-        {vendingType === "Tradicional" && (
+        {/* Conversión a Touch (solo si aplica) */}
+        {allowTouchUpgrade && (
           <div className="mt-6 flex items-center gap-3">
             <input
               id="touch"

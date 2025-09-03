@@ -15,7 +15,7 @@ const modelos = [
   {
     id: "Purificadora",
     nombre: "PURIFICADORAS",
-    imagen: "/img/vending/mostrador.png",
+    imagen: "/img/vending/mostrador.jpg",
     precio: 52950,
     descripcion: "Ideal para emprendedores. Capacidad 600 garrafones/mes.",
     rutaInfo: "/purificadora-info",
@@ -31,14 +31,14 @@ const modelos = [
     badge: "Alta demanda",
   },
   {
-    id: "Vending-Limpieza",
-    nombre: "VENDING DE LIMPIEZA",
-    imagen: "/img/vending/5productos.jpg",
-    precio: 34950,
-    descripcion: "Automatizada para venta de productos de limpieza.",
-    rutaInfo: "/vending-limpieza-info",
-    badge: "Nuevo",
-  },
+  id: "Vending-Limpieza",
+  nombre: "VENDING DE LIMPIEZA",
+  imagen: "/img/vending/9productos.jpeg", 
+  precio: 34950,
+  descripcion: "Automatizada para venta de productos de limpieza.",
+  rutaInfo: "/vending-limpieza-info",
+  badge: "Nuevo",
+}
 ];
 
 const formatMXN = (n) =>
