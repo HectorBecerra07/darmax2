@@ -73,7 +73,7 @@ export default function Nosotros() {
                 Conócenos
               </a>
               <a
-                href="/proyectos"
+                href="/proyectos-empresariales"
                 className="px-6 py-3 rounded-xl font-semibold bg-white/10 border border-white/20 hover:bg-white/15 transition"
               >
                 Ver proyectos
