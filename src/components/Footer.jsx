@@ -34,23 +34,24 @@ const Footer = () => {
             Blvd. de los Continentes 85, Bosques de Aragón,<br />
             57170 Cdad. Nezahualcóyotl, Méx.
           </p>
-          <p className="mb-2">Tel: +52 55 1234 5678</p>
-          <p className="mb-2">Email: contacto@darmax.com</p>
+          <p className="mb-2">Tel: +52 5653751129</p>
+          <p className="mb-2">Email: ventas1@darmaxagua.com.mx</p>
+          <p className="mb-2">Email: ventas2@darmaxagua.com.mx</p>
         </div>
 
         <div>
           <h3 className="text-xl font-semibold mb-4">Síguenos</h3>
           <div className="flex space-x-5 text-2xl mb-6">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-sky-400">
+            <a href="https://www.facebook.com/Darmaxagua/" target="_blank" rel="noopener noreferrer" className="hover:text-sky-400">
               <FaFacebookF />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400">
+            <a href="https://www.instagram.com/darmaxagua/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400">
               <FaInstagram />
             </a>
             <a href="https://wa.me/525512345678" target="_blank" rel="noopener noreferrer" className="hover:text-green-400">
               <FaWhatsapp />
             </a>
-            <a href="https://www.tiktok.com/@tunombredeusuario" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400">
+            <a href="https://www.tiktok.com/@darmax_agua" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400">
               <FaTiktok />
             </a>
           </div>

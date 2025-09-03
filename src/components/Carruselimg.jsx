@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const imagenes = [
-  "https://images.unsplash.com/photo-1606787366850-de6330128bfc?crop=entropy&cs=tinysrgb&fit=crop&h=800&w=1200",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?crop=entropy&cs=tinysrgb&fit=crop&h=800&w=1200",
-  "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?crop=entropy&cs=tinysrgb&fit=crop&h=800&w=1200",
-  "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?crop=entropy&cs=tinysrgb&fit=crop&h=800&w=1200",
-  "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?crop=entropy&cs=tinysrgb&fit=crop&h=800&w=1200",
-  "https://images.unsplash.com/photo-1581291519195-ef11498d1cf5?crop=entropy&cs=tinysrgb&fit=crop&h=800&w=1200",
-  "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?crop=entropy&cs=tinysrgb&fit=crop&h=800&w=1200",
-  "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?crop=entropy&cs=tinysrgb&fit=crop&h=800&w=1200",
+   "/img/trabajos/trabajos1.jpg",
+  "/img/trabajos/trabajos2.jpg",
+  "/img/trabajos/trabajos3.jpg",
+  "/img/trabajos/trabajos4.jpg",
+  "/img/trabajos/trabajos5.jpg",
+  "/img/trabajos/trabajos6.jpg",
+  "/img/trabajos/trabajos7.jpg",
 ];
 
 export default function CarruselResponsive() {

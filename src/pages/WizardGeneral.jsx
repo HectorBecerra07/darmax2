@@ -59,8 +59,8 @@ const imagenesCarruselPorModelo = {
     "/img/vending/atlantistouchvending.jpg",
   ],
   // Limpieza (por si usas estos ids de modelo)
-  Vending5: ["/img/vending/5productos.jpg"],
-  Vending8: ["/img/vending/9productos.jpeg", "/img/limpieza3.png"],
+  Vending5: ["/img/vending/5productos.jpg", "/img/vending/productoslimpieza5.png"],
+  Vending8: ["/img/vending/9productos.jpeg", "/img/vending/productoslimpieza8.png"],
 };
 
 const configuraciones = {

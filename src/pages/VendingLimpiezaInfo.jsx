@@ -7,8 +7,8 @@ const HERO_IMG = "/img/vending/5productos.jpg";
 
 const highlights = [
   { icon: "🧴", title: "Hasta 5 productos", desc: "Cloro, detergente, suavizante y más" },
-  { icon: "💳", title: "Pago mixto", desc: "Efectivo, tarjeta y QR" },
-  { icon: "🖥️", title: "Pantalla touch", desc: "Flujo de compra intuitivo" },
+  { icon: "💳", title: "Pago efectivo", desc: "Efectivo," },
+  { icon: "🖥️", title: "Botones", desc: "Flujo de compra intuitivo" },
   { icon: "♻️", title: "Eco-friendly", desc: "Recarga y reutiliza envases" },
 ];
 
@@ -28,15 +28,11 @@ const especificacionesLimpieza = [
     titulo: "Portafolio flexible",
     descripcion: "Configura cloro, detergente, suavizante, desinfectante y más.",
   },
-  {
-    imagen: "/img/limpieza/pantalla.png",
-    titulo: "UI táctil",
-    descripcion: "Interfaz clara con selección por producto y cantidad.",
-  },
+
   {
     imagen: "/img/limpieza/formaspago.png",
-    titulo: "Pagos integrados",
-    descripcion: "Monedas, billetes, tarjeta y códigos QR compatibles.",
+    titulo: "Pagos en efectivo",
+    descripcion: "Monedas, proxima mente billetes, tarjeta y códigos QR compatibles.",
   },
 ];
 
@@ -219,7 +215,7 @@ export default function VendingLimpiezaInfo() {
         <p className="text-slate-600 text-center mt-2">Vitrinas y ejemplos de configuración.</p>
 
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[HERO_IMG, "/img/limpieza/dispensador.png", "/img/limpieza/productos.png", "/img/limpieza/pantalla.png"].map(
+          {[HERO_IMG, "/img/vending/productoslimpieza5.png", "/img/vending/9productos.png", "/img/vending/productoslimpieza8.png"].map(
             (src, i) => (
               <motion.div
                 key={src + i}
