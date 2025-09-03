@@ -215,7 +215,7 @@ export default function VendingLimpiezaInfo() {
         <p className="text-slate-600 text-center mt-2">Vitrinas y ejemplos de configuración.</p>
 
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[HERO_IMG, "/img/vending/productoslimpieza5.png", "/img/vending/9productos.png", "/img/vending/productoslimpieza8.png"].map(
+          {[HERO_IMG, "/img/vending/productoslimpieza5.png", "/img/vending/9productos.jpeg", "/img/vending/productoslimpieza8.png"].map(
             (src, i) => (
               <motion.div
                 key={src + i}

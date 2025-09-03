@@ -235,7 +235,7 @@ export default function VendingInfo() {
           Una muestra de ubicaciones donde nuestras vending operan con éxito.
         </p>
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {["/img/proyectos/hotel.jpg", "/img/proyectos/centro-comercial.jpg", "/img/vending/produccion.png", "/img/vending/acero.png"].map(
+          {["/img/trabajos/trabajos1.jpg", "/img/trabajos/trabajos2.jpg", "/img/trabajos/trabajos3.jpg", "/img/trabajos/trabajos5.jpg"].map(
             (src, i) => (
               <motion.div
                 key={src + i}

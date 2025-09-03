@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 
 /* ====== Datos ====== */
-const HERO_IMG = "/img/vending/mostrador.png"; // cambia si tienes una imagen hero específica
+const HERO_IMG = "/img/vending/mostrador.jpg"; // cambia si tienes una imagen hero específica
 
 const highlights = [
   { icono: "💧", titulo: "3,000 L/día", desc: "Capacidad máxima estimada" },
@@ -235,10 +235,10 @@ export default function PurificadoraInfo() {
         </p>
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            "/img/purificadora/filtrado.png",
-            "/img/purificadora/uv.png",
-            "/img/purificadora/tanque.png",
-            "/img/purificadora/produccion.png",
+            "/img/trabajos/trabajos1.jpg",
+            "/img/trabajos/trabajos3.jpg",
+            "/img/trabajos/trabajos6.jpg",
+            "/img/trabajos/trabajos7.jpg",
           ].map((src, i) => (
             <motion.div
               key={src + i}
