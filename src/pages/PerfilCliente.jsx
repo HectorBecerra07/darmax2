@@ -13,37 +13,39 @@ export default function PerfilCliente() {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
   const [pedidos, setPedidos] = useState([]);
-  const [filtro, setFiltro] = useState("Todos"); // Todos | Pendiente | Entregado
+  const [filtro, setFiltro] = useState("Todos");
 
-  // Sincroniza los pedidos del usuario a partir del store global "pedidos"
+  // Estado del formulario de dirección
+  const [direccion, setDireccion] = useState({
+    calle: user?.direccion?.calle || "",
+    colonia: user?.direccion?.colonia || "",
+    cp: user?.direccion?.cp || "",
+    ciudad: user?.direccion?.ciudad || "",
+    estado: user?.direccion?.estado || "",
+    pais: user?.direccion?.pais || "México",
+  });
+
   const syncPedidosUsuario = () => {
     if (!user?.email) return;
 
-    // Lee global (para admin)
     const pedidosAdmin = JSON.parse(localStorage.getItem("pedidos")) || [];
-    // Filtra por email
     const delUsuario = pedidosAdmin.filter((p) => p.correo === user.email);
 
-    // También considera lo que ya hubiera en la clave del usuario (por si creó sin estar logueado)
     const keyUsuario = `pedidos-${user.email}`;
     const pedidosUsuario = JSON.parse(localStorage.getItem(keyUsuario)) || [];
 
-    // Merge por id (prioriza el estado más reciente que venga del admin)
     const map = new Map();
     [...pedidosUsuario, ...delUsuario].forEach((p) => map.set(p.id, p));
     const result = Array.from(map.values()).sort((a, b) => b.id - a.id);
 
-    // Persistimos para que el perfil siempre esté alineado
     localStorage.setItem(keyUsuario, JSON.stringify(result));
     setPedidos(result);
   };
 
   useEffect(() => {
     if (!user?.email) return;
-    // 1) Carga inicial
     syncPedidosUsuario();
 
-    // 2) Escucha cambios de localStorage (si admin cambia estado en otra pestaña)
     const onStorage = (e) => {
       if (e.key === "pedidos") {
         syncPedidosUsuario();
@@ -62,6 +64,14 @@ export default function PerfilCliente() {
   const handleLogout = () => {
     setUser(null);
     navigate("/");
+  };
+
+  // Guardar dirección
+  const handleGuardarDireccion = () => {
+    const updatedUser = { ...user, direccion };
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    alert("Dirección guardada correctamente ✅");
   };
 
   if (!user) {
@@ -115,7 +125,9 @@ export default function PerfilCliente() {
                 key={f}
                 onClick={() => setFiltro(f)}
                 className={`px-4 py-2 text-sm font-medium ${
-                  filtro === f ? "bg-[#ccff00] text-black" : "bg-white hover:bg-gray-50"
+                  filtro === f
+                    ? "bg-[#ccff00] text-black"
+                    : "bg-white hover:bg-gray-50"
                 } ${f !== "Todos" ? "border-l border-gray-200" : ""}`}
               >
                 {f}
@@ -134,7 +146,9 @@ export default function PerfilCliente() {
                 className="py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
               >
                 <div>
-                  <p className="font-bold">Pedido #{pedido.orden || "Sin número"}</p>
+                  <p className="font-bold">
+                    Pedido #{pedido.orden || "Sin número"}
+                  </p>
                   <p className="text-gray-500 text-sm">
                     Productos: {(pedido.productos || []).join(", ")}
                   </p>
@@ -178,8 +192,103 @@ export default function PerfilCliente() {
             <span className="font-bold">Email:</span> {user?.email}
           </p>
           <p className="text-gray-600">
-            <span className="font-bold">Teléfono:</span> {user?.phone || "No registrado"}
+            <span className="font-bold">Teléfono:</span>{" "}
+            {user?.phone || "No registrado"}
           </p>
+
+          {/* Mostrar dirección si existe */}
+          {user?.direccion ? (
+            <div className="text-gray-600 space-y-1 mt-4">
+              <p>
+                <span className="font-bold">Calle:</span> {user.direccion.calle}
+              </p>
+              <p>
+                <span className="font-bold">Colonia:</span>{" "}
+                {user.direccion.colonia}
+              </p>
+              <p>
+                <span className="font-bold">CP:</span> {user.direccion.cp}
+              </p>
+              <p>
+                <span className="font-bold">Ciudad:</span>{" "}
+                {user.direccion.ciudad}
+              </p>
+              <p>
+                <span className="font-bold">Estado:</span>{" "}
+                {user.direccion.estado}
+              </p>
+              <p>
+                <span className="font-bold">País:</span> {user.direccion.pais}
+              </p>
+            </div>
+          ) : (
+            <p className="text-gray-500 mt-2">No has registrado tu dirección.</p>
+          )}
+        </div>
+
+        {/* Formulario de dirección */}
+        <div className="mt-6">
+          <h4 className="text-xl font-semibold mb-4">Editar dirección</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              type="text"
+              placeholder="Calle"
+              value={direccion.calle}
+              onChange={(e) =>
+                setDireccion({ ...direccion, calle: e.target.value })
+              }
+              className="px-4 py-2 border rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="Colonia"
+              value={direccion.colonia}
+              onChange={(e) =>
+                setDireccion({ ...direccion, colonia: e.target.value })
+              }
+              className="px-4 py-2 border rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="Código Postal"
+              value={direccion.cp}
+              onChange={(e) => setDireccion({ ...direccion, cp: e.target.value })}
+              className="px-4 py-2 border rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="Ciudad"
+              value={direccion.ciudad}
+              onChange={(e) =>
+                setDireccion({ ...direccion, ciudad: e.target.value })
+              }
+              className="px-4 py-2 border rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="Estado"
+              value={direccion.estado}
+              onChange={(e) =>
+                setDireccion({ ...direccion, estado: e.target.value })
+              }
+              className="px-4 py-2 border rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="País"
+              value={direccion.pais}
+              onChange={(e) =>
+                setDireccion({ ...direccion, pais: e.target.value })
+              }
+              className="px-4 py-2 border rounded-lg"
+            />
+          </div>
+          <button
+            onClick={handleGuardarDireccion}
+            className="mt-4 px-6 py-2 bg-[#ccff00] rounded-lg font-bold"
+          >
+            Guardar dirección
+          </button>
         </div>
       </div>
     </div>

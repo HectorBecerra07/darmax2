@@ -18,17 +18,19 @@ const Register = () => {
       return;
     }
 
-    // Guarda en localStorage una lista de usuarios (esto es opcional si lo quieres simular)
+    // Guarda en localStorage la lista de usuarios (simulación)
     const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
     const nuevoUsuario = {
       name: nombre,
       email,
-      telefono,
+      phone: telefono, // 🔹 usamos "phone" para ser consistentes
     };
     localStorage.setItem("usuarios", JSON.stringify([...usuarios, nuevoUsuario]));
 
-    // Guarda en tu contexto el usuario logueado
-    setUser({ name: nombre, email });
+    // Guarda usuario logueado en contexto y localStorage
+    setUser(nuevoUsuario);
+    localStorage.setItem("user", JSON.stringify(nuevoUsuario));
+
     navigate("/perfil");
   };
 
