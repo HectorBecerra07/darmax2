@@ -266,19 +266,20 @@ function CompareModal({ open, onClose, models = [], navigate }) {
     </div>
   );
 }
-
 /* =========================
-   Beneficios de invertir
+   Beneficios de invertir (con colores sólidos)
 ========================= */
 function Beneficios() {
   const items = [
-    { icon: "💸", title: "ROI rápido", desc: "Recupera tu inversión en meses con flujos constantes." },
-    { icon: "⚙️", title: "Operación simple", desc: "Automatización y consumibles disponibles." },
-    { icon: "📈", title: "Negocio escalable", desc: "Empieza con 1 equipo y crece por módulos." },
-    { icon: "🤝", title: "Acompañamiento", desc: "Instalación, capacitación y soporte Darmax." },
-    { icon: "🛡️", title: "Calidad y garantía", desc: "Equipos robustos, respaldo y refacciones." },
-    { icon: "🌎", title: "Demanda constante", desc: "Agua y limpieza: consumo diario asegurado." },
+    { icon: "/img/Iniciatunegocio/RAP.png", title: "ROI RÁPIDO", desc: "RECUPERA TU INVERSIÓN EN MESES CON FLUJOS CONSTANTES." },
+    { icon: "/img/Iniciatunegocio/OPSIMP.png", title: "OPERACIÓN SIMPLE", desc: "AUTOMATIZACIÓN Y CONSUMIBLES DISPONIBLES." },
+    { icon: "/img/Iniciatunegocio/NEGESC.png", title: "NEGOCIO ESCALABLE", desc: "EMPIEZA CON 1 EQUIPO Y CRECE POR MÓDULOS." },
+    { icon: "/img/Iniciatunegocio/ACOMP.png", title: "ACOMPAÑAMIENTO", desc: "INSTALACIÓN, CAPACITACIÓN Y SOPORTE DARMAX." },
+    { icon: "/img/Iniciatunegocio/CALID.png", title: "CALIDAD Y GARANTÍA", desc: "EQUIPOS ROBUSTOS, RESPALDO Y REFACCIONES." },
+    { icon: "/img/Iniciatunegocio/DEMCON.png", title: "DEMANDA CONSTANTE", desc: "AGUA Y LIMPIEZA: CONSUMO DIARIO ASEGURADO." },
   ];
+
+  const colors = ["#5188C9", "#03A4A4"]; // alternar entre estos
 
   const img = (src) => (
     <img
@@ -296,12 +297,18 @@ function Beneficios() {
         {/* Cards de beneficios */}
         <div className="grid sm:grid-cols-2 gap-4">
           {items.map((b, i) => (
-            <div key={i} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm hover:shadow-lg transition">
+            <div
+              key={i}
+              className="rounded-2xl p-5 shadow-sm hover:shadow-lg transition text-white"
+              style={{
+                backgroundColor: colors[i % colors.length],
+              }}
+            >
               <div className="flex items-start gap-3">
-                <div className="text-2xl">{b.icon}</div>
+                <img src={b.icon} alt={b.title} className="w-10 h-10 object-contain" />
                 <div>
-                  <h4 className="font-semibold text-slate-900">{b.title}</h4>
-                  <p className="text-sm text-slate-600 mt-1">{b.desc}</p>
+                  <h4 className="font-bold text-lg">{b.title}</h4>
+                  <p className="text-xs mt-1">{b.desc}</p>
                 </div>
               </div>
             </div>
@@ -314,10 +321,10 @@ function Beneficios() {
           <div>{img("/img/inicia/benefit-2.jpg")}</div>
           <div>{img("/img/inicia/benefit-3.jpg")}</div>
 
-          <div className="col-span-2 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-            <h3 className="text-xl font-extrabold text-slate-900">¿Listo para invertir?</h3>
+          <div className="col-span-2 rounded-2xl bg-white p-6 shadow-sm">
+            <h3 className="text-xl font-extrabold text-slate-900">¿LISTO PARA INVERTIR?</h3>
             <p className="text-sm text-slate-600 mt-1">
-              Te ayudamos a estimar el punto de equilibrio y el potencial de tu zona.
+              TE AYUDAMOS A ESTIMAR EL PUNTO DE EQUILIBRIO Y EL POTENCIAL DE TU ZONA.
             </p>
             <a
               href={buildWaUrl({})}
@@ -326,7 +333,7 @@ function Beneficios() {
               className="inline-flex mt-4 px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
               style={{ backgroundColor: "#ccff00" }}
             >
-              Cotizar por WhatsApp
+              COTIZAR POR WHATSAPP
             </a>
           </div>
         </div>
@@ -334,6 +341,7 @@ function Beneficios() {
     </section>
   );
 }
+
 
 /* =========================
    Página IniciaNegocio
@@ -371,53 +379,65 @@ const IniciaNegocio = ({ inicioRef }) => {
         ref={inicioRef}
         className="min-h-screen bg-white pt-24 pb-16 px-6 flex flex-col items-center"
       >
-        {/* Hero */}
-        <header className="w-full max-w-7xl">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-tr from-slate-900 via-slate-800 to-black text-white">
-            <div className="p-8 md:p-12">
-              <span className="inline-block text-[11px] tracking-widest uppercase bg-white/10 border border-white/20 px-3 py-1 rounded-full backdrop-blur">
-                Emprende con respaldo Darmax
-              </span>
-              <h1 className="mt-4 text-3xl md:text-5xl font-extrabold leading-tight">
-                Inicia tu negocio con Darmax
-              </h1>
-              <p className="mt-3 md:mt-4 text-white/80 max-w-2xl">
-                Equipos confiables, instalación y asesoría para que arranques
-                rápido y seguro. Elige tu modelo, configúralo y escala cuando lo
-                necesites.
-              </p>
-              <ul className="mt-6 flex flex-wrap gap-2">
-                <Pill>Instalación y capacitación</Pill>
-                <Pill>Soporte técnico</Pill>
-                <Pill>Refacciones disponibles</Pill>
-                <Pill>ROI competitivo</Pill>
-              </ul>
+       {/* Hero */}
+<header className="w-full max-w-7xl">
+  <div
+    className="relative overflow-hidden rounded-3xl text-white"
+    style={{
+      backgroundImage: "url('/img/Iniciatunegocio/Manodeagua.jpeg')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    }}
+  >
+    {/* Overlay oscuro */}
+    <div className="absolute inset-0 bg-black/40" />
 
-              {/* CTA Hero */}
-              <div className="mt-6 flex flex-wrap gap-3">
-                <a
-                  href={buildWaUrl({})}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
-                  style={{ backgroundColor: "#ccff00" }}
-                >
-                  Cotizar por WhatsApp
-                </a>
-                <button
-                  onClick={() => {
-                    const el = document.getElementById("modelos");
-                    if (el) el.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="px-6 py-3 rounded-xl font-semibold bg-white/10 border border-white/20 text-white hover:bg-white/15 backdrop-blur transition"
-                >
-                  Ver modelos
-                </button>
-              </div>
-            </div>
-            <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
-          </div>
-        </header>
+    <div className="relative p-8 md:p-12 z-10">
+      <span className="inline-block text-[11px] tracking-widest uppercase bg-white/10 border border-white/20 px-3 py-1 rounded-full backdrop-blur">
+        Emprende con respaldo Darmax
+      </span>
+
+      <h1 className="mt-4 text-3xl md:text-5xl font-extrabold leading-tight uppercase">
+        Inicia tu negocio con Darmax
+      </h1>
+
+      <p className="mt-3 md:mt-4 text-white/80 max-w-2xl">
+        Equipos confiables, instalación y asesoría para que arranques rápido y
+        seguro. Elige tu modelo, configúralo y escala cuando lo necesites.
+      </p>
+
+      <ul className="mt-6 flex flex-wrap gap-2">
+        <Pill>Instalación y capacitación</Pill>
+        <Pill>Soporte técnico</Pill>
+        <Pill>Refacciones disponibles</Pill>
+        <Pill>ROI competitivo</Pill>
+      </ul>
+
+      {/* CTA Hero */}
+      <div className="mt-6 flex flex-wrap gap-3">
+        <a
+          href={buildWaUrl({})}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
+          style={{ backgroundColor: "#ccff00" }}
+        >
+          Cotizar por WhatsApp
+        </a>
+        <button
+          onClick={() => {
+            const el = document.getElementById("modelos");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
+          className="px-6 py-3 rounded-xl font-semibold bg-white/10 border border-white/20 text-white hover:bg-white/15 backdrop-blur transition"
+        >
+          Ver modelos
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
 
         {/* Beneficios de invertir */}
         <Beneficios />

@@ -110,24 +110,29 @@ export default function Nosotros() {
               </p>
 
               {/* mini tarjetas */}
-              <div className="mt-6 grid sm:grid-cols-3 gap-4">
-                {[
-                  { k: "+300", v: "equipos instalados" },
-                  { k: "24/7", v: "soporte y asistencia" },
-                  { k: "100%", v: "enfoque en el cliente" },
-                ].map((stat, i) => (
-                  <motion.div
-                    key={i}
-                    {...fadeUp(0.1 + i * 0.05)}
-                    className="rounded-2xl bg-[#5188C9] p-4 border border-gray-100 shadow-sm"
-                  >
-                    <div className="text-2xl font-extrabold text-white">
-                      {stat.k}
-                    </div>
-                    <div className="text-sm text-white">{stat.v}</div>
-                  </motion.div>
-                ))}
-              </div>
+<div className="mt-6 grid sm:grid-cols-3 gap-4">
+  {[
+    { k: "+300", v: "equipos instalados" },
+    { k: "24/7", v: "soporte y asistencia" },
+    { k: "100%", v: "enfoque en el cliente" },
+  ].map((stat, i) => {
+    const colors = ["#5188C9", "#03A4A4", "#F97316"]; 
+    return (
+      <motion.div
+        key={i}
+        {...fadeUp(0.1 + i * 0.05)}
+        className="rounded-2xl p-4 border border-gray-100 shadow-sm"
+        style={{ backgroundColor: colors[i] }}
+      >
+        <div className="text-2xl font-extrabold text-white">
+          {stat.k}
+        </div>
+        <div className="text-sm text-white">{stat.v}</div>
+      </motion.div>
+    );
+  })}
+</div>
+
             </motion.div>
 
             <motion.div {...fadeUp(0.1)}>
