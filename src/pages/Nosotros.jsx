@@ -52,12 +52,11 @@ export default function Nosotros() {
                 Hecho en México
               </span>
               <h1 className="mt-4 text-3xl md:text-5xl font-extrabold leading-tight">
-                Personas, tecnología y propósito.
+                SOLUCCIONES REAALES PARA PERSONAS REALES
               </h1>
               <p className="mt-3 md:mt-4 text-black/80 max-w-2xl">
-                En Darmax creemos que emprender transforma vidas. Diseñamos
-                soluciones accesibles para que más personas inicien y escalen
-                su propio negocio.
+                Equipos confiables, asesoria experta y soluciones escalables. <br></br>
+                Inicia tu negocio hoy en Darmax
               </p>
             </motion.div>
 
@@ -68,7 +67,7 @@ export default function Nosotros() {
               <a
                 href="#historia"
                 className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
-                style={{ backgroundColor: "#ccff00" }}
+                style={{ backgroundColor: "#5188C9" }}
               >
                 Conócenos
               </a>
@@ -89,7 +88,7 @@ export default function Nosotros() {
         <section id="historia" className="py-20 bg-gray-50 px-6">
           <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
             <motion.div {...fadeUp(0)}>
-              <SectionTitle label="Nuestra historia" title="De un sueño a una realidad" center={false} />
+              <SectionTitle label="Nuestra historia" title="NUESTRA HISTORIA" center={false} />
               <p className="mt-4 text-lg leading-relaxed">
                 Darmax nació con un sueño: transformar la manera en que las
                 personas acceden al agua y a productos esenciales, creando
@@ -120,12 +119,12 @@ export default function Nosotros() {
                   <motion.div
                     key={i}
                     {...fadeUp(0.1 + i * 0.05)}
-                    className="rounded-2xl bg-white p-4 border border-gray-100 shadow-sm"
+                    className="rounded-2xl bg-[#5188C9] p-4 border border-gray-100 shadow-sm"
                   >
-                    <div className="text-2xl font-extrabold text-slate-900">
+                    <div className="text-2xl font-extrabold text-white">
                       {stat.k}
                     </div>
-                    <div className="text-sm text-slate-600">{stat.v}</div>
+                    <div className="text-sm text-white">{stat.v}</div>
                   </motion.div>
                 ))}
               </div>
@@ -156,7 +155,7 @@ export default function Nosotros() {
         {/* LÍNEA DEL TIEMPO */}
         <section className="py-16 bg-white px-6">
           <div className="max-w-7xl mx-auto">
-            <SectionTitle label="Nuestro camino" title="Hitos que nos definen" />
+            <SectionTitle label="Nuestro camino" title="EVOLUCION DEL NEGOCIO" />
             <div className="mt-10 relative">
               <div className="absolute left-4 sm:left-1/2 sm:-translate-x-px h-full w-0.5 bg-gray-200" />
               <div className="space-y-10">
@@ -195,7 +194,7 @@ export default function Nosotros() {
 
                     <div className="pl-12 sm:pl-0">
                       <div className="absolute left-3.5 sm:left-1/2 sm:-translate-x-1/2 top-1.5 h-3.5 w-3.5 rounded-full ring-4 ring-white"
-                        style={{ backgroundColor: "#ccff00" }}
+                        style={{ backgroundColor: "#5188C9" }}
                       />
                       <h3 className="font-semibold text-slate-900">{item.title}</h3>
                       <p className="text-slate-600 text-sm mt-1">{item.desc}</p>
@@ -208,7 +207,7 @@ export default function Nosotros() {
         </section>
 
         {/* MISIÓN & VISIÓN */}
-        <section className="py-20 bg-gray-50 px-6">
+        <section className="py-20 bg-[#F9FAFB] px-6">
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
             {[
               {
@@ -225,19 +224,19 @@ export default function Nosotros() {
               <motion.div
                 key={card.label}
                 {...fadeUp(0.05 * i)}
-                className="relative rounded-3xl bg-white/80 backdrop-blur border border-gray-100 shadow-sm p-6 md:p-8"
+                className="relative rounded-3xl bg-[#5188C9] backdrop-blur border border-gray-100 shadow-sm p-6 md:p-8"
               >
                 <div
                   className="absolute inset-x-0 -top-0.5 h-1 rounded-t-3xl"
-                  style={{ backgroundColor: "#ccff00" }}
+                  style={{ backgroundColor: "#03A4A4" }}
                 />
-                <span className="text-xs uppercase tracking-widest text-slate-500">
+                <span className="text-xs uppercase tracking-widest text-white">
                   {card.label}
                 </span>
-                <h3 className="mt-1 text-xl md:text-2xl font-extrabold text-slate-900">
+                <h3 className="mt-1 text-xl md:text-2xl font-extrabold text-white">
                   {card.title}
                 </h3>
-                <p className="mt-3 text-slate-700 leading-relaxed">{card.text}</p>
+                <p className="mt-3 text-white leading-relaxed">{card.text}</p>
               </motion.div>
             ))}
           </div>
@@ -246,16 +245,16 @@ export default function Nosotros() {
 {/* VALORES */}
 <section className="py-20 bg-white px-6">
   <div className="max-w-7xl mx-auto">
-    <SectionTitle label="Nuestra cultura" title="Valores que vivimos diario" />
+    <SectionTitle label="Nuestra cultura" title="VALORES" />
 
-    <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
+    <div className="mt-10 grid sm:grid-cols- lg:grid-cols-3 gap-12">
       {[
-        { img: "/img/valor/DISCIPLINA.png",       t: "DISCIPLINA",       d: "Enfoque riguroso y ordenado para garantizar resultados." },
-        { img: "/img/valor/CONSTANCIA.png",       t: "CONSTANCIA",       d: "Evolucionar a diario para mantenernos a la vanguardia." },
-        { img: "/img/valor/RESPONSABILIDAD.png",  t: "RESPONSABILIDAD",  d: "Compromiso con clientes, colaboradores y medio ambiente." },
-        { img: "/img/valor/INTEGRIDAD.png",       t: "INTEGRIDAD",       d: "Actuar con honestidad, construyendo relaciones de confianza." },
-        { img: "/img/valor/LIDERAZGO.png",        t: "LIDERAZGO",        d: "Inspirar con visión hacia la innovación y excelencia." },
-        { img: "/img/valor/COMPROMISO.png",       t: "COMPROMISO",       d: "Productos y servicio que aportan valor real y duradero." },
+        { img: "/img/valor/DISCIPLINA.png",       t: "DISCIPLINA",       d: "ENFOQUE RIGUROSO Y ORDENADO PARA GARANTIZAR RESULTADOS." },
+        { img: "/img/valor/CONSTANCIA.png",       t: "CONSTANCIA",       d: "EVOLUCIONAR A DIARIO PARA MANTENERNOS A LA VANGUARDIA." },
+        { img: "/img/valor/RESPONSABILIDAD.png",  t: "RESPONSABILIDAD",  d: "COMPROMISO CON CLIENTES, COLABORADORES Y MEDIO AMBIENTE." },
+        { img: "/img/valor/INTEGRIDAD.png",       t: "INTEGRIDAD",       d: "ACTUAR CON HONESTIDAD, CONSTRUYENDO RELACIONES DE CONFIANZA." },
+        { img: "/img/valor/LIDERAZGO.png",        t: "LIDERAZGO",        d: "INSPIRAR CON VISIÓN HACIA LA INNOVACIÓN Y EXCELENCIA." },
+        { img: "/img/valor/COMPROMISO.png",       t: "COMPROMISO",       d: "PRODUCTOS Y SERVICIO QUE APORTAN VALOR REAL Y DURADERO." },
       ].map((v, i) => (
         <motion.div
           key={i}
