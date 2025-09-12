@@ -167,23 +167,23 @@ export default function Nosotros() {
                 {[
                   {
                     year: "2019",
-                    title: "Primera purificadora",
-                    desc: "Arrancamos operaciones con la primera unidad y los primeros clientes.",
+                    title: "NACE DARMAX",
+                    desc: "Comenzamos con una pequeña purificadora y una gran determinación: hacer del agua un modelo de negocio accesible y rentable.",
                   },
                   {
                     year: "2021",
-                    title: "Vending de agua",
-                    desc: "Introducimos equipos vending automatizados para escalar cobertura.",
+                    title: "PRIMERA MÁQUINA VENDING",
+                    desc: "Incorporamos tecnología vending para facilitar el acceso al agua purificada y abrir nuevas oportunidades de emprendimiento.",
                   },
                   {
                     year: "2023",
-                    title: "Expansión nacional",
-                    desc: "Alianzas logísticas y servicio técnico en múltiples estados.",
+                    title: "CRECEMOS A NIVEL NACIONAL",
+                    desc: "Establecimos alianzas logísticas y soporte técnico para atender a más estados de la república, ampliando la red de emprendedores Darmax.",
                   },
                   {
                     year: "2025",
-                    title: "Innovación continua",
-                    desc: "Nuevos modelos, más eficiencia y mejores oportunidades para emprendedores.",
+                    title: "INNOVACIÓN QUE NO SE DETIENE",
+                    desc: "Lanzamos nuevos modelos con tecnología de vanguardia que hacen más fácil y rentable iniciar tu propio negocio.",
                   },
                 ].map((item, i) => (
                   <motion.div

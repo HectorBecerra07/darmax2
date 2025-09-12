@@ -2,8 +2,8 @@ import React, { useState, useMemo } from "react";
 
 const extrasPorMaquina = {
   Neptuno: [
-    { id: "tinaco-2500", nombre: "2 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 10500 },
-    { id: "tinaco-5000", nombre: "2 Tinacos 5000L", descripcion: "Para almacenamiento", precio: 21000 },
+    { id: "tinaco-2500", nombre: "1 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 5500 },
+    { id: "tinaco-5000", nombre: "1 Tinacos 5000L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
     { id: "Tramites", nombre: "Permisos, Trámites y Requerimientos", descripcion: "Requisitos legales y tramites", precio: 3500 },
     { id: "Kit", nombre: "Insumos anuales", descripcion: "Kit de insumos anuales", precio: 4500 },
@@ -69,16 +69,16 @@ const extrasPorMaquina = {
 /* Imágenes por máquina/capacidad */
 const TINACO_IMAGES = {
   default: {
-    "tinaco-2500": "/img/tinacos/default-2500.jpg",
-    "tinaco-5000": "/img/tinacos/default-5000.jpg",
+    "tinaco-2500": "/img/TINACOS/0035.png",
+    "tinaco-5000": "/img/TINACOS/0036.png",
   },
   Neptuno: {
-    "tinaco-2500": "/img/tinacos/neptuno-2500.jpg",
-    "tinaco-5000": "/img/tinacos/neptuno-5000.jpg",
+    "tinaco-2500": "/img/TINACOS/0035.png",
+    "tinaco-5000": "/img/TINACOS/0036.png",
   },
   NeptunoAPlus: {
-    "tinaco-2500": "/img/tinacos/neptunoaplus-2500.jpg",
-    "tinaco-5000": "/img/tinacos/neptunoaplus-5000.jpg",
+    "tinaco-2500": "/img/TINACOS/0026.png",
+    "tinaco-5000": "/img/TINACOS/0028.png",
   },
   Atlantis: {
     "tinaco-2500": "/img/tinacos/atlantis-2500.jpg",

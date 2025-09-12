@@ -15,7 +15,7 @@ import CarouselImages from "../components/CarouselImages";
 ========================= */
 const imagenesCarrusel = {
   Purificadora: [
-    "/img/purificadoras/MOSTRADOR%20NEPTUNO/MOSTRADOR%20DE%20AGUA.jpg",
+    "/img/TINACOS/0035.png",
     "/img/purificadoras/MOSTRADOR%20NEPTUNO%20A-PLUS/PURI%20MAS%20ALCALINA%20PROCS.jpg",
     "/img/purificadoras/MOSTRADOR%20POSEIDON%20PRO/OSMOSIS%20MAS%20ALCALINA%20PROCS.jpg",
   ],
@@ -43,6 +43,13 @@ const VENDING_IMAGES = {
 
 const imagenesCarruselPorModelo = {
   // Tradicionales
+  Neptuno: [
+    "/img/TINACOS/0033.png",
+  ],
+  NeptunoAPlus: [
+    "/img/TINACOS/0024.png",
+  ],
+
   Atlantis: [
     "/img/vending/ATLANTIS300MAX.png",
   ],
