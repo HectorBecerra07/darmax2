@@ -19,19 +19,19 @@ export default function NavBar() {
   const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
   const location = useLocation();
   const isHome = location.pathname === "/";
-  const textColor = isHome ? "text-white" : "text-black";
+  const textColor = isHome ? "text-white" : "text-white";
   const firstName = (user?.name || "").split(" ")[0] || "";
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full z-50 px-4 md:px-6 lg:px-8 py-3 bg-transparent">
+      <nav className="fixed top-0 left-0 w-full z-50 px-4 md:px-6 lg:px-8 py-3 bg-black">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="shrink-0 flex items-center">
             <img
-              src="/img/darmax-logo.png"
+              src="/img/logo4.png"
               alt="Logo Darmax"
-              className="h-10 md:h-12 lg:h-14 w-auto"
+              className="h-10 md:h-20 lg:h-51 w-auto"
             />
           </Link>
 

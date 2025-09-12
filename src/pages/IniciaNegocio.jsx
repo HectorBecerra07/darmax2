@@ -271,12 +271,12 @@ function CompareModal({ open, onClose, models = [], navigate }) {
 ========================= */
 function Beneficios() {
   const items = [
-    { icon: "/img/Iniciatunegocio/RAP.png", title: "ROI RÁPIDO", desc: "RECUPERA TU INVERSIÓN EN MESES CON FLUJOS CONSTANTES." },
-    { icon: "/img/Iniciatunegocio/OPSIMP.png", title: "OPERACIÓN SIMPLE", desc: "AUTOMATIZACIÓN Y CONSUMIBLES DISPONIBLES." },
-    { icon: "/img/Iniciatunegocio/NEGESC.png", title: "NEGOCIO ESCALABLE", desc: "EMPIEZA CON 1 EQUIPO Y CRECE POR MÓDULOS." },
-    { icon: "/img/Iniciatunegocio/ACOMP.png", title: "ACOMPAÑAMIENTO", desc: "INSTALACIÓN, CAPACITACIÓN Y SOPORTE DARMAX." },
-    { icon: "/img/Iniciatunegocio/CALID.png", title: "CALIDAD Y GARANTÍA", desc: "EQUIPOS ROBUSTOS, RESPALDO Y REFACCIONES." },
-    { icon: "/img/Iniciatunegocio/DEMCON.png", title: "DEMANDA CONSTANTE", desc: "AGUA Y LIMPIEZA: CONSUMO DIARIO ASEGURADO." },
+    { icon: "/img/Iniciatunegocio/RAP.png", title: "RETORNO DE INVERSION", desc: "RECUPERA TU INVERSIÓN EN UN LAPSO DE  12 A 15 MESES APROX." },
+    { icon: "/img/Iniciatunegocio/OPSIMP.png", title: "VENTAS 24/7", desc: "GENERA INGRESOS LOS 365 DIAS DEL AÑO CON VENDINGS AUTOMATIZADAS. OLVIDATE DEL PERSONAL." },
+    { icon: "/img/Iniciatunegocio/NEGESC.png", title: "NEGOCIO ESCALABLE", desc: "AUMENTO TUS INGRESOS AÑADIENDO DIFERENTES COMBOS EMPRENDEDORES." },
+    { icon: "/img/Iniciatunegocio/ACOMP.png", title: "ACOMPAÑAMIENTO", desc: "TODOS NUESTROS PAQUETES INCLUYEN: MATERIALES DE INSTALACION, CAPACITACION Y SOPORTE DARMAX ." },
+    { icon: "/img/Iniciatunegocio/CALID.png", title: "CALIDAD PREMIUM Y GARANTÍA", desc: "OFRECE SERVICIOS CON LA MAS ALTA CALIDAD DEL MERCADO CON MATERIALES CERTIFICADOS Y GARANTIA DARMAX." },
+    { icon: "/img/Iniciatunegocio/DEMCON.png", title: "NEGOCIO RENTABLE", desc: "VENDE PRODUCTOS DE PRIMERA NECECIDAD CON DEMANDA CONSTANTE. INVIERTE SEGURO " },
   ];
 
   const colors = ["#5188C9", "#03A4A4"]; // alternar entre estos
@@ -320,12 +320,14 @@ function Beneficios() {
           <div className="col-span-2">{img("/img/inicia/benefit-1.jpg")}</div>
           <div>{img("/img/inicia/benefit-2.jpg")}</div>
           <div>{img("/img/inicia/benefit-3.jpg")}</div>
-
-          <div className="col-span-2 rounded-2xl bg-white p-6 shadow-sm">
-            <h3 className="text-xl font-extrabold text-slate-900">¿LISTO PARA INVERTIR?</h3>
-            <p className="text-sm text-slate-600 mt-1">
-              TE AYUDAMOS A ESTIMAR EL PUNTO DE EQUILIBRIO Y EL POTENCIAL DE TU ZONA.
+          <div className="col-span-2 rounded-2xl bg-[#F97416] p-8 shadow-sm">
+            <h3 className="text-xl font-extrabold text-slate-900"></h3>
+            <h3 className="text-xl font-extrabold text-slate-900">CONFIGURA TU NEGOCIO E INVIERTE SEGURO </h3>
+            <p className="text-sm text-white mt-1">
+              PERSONALIZA TU NEGOCIO DE ACUERDO A TUS NECECIDADES, TIEMPOS Y PRESUPESTO E INVERSION.
             </p>
+            <h3 className="text-xl font-extrabold text-slate-900">¿LISTO PARA EMPRENDER?</h3>
+            
             <a
               href={buildWaUrl({})}
               target="_blank"
@@ -402,15 +404,17 @@ const IniciaNegocio = ({ inicioRef }) => {
       </h1>
 
       <p className="mt-3 md:mt-4 text-white/80 max-w-2xl">
-        Equipos confiables, instalación y asesoría para que arranques rápido y
-        seguro. Elige tu modelo, configúralo y escala cuando lo necesites.
+        APROVECHA NUESTRO POCICIONAMIENTO DE MARCA Y OFRECE A TUS CLIENTES SERVICIOS
+        CONFIABLES Y CON CALIDAD PREMIUM. <br></br>
+        RESPUESTA RAPIDA DE CAPACITACION E INSTLACION ARANCA EN 15 DIAS HABILES Y 
+        UNETE A NUESTRA FAMILIA DE EMPRENDEDORES 
       </p>
 
       <ul className="mt-6 flex flex-wrap gap-2">
-        <Pill>Instalación y capacitación</Pill>
-        <Pill>Soporte técnico</Pill>
-        <Pill>Refacciones disponibles</Pill>
-        <Pill>ROI competitivo</Pill>
+        <Pill>INSTALACION Y CAPACITACION</Pill>
+        <Pill>SOPORTE TECNICO</Pill>
+        <Pill>REFACCIONES DISPONIBLES</Pill>
+        <Pill>RETORNO DE INVERSION</Pill>
       </ul>
 
       {/* CTA Hero */}

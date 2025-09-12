@@ -66,7 +66,7 @@ export default function Nosotros() {
             >
               <a
                 href="#historia"
-                className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
+                className="px-6 py-3 rounded-xl font-semibold text-white hover:brightness-95 transition shadow-lg"
                 style={{ backgroundColor: "#5188C9" }}
               >
                 Conócenos
