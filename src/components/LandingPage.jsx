@@ -52,7 +52,7 @@ export default function LandingPage() {
             <img
               src="/img/darmax-logo.png"
               alt="Logo Darmax"
-              className="w-[500px] h-auto object-contain"
+              className="w-[400px] h-auto object-contain"
             />
           </div>
         </div>
