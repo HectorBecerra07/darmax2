@@ -59,7 +59,7 @@ export default function NavBar() {
             </Link>
           </div>
 
-          {/* Usuario + carrito */}
+          {/* Usuario + carrito
           <div className="hidden md:flex items-center gap-4 lg:gap-6">
             <button
               onClick={() => setShowCart(true)}
@@ -91,7 +91,7 @@ export default function NavBar() {
                 <UserIcon className="w-7 h-7" />
               </Link>
             )}
-          </div>
+          </div> */}
 
           {/* Botón menú móvil */}
           <button
