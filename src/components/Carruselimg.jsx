@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const imagenes = [
-   "/img/trabajos/trabajos1.jpg",
+  "/img/trabajos/trabajos1.jpg",
   "/img/trabajos/trabajos2.jpg",
   "/img/trabajos/trabajos3.jpg",
   "/img/trabajos/trabajos4.jpg",
@@ -79,7 +79,7 @@ export default function CarruselResponsive() {
   });
 
   return (
-    <section className="w-full bg-gradient-to-b from-slate-50 to-white py-14 px-4">
+    <section className="w-full bg-gradient-to-b from-white-50 to-white py-14 px-4">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 text-center mb-8">
           Nuestros trabajos
@@ -94,21 +94,41 @@ export default function CarruselResponsive() {
           <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-white to-transparent z-10" />
           <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10" />
 
-          {/* Botones */}
-          <button
-            onClick={prev}
-            aria-label="Anterior"
-            className="hidden md:flex items-center justify-center absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full w-10 h-10 shadow border border-gray-200"
-          >
-            ◀
-          </button>
-          <button
-            onClick={next}
-            aria-label="Siguiente"
-            className="hidden md:flex items-center justify-center absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full w-10 h-10 shadow border border-gray-200"
-          >
-            ▶
-          </button>
+          {/* Botones mejorados */}
+<button
+  onClick={prev}
+  aria-label="Anterior"
+  className="hidden md:flex items-center justify-center absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white hover:scale-110 transition-all duration-300 rounded-full w-11 h-11 shadow-lg border border-gray-300 backdrop-blur-sm"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    className="w-6 h-6 text-gray-700"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+  </svg>
+</button>
+
+<button
+  onClick={next}
+  aria-label="Siguiente"
+  className="hidden md:flex items-center justify-center absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white hover:scale-110 transition-all duration-300 rounded-full w-11 h-11 shadow-lg border border-gray-300 backdrop-blur-sm"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    className="w-6 h-6 text-gray-700"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+  </svg>
+</button>
+
 
           {/* Track */}
           <div
