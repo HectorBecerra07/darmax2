@@ -29,9 +29,18 @@ const topSellers = [
 ];
 
 const combos2en1 = [
-  { titulo: "Purificadora + Vending Touch", imagen: "/img/combos/2en1-touch.jpg" },
-  { titulo: "Purificadora + Vending Tradicional", imagen: "/img/combos/2en1-tradicional.jpg" },
-  { titulo: "Purificadora + Vending Limpieza", imagen: "/img/combos/2en1-limpieza.jpg" },
+  {
+    titulo: "Purificadora + Vending Touch",
+    imagen: "/img/combos/2en1-touch.jpg",
+  },
+  {
+    titulo: "Purificadora + Vending Tradicional",
+    imagen: "/img/combos/2en1-tradicional.jpg",
+  },
+  {
+    titulo: "Purificadora + Vending Limpieza",
+    imagen: "/img/combos/2en1-limpieza.jpg",
+  },
 ];
 
 const combo3en1 = {
@@ -44,6 +53,14 @@ const combo3en1 = {
 const WA_NUMBER = "525519655369"; // +52 551 965 5369
 const waLink = (texto) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(texto)}`;
+
+     // 🔹 Agrega este array arriba en tu archivo (por ejemplo, junto a las otras constantes)
+const tiktokVideos = [
+  "https://www.tiktok.com/embed/7570139547300875576",
+  "https://www.tiktok.com/embed/7570112791164587275",
+  "https://www.tiktok.com/embed/7568617902530645259",
+  "https://www.tiktok.com/embed/7567129702515690808",
+];
 
 export default function Promociones() {
   return (
@@ -61,7 +78,7 @@ export default function Promociones() {
         `}</style>
       </Helmet>
 
-      {/* HERO (mismo alto de antes, solo ajusta foto) */}
+      {/* HERO PROMOCIONES */}
       <section className="mt-24">
         <Swiper
           modules={[Autoplay, Pagination, EffectFade]}
@@ -90,8 +107,76 @@ export default function Promociones() {
           ))}
         </Swiper>
       </section>
+      
 
-      {/* TOP SELLERS – Carrusel */}
+
+
+{/* SECCIÓN: VIDEOS DE TIKTOK */}
+<section className="py-16 px-4 md:px-8 bg-white text-black">
+  <div className="max-w-6xl mx-auto text-center mb-10">
+    <span className="inline-block text-[11px] tracking-widest uppercase bg-white text-black px-3 py-1 rounded-full">
+      Contenido real
+    </span>
+    <h2 className="mt-3 text-3xl font-bold">
+      Mira nuestros videos en TikTok
+    </h2>
+    <p className="mt-2 text-gray-400">
+      Tips, instalaciones reales y promociones exclusivas en{" "}
+      <a
+        href="https://www.tiktok.com/@darmax_agua"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-sky-400 hover:underline"
+      >
+        @darmax_agua
+      </a>
+    </p>
+  </div>
+
+  <Swiper
+    modules={[Pagination, Autoplay]}
+    pagination={{ clickable: true }}
+    autoplay={{ delay: 4500, disableOnInteraction: false }}
+    loop
+    breakpoints={{
+      320: { slidesPerView: 1.02, spaceBetween: 12 },
+      640: { slidesPerView: 2, spaceBetween: 16 },
+      1024: { slidesPerView: 3, spaceBetween: 20 },
+    }}
+    className="max-w-6xl mx-auto"
+  >
+    {tiktokVideos.map((src, i) => (
+      <SwiperSlide key={i}>
+        <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
+          <iframe
+            src={src}
+            width="100%"
+            height="520"
+            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+            allowFullScreen
+            className="w-full h-[480px] md:h-[520px]"
+            loading="lazy"
+            title={`Video TikTok ${i + 1}`}
+          ></iframe>
+        </div>
+      </SwiperSlide>
+    ))}
+  </Swiper>
+
+  <div className="text-center mt-10">
+    <a
+      href="https://www.tiktok.com/@darmax_agua"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-block bg-sky-400 text-black font-semibold px-6 py-3 rounded-xl hover:bg-sky-300 transition shadow-lg"
+    >
+      Ver más en TikTok
+    </a>
+  </div>
+</section>
+
+
+      {/* TOP SELLERS */}
       <section className="py-12 px-4 md:px-8 bg-gray-50">
         <Header
           title="Top Sellers"
@@ -127,9 +212,10 @@ export default function Promociones() {
                     {item.titulo}
                   </h3>
                   <div className="mt-4 flex justify-center">
-                    {/* ÚNICO BOTÓN: Cotizar por WhatsApp */}
                     <a
-                      href={waLink(`Hola, me interesa "${item.titulo}". ¿Me cotizas?`)}
+                      href={waLink(
+                        `Hola, me interesa "${item.titulo}". ¿Me cotizas?`
+                      )}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-5 py-2 rounded-xl font-semibold text-black hover:brightness-90 transition"
@@ -145,7 +231,7 @@ export default function Promociones() {
         </Swiper>
       </section>
 
-      {/* COMBOS 2 EN 1 – Carrusel */}
+      {/* COMBOS 2 EN 1 */}
       <section className="py-12 px-4 md:px-8">
         <Header
           title="Combos 2 en 1"
@@ -181,9 +267,10 @@ export default function Promociones() {
                     {combo.titulo}
                   </h3>
                   <div className="mt-4 flex justify-center">
-                    {/* ÚNICO BOTÓN: Cotizar por WhatsApp */}
                     <a
-                      href={waLink(`Hola, quiero cotizar el combo "${combo.titulo}".`)}
+                      href={waLink(
+                        `Hola, quiero cotizar el combo "${combo.titulo}".`
+                      )}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-5 py-2 rounded-xl font-semibold text-black hover:brightness-90 transition"
@@ -220,19 +307,23 @@ export default function Promociones() {
             <p className="mt-2 text-slate-600">{combo3en1.descripcion}</p>
             <ul className="mt-4 space-y-2 text-sm text-slate-700">
               <li className="flex items-start gap-2">
-                <span className="mt-0.5">✔</span> Mayor capacidad y flujo para alta demanda.
+                <span className="mt-0.5">✔</span> Mayor capacidad y flujo para
+                alta demanda.
               </li>
               <li className="flex items-start gap-2">
-                <span className="mt-0.5">✔</span> Instalación y puesta en marcha incluidas.
+                <span className="mt-0.5">✔</span> Instalación y puesta en marcha
+                incluidas.
               </li>
               <li className="flex items-start gap-2">
-                <span className="mt-0.5">✔</span> Garantía extendida y soporte técnico.
+                <span className="mt-0.5">✔</span> Garantía extendida y soporte
+                técnico.
               </li>
             </ul>
             <div className="mt-6 flex flex-wrap gap-3">
-              {/* ÚNICO BOTÓN: Cotizar por WhatsApp */}
               <a
-                href={waLink(`Hola, me interesa el "${combo3en1.titulo}". ¿Me compartes cotización?`)}
+                href={waLink(
+                  `Hola, me interesa el "${combo3en1.titulo}". ¿Me compartes cotización?`
+                )}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-90 transition shadow-lg"
@@ -244,6 +335,8 @@ export default function Promociones() {
           </div>
         </div>
       </section>
+
+      
     </>
   );
 }
