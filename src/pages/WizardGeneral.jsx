@@ -8,6 +8,7 @@ import Step2ModelDetails from "../components/Step2ModelDetails";
 import Step3ExtrasConfigurator from "../components/Step3ExtrasConfigurator";
 import Step4Summary from "../components/Step4Summary";
 import CarouselImages from "../components/CarouselImages";
+import Breadcrumbs from "../components/Breadcrumbs"; // Importa el componente Breadcrumbs
 
 /* =========================
    IMÁGENES BASE POR CATEGORÍA
@@ -99,6 +100,58 @@ export default function WizardGeneral() {
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => Math.max(0, prev - 1));
 
+  /**
+   * breadcrumbSteps: Define la estructura de los breadcrumbs dinámicamente.
+   * Incluye "Inicio", "Configuración" (condicionalmente) y los pasos específicos del asistente.
+   */
+  const breadcrumbSteps = useMemo(() => {
+    const dynamicSteps = [];
+    if (id === "Vending") {
+      dynamicSteps.push(
+        { label: "Tipo de Vending" }, // Wizard Step 0
+        { label: "Seleccionar Modelo" }, // Wizard Step 1
+        { label: "Detalles del Modelo" }, // Wizard Step 2
+        { label: "Extras Opcionales" }, // Wizard Step 3
+        { label: "Resumen" } // Wizard Step 4
+      );
+    } else { // Purificadora or Vending-Limpieza
+      dynamicSteps.push(
+        { label: "Seleccionar Modelo" }, // Wizard Step 1
+        { label: "Detalles del Modelo" }, // Wizard Step 2
+        { label: "Extras Opcionales" }, // Wizard Step 3
+        { label: "Resumen" } // Wizard Step 4
+      );
+    }
+
+    const finalBreadcrumbSteps = [
+      { label: "Inicio", path: "/" },
+    ];
+
+    // "Configuración" se añade solo si la categoría no es "Purificadora"
+    if (id !== "Purificadora") {
+      finalBreadcrumbSteps.push({ label: "Configuración", path: `/configurar/${id}` });
+    }
+
+    finalBreadcrumbSteps.push(...dynamicSteps);
+    return finalBreadcrumbSteps;
+  }, [id]);
+
+  /**
+   * actualBreadcrumbStepIndex: Calcula el índice del paso actual dentro del array `breadcrumbSteps`.
+   * Ajusta el índice base según si "Configuración" está presente y el índice inicial del `step` del asistente.
+   */
+  const actualBreadcrumbStepIndex = useMemo(() => {
+    let baseBreadcrumbCount = 1; // "Inicio"
+    if (id !== "Purificadora") {
+      baseBreadcrumbCount += 1; // "Configuración"
+    }
+
+    // Ajusta el `step` del asistente para que sea 0-indexado relativo a los pasos dinámicos
+    const adjustedStep = (id === "Vending") ? step : (step - 1);
+
+    return baseBreadcrumbCount + adjustedStep;
+  }, [id, step]);
+
   const modelos =
     configuraciones[id]?.filter((m) => {
       if (id !== "Vending") return true;
@@ -123,93 +176,112 @@ export default function WizardGeneral() {
   }, [id, vendingType]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.6 }}
-      className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-20 items-center"
-    >
-      {id === "Vending" && step === 0 && (
-        <div className="col-span-2">
-          <Step0SelectVendingType
-            onSelect={(type) => {
-              setVendingType(type);          // "Tradicional" | "Touch"
-              setSelectedModel(null);
-              setSelectedExtras([]);
-              setExtraTouchPrice(type === "Touch" ? 10000 : 0); // tu lógica existente
-              setStep(1);
-            }}
-          />
-        </div>
-      )}
-
-      {step === 1 && (
-        <>
-          <div className="space-y-10">
-            {/* ⬇️ Aquí ya se respeta touch vs tradicional */}
-            <CarouselImages images={landingImages} />
-          </div>
-          <div>
-            <Step1SelectModel
-              modelos={modelos}
-              vendingType={vendingType}
-              onSelect={setSelectedModel}
-              onNext={nextStep}
+    <>
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        {/* Componente Breadcrumbs para la navegación por pasos */}
+        <Breadcrumbs
+          steps={breadcrumbSteps}
+          currentStepIndex={actualBreadcrumbStepIndex}
+          onStepClick={(index) => {
+            // Calcula el `baseBreadcrumbCount` para ajustar el índice del paso del asistente
+            let baseBreadcrumbCount = 1; // "Inicio"
+            if (id !== "Purificadora") {
+              baseBreadcrumbCount += 1; // "Configuración"
+            }
+            const newStep = index - baseBreadcrumbCount;
+            // Ajusta el `step` del asistente según la categoría
+            setStep((id === "Vending") ? newStep : (newStep + 1));
+          }}
+        />
+      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-20 items-center"
+      >
+        {id === "Vending" && step === 0 && (
+          <div className="col-span-2">
+            <Step0SelectVendingType
+              onSelect={(type) => {
+                setVendingType(type);          // "Tradicional" | "Touch"
+                setSelectedModel(null);
+                setSelectedExtras([]);
+                setExtraTouchPrice(type === "Touch" ? 10000 : 0); // tu lógica existente
+                setStep(1);
+              }}
             />
           </div>
-        </>
-      )}
+        )}
 
-      {step === 2 && selectedModel && (
-        <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-          {/* ⬇️ Por modelo: si no hay, usa lo que se mostró en landing */}
-          <CarouselImages
-            images={imagenesCarruselPorModelo[selectedModel.id] || landingImages}
-          />
-          <div>
-            <Step2ModelDetails
-              modelo={selectedModel}
-              vendingType={vendingType}
-              onNext={(extraTouch) => {
-                setExtraTouchPrice(extraTouch);
-                nextStep();
+        {step === 1 && (
+          <>
+            <div className="space-y-10">
+              {/* ⬇️ Aquí ya se respeta touch vs tradicional */}
+              <CarouselImages images={landingImages} />
+            </div>
+            <div>
+              <Step1SelectModel
+                modelos={modelos}
+                vendingType={vendingType}
+                onSelect={setSelectedModel}
+                onNext={nextStep}
+              />
+            </div>
+          </>
+        )}
+
+        {step === 2 && selectedModel && (
+          <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            {/* ⬇️ Por modelo: si no hay, usa lo que se mostró en landing */}
+            <CarouselImages
+              images={imagenesCarruselPorModelo[selectedModel.id] || landingImages}
+            />
+            <div>
+              <Step2ModelDetails
+                modelo={selectedModel}
+                vendingType={vendingType}
+                onNext={(extraTouch) => {
+                  setExtraTouchPrice(extraTouch);
+                  nextStep();
+                }}
+                onBack={prevStep}
+              />
+            </div>
+          </div>
+        )}
+
+        {step === 3 && selectedModel && (
+          <div className="col-span-2">
+            <Step3ExtrasConfigurator
+              selectedModelId={selectedModel.id}
+              onSelect={(extrasSeleccionados) => {
+                setSelectedExtras(extrasSeleccionados);
+                const totalExtras = extrasSeleccionados.reduce(
+                  (acc, curr) => acc + (curr.precio || 0),
+                  0
+                );
+                setExtrasPrice(totalExtras);
               }}
+              onNext={nextStep}
               onBack={prevStep}
             />
           </div>
-        </div>
-      )}
+        )}
 
-      {step === 3 && selectedModel && (
-        <div className="col-span-2">
-          <Step3ExtrasConfigurator
-            selectedModelId={selectedModel.id}
-            onSelect={(extrasSeleccionados) => {
-              setSelectedExtras(extrasSeleccionados);
-              const totalExtras = extrasSeleccionados.reduce(
-                (acc, curr) => acc + (curr.precio || 0),
-                0
-              );
-              setExtrasPrice(totalExtras);
-            }}
-            onNext={nextStep}
-            onBack={prevStep}
-          />
-        </div>
-      )}
-
-      {step === 4 && (
-        <div className="col-span-2">
-          <Step4Summary
-            modelo={selectedModel}
-            extras={selectedExtras}
-            extraTouchPrice={extraTouchPrice}
-            extrasPrice={extrasPrice}
-            onBack={prevStep}
-          />
-        </div>
-      )}
-    </motion.div>
+        {step === 4 && (
+          <div className="col-span-2">
+            <Step4Summary
+              modelo={selectedModel}
+              extras={selectedExtras}
+              extraTouchPrice={extraTouchPrice}
+              extrasPrice={extrasPrice}
+              onBack={prevStep}
+            />
+          </div>
+        )}
+      </motion.div>
+    </>
   );
 }
