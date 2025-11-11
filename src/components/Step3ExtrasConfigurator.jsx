@@ -100,6 +100,38 @@ const TINACO_IMAGES = {
   },
 };
 
+/*
+ * TINACO_ALCALINA_IMAGES: Define las rutas de las imágenes para los tinacos
+ * cuando se selecciona el extra de "Agua alcalina".
+ * NOTA: Estas son rutas de marcador de posición y deben ser reemplazadas por imágenes reales.
+ */
+const TINACO_ALCALINA_IMAGES = {
+  default: {
+    "tinaco-2500": "/img/TINACOS/alcalina/207.png", // Placeholder: Reemplazar con imagen real de tinaco-2500 con agua alcalina
+    "tinaco-5000": "/img/TINACOS/0036-alcalina.png", // Placeholder: Reemplazar con imagen real de tinaco-5000 con agua alcalina
+  },
+  Neptuno: {
+    "tinaco-2500": "/img/TINACOS/alcalina/231.png",
+    "tinaco-5000": "/img/TINACOS/alcalina/232.png",
+  },
+  NeptunoAPlus: {
+    "tinaco-2500": "/img/TINACOS/alcalina/221.png",
+    "tinaco-5000": "/img/TINACOS/alcalina/223.png",
+  },
+  Atlantis: {
+    "tinaco-2500": "/img/tinacos/atlantis-2500-alcalina.jpg",
+    "tinaco-5000": "/img/tinacos/atlantis-5000-alcalina.jpg",
+  },
+  AtlantisMax: {
+    "tinaco-2500": "/img/tinacos/atlantismax-2500-alcalina.jpg",
+    "tinaco-5000": "/img/tinacos/atlantismax-5000-alcalina.jpg",
+  },
+  AtlantisTouch: {
+    "tinaco-2500": "/img/tinacos/atlantistouch-2500-alcalina.jpg",
+    "tinaco-5000": "/img/tinacos/atlantistouch-5000-alcalina.jpg",
+  },
+};
+
 const TINACO_IDS = ["tinaco-2500", "tinaco-5000"];
 
 export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onNext, onBack }) {
@@ -113,11 +145,50 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
     [seleccionados]
   );
 
+  /*
+   * tinacoImg: Calcula la ruta de la imagen del tinaco a mostrar.
+   * Si el extra "agua-alcalina" está seleccionado, usa las imágenes de TINACO_ALCALINA_IMAGES.
+   * De lo contrario, usa las imágenes estándar de TINACO_IMAGES.
+   */
   const tinacoImg = useMemo(() => {
     if (!modeloSoportaTinacos || !selectedTinacoId) return null;
-    const porMaquina = TINACO_IMAGES[selectedModelId];
-    return (porMaquina && porMaquina[selectedTinacoId]) || TINACO_IMAGES.default[selectedTinacoId] || null;
-  }, [modeloSoportaTinacos, selectedModelId, selectedTinacoId]);
+
+    const hasAguaAlcalina = seleccionados.includes("agua-alcalina");
+
+    let imageSource = TINACO_IMAGES;
+    if (hasAguaAlcalina) {
+      imageSource = TINACO_ALCALINA_IMAGES;
+    }
+
+    const porMaquina = imageSource[selectedModelId];
+    return (porMaquina && porMaquina[selectedTinacoId]) || imageSource.default[selectedTinacoId] || null;
+  }, [modeloSoportaTinacos, selectedModelId, selectedTinacoId, seleccionados]);
+
+  /*
+   * displayString: Genera el texto de sugerencia visual para el tinaco.
+   * Incluye el nombre del tinaco seleccionado y los nombres de otros extras seleccionados,
+   * unidos por "+".
+   */
+  const displayString = useMemo(() => {
+    if (!selectedTinacoId) return "";
+
+    const selectedTinacoExtra = extras.find((extra) => extra.id === selectedTinacoId);
+    const tinacoNombre = selectedTinacoExtra ? selectedTinacoExtra.nombre : "";
+
+    const otherSelectedExtras = seleccionados.filter(
+      (id) => id !== selectedTinacoId
+    );
+
+    const otherExtrasNames = otherSelectedExtras
+      .map((id) => extras.find((extra) => extra.id === id)?.nombre)
+      .filter(Boolean);
+
+    let result = tinacoNombre;
+    if (otherExtrasNames.length > 0) {
+      result += " + " + otherExtrasNames.join(" + ");
+    }
+    return result;
+  }, [selectedTinacoId, seleccionados, extras]);
 
   const toggleExtra = (id) => {
     const extraSeleccionado = extras.find((e) => e.id === id);
@@ -167,8 +238,9 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
                 draggable="false"
               />
             </div>
+            {/* Muestra la sugerencia visual del tinaco y los extras seleccionados */}
             <p className="text-xs text-gray-500 mt-2">
-              Sugerencia visual para {selectedModelId} – {selectedTinacoId === "tinaco-2500" ? "2× 2500 L" : "2× 5000 L"}.
+              Sugerencia visual para {selectedModelId} – {displayString}.
             </p>
           </div>
         </div>

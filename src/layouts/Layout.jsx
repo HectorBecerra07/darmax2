@@ -19,7 +19,8 @@ const Layout = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen bg-white text-gray-800">
       <Navbar />
-      <main className="flex-1">{children}</main>
+      {/* Agrega padding superior para compensar la altura de la Navbar fija */}
+      <main className="flex-1 pt-20">{children}</main>
       {!hideFooter && <Footer />}
     </div>
   );
