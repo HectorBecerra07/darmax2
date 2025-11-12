@@ -19,20 +19,26 @@ export const CarritoProvider = ({ children }) => {
     const precio = producto.precio ? producto.precio : 0;
 
     setCarrito((prev) => {
-      const existe = prev.find((p) => p.id === producto.id);
+      const existe = prev.find(
+        (p) => String(p.id) === String(producto.id)
+      );
+
       if (existe) {
         return prev.map((p) =>
-          p.id === producto.id
+          String(p.id) === String(producto.id)
             ? { ...p, cantidad: p.cantidad + cantidad }
             : p
         );
       }
+
       return [...prev, { ...producto, cantidad, precio }];
     });
   };
 
   const eliminarProducto = (id) => {
-    setCarrito((prev) => prev.filter((p) => p.id !== id));
+    setCarrito((prev) =>
+      prev.filter((p) => String(p.id) !== String(id))
+    );
   };
 
   const vaciarCarrito = () => {
@@ -42,7 +48,7 @@ export const CarritoProvider = ({ children }) => {
   const incrementarCantidad = (productoId) => {
     setCarrito((prev) =>
       prev.map((item) =>
-        item.id === productoId
+        String(item.id) === String(productoId)
           ? { ...item, cantidad: item.cantidad + 1 }
           : item
       )
@@ -51,16 +57,22 @@ export const CarritoProvider = ({ children }) => {
 
   const disminuirCantidad = (productoId) => {
     setCarrito((prev) =>
-      prev.map((item) => {
-        if (item.id === productoId && item.cantidad > 1) {
-          return { ...item, cantidad: item.cantidad - 1 };
-        }
-        return item;
-      })
+      prev
+        .map((item) => {
+          if (String(item.id) === String(productoId)) {
+            const nuevaCantidad = item.cantidad - 1;
+            return { ...item, cantidad: nuevaCantidad };
+          }
+          return item;
+        })
+        .filter((item) => item.cantidad > 0)
     );
   };
 
-  const totalProductos = carrito.reduce((acc, p) => acc + (p.cantidad || 0), 0);
+  const totalProductos = carrito.reduce(
+    (acc, p) => acc + (p.cantidad || 0),
+    0
+  );
 
   return (
     <CarritoContext.Provider

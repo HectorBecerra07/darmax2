@@ -1,6 +1,7 @@
 import React from "react";
 import { useCarrito } from "../context/CarritoContext";
 import { useNavigate } from "react-router-dom";
+import { XMarkIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 
 const CarritoLateral = ({ isOpen, onClose }) => {
   const {
@@ -8,66 +9,86 @@ const CarritoLateral = ({ isOpen, onClose }) => {
     eliminarProducto,
     vaciarCarrito,
     incrementarCantidad,
-    decrementarCantidad,
+    disminuirCantidad,
   } = useCarrito();
   const navigate = useNavigate();
 
   const total = carrito.reduce(
-    (acc, p) => acc + (Number(p.precio || 0) * p.cantidad),
+    (acc, p) => acc + Number(p.precio || 0) * p.cantidad,
     0
   );
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-0 top-0 w-80 h-full bg-white shadow-2xl p-6 z-50 flex flex-col border-l">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">🛒 Tu Carrito</h2>
+    <div className="fixed right-0 top-0 w-full sm:w-96 h-full bg-gray-900/95 backdrop-blur-lg shadow-2xl z-50 flex flex-col border-l border-gray-700">
+      <div className="flex items-center justify-between p-5 border-b border-gray-700">
+        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <ShoppingCartIcon className="w-6 h-6 text-cyan-400" />
+          Tu Carrito
+        </h2>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Cerrar carrito"
+          className="text-gray-400 hover:text-white"
+        >
+          <XMarkIcon className="w-7 h-7" />
+        </button>
+      </div>
 
       {carrito.length === 0 ? (
-        <p className="text-gray-500 text-sm">Tu carrito está vacío.</p>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-gray-400">Tu carrito está vacío.</p>
+        </div>
       ) : (
         <>
-          <ul className="flex-1 overflow-y-auto divide-y divide-gray-200">
+          <ul className="flex-1 overflow-y-auto p-5 divide-y divide-gray-800">
             {carrito.map((p) => (
-              <li key={p.id} className="flex justify-between items-center py-4">
-                <div className="flex flex-col gap-1">
-                  <p className="font-medium text-gray-800">{p.nombre}</p>
-                  <p className="text-xs text-gray-500">
-                    {p.cantidad} × ${Number(p.precio || 0).toFixed(2)}
+              <li key={p.id} className="flex items-center gap-4 py-4">
+                <img
+                  src={p.imagen}
+                  alt={p.nombre}
+                  className="w-16 h-16 object-cover rounded-md border border-gray-700"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold text-white">{p.nombre}</p>
+                  <p className="text-sm text-cyan-400">
+                    ${Number(p.precio || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => decrementarCantidad(p.id)}
-                      className="text-gray-600 border rounded px-2 py-0.5 hover:bg-gray-100"
-                    >
-                      -
-                    </button>
-                    <span className="text-sm font-medium">{p.cantidad}</span>
-                    <button
-                      type="button"
-                      onClick={() => incrementarCantidad(p.id)}
-                      className="text-gray-600 border rounded px-2 py-0.5 hover:bg-gray-100"
-                    >
-                      +
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => eliminarProducto(p.id)}
+                    className="text-red-500 text-xs hover:underline mt-1"
+                  >
+                    Eliminar
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => eliminarProducto(p.id)}
-                  className="text-red-500 text-xs hover:underline"
-                >
-                  Quitar
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => disminuirCantidad(p.id)}
+                    className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    -
+                  </button>
+                  <span className="font-medium text-white">{p.cantidad}</span>
+                  <button
+                    type="button"
+                    onClick={() => incrementarCantidad(p.id)}
+                    className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    +
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
 
-          <div className="mt-4 space-y-4">
-            <p className="flex justify-between font-bold text-gray-700 text-lg">
+          <div className="p-5 border-t border-gray-700 space-y-4">
+            <p className="flex justify-between font-bold text-white text-lg">
               <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
+              <span className="text-cyan-400">${total.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</span>
             </p>
 
             <button
@@ -77,10 +98,7 @@ const CarritoLateral = ({ isOpen, onClose }) => {
                 onClose();
               }}
               disabled={total <= 0}
-              className="w-full py-2 rounded-lg font-semibold text-black transition"
-              style={{
-                backgroundColor: "#ccff00",
-              }}
+              className="w-full py-3 rounded-lg font-semibold text-white transition bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-500"
             >
               Finalizar pedido
             </button>
@@ -88,24 +106,16 @@ const CarritoLateral = ({ isOpen, onClose }) => {
             <button
               type="button"
               onClick={vaciarCarrito}
-              className="w-full text-red-600 text-xs hover:underline"
+              className="w-full text-red-500 text-sm hover:underline"
             >
               Vaciar carrito
             </button>
           </div>
         </>
       )}
-
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Cerrar carrito"
-        className="absolute right-4 top-4 text-xl text-gray-500 hover:text-black"
-      >
-        ×
-      </button>
     </div>
   );
 };
 
 export default CarritoLateral;
+

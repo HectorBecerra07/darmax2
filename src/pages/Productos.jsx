@@ -23,7 +23,7 @@ export default function Productos() {
   const [modalOpen, setModalOpen] = useState(false);
   const [productoActivo, setProductoActivo] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
-  const productosPorPagina = 16;
+  const productosPorPagina = 10;
 
   const { agregarProducto } = useCarrito();
 
@@ -194,7 +194,7 @@ export default function Productos() {
               onClick={() => cambiarPagina(i + 1)}
               className={`px-3 py-1 border rounded-full transition ${
                 paginaActual === i + 1
-                  ? "bg-[#ccff00] border-[#ccff00] text-black font-bold"
+                  ? "bg-[#24d4da] border-[#24d4da] text-black font-bold"
                   : "hover:bg-gray-100"
               }`}
               aria-current={paginaActual === i + 1 ? "page" : undefined}
