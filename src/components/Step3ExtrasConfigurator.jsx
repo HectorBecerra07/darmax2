@@ -21,8 +21,8 @@ const extrasPorMaquina = {
   ],
 
   Atlantis: [
-    { id: "tinaco-2500", nombre: "2 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 10500 },
-    { id: "tinaco-5000", nombre: "2 Tinacos 5000L", descripcion: "Para almacenamiento", precio: 21000 },
+    { id: "tinaco-2500", nombre: "1 Tinaco 2500L", descripcion: "Para almacenamiento", precio: 10500 },
+    { id: "tinaco-5000", nombre: "1 Tinaco 5000L", descripcion: "Para almacenamiento", precio: 21000 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
     { id: "Tramites", nombre: "Permisos, Trámites y Requerimientos", descripcion: "Requisitos legales y tramites", precio: 3500 },
     { id: "Kit", nombre: "Insumos anuales", descripcion: "Kit de insumos anuales", precio: 4500 },
@@ -40,8 +40,8 @@ const extrasPorMaquina = {
   ],
 
   AtlantisTouch: [
-    { id: "tinaco-2500", nombre: "2 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 10500 },
-    { id: "tinaco-5000", nombre: "2 Tinacos 5000L", descripcion: "Para almacenamiento", precio: 21000 },
+    { id: "tinaco-2500", nombre: "1 Tinaco 2500L", descripcion: "Para almacenamiento", precio: 10500 },
+    { id: "tinaco-5000", nombre: "1 Tinaco 5000L", descripcion: "Para almacenamiento", precio: 21000 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
     { id: "Tramites", nombre: "Permisos, Trámites y Requerimientos", descripcion: "Requisitos legales y tramites", precio: 3500 },
     { id: "Kit", nombre: "Insumos anuales", descripcion: "Kit de insumos anuales", precio: 4500 },
@@ -87,17 +87,21 @@ const TINACO_IMAGES = {
     "tinaco-5000": "/img/TINACOS/0028.png",
   },
   Atlantis: {
-    "tinaco-2500": "/img/tinacos/atlantis-2500.jpg",
-    "tinaco-5000": "/img/tinacos/atlantis-5000.jpg",
+    "tinaco-2500": "/img/TINACOS/atlantis/203.png",
+    "tinaco-5000": "/img/TINACOS/atlantis/204.png",
   },
   AtlantisMax: {
-    "tinaco-2500": "/img/tinacos/atlantismax-2500.jpg",
-    "tinaco-5000": "/img/tinacos/atlantismax-5000.jpg",
+    "tinaco-2500": "/img/TINACOS/atlantis/211.png",
+    "tinaco-5000": "/img/TINACOS/atlantis/213.png",
   },
   AtlantisTouch: {
-    "tinaco-2500": "/img/tinacos/atlantistouch-2500.jpg",
-    "tinaco-5000": "/img/tinacos/atlantistouch-5000.jpg",
+    "tinaco-2500": "/img/TINACOS/atlantis/203.png",
+    "tinaco-5000": "/img/TINACOS/atlantis/204.png",
   },
+  AtlantisMaxTouch:{
+    "tinaco-2500": "/img/TINACOS/atlantis/211.png",
+    "tinaco-5000": "/img/TINACOS/atlantis/213.png",
+  }
 };
 
 /*
@@ -119,17 +123,21 @@ const TINACO_ALCALINA_IMAGES = {
     "tinaco-5000": "/img/TINACOS/alcalina/223.png",
   },
   Atlantis: {
-    "tinaco-2500": "/img/tinacos/atlantis-2500-alcalina.jpg",
-    "tinaco-5000": "/img/tinacos/atlantis-5000-alcalina.jpg",
+    "tinaco-2500": "/img/TINACOS/atlantis/207.png",
+    "tinaco-5000": "/img/TINACOS/atlantis/208.png",
   },
   AtlantisMax: {
-    "tinaco-2500": "/img/tinacos/atlantismax-2500-alcalina.jpg",
-    "tinaco-5000": "/img/tinacos/atlantismax-5000-alcalina.jpg",
+    "tinaco-2500": "/img/TINACOS/atlantis/216.png",
+    "tinaco-5000": "/img/TINACOS/atlantis/218.png",
   },
   AtlantisTouch: {
-    "tinaco-2500": "/img/tinacos/atlantistouch-2500-alcalina.jpg",
-    "tinaco-5000": "/img/tinacos/atlantistouch-5000-alcalina.jpg",
+    "tinaco-2500": "/img/TINACOS/atlantis/207.png",
+    "tinaco-5000": "/img/TINACOS/atlantis/208.png",
   },
+  AtlantisMaxTouch:{
+    "tinaco-2500": "/img/TINACOS/atlantis/216.png",
+    "tinaco-5000": "/img/TINACOS/atlantis/218.png",
+  }
 };
 
 const TINACO_IDS = ["tinaco-2500", "tinaco-5000"];

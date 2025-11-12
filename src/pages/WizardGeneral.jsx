@@ -128,9 +128,9 @@ export default function WizardGeneral() {
     ];
 
     // "Configuración" se añade solo si la categoría no es "Purificadora"
-    if (id !== "Purificadora") {
-      finalBreadcrumbSteps.push({ label: "Configuración", path: `/configurar/${id}` });
-    }
+    // if (id !== "Purificadora") {
+    //   finalBreadcrumbSteps.push({ label: "Configuración", path: `/configurar/${id}` });
+    // }
 
     finalBreadcrumbSteps.push(...dynamicSteps);
     return finalBreadcrumbSteps;
@@ -142,9 +142,9 @@ export default function WizardGeneral() {
    */
   const actualBreadcrumbStepIndex = useMemo(() => {
     let baseBreadcrumbCount = 1; // "Inicio"
-    if (id !== "Purificadora") {
-      baseBreadcrumbCount += 1; // "Configuración"
-    }
+    // if (id !== "Purificadora") {
+    //   baseBreadcrumbCount += 1; // "Configuración"
+    // }
 
     // Ajusta el `step` del asistente para que sea 0-indexado relativo a los pasos dinámicos
     const adjustedStep = (id === "Vending") ? step : (step - 1);
@@ -185,9 +185,9 @@ export default function WizardGeneral() {
           onStepClick={(index) => {
             // Calcula el `baseBreadcrumbCount` para ajustar el índice del paso del asistente
             let baseBreadcrumbCount = 1; // "Inicio"
-            if (id !== "Purificadora") {
-              baseBreadcrumbCount += 1; // "Configuración"
-            }
+            // if (id !== "Purificadora") {
+            //   baseBreadcrumbCount += 1; // "Configuración"
+            // }
             const newStep = index - baseBreadcrumbCount;
             // Ajusta el `step` del asistente según la categoría
             setStep((id === "Vending") ? newStep : (newStep + 1));
