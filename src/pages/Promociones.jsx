@@ -1,7 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, EffectFade, Navigation } from "swiper/modules";
+import { Autoplay, Pagination, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
@@ -58,7 +58,7 @@ export default function Promociones() {
       </Helmet>
 
       {/* Si tu navbar es fixed, controla el espacio aquí */}
-      <main className="pt-0 md:pt-0">
+      <main className="pt-10 md:pt-10">
         {/* HERO PROMOCIONES — pegado al header y altura exacta de banner */}
 {/* HERO PROMOCIONES — pegado al header y altura exacta de banner */}
 <section className="w-full m-0 p-0">
@@ -70,7 +70,7 @@ export default function Promociones() {
     pagination={{ clickable: true }}
     speed={700}
     // Alturas pensadas para 1920x300 (6.4:1)
-    className="w-full aspect-[3/1]"
+    className="w-full h-[170px] sm:h-[200px] md:h-[260px] lg:h-[300px]"
   >
     {promociones.map((promo) => (
       <SwiperSlide key={promo.id}>
@@ -82,7 +82,7 @@ export default function Promociones() {
             decoding="async"
             draggable="false"
             // NO recorta: se ve completa y centrada
-            className="absolute inset-0 w-full h-full object-cover object-center select-none"
+            className="absolute inset-0 w-full h-full object-contain object-center select-none"
           />
           {/* Si tu imagen ya tiene texto, no uses gradiente encima */}
           {/* <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" /> */}
@@ -110,13 +110,9 @@ export default function Promociones() {
           </div>
 
           <Swiper
-            modules={[Pagination, Navigation]}
+            modules={[Pagination, Autoplay]}
             pagination={{ clickable: true }}
-<<<<<<< HEAD
     
-=======
-            navigation={true}
->>>>>>> c5a7fd3a4827299742a54b318526bc19124f3667
             loop
             breakpoints={{
               320: { slidesPerView: 1.02, spaceBetween: 12 },
@@ -127,13 +123,14 @@ export default function Promociones() {
           >
             {tiktokVideos.map((src, i) => (
               <SwiperSlide key={i}>
-                <div className="bg-white rounded-2xl overflow-hidden shadow-lg aspect-[9/19] border border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
                   <iframe
                     src={src}
                     width="100%"
-                    allow="encrypted-media; fullscreen; picture-in-picture"
+                    height="520"
+                    allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
                     allowFullScreen
-                    className="w-full h-full"
+                    className="w-full h-[420px] sm:h-[480px] md:h-[520px]"
                     loading="lazy"
                     title={`Video TikTok ${i + 1}`}
                   />
