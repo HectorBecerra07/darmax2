@@ -41,7 +41,7 @@ export default function CarouselImages({ images }) {
       {/* Botón Izquierda */}
       <button
         onClick={handlePrev}
-        className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 rounded-full shadow-lg transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+        className="absolute top-1/2 left-1 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 rounded-full shadow-lg transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100"
       >
         <ChevronLeft size={24} />
       </button>
@@ -49,7 +49,7 @@ export default function CarouselImages({ images }) {
       {/* Botón Derecha */}
       <button
         onClick={handleNext}
-        className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 rounded-full shadow-lg transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+        className="absolute top-1/2 right-1 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 rounded-full shadow-lg transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100"
       >
         <ChevronRight size={24} />
       </button>
