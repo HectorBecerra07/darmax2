@@ -112,7 +112,7 @@ export default function Promociones() {
           <Swiper
             modules={[Pagination, Autoplay]}
             pagination={{ clickable: true }}
-            autoplay={{ delay: 4500, disableOnInteraction: false }}
+    
             loop
             breakpoints={{
               320: { slidesPerView: 1.02, spaceBetween: 12 },
