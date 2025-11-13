@@ -1,8 +1,7 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const prisma = require('./prisma'); // o ../prismaClient si lo usas así
-const cors = require('cors');
-const adminRoutes = require('./routes/admin');
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import adminRoutes from "./routes/admin.js";
 
 dotenv.config();
 
@@ -11,9 +10,9 @@ app.use(cors());
 app.use(express.json());
 
 // Rutas
-app.use('/admin', adminRoutes);
+app.use("/admin", adminRoutes);
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.send("API funcionando 🚀");
 });
 
