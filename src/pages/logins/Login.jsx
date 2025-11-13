@@ -1,16 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
+import toast from "react-hot-toast";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const { setUser } = useUser();
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const usuarioSimulado = { name: "Juan Pérez", email: "juan@gmail.com" };
-    setUser(usuarioSimulado);
-    navigate("/perfil");
+    if (!email || !password) {
+      return toast.error("Email y contraseña son obligatorios.");
+    }
+
+    setIsSubmitting(true);
+    const toastId = toast.loading("Iniciando sesión...");
+
+    try {
+      const res = await fetch(`${API_URL}/api/users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "No se pudo iniciar sesión.");
+      }
+
+      // El contexto se encargará de guardar el token y el usuario
+      setUser(data); 
+      
+      toast.success("¡Bienvenido de vuelta!", { id: toastId });
+      navigate("/perfil");
+
+    } catch (error) {
+      toast.error(error.message, { id: toastId });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -39,26 +73,33 @@ const Login = () => {
           <input
             type="email"
             placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 py-2 bg-white/60 border border-white/40 rounded-lg text-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#24d4da]"
             required
+            disabled={isSubmitting}
           />
           <input
             type="password"
             placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full px-3 py-2 bg-white/60 border border-white/40 rounded-lg text-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#24d4da]"
             required
+            disabled={isSubmitting}
           />
 
           <label className="flex items-center gap-2 text-sm text-black">
-            <input type="checkbox" className="accent-white" />
+            <input type="checkbox" className="accent-white" disabled={isSubmitting} />
             Recordarme
           </label>
 
           <button
             type="submit"
-            className="w-full py-3 bg-gradient-to-r from-gray-900 to-slate-800 text-white text-sm font-bold rounded-lg hover:opacity-90 transition"
+            className="w-full py-3 bg-gradient-to-r from-gray-900 to-slate-800 text-white text-sm font-bold rounded-lg hover:opacity-90 transition disabled:opacity-50"
+            disabled={isSubmitting}
           >
-            Login
+            {isSubmitting ? "Ingresando..." : "Login"}
           </button>
         </form>
 

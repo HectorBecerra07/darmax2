@@ -30,6 +30,18 @@ async function main() {
     });
     console.log(`Admin ${admin.email} creado/actualizado`);
   }
+
+  // Crear un usuario de prueba para el carrito
+  await prisma.user.upsert({
+    where: { email: 'test@user.com' },
+    update: {},
+    create: {
+      email: 'test@user.com',
+      name: 'Usuario de Prueba',
+      // No se le asigna contraseña hasheada por ahora
+    },
+  });
+  console.log("Usuario de prueba 'test@user.com' creado/actualizado.");
 }
 
 

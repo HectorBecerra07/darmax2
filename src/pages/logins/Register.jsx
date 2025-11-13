@@ -1,37 +1,49 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useUser } from "../../context/UserContext";
+import toast from "react-hot-toast";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Register = () => {
-  const [nombre, setNombre] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser } = useUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nombre || !email || !telefono || !password) {
-      alert("Completa todos los campos");
+    if (!name || !email || !password) {
+      toast.error("Nombre, email y contraseña son obligatorios.");
       return;
     }
 
-    // Guarda en localStorage la lista de usuarios (simulación)
-    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-    const nuevoUsuario = {
-      name: nombre,
-      email,
-      phone: telefono, // 🔹 usamos "phone" para ser consistentes
-    };
-    localStorage.setItem("usuarios", JSON.stringify([...usuarios, nuevoUsuario]));
+    setIsSubmitting(true);
+    const toastId = toast.loading("Creando cuenta...");
 
-    // Guarda usuario logueado en contexto y localStorage
-    setUser(nuevoUsuario);
-    localStorage.setItem("user", JSON.stringify(nuevoUsuario));
+    try {
+      const res = await fetch(`${API_URL}/api/users/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, telefono }),
+      });
 
-    navigate("/perfil");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "No se pudo completar el registro.");
+      }
+
+      toast.success("¡Registro exitoso! Ahora puedes iniciar sesión.", { id: toastId });
+      navigate("/login");
+
+    } catch (error) {
+      toast.error(error.message, { id: toastId });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -60,9 +72,10 @@ const Register = () => {
           <input
             type="text"
             placeholder="Nombre completo"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="w-full px-4 py-3 bg-white/80 border border-white/40 rounded-lg text-sm text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#24d4da]"
+            disabled={isSubmitting}
           />
           <input
             type="email"
@@ -70,6 +83,7 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-3 bg-white/80 border border-white/40 rounded-lg text-sm text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#24d4da]"
+            disabled={isSubmitting}
           />
           <input
             type="tel"
@@ -77,6 +91,7 @@ const Register = () => {
             value={telefono}
             onChange={(e) => setTelefono(e.target.value)}
             className="w-full px-4 py-3 bg-white/80 border border-white/40 rounded-lg text-sm text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#24d4da]"
+            disabled={isSubmitting}
           />
           <input
             type="password"
@@ -84,10 +99,11 @@ const Register = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-3 bg-white/80 border border-white/40 rounded-lg text-sm text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#24d4da]"
+            disabled={isSubmitting}
           />
 
           <label className="flex items-center text-sm text-black mt-2">
-            <input type="checkbox" className="mr-2 accent-black" required />
+            <input type="checkbox" className="mr-2 accent-black" required disabled={isSubmitting} />
             Acepto los{" "}
             <a href="#" className="font-bold underline ml-1 text-black">
               Términos y condiciones
@@ -96,9 +112,10 @@ const Register = () => {
 
           <button
             type="submit"
-            className="w-full py-3 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:opacity-90 transition"
+            className="w-full py-3 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:opacity-90 transition disabled:opacity-50"
+            disabled={isSubmitting}
           >
-            Crear cuenta
+            {isSubmitting ? "Creando cuenta..." : "Crear cuenta"}
           </button>
 
           <p className="text-sm text-center mt-6 text-black">
