@@ -10,51 +10,39 @@ const ModalProductoForm = ({
   producto,
   categoriasExistentes,
 }) => {
-  // Campos base
+  // State for all form fields
   const [nombre, setNombre] = useState("");
   const [precio, setPrecio] = useState("");
-  const [categoria, setCategoria] = useState("");
+  const [categoriaId, setCategoriaId] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [stock, setStock] = useState(0);
   const [imagen, setImagen] = useState("");
-
-  // Envíos
   const [pesoKg, setPesoKg] = useState("");
   const [largoCm, setLargoCm] = useState("");
   const [anchoCm, setAnchoCm] = useState("");
   const [altoCm, setAltoCm] = useState("");
-
-  // Categorías dinámicas
-  const [categorias, setCategorias] = useState([]);
-  const [nuevaCat, setNuevaCat] = useState("");
-
-  // Imagen: URL o Archivo
   const [imgMode, setImgMode] = useState("file");
   const [fileObj, setFileObj] = useState(null);
-
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Cargar categorías desde el prop
-    setCategorias(categoriasExistentes || []);
-
     if (producto) {
       setNombre(producto.nombre ?? "");
       setPrecio(producto.precio ?? "");
-      setCategoria(producto.categoria?.nombre ?? ""); // Ajustado para objeto
+      setCategoriaId(producto.categoriaId ?? "");
       setDescripcion(producto.descripcion ?? "");
       setStock(producto.stock ?? 0);
       setImagen(producto.imagen ?? "");
       setPesoKg(producto.pesoKg ?? "");
-      setLargoCm(producto.largoCm ?? ""); // Ajustado
-      setAnchoCm(producto.anchoCm ?? ""); // Ajustado
-      setAltoCm(producto.altoCm ?? "");   // Ajustado
+      setLargoCm(producto.largoCm ?? "");
+      setAnchoCm(producto.anchoCm ?? "");
+      setAltoCm(producto.altoCm ?? "");
     } else {
-      // Resetear formulario para nuevo producto
+      // Reset form for new product
       setNombre("");
       setPrecio("");
-      setCategoria("");
+      setCategoriaId("");
       setDescripcion("");
       setStock(0);
       setImagen("");
@@ -63,14 +51,12 @@ const ModalProductoForm = ({
       setAnchoCm("");
       setAltoCm("");
     }
-
-    // Resetear estado del modal
+    // Reset modal-specific state
     setImgMode("file");
     setFileObj(null);
     setErrors({});
-    setNuevaCat("");
     setIsSubmitting(false);
-  }, [producto, show, categoriasExistentes]);
+  }, [producto, show]);
 
   if (!show) return null;
 
@@ -93,23 +79,12 @@ const ModalProductoForm = ({
     setFileObj(file || null);
   };
 
-  const handleAddCategory = () => {
-    const val = (nuevaCat || "").trim();
-    if (!val || categorias.find(c => c.nombre === val)) return;
-    // Solo agrega a la UI local para seleccionarla. El backend la creará.
-    setCategorias([...categorias, { id: `new_${val}`, nombre: val }]);
-    setCategoria(val);
-    setNuevaCat("");
-  };
-
   const validate = () => {
     const errs = {};
     if (!nombre?.trim()) errs.nombre = "Requerido";
-    const precioNum = toNumberOrNull(precio);
-    if (precioNum == null || precioNum <= 0) errs.precio = "Precio inválido";
-    if (!categoria?.trim()) errs.categoria = "Selecciona o crea una categoría";
+    if (toNumberOrNull(precio) == null || toNumberOrNull(precio) <= 0) errs.precio = "Precio inválido";
+    if (!categoriaId) errs.categoriaId = "Selecciona una categoría";
     if (stock < 0) errs.stock = "No puede ser negativo";
-    
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -131,7 +106,7 @@ const ModalProductoForm = ({
       const productData = {
         nombre: nombre.trim(),
         precio: toNumberOrNull(precio),
-        categoria: categoria.trim(),
+        categoriaId: parseInt(categoriaId),
         descripcion: descripcion.trim(),
         stock: Number.isFinite(Number(stock)) ? parseInt(stock, 10) : 0,
         imagen: imagenFinal || "",
@@ -141,10 +116,7 @@ const ModalProductoForm = ({
         altoCm: toNumberOrNull(altoCm),
       };
 
-      const url = producto
-        ? `${API_URL}/api/productos/${producto.id}`
-        : `${API_URL}/api/productos`;
-      
+      const url = producto ? `${API_URL}/api/productos/${producto.id}` : `${API_URL}/api/productos`;
       const method = producto ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -160,7 +132,6 @@ const ModalProductoForm = ({
 
       toast.dismiss(toastId);
       onSaveSuccess();
-
     } catch (error) {
       console.error(error);
       if (toastId) toast.dismiss(toastId);
@@ -173,116 +144,94 @@ const ModalProductoForm = ({
   const previewSrc = () => {
     if (imgMode === "file" && fileObj) return URL.createObjectURL(fileObj);
     if (imgMode === "url" && imagen) return imagen;
-    if (producto?.imagen) return producto.imagen;
+    if (producto?.imagen && !fileObj) return producto.imagen;
     return null;
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 w-[28rem] max-w-full space-y-4 shadow-lg">
+      <div className="bg-white rounded-lg p-8 w-[28rem] max-w-full space-y-4 shadow-lg max-h-[90vh] overflow-y-auto">
         <h3 className="text-lg font-bold">{producto ? "Editar Producto" : "Nuevo Producto"}</h3>
 
         <form onSubmit={handleSubmit} className="space-y-3">
           {/* Nombre */}
           <div>
-            <input
-              type="text"
-              placeholder="Nombre"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              className="w-full border rounded p-2"
-              required
-            />
+            <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full border rounded p-2" required />
             {errors.nombre && <p className="text-xs text-red-600 mt-1">{errors.nombre}</p>}
           </div>
 
           {/* Precio */}
           <div>
-            <input
-              type="number"
-              placeholder="Precio"
-              value={precio}
-              onChange={(e) => setPrecio(e.target.value)}
-              className="w-full border rounded p-2"
-              required
-            />
+            <input type="number" placeholder="Precio" value={precio} onChange={(e) => setPrecio(e.target.value)} className="w-full border rounded p-2" required />
             {errors.precio && <p className="text-xs text-red-600 mt-1">{errors.precio}</p>}
           </div>
 
           {/* Categoría */}
           <div>
-            <select
-              value={categoria}
-              onChange={(e) => setCategoria(e.target.value)}
-              className="w-full border rounded p-2"
-              required
-            >
+            <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)} className="w-full border rounded p-2" required>
               <option value="">Selecciona una categoría</option>
-              {categorias.map((c) => (
-                <option key={c.id} value={c.nombre}>{c.nombre}</option>
+              {(categoriasExistentes || []).map((c) => (
+                <option key={c.id} value={c.id}>{c.nombre}</option>
               ))}
             </select>
-            {errors.categoria && <p className="text-xs text-red-600 mt-1">{errors.categoria}</p>}
-            <div className="mt-2 flex gap-2">
-              <input
-                type="text"
-                placeholder="O crea una nueva categoría"
-                value={nuevaCat}
-                onChange={(e) => setNuevaCat(e.target.value)}
-                className="flex-1 border rounded p-2"
-              />
-              <button
-                type="button"
-                onClick={handleAddCategory}
-                className="bg-cyan-500 hover:bg-cyan-600 text-white rounded px-3"
-              >
-                Agregar
-              </button>
-            </div>
+            {errors.categoriaId && <p className="text-xs text-red-600 mt-1">{errors.categoriaId}</p>}
           </div>
 
           {/* Descripción */}
-          <textarea
-            placeholder="Descripción"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            className="w-full border rounded p-2"
-            rows="3"
-          />
+          <textarea placeholder="Descripción" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="w-full border rounded p-2" rows="3" />
 
           {/* Stock */}
           <div>
-            <input
-              type="number"
-              placeholder="Stock"
-              value={stock}
-              min="0"
-              onChange={(e) => setStock(parseInt(e.target.value) || 0)}
-              className="w-full border rounded p-2"
-              required
-            />
+            <input type="number" placeholder="Stock" value={stock} min="0" onChange={(e) => setStock(parseInt(e.target.value) || 0)} className="w-full border rounded p-2" required />
             {errors.stock && <p className="text-xs text-red-600 mt-1">{errors.stock}</p>}
           </div>
 
           {/* Imagen */}
           <div>
-            {/* ... (resto del JSX de imagen sin cambios) ... */}
+            <div className="flex items-center gap-4 text-sm mb-2">
+              <label className="flex items-center gap-2"><input type="radio" name="imgMode" value="file" checked={imgMode === "file"} onChange={() => setImgMode("file")} /> Archivo</label>
+              <label className="flex items-center gap-2"><input type="radio" name="imgMode" value="url" checked={imgMode === "url"} onChange={() => setImgMode("url")} /> URL</label>
+            </div>
+            {imgMode === "file" ? (
+              <input type="file" accept="image/*" onChange={handleImagenFile} className="w-full border rounded p-2" />
+            ) : (
+              <input type="url" placeholder="https://tu-imagen..." value={imagen} onChange={(e) => setImagen(e.target.value)} className="w-full border rounded p-2" />
+            )}
+            {previewSrc() && (
+              <div className="mt-3">
+                <p className="text-xs text-gray-600 mb-1">Vista previa:</p>
+                <img src={previewSrc()} alt="preview" className="h-24 w-24 object-cover rounded" />
+              </div>
+            )}
           </div>
 
           {/* Envíos */}
-          <div className="grid grid-cols-3 gap-2">
-            {/* ... (resto del JSX de envíos sin cambios) ... */}
+          <div className="grid grid-cols-3 gap-2 pt-2 border-t mt-4">
+            <div className="col-span-3"><label className="text-sm font-medium text-gray-600">Datos de Envío (Opcional)</label></div>
+            <div>
+              <label className="text-xs font-medium">Peso (kg)</label>
+              <input type="number" step="0.01" min="0" value={pesoKg} onChange={(e) => setPesoKg(e.target.value)} className="w-full border rounded p-2" />
+            </div>
+            <div>
+              <label className="text-xs font-medium">Largo (cm)</label>
+              <input type="number" step="0.1" min="0" value={largoCm} onChange={(e) => setLargoCm(e.target.value)} className="w-full border rounded p-2" />
+            </div>
+            <div>
+              <label className="text-xs font-medium">Ancho (cm)</label>
+              <input type="number" step="0.1" min="0" value={anchoCm} onChange={(e) => setAnchoCm(e.target.value)} className="w-full border rounded p-2" />
+            </div>
+            <div className="col-span-3">
+              <label className="text-xs font-medium">Alto (cm)</label>
+              <input type="number" step="0.1" min="0" value={altoCm} onChange={(e) => setAltoCm(e.target.value)} className="w-full border rounded p-2" />
+            </div>
           </div>
 
-          <div className="flex justify-end space-x-2 pt-2">
-            <button type="button" onClick={onClose} className="text-gray-600" disabled={isSubmitting}>
+          {/* Botones de Acción */}
+          <div className="flex justify-end space-x-2 pt-4">
+            <button type="button" onClick={onClose} className="text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100" disabled={isSubmitting}>
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="bg-cyan-500 hover:bg-cyan-600 text-white rounded px-4 py-2 disabled:bg-gray-400"
-              disabled={isSubmitting}
-            >
+            <button type="submit" className="bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg px-4 py-2 disabled:bg-gray-400" disabled={isSubmitting}>
               {isSubmitting ? "Guardando..." : "Guardar"}
             </button>
           </div>

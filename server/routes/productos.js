@@ -4,23 +4,6 @@ import { PrismaClient } from "@prisma/client";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// --- Rutas de Categorías ---
-
-// GET /api/productos/categorias
-router.get("/categorias", async (req, res) => {
-  try {
-    const categorias = await prisma.categoria.findMany({
-      orderBy: { nombre: "asc" },
-    });
-    res.json(categorias);
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    res.status(500).json({ message: "Error del servidor" });
-  }
-});
-
-// --- Rutas de Productos ---
-
 // GET /api/productos
 router.get("/", async (req, res) => {
   try {
@@ -39,20 +22,13 @@ router.get("/", async (req, res) => {
 
 // POST /api/productos
 router.post("/", async (req, res) => {
-  const { nombre, precio, descripcion, stock, imagen, categoria, pesoKg, largoCm, anchoCm, altoCm } = req.body;
+  const { nombre, precio, descripcion, stock, imagen, categoriaId, pesoKg, largoCm, anchoCm, altoCm } = req.body;
 
-  if (!nombre || !precio || !categoria) {
-    return res.status(400).json({ message: "Nombre, precio y categoría son obligatorios" });
+  if (!nombre || !precio || !categoriaId) {
+    return res.status(400).json({ message: "Nombre, precio y ID de categoría son obligatorios" });
   }
 
   try {
-    // Busca la categoría o créala si no existe
-    const categoriaDB = await prisma.categoria.upsert({
-      where: { nombre: categoria },
-      update: {},
-      create: { nombre: categoria },
-    });
-
     const nuevoProducto = await prisma.producto.create({
       data: {
         nombre,
@@ -65,7 +41,7 @@ router.post("/", async (req, res) => {
         anchoCm,
         altoCm,
         categoria: {
-          connect: { id: categoriaDB.id },
+          connect: { id: parseInt(categoriaId) },
         },
       },
     });
@@ -79,19 +55,13 @@ router.post("/", async (req, res) => {
 // PUT /api/productos/:id
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { nombre, precio, descripcion, stock, imagen, categoria, pesoKg, largoCm, anchoCm, altoCm } = req.body;
+  const { nombre, precio, descripcion, stock, imagen, categoriaId, pesoKg, largoCm, anchoCm, altoCm } = req.body;
 
-  if (!nombre || !precio || !categoria) {
-    return res.status(400).json({ message: "Nombre, precio y categoría son obligatorios" });
+  if (!nombre || !precio || !categoriaId) {
+    return res.status(400).json({ message: "Nombre, precio y ID de categoría son obligatorios" });
   }
 
   try {
-    const categoriaDB = await prisma.categoria.upsert({
-      where: { nombre: categoria },
-      update: {},
-      create: { nombre: categoria },
-    });
-
     const productoActualizado = await prisma.producto.update({
       where: { id: parseInt(id) },
       data: {
@@ -105,7 +75,7 @@ router.put("/:id", async (req, res) => {
         anchoCm,
         altoCm,
         categoria: {
-          connect: { id: categoriaDB.id },
+          connect: { id: parseInt(categoriaId) },
         },
       },
     });

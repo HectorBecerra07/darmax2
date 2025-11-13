@@ -15,7 +15,7 @@ export default function ProductosAdmin() {
     try {
       const [productosRes, categoriasRes] = await Promise.all([
         fetch(`${API_URL}/api/productos`),
-        fetch(`${API_URL}/api/productos/categorias`),
+        fetch(`${API_URL}/api/categorias`),
       ]);
 
       if (!productosRes.ok || !categoriasRes.ok) {

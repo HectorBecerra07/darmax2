@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import adminRoutes from "./routes/admin.js";
 import productRoutes from "./routes/productos.js";
+import categoryRoutes from "./routes/categorias.js";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 // Rutas de la API
 app.use("/api/admin", adminRoutes);
 app.use("/api/productos", productRoutes);
+app.use("/api/categorias", categoryRoutes);
 
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");

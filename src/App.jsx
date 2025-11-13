@@ -40,13 +40,14 @@ import ProductosAdmin from "./administrador/pages/ProductosAdmin";
 import PedidosAdmin from "./administrador/pages/PedidosAdmin";
 import ReportesAdmin from "./administrador/pages/ReportesAdmin";
 import ClientesAdmin from "./administrador/pages/ClientesAdmin";
+import CategoriasAdmin from "./administrador/pages/CategoriasAdmin";
 
 const stripePromise = loadStripe("TU_CLAVE_PUBLICA_DE_STRIPE");
 
 const PageWrapper = ({ children }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+}, []);
 
   return (
     <motion.div
@@ -72,6 +73,7 @@ function AppContent() {
           <Route path="/admin/login" element={<LoginAdmin />} />
           <Route path="/admin/dashboard" element={<DashboardAdmin />}>
             <Route path="productos" element={<ProductosAdmin />} />
+            <Route path="categorias" element={<CategoriasAdmin />} />
             <Route path="pedidos" element={<PedidosAdmin />} />
             <Route path="reportes" element={<ReportesAdmin />} />
             <Route path="clientes" element={<ClientesAdmin />} />

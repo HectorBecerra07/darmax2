@@ -43,6 +43,14 @@ const SidebarAdmin = () => {
             📦 Productos
           </NavLink>
           <NavLink
+            to="/admin/dashboard/categorias"
+            className={({ isActive }) =>
+              `${linkClass} ${isActive ? "bg-cyan-500 text-white" : "text-gray-300"}`
+            }
+          >
+            🏷️ Categorías
+          </NavLink>
+          <NavLink
             to="/admin/dashboard/pedidos"
             className={({ isActive }) =>
               `${linkClass} ${isActive ? "bg-cyan-500 text-white" : "text-gray-300"}`
