@@ -63,7 +63,7 @@ export default function NavBar() {
           </Link>
 
           {/* Menú escritorio */}
-          <div className="hidden md:flex items-center justify-center gap-6 lg:gap-8 flex-1">
+          <div className="hidden lg:flex items-center justify-center gap-6 lg:gap-8 flex-1">
             {navLinks.map(link => {
               const isActive = location.pathname.startsWith(link.href);
               return (
@@ -79,7 +79,7 @@ export default function NavBar() {
           </div>
 
           {/* Usuario + carrito */}
-          <div className="hidden md:flex items-center gap-4 lg:gap-6">
+          <div className="hidden lg:flex items-center gap-4 lg:gap-6">
             <button
               onClick={() => setShowCart(true)}
               className={`relative text-white ${hoverLinkClass}`}
@@ -113,7 +113,7 @@ export default function NavBar() {
           </div>
 
           {/* Botón menú móvil */}
-          <div className="flex items-center justify-end md:hidden">
+          <div className="flex items-center justify-end lg:hidden">
             <button
               onClick={() => setShowCart(true)}
               className="relative text-white hover:text-[#ccff00] mr-4"
@@ -153,7 +153,7 @@ export default function NavBar() {
             <Link 
               key={link.href} 
               to={link.href} 
-              className={`text-white text-lg font-semibold p-3 rounded-lg transition-colors duration-200 ${location.pathname.startsWith(link.href) ? 'bg-gray-700' : 'hover:bg-gray-800'}`}
+              className={`text-white text-base font-semibold p-3 rounded-lg transition-colors duration-200 ${location.pathname.startsWith(link.href) ? 'bg-gray-700' : 'hover:bg-gray-800'}`}
               onClick={() => setNavOpen(false)}
             >
               {link.text}
@@ -162,15 +162,15 @@ export default function NavBar() {
           <div className="border-t border-gray-700 my-4"></div>
           {user ? (
             <>
-              <Link to="/perfil" className="text-white text-lg font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
+              <Link to="/perfil" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
                 Hola, {firstName} (Mi Perfil)
               </Link>
-              <button onClick={() => { logout(); setNavOpen(false); }} className="text-left text-white text-lg font-semibold p-3 rounded-lg hover:bg-gray-800">
+              <button onClick={() => { logout(); setNavOpen(false); }} className="text-left text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800">
                 Cerrar Sesión
               </button>
             </>
           ) : (
-            <Link to="/login" className="text-white text-lg font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
+            <Link to="/login" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
               Iniciar Sesión
             </Link>
           )}
