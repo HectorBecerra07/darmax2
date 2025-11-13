@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import ModalProductoForm from "../components/ModalProductoForm";
+import toast from "react-hot-toast";
 
-const LS_PROD = "productos";
-const LS_CAT = "categorias";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ProductosAdmin() {
   const [productos, setProductos] = useState([]);
@@ -11,50 +11,56 @@ export default function ProductosAdmin() {
   const [productoEditando, setProductoEditando] = useState(null);
   const [filtro, setFiltro] = useState("todos");
 
-  // Carga inicial
-  useEffect(() => {
-    const ps = JSON.parse(localStorage.getItem(LS_PROD)) || [];
-    const cs = JSON.parse(localStorage.getItem(LS_CAT)) || [];
-    setProductos(ps);
-    setCategorias(cs);
+  const fetchData = useCallback(async () => {
+    try {
+      const [productosRes, categoriasRes] = await Promise.all([
+        fetch(`${API_URL}/api/productos`),
+        fetch(`${API_URL}/api/productos/categorias`),
+      ]);
+
+      if (!productosRes.ok || !categoriasRes.ok) {
+        throw new Error("Error al cargar los datos");
+      }
+
+      const productosData = await productosRes.json();
+      const categoriasData = await categoriasRes.json();
+
+      setProductos(productosData);
+      setCategorias(categoriasData);
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudieron cargar los datos desde el servidor.");
+    }
   }, []);
 
-  const guardarProductos = (nuevos) => {
-    localStorage.setItem(LS_PROD, JSON.stringify(nuevos));
-    setProductos(nuevos);
-  };
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-  const guardarCategorias = (nuevas) => {
-    const uniques = Array.from(new Set(nuevas.map((c) => c.trim()).filter(Boolean)));
-    localStorage.setItem(LS_CAT, JSON.stringify(uniques));
-    setCategorias(uniques);
-  };
-
-  const ensureCategoria = (cat) => {
-    if (!cat) return;
-    if (!categorias.includes(cat)) guardarCategorias([...categorias, cat]);
-  };
-
-  const handleAgregar = (nuevoProducto) => {
-    // Asegura la categoría en el catálogo
-    ensureCategoria(nuevoProducto.categoria);
-
-    let nuevos;
-    if (productoEditando) {
-      nuevos = productos.map((p) =>
-        p.id === productoEditando.id ? { ...nuevoProducto, id: productoEditando.id } : p
-      );
-    } else {
-      nuevos = [...productos, { ...nuevoProducto, id: Date.now() }];
-    }
-    guardarProductos(nuevos);
-    setProductoEditando(null);
+  const handleSaveSuccess = () => {
     setModalOpen(false);
+    setProductoEditando(null);
+    toast.success("Producto guardado exitosamente!");
+    fetchData(); // Recargar datos
   };
 
-  const handleEliminar = (id) => {
-    const nuevos = productos.filter((p) => p.id !== id);
-    guardarProductos(nuevos);
+  const handleEliminar = async (id) => {
+    if (!window.confirm("¿Estás seguro de que quieres eliminar este producto?")) {
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/api/productos/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        throw new Error("Error al eliminar");
+      }
+      toast.success("Producto eliminado.");
+      fetchData(); // Recargar datos
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo eliminar el producto.");
+    }
   };
 
   const handleEditar = (producto) => {
@@ -65,15 +71,15 @@ export default function ProductosAdmin() {
   const productosFiltrados =
     filtro === "todos"
       ? productos
-      : productos.filter((p) => p.categoria?.toLowerCase() === filtro.toLowerCase());
+      : productos.filter((p) => p.categoria?.nombre.toLowerCase() === filtro.toLowerCase());
 
   const fmtMoney = (n) =>
-    new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" })
-      .format(Number(n || 0));
+    new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(
+      Number(n || 0)
+    );
 
-  const fmtDims = (d) => {
-    if (!d) return "-";
-    const { largoCm, anchoCm, altoCm } = d;
+  const fmtDims = (p) => {
+    const { largoCm, anchoCm, altoCm } = p;
     if ([largoCm, anchoCm, altoCm].every((x) => x == null || x === "")) return "-";
     return `${largoCm ?? "-"} × ${anchoCm ?? "-"} × ${altoCm ?? "-"} cm`;
   };
@@ -100,7 +106,9 @@ export default function ProductosAdmin() {
         >
           <option value="todos">Todos</option>
           {categorias.map((c) => (
-            <option key={c} value={c}>{c}</option>
+            <option key={c.id} value={c.nombre}>
+              {c.nombre}
+            </option>
           ))}
         </select>
       </div>
@@ -125,21 +133,33 @@ export default function ProductosAdmin() {
               <tr key={p.id} className="text-center">
                 <td className="border p-2">{p.nombre}</td>
                 <td className="border p-2">{fmtMoney(p.precio)}</td>
-                <td className="border p-2">{p.categoria}</td>
+                <td className="border p-2">{p.categoria.nombre}</td>
                 <td className="border p-2 text-left">{p.descripcion}</td>
                 <td className="border p-2">{p.stock ?? "-"}</td>
                 <td className="border p-2">{p.pesoKg ?? "-"}</td>
-                <td className="border p-2">{fmtDims(p.dimensiones)}</td>
+                <td className="border p-2">{fmtDims(p)}</td>
                 <td className="border p-2">
                   {p.imagen ? (
-                    <img src={p.imagen} alt={p.nombre} className="mx-auto h-16 w-16 object-cover" />
-                  ) : ("-")}
+                    <img
+                      src={p.imagen}
+                      alt={p.nombre}
+                      className="mx-auto h-16 w-16 object-cover"
+                    />
+                  ) : (
+                    "-"
+                  )}
                 </td>
                 <td className="space-x-2 border p-2">
-                  <button onClick={() => handleEditar(p)} className="text-blue-600 hover:underline">
+                  <button
+                    onClick={() => handleEditar(p)}
+                    className="text-blue-600 hover:underline"
+                  >
                     Editar
                   </button>
-                  <button onClick={() => handleEliminar(p.id)} className="text-red-600 hover:underline">
+                  <button
+                    onClick={() => handleEliminar(p.id)}
+                    className="text-red-600 hover:underline"
+                  >
                     Eliminar
                   </button>
                 </td>
@@ -159,8 +179,9 @@ export default function ProductosAdmin() {
       <ModalProductoForm
         show={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSave={handleAgregar}
+        onSaveSuccess={handleSaveSuccess}
         producto={productoEditando}
+        categoriasExistentes={categorias}
       />
     </div>
   );

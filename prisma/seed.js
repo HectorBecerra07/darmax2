@@ -4,20 +4,35 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const hash = await bcrypt.hash("admin123", 10);
-
-  await prisma.adminUser.upsert({
-    where: { email: "admin@tutienda.com" },
-    update: {},
-    create: {
+  const admins = [
+    {
       email: "admin@tutienda.com",
       name: "Maximiliano de la Torre",
-      passwordHash: hash,
+      password: "admin123",
     },
-  });
+    {
+      email: "e.axel12@gmail.com",
+      name: "Axel",
+      password: "administrador123",
+    },
+  ];
 
-  console.log("Admin creado/actualizado");
+  for (const admin of admins) {
+    const hash = await bcrypt.hash(admin.password, 10);
+    await prisma.adminUser.upsert({
+      where: { email: admin.email },
+      update: {},
+      create: {
+        email: admin.email,
+        name: admin.name,
+        passwordHash: hash,
+      },
+    });
+    console.log(`Admin ${admin.email} creado/actualizado`);
+  }
 }
+
+
 
 main()
   .catch((e) => {
