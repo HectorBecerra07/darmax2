@@ -1,22 +1,23 @@
 import express from "express";
+import dotenv from "dotenv";
 import cors from "cors";
 import adminRoutes from "./routes/admin.js";
 
+dotenv.config();
+
 const app = express();
+app.use(cors());
+app.use(express.json());
 
-// Middleware
-app.use(cors()); // permite peticiones desde tu frontend (Vite en 5173)
-app.use(express.json()); // para leer JSON en req.body
+// Rutas
+app.use("/admin", adminRoutes);
 
-// Rutas del admin
-app.use("/api/admin", adminRoutes);
-
-// Ruta simple para probar que el server está vivo
 app.get("/", (req, res) => {
-  res.send("API Darmax funcionando");
+  res.send("API funcionando 🚀");
 });
 
-const PORT = 4000;
+const PORT = process.env.PORT || 3001;
+
 app.listen(PORT, () => {
-  console.log(`Servidor Express escuchando en http://localhost:${PORT}`);
+  console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
