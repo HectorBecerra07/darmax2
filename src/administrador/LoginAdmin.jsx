@@ -6,26 +6,30 @@ const LoginAdmin = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const usuarios = [
-      {
-        correo: "admin@tutienda.com",
-        password: "admin123",
-        nombre: "Maximiliano de la Torre",
-      },
-    ];
+    try {
+      const res = await fetch("http://localhost:4000/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const usuarioValido = usuarios.find(
-      (user) => user.correo === email && user.password === password
-    );
+      if (!res.ok) {
+        alert("Credenciales incorrectas");
+        return;
+      }
 
-    if (usuarioValido) {
-      localStorage.setItem("adminNombre", usuarioValido.nombre);
+      const data = await res.json();
+
+      localStorage.setItem("adminNombre", data.name);
       navigate("/admin/dashboard");
-    } else {
-      alert("Credenciales incorrectas");
+    } catch (error) {
+      console.error(error);
+      alert("Error conectando con el servidor");
     }
   };
 
@@ -49,6 +53,7 @@ const LoginAdmin = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+
         <input
           type="password"
           placeholder="Contraseña"
@@ -56,6 +61,7 @@ const LoginAdmin = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
         <button
           type="submit"
           className="w-full bg-cyan-500 hover:bg-cyan-600 transition text-white py-2 rounded-lg"
