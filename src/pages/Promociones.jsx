@@ -112,11 +112,7 @@ export default function Promociones() {
           <Swiper
             modules={[Pagination, Navigation]}
             pagination={{ clickable: true }}
-<<<<<<< HEAD
             navigation={true}
-=======
-    
->>>>>>> 292defe4b4db11c4bc735bfcd10d620c25b95429
             loop
             breakpoints={{
               320: { slidesPerView: 1.02, spaceBetween: 12 },
