@@ -4,13 +4,12 @@ import { useCarrito } from "../context/CarritoContext";
 import toast from "react-hot-toast";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-const LS_PROD = "productos";
-const LS_CAT = "categorias";
+const API_URL = import.meta.env.VITE_API_URL;
 const CATEGORIA_PURIFICADORES = "PurificadoresCaseros";
 
 const agruparPorCategoria = (productos) =>
   productos.reduce((acc, p) => {
-    const cat = p.categoria || "Sin categoría";
+    const cat = p.categoria?.nombre || "Sin categoría";
     if (!acc[cat]) acc[cat] = [];
     acc[cat].push(p);
     return acc;
@@ -18,7 +17,6 @@ const agruparPorCategoria = (productos) =>
 
 export default function Productos() {
   const [productos, setProductos] = useState([]);
-  const [categoriasLS, setCategoriasLS] = useState([]);
   const [categoriaActiva, setCategoriaActiva] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [productoActivo, setProductoActivo] = useState(null);
@@ -28,39 +26,37 @@ export default function Productos() {
   const { agregarProducto } = useCarrito();
 
   useEffect(() => {
-    const prods = JSON.parse(localStorage.getItem(LS_PROD)) || [];
-    const cats = JSON.parse(localStorage.getItem(LS_CAT)) || [];
-    setProductos(prods);
-    setCategoriasLS(cats);
+    const fetchProductos = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/productos`);
+        if (!res.ok) throw new Error("No se pudieron cargar los productos.");
+        const data = await res.json();
+        setProductos(data);
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+    fetchProductos();
   }, []);
 
-  // Excluir la categoría "PurificadoresCaseros" del listado general
   const productosVisibles = useMemo(
     () =>
       (productos || []).filter(
-        (p) => (p.categoria || "").toLowerCase() !== CATEGORIA_PURIFICADORES.toLowerCase()
+        (p) => (p.categoria?.nombre || "").toLowerCase() !== CATEGORIA_PURIFICADORES.toLowerCase()
       ),
     [productos]
   );
 
-  // Categorías visibles (también sin PurificadoresCaseros)
-  const categoriasDerivadas = useMemo(() => {
+  const categorias = useMemo(() => {
     const set = new Set(
-      (productosVisibles || []).map((p) => p.categoria).filter(Boolean)
+      (productosVisibles || []).map((p) => p.categoria?.nombre).filter(Boolean)
     );
     return Array.from(set);
   }, [productosVisibles]);
 
-  const categorias = useMemo(() => {
-    const base = categoriasLS.length > 0 ? categoriasLS : categoriasDerivadas;
-    return base.filter(
-      (c) => (c || "").toLowerCase() !== CATEGORIA_PURIFICADORES.toLowerCase()
-    );
-  }, [categoriasLS, categoriasDerivadas]);
-
   useEffect(() => {
-    if (!categoriaActiva) {
-      setCategoriaActiva(categorias[0] || "");
+    if (!categoriaActiva && categorias.length > 0) {
+      setCategoriaActiva(categorias[0]);
     } else if (!categorias.includes(categoriaActiva) && categorias.length > 0) {
       setCategoriaActiva(categorias[0]);
     }
@@ -81,7 +77,7 @@ export default function Productos() {
   const productosPaginados = productosFiltrados.slice(inicio, fin);
 
   const handleAgregarCarrito = (producto) => {
-    agregarProducto({ ...producto, cantidad: 1, precio: producto.precio });
+    agregarProducto(producto, 1);
     toast.success(`${producto.nombre} añadido al carrito 🎉`);
   };
 
@@ -112,7 +108,7 @@ export default function Productos() {
       <div className="flex flex-wrap justify-center gap-3 mb-12">
         {categorias.length === 0 ? (
           <span className="text-gray-500 text-sm">
-            Aún no hay categorías (excluyendo PurificadoresCaseros). Agrega desde el Admin.
+            No hay categorías de componentes disponibles.
           </span>
         ) : (
           categorias.map((cat) => (
@@ -166,7 +162,6 @@ export default function Productos() {
             >
               Añadir al carrito
             </button>
-            {/* NOTA: Peso y dimensiones NO se muestran aquí (solo en Admin). */}
           </div>
         ))}
         {productosPaginados.length === 0 && (

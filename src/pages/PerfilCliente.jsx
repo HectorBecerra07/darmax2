@@ -10,7 +10,7 @@ const currency = (n) =>
   });
 
 export default function PerfilCliente() {
-  const { user, setUser } = useUser();
+  const { user, logout } = useUser();
   const navigate = useNavigate();
   const [pedidos, setPedidos] = useState([]);
   const [filtro, setFiltro] = useState("Todos");
@@ -62,16 +62,17 @@ export default function PerfilCliente() {
   }, [pedidos, filtro]);
 
   const handleLogout = () => {
-    setUser(null);
+    logout();
     navigate("/");
   };
 
   // Guardar dirección
   const handleGuardarDireccion = () => {
+    // TODO: Esto debería ser una llamada a la API
     const updatedUser = { ...user, direccion };
-    setUser(updatedUser);
+    // setUser(updatedUser); // setUser es ahora login
     localStorage.setItem("user", JSON.stringify(updatedUser));
-    alert("Dirección guardada correctamente ✅");
+    alert("Dirección guardada correctamente (simulación) ✅");
   };
 
   if (!user) {
