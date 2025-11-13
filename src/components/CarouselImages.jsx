@@ -24,7 +24,7 @@ export default function CarouselImages({ images }) {
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="relative w-full max-w-5xl h-[400px] md:h-[550px] overflow-hidden rounded-3xl shadow-2xl border mx-auto group">
+    <div className="relative w-full max-w-5xl h-[300px] sm:h-[400px] md:h-[550px] overflow-hidden rounded-3xl shadow-2xl border mx-auto group">
       <AnimatePresence mode="wait">
         <motion.img
           key={currentIndex}
@@ -41,26 +41,26 @@ export default function CarouselImages({ images }) {
       {/* Botón Izquierda */}
       <button
         onClick={handlePrev}
-        className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80 hover:bg-white text-black p-3 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100"
+        className="absolute top-1/2 left-1 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 rounded-full shadow-lg transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100"
       >
-        <ChevronLeft size={26} />
+        <ChevronLeft size={24} />
       </button>
 
       {/* Botón Derecha */}
       <button
         onClick={handleNext}
-        className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80 hover:bg-white text-black p-3 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100"
+        className="absolute top-1/2 right-1 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 rounded-full shadow-lg transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100"
       >
-        <ChevronRight size={26} />
+        <ChevronRight size={24} />
       </button>
 
       {/* Dots con barra de progreso */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-3">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
         {images.map((_, index) => (
           <div
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`relative w-4 h-4 rounded-full cursor-pointer transition-all ${
+            className={`relative w-3 h-3 rounded-full cursor-pointer transition-all ${
               index === currentIndex ? "bg-[#24d4da]" : "bg-gray-300"
             }`}
           >
