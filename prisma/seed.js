@@ -32,13 +32,16 @@ async function main() {
   }
 
   // Crear un usuario de prueba para el carrito
+  const testUserPasswordHash = await bcrypt.hash("password123", 10);
   await prisma.user.upsert({
     where: { email: 'test@user.com' },
-    update: {},
+    update: {
+      passwordHash: testUserPasswordHash,
+    },
     create: {
       email: 'test@user.com',
       name: 'Usuario de Prueba',
-      // No se le asigna contraseña hasheada por ahora
+      passwordHash: testUserPasswordHash,
     },
   });
   console.log("Usuario de prueba 'test@user.com' creado/actualizado.");
