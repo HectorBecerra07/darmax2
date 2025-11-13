@@ -110,8 +110,7 @@ function AppContent() {
                       </Elements>
                     }
                   />
-                  {/* 👇 Nueva ruta agregada */}
-                  <Route path="/PurificadoresCaseros" element={<PageWrapper><PurificadoresCaseros /></PageWrapper>} />
+                  <Route path="/purificadores-caseros" element={<PageWrapper><PurificadoresCaseros /></PageWrapper>} />
                   <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
                 </Routes>
               </Layout>
