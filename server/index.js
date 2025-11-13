@@ -4,12 +4,19 @@ import adminRoutes from "./routes/admin.js";
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// Middleware
+app.use(cors()); // permite peticiones desde tu frontend (Vite en 5173)
+app.use(express.json()); // para leer JSON en req.body
 
+// Rutas del admin
 app.use("/api/admin", adminRoutes);
+
+// Ruta simple para probar que el server está vivo
+app.get("/", (req, res) => {
+  res.send("API Darmax funcionando");
+});
 
 const PORT = 4000;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor Express escuchando en http://localhost:${PORT}`);
 });

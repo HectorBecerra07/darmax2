@@ -5,11 +5,17 @@
   "author": "Héctor Rivera",
   "license": "ISC",
   "homepage": ".",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "vite preview"
+
+    "server": "node server/index.js",
+
+    "migrate": "npx prisma migrate dev --name init",
+    "generate": "npx prisma generate",
+    "studio": "npx prisma studio"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
