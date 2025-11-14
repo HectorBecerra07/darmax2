@@ -48,7 +48,7 @@ export default function NavBar() {
     <>
       {/* NAVBAR */}
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-black/50 backdrop-blur-md' : 'bg-black'}`}>
-        <div className="max-w-7xl mx-auto grid grid-cols-3 items-center h-20 px-4 sm:px-6 lg:px-8 md:flex md:justify-between">
+        <div className="max-w-7xl mx-auto grid grid-cols-3 items-center h-20 px-4 sm:px-6 nav:px-8 md:flex md:justify-between">
           
           {/* Elemento vacío para la columna izquierda en móvil, si no hay nada */}
           <div className="md:hidden"></div>
@@ -58,19 +58,19 @@ export default function NavBar() {
             <img
               src="/img/logo4.png"
               alt="Logo Darmax"
-              className="h-20 md:h-20 lg:h-24 w-auto object-contain"
+              className="h-20 md:h-20 nav:h-24 w-auto object-contain"
             />
           </Link>
 
           {/* Menú escritorio */}
-          <div className="hidden lg:flex items-center justify-center gap-6 lg:gap-8 flex-1">
+          <div className="hidden nav:flex items-center justify-center gap-6 nav:gap-10 flex-1">
             {navLinks.map(link => {
               const isActive = location.pathname.startsWith(link.href);
               return (
                 <Link 
                   key={link.href} 
                   to={link.href} 
-                  className={`${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass} hover:bg-[#24d4da]/20 hover:rounded-md px-3 py-2`}
+                  className={`${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass} hover:bg-[#24d4da]/20 hover:rounded-md px-2 py-1 text-sm`}
                 >
                   {link.text}
                 </Link>
@@ -79,7 +79,7 @@ export default function NavBar() {
           </div>
 
           {/* Usuario + carrito */}
-          <div className="hidden lg:flex items-center gap-4 lg:gap-6">
+          <div className="hidden nav:flex items-center gap-4 nav:gap-8">
             <button
               onClick={() => setShowCart(true)}
               className={`relative text-white ${hoverLinkClass}`}
@@ -113,7 +113,7 @@ export default function NavBar() {
           </div>
 
           {/* Botón menú móvil */}
-          <div className="flex items-center justify-end lg:hidden">
+          <div className="flex items-center justify-end nav:hidden">
             <button
               onClick={() => setShowCart(true)}
               className="relative text-white hover:text-[#ccff00] mr-4"
