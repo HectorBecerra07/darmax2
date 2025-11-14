@@ -1,11 +1,12 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("PRISMA_DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
 }
+
 // --- MODELOS DE USUARIOS ---
 
 // Para clientes de la tienda
