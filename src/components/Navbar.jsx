@@ -94,10 +94,7 @@ export default function NavBar() {
             </button>
 
             {user ? (
-              <div className="flex items-center gap-3 group">
-                <span className="text-white font-medium max-w-[120px] truncate">
-                  Hola, {firstName}
-                </span>
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => navigate("/perfil")}
                   className={`font-medium text-white ${hoverLinkClass}`}
@@ -163,9 +160,9 @@ export default function NavBar() {
           {user ? (
             <>
               <Link to="/perfil" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
-                Hola, {firstName} (Mi Perfil)
+                Mi Perfil
               </Link>
-              <button onClick={() => { logout(); setNavOpen(false); }} className="text-left text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800">
+              <button onClick={() => { logout(); navigate('/'); setNavOpen(false); }} className="text-left text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800">
                 Cerrar Sesión
               </button>
             </>

@@ -23,53 +23,75 @@ export const UserProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [loggedOutUserName, setLoggedOutUserName] = useState("");
 
   useEffect(() => {
-    // Al cargar la app, intentar restaurar la sesión desde localStorage
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      const decodedToken = parseJwt(storedToken);
-      // Comprobar si el token ha expirado
-      if (decodedToken && decodedToken.exp * 1000 > Date.now()) {
-        // En un caso real, aquí también se podría volver a pedir los datos del usuario a la API
-        // para tener la información más actualizada.
-        setUser({
-          id: decodedToken.userId,
-          name: decodedToken.name,
-          email: decodedToken.email,
-        });
-        setToken(storedToken);
-        setIsAuthenticated(true);
-      } else {
-        // Si el token es inválido o expiró, lo limpiamos
-        localStorage.removeItem("token");
+    const fetchUser = async () => {
+      const storedToken = localStorage.getItem("token");
+      if (storedToken) {
+        const decodedToken = parseJwt(storedToken);
+        if (decodedToken && decodedToken.exp * 1000 > Date.now()) {
+          try {
+            const response = await fetch('/api/users/me', {
+              headers: {
+                'Authorization': `Bearer ${storedToken}`
+              }
+            });
+            if (response.ok) {
+              const userData = await response.json();
+              setUser(userData);
+              setToken(storedToken);
+              setIsAuthenticated(true);
+            } else {
+              localStorage.removeItem("token");
+            }
+          } catch (error) {
+            console.error("Error fetching user profile:", error);
+          }
+        } else {
+          localStorage.removeItem("token");
+        }
       }
-    }
-    setIsLoading(false);
+      setIsLoading(false);
+    };
+
+    fetchUser();
   }, []);
 
   const login = (data) => {
-    const { user: userData, token: userToken } = data;
-    localStorage.setItem("token", userToken);
-    setUser(userData);
-    setToken(userToken);
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      setToken(data.token);
+    }
+    setUser(data.user);
     setIsAuthenticated(true);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    setToken(null);
-    setIsAuthenticated(false);
+    if (user) {
+      setLoggedOutUserName((user.name || "").split(" ")[0]);
+    }
+    setIsLoggingOut(true);
+
+    setTimeout(() => {
+      localStorage.removeItem("token");
+      setUser(null);
+      setToken(null);
+      setIsAuthenticated(false);
+      setIsLoggingOut(false);
+      setLoggedOutUserName("");
+    }, 2500); // Debe coincidir con la duración de la pantalla de despedida
   };
 
-  // El valor del proveedor ahora incluye el estado de autenticación y las funciones
   const value = {
     user,
     token,
     isAuthenticated,
     isLoading,
-    setUser: login, // Renombramos setUser a login para mayor claridad
+    isLoggingOut,
+    loggedOutUserName,
+    setUser: login,
     login,
     logout,
   };

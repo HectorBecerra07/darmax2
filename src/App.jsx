@@ -61,11 +61,18 @@ const PageWrapper = ({ children }) => {
   );
 };
 
+import { useUser } from "./context/UserContext";
+import GoodbyeScreen from "./components/GoodbyeScreen";
+
 function AppContent() {
   const location = useLocation();
+  const { isLoggingOut, loggedOutUserName } = useUser();
 
   return (
     <>
+      <AnimatePresence>
+        {isLoggingOut && <GoodbyeScreen name={loggedOutUserName} />}
+      </AnimatePresence>
       <ScrollToTop />
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>

@@ -2,9 +2,55 @@ import express from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import authMiddleware from "../middleware/auth.js";
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+// GET /api/users/me - Obtener perfil del usuario autenticado
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    const { passwordHash: _, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+  } catch (error) {
+    console.error("Error al obtener el perfil del usuario:", error);
+    res.status(500).json({ message: "Error del servidor al obtener el perfil." });
+  }
+});
+
+// PUT /api/users/me - Actualizar perfil del usuario autenticado
+router.put("/me", authMiddleware, async (req, res) => {
+  const { calle, colonia, codigoPostal, ciudad, estadoEnvio, pais } = req.body;
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: req.userId },
+      data: {
+        calle,
+        colonia,
+        codigoPostal,
+        ciudad,
+        estadoEnvio,
+        pais,
+      },
+    });
+
+    const { passwordHash: _, ...userWithoutPassword } = updatedUser;
+    res.json(userWithoutPassword);
+  } catch (error) {
+    console.error("Error al actualizar el perfil:", error);
+    res.status(500).json({ message: "Error del servidor al actualizar el perfil." });
+  }
+});
+
 
 // POST /api/users/register
 router.post("/register", async (req, res) => {

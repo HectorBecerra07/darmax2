@@ -10,20 +10,34 @@ const currency = (n) =>
   });
 
 export default function PerfilCliente() {
-  const { user, logout } = useUser();
+  const { user, logout, login, token } = useUser();
   const navigate = useNavigate();
   const [pedidos, setPedidos] = useState([]);
   const [filtro, setFiltro] = useState("Todos");
 
   // Estado del formulario de dirección
   const [direccion, setDireccion] = useState({
-    calle: user?.direccion?.calle || "",
-    colonia: user?.direccion?.colonia || "",
-    cp: user?.direccion?.cp || "",
-    ciudad: user?.direccion?.ciudad || "",
-    estado: user?.direccion?.estado || "",
-    pais: user?.direccion?.pais || "México",
+    calle: "",
+    colonia: "",
+    codigoPostal: "",
+    ciudad: "",
+    estadoEnvio: "",
+    pais: "México",
   });
+
+  // Sincronizar el formulario con los datos del usuario cuando se cargan
+  useEffect(() => {
+    if (user) {
+      setDireccion({
+        calle: user.calle || "",
+        colonia: user.colonia || "",
+        codigoPostal: user.codigoPostal || "",
+        ciudad: user.ciudad || "",
+        estadoEnvio: user.estadoEnvio || "",
+        pais: user.pais || "México",
+      });
+    }
+  }, [user]);
 
   const syncPedidosUsuario = () => {
     if (!user?.email) return;
@@ -67,12 +81,30 @@ export default function PerfilCliente() {
   };
 
   // Guardar dirección
-  const handleGuardarDireccion = () => {
-    // TODO: Esto debería ser una llamada a la API
-    const updatedUser = { ...user, direccion };
-    // setUser(updatedUser); // setUser es ahora login
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    alert("Dirección guardada correctamente (simulación) ✅");
+  const handleGuardarDireccion = async () => {
+    try {
+      const response = await fetch('/api/users/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(direccion),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al guardar la dirección');
+      }
+
+      const updatedUser = await response.json();
+      // Actualizar el contexto de usuario con los nuevos datos
+      login({ user: updatedUser });
+      alert("Dirección guardada correctamente ✅");
+
+    } catch (error) {
+      console.error("Error en handleGuardarDireccion:", error);
+      alert("Hubo un error al guardar la dirección. Inténtalo de nuevo.");
+    }
   };
 
   if (!user) {
@@ -194,32 +226,32 @@ export default function PerfilCliente() {
           </p>
           <p className="text-gray-600">
             <span className="font-bold">Teléfono:</span>{" "}
-            {user?.phone || "No registrado"}
+            {user?.telefono || "No registrado"}
           </p>
 
           {/* Mostrar dirección si existe */}
-          {user?.direccion ? (
+          {user?.calle ? (
             <div className="text-gray-600 space-y-1 mt-4">
               <p>
-                <span className="font-bold">Calle:</span> {user.direccion.calle}
+                <span className="font-bold">Calle:</span> {user.calle}
               </p>
               <p>
                 <span className="font-bold">Colonia:</span>{" "}
-                {user.direccion.colonia}
+                {user.colonia}
               </p>
               <p>
-                <span className="font-bold">CP:</span> {user.direccion.cp}
+                <span className="font-bold">CP:</span> {user.codigoPostal}
               </p>
               <p>
                 <span className="font-bold">Ciudad:</span>{" "}
-                {user.direccion.ciudad}
+                {user.ciudad}
               </p>
               <p>
                 <span className="font-bold">Estado:</span>{" "}
-                {user.direccion.estado}
+                {user.estadoEnvio}
               </p>
               <p>
-                <span className="font-bold">País:</span> {user.direccion.pais}
+                <span className="font-bold">País:</span> {user.pais}
               </p>
             </div>
           ) : (
@@ -252,8 +284,8 @@ export default function PerfilCliente() {
             <input
               type="text"
               placeholder="Código Postal"
-              value={direccion.cp}
-              onChange={(e) => setDireccion({ ...direccion, cp: e.target.value })}
+              value={direccion.codigoPostal}
+              onChange={(e) => setDireccion({ ...direccion, codigoPostal: e.target.value })}
               className="px-4 py-2 border rounded-lg"
             />
             <input
@@ -268,9 +300,9 @@ export default function PerfilCliente() {
             <input
               type="text"
               placeholder="Estado"
-              value={direccion.estado}
+              value={direccion.estadoEnvio}
               onChange={(e) =>
-                setDireccion({ ...direccion, estado: e.target.value })
+                setDireccion({ ...direccion, estadoEnvio: e.target.value })
               }
               className="px-4 py-2 border rounded-lg"
             />
