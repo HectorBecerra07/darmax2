@@ -47,6 +47,9 @@ export const CarritoProvider = ({ children }) => {
   const agregarProducto = async (producto, cantidad = 1) => {
     if (!isAuthenticated) return toast.error("Necesitas iniciar sesión para agregar productos.");
     
+    // DEBUG: Imprimir el token que se va a usar
+    console.log("Token que se usará en la petición de Carrito:", token);
+
     const toastId = toast.loading("Agregando al carrito...");
     try {
       const res = await fetch(`${API_URL}/api/carrito`, {

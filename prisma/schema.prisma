@@ -1,6 +1,6 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("PRISMA_DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
 }
 
 generator client {
@@ -17,6 +17,14 @@ model User {
   name            String?
   telefono        String?
   passwordHash    String?  // Nullable para usuarios creados desde el admin o sin cuenta
+
+  // Campos de dirección del usuario
+  calle           String?
+  colonia         String?
+  codigoPostal    String?
+  ciudad          String?
+  estadoEnvio     String?
+  pais            String?
 
   // Relación con Pedidos y Carrito
   pedidos         Pedido[]
@@ -92,7 +100,7 @@ model Pedido {
   // Dirección de envío
   direccion       String
   ciudad          String
-  estadoDireccion String
+  estadoEnvio     String
   codigoPostal    String
 
   // Relación con User (opcional, para pedidos de invitados)
