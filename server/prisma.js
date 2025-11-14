@@ -1,11 +1,15 @@
 const { PrismaClient } = require('@prisma/client');
 
+console.log("👉 NODE_ENV:", process.env.NODE_ENV);
+console.log("👉 PRISMA_DATABASE_URL existe?:", !!process.env.PRISMA_DATABASE_URL);
+
 let prisma;
 
-if (process.env.NODE_ENV === 'production') {
+// En producción (Vercel Serverless)
+if (process.env.NODE_ENV === "production") {
   prisma = new PrismaClient();
 } else {
-  // Previene crear demasiadas conexiones en entornos dev con hot reload
+  // En desarrollo: hot-reload crea muchas conexiones
   if (!global.prisma) {
     global.prisma = new PrismaClient();
   }
