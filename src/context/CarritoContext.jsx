@@ -1,103 +1,122 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
-import { useUser } from "./UserContext"; // Importar el contexto de usuario real
+import { useUser } from "./UserContext";
 
 const CarritoContext = createContext();
-const API_URL = import.meta.env.VITE_API_URL;
 
 export const useCarrito = () => useContext(CarritoContext);
+
+const GUEST_CART_KEY = 'guestCart';
 
 export const CarritoProvider = ({ children }) => {
   const [carrito, setCarrito] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { token, isAuthenticated } = useUser(); // Usar el contexto real
+  const { token, isAuthenticated, user } = useUser();
 
-  const fetchCarrito = useCallback(async () => {
-    if (!isAuthenticated || !token) {
-      setCarrito([]); // Si no está autenticado, el carrito está vacío
-      setIsLoading(false);
-      return;
-    }
-    
+  // Helper para actualizar el estado y localStorage para invitados
+  const updateGuestCart = (newCart) => {
+    setCarrito(newCart);
+    localStorage.setItem(GUEST_CART_KEY, JSON.stringify(newCart));
+  };
+
+  // Cargar el carrito desde el backend
+  const fetchApiCart = useCallback(async () => {
+    if (!token) return;
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/carrito`, {
+      const res = await fetch('/api/carrito', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error("No se pudo cargar el carrito.");
+      if (!res.ok) throw new Error("No se pudo cargar el carrito del servidor.");
       const data = await res.json();
-      const carritoAplanado = data.map(item => ({
+      const serverCart = data.map(item => ({
         ...item.producto,
         cantidad: item.cantidad,
-        id: item.producto.id 
+        id: item.producto.id,
       }));
-      setCarrito(carritoAplanado);
+      setCarrito(serverCart);
     } catch (error) {
       toast.error(error.message);
       setCarrito([]);
     } finally {
       setIsLoading(false);
     }
-  }, [token, isAuthenticated]);
+  }, [token]);
+
+  // Sincronizar carrito de invitado con el backend al iniciar sesión
+  const syncGuestCartToApi = useCallback(async () => {
+    const guestCart = JSON.parse(localStorage.getItem(GUEST_CART_KEY) || '[]');
+    if (guestCart.length === 0) {
+      await fetchApiCart();
+      return;
+    }
+
+    const toastId = toast.loading("Sincronizando tu carrito...");
+    try {
+      // Usamos Promise.all para enviar todos los productos al mismo tiempo
+      await Promise.all(
+        guestCart.map(item =>
+          fetch('/api/carrito', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ productoId: item.id, cantidad: item.cantidad }),
+          })
+        )
+      );
+      localStorage.removeItem(GUEST_CART_KEY);
+      toast.success("Carrito sincronizado", { id: toastId });
+    } catch (error) {
+      toast.error("Error al sincronizar el carrito.", { id: toastId });
+    } finally {
+      // Cargar el carrito final desde el servidor
+      await fetchApiCart();
+    }
+  }, [token, fetchApiCart]);
 
   useEffect(() => {
-    fetchCarrito();
-  }, [fetchCarrito]);
+    if (isAuthenticated && user) {
+      // Si el usuario está autenticado, sincronizar y/o cargar el carrito del API
+      syncGuestCartToApi();
+    } else {
+      // Si es un invitado, cargar desde localStorage
+      const guestCart = JSON.parse(localStorage.getItem(GUEST_CART_KEY) || '[]');
+      setCarrito(guestCart);
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, user, syncGuestCartToApi]);
+
 
   const agregarProducto = async (producto, cantidad = 1) => {
-    if (!isAuthenticated) return toast.error("Necesitas iniciar sesión para agregar productos.");
-    
-    // DEBUG: Imprimir el token que se va a usar
-    console.log("Token que se usará en la petición de Carrito:", token);
-
-    const toastId = toast.loading("Agregando al carrito...");
-    try {
-      const res = await fetch(`${API_URL}/api/carrito`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ productoId: producto.id, cantidad }),
-      });
-      if (!res.ok) throw new Error("Error al agregar el producto.");
-      
-      toast.success("Producto agregado", { id: toastId });
-      await fetchCarrito();
-    } catch (error) {
-      toast.error(error.message, { id: toastId });
-    }
-  };
-
-  const eliminarProducto = async (productoId) => {
-    const toastId = toast.loading("Eliminando producto...");
-    try {
-      const res = await fetch(`${API_URL}/api/carrito/${productoId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Error al eliminar el producto.");
-      
-      toast.success("Producto eliminado", { id: toastId });
-      await fetchCarrito();
-    } catch (error) {
-      toast.error(error.message, { id: toastId });
-    }
-  };
-
-  const vaciarCarrito = async () => {
-    const toastId = toast.loading("Vaciando carrito...");
-    try {
-      const res = await fetch(`${API_URL}/api/carrito`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Error al vaciar el carrito.");
-      
-      toast.success("Carrito vacío", { id: toastId });
-      await fetchCarrito();
-    } catch (error) {
-      toast.error(error.message, { id: toastId });
+    if (isAuthenticated) {
+      const toastId = toast.loading("Agregando al carrito...");
+      try {
+        const res = await fetch('/api/carrito', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ productoId: producto.id, cantidad }),
+        });
+        if (!res.ok) throw new Error("Error al agregar el producto.");
+        toast.success("Producto agregado", { id: toastId });
+        await fetchApiCart();
+      } catch (error) {
+        toast.error(error.message, { id: toastId });
+      }
+    } else {
+      // Lógica para invitado
+      const existingItem = carrito.find(p => p.id === producto.id);
+      let newCart;
+      if (existingItem) {
+        newCart = carrito.map(p =>
+          p.id === producto.id ? { ...p, cantidad: p.cantidad + cantidad } : p
+        );
+      } else {
+        newCart = [...carrito, { ...producto, cantidad }];
+      }
+      updateGuestCart(newCart);
+      toast.success("Producto agregado al carrito");
     }
   };
 
@@ -106,21 +125,65 @@ export const CarritoProvider = ({ children }) => {
       await eliminarProducto(productoId);
       return;
     }
-    
-    try {
-      const res = await fetch(`${API_URL}/api/carrito/${productoId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ cantidad: nuevaCantidad }),
-      });
-      if (!res.ok) throw new Error("Error al actualizar cantidad.");
-      
-      await fetchCarrito();
-    } catch (error) {
-      toast.error(error.message);
+
+    if (isAuthenticated) {
+      try {
+        const res = await fetch(`/api/carrito/${productoId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ cantidad: nuevaCantidad }),
+        });
+        if (!res.ok) throw new Error("Error al actualizar cantidad.");
+        await fetchApiCart();
+      } catch (error) {
+        toast.error(error.message);
+      }
+    } else {
+      const newCart = carrito.map(p =>
+        p.id === productoId ? { ...p, cantidad: nuevaCantidad } : p
+      );
+      updateGuestCart(newCart);
+    }
+  };
+
+  const eliminarProducto = async (productoId) => {
+    if (isAuthenticated) {
+      const toastId = toast.loading("Eliminando producto...");
+      try {
+        const res = await fetch(`/api/carrito/${productoId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Error al eliminar el producto.");
+        toast.success("Producto eliminado", { id: toastId });
+        await fetchApiCart();
+      } catch (error) {
+        toast.error(error.message, { id: toastId });
+      }
+    } else {
+      const newCart = carrito.filter(p => p.id !== productoId);
+      updateGuestCart(newCart);
+      toast.success("Producto eliminado");
+    }
+  };
+
+  const vaciarCarrito = async () => {
+    if (isAuthenticated) {
+      const toastId = toast.loading("Vaciando carrito...");
+      try {
+        const res = await fetch('/api/carrito', {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Error al vaciar el carrito.");
+        toast.success("Carrito vacío", { id: toastId });
+        await fetchApiCart();
+      } catch (error) {
+        toast.error(error.message, { id: toastId });
+      }
+    } else {
+      updateGuestCart([]);
+      toast.success("Carrito vacío");
     }
   };
 
@@ -151,7 +214,7 @@ export const CarritoProvider = ({ children }) => {
         totalProductos,
         incrementarCantidad,
         disminuirCantidad,
-        actualizarCantidad, 
+        actualizarCantidad,
       }}
     >
       {children}
