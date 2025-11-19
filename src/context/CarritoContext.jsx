@@ -99,7 +99,7 @@ export const CarritoProvider = ({ children }) => {
           body: JSON.stringify({ productoId: producto.id, cantidad }),
         });
         if (!res.ok) throw new Error("Error al agregar el producto.");
-        toast.success("Producto agregado", { id: toastId });
+        toast.dismiss(toastId);
         await fetchApiCart();
       } catch (error) {
         toast.error(error.message, { id: toastId });
@@ -116,7 +116,6 @@ export const CarritoProvider = ({ children }) => {
         newCart = [...carrito, { ...producto, cantidad }];
       }
       updateGuestCart(newCart);
-      toast.success("Producto agregado al carrito");
     }
   };
 

@@ -62,6 +62,7 @@ const PageWrapper = ({ children }) => {
 
 import { useUser } from "./context/UserContext";
 import GoodbyeScreen from "./components/GoodbyeScreen";
+import { Toaster } from "react-hot-toast"; // Importar Toaster
 
 function AppContent() {
   const location = useLocation();
@@ -296,6 +297,7 @@ function AppContent() {
           />
         </Routes>
       </AnimatePresence>
+      <Toaster position="bottom-right" /> {/* Toaster para notificaciones */}
     </>
   );
 }
