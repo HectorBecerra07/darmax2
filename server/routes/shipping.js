@@ -21,6 +21,7 @@ router.get("/test", (req, res) => {
 // POST /api/shipping/cotizar
 router.post("/cotizar", async (req, res) => {
   try {
+    console.log("ENTERING /cotizar handler"); // 👈 DIAGNOSTIC LOG
     const { address_from, address_to, parcels } = req.body;
 
     if (!address_from || !address_to || !parcels) {
@@ -37,23 +38,26 @@ router.post("/cotizar", async (req, res) => {
       });
     }
 
-    console.log("📦 Enviando cotización a Skydropx con:", {
-      address_from,
-      address_to,
-      parcels,
-    });
-
-    const response = await fetch("https://api.skydropx.com/v1/quotations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token token=${SKYDROPX_API_KEY}`,
-      },
-      body: JSON.stringify({
+    const requestBody = {
+      quotation: {
         address_from,
         address_to,
         parcels,
-      }),
+      },
+    };
+
+    console.log(
+      "📦 Enviando cotización a Skydropx con:",
+      JSON.stringify(requestBody, null, 2)
+    );
+
+    const response = await fetch("https://pro.skydropx.com/api/v1/quotations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${SKYDROPX_API_KEY}`,
+      },
+      body: JSON.stringify(requestBody),
     });
 
     const text = await response.text();
@@ -65,7 +69,6 @@ router.post("/cotizar", async (req, res) => {
       data = { raw: text };
     }
 
-    // Si Skydropx respondió con error (401, 422, etc), devolvemos eso al front
     if (!response.ok) {
       console.error(
         "❌ Error desde Skydropx:",
@@ -79,56 +82,24 @@ router.post("/cotizar", async (req, res) => {
       });
     }
 
-    // Intentamos extraer quotationId y rates de forma SEGURA (sin romper nada)
-    let quotationId = null;
-    let rates = [];
+    // NUEVA LÓGICA PARA LA API PRO
+    const quotationId = data.id || null;
+    const rates = (data.rates || []).map((r) => ({
+      id: r.id,
+      provider: r.provider_display_name || r.provider_name,
+      service: r.provider_service_name,
+      days: r.days,
+      total: Number(r.total || r.amount || 0),
+      currency: r.currency_code || "MXN",
+    }));
 
-    if (Array.isArray(data?.data) && data.data.length > 0) {
-      // Forma típica: data.data es un array de quotes
-      rates = data.data.map((r) => ({
-        id: r.id,
-        provider:
-          r.attributes?.provider ||
-          r.attributes?.carrier ||
-          "Proveedor desconocido",
-        service:
-          r.attributes?.service_level_name ||
-          r.attributes?.service_level_code ||
-          "Servicio",
-        days:
-          r.attributes?.delivery_time_days ||
-          r.attributes?.days ||
-          r.attributes?.estimated_delivery_days ||
-          null,
-        total: Number(r.attributes?.total_pricing || 0),
-        currency: r.attributes?.currency || "MXN",
-      }));
-
-      // Distintas formas posibles de traer el quotation id
-      quotationId =
-        data?.data?.[0]?.relationships?.quotation?.data?.id ||
-        data?.data?.[0]?.attributes?.quotation_id ||
-        null;
-    } else if (Array.isArray(data?.rates)) {
-      // Otra forma posible: data.rates ya viene armado
-      rates = data.rates.map((r) => ({
-        id: r.id,
-        provider: r.provider,
-        service: r.service,
-        days: r.days,
-        total: Number(r.total),
-        currency: r.currency || "MXN",
-      }));
-      quotationId = data.quotationId || null;
-    }
-
-    console.log("✅ Cotización procesada. quotationId:", quotationId);
+    console.log("✅ Cotización PROCESADA. quotationId:", quotationId);
     console.log("✅ Primer rate:", rates[0]);
 
     return res.json({
       quotationId,
       rates,
-      raw: data, // opcional: si no quieres mandar todo, puedes quitar esta línea
+      raw: data,
     });
   } catch (error) {
     console.error("💥 Error en /api/shipping/cotizar:", error);
