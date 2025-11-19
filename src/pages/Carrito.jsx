@@ -81,6 +81,17 @@ const Carrito = () => {
     setAddressTo((prev) => ({ ...prev, [name]: value }));
   };
 
+  // 👉 Seleccionar paquetería (card)
+  const handleRateClick = (idx) => {
+    setSelectedRateIndex(idx);
+    const rate = shippingRates[idx];
+    setShippingTotal(rate ? rate.total : 0);
+
+    // Reiniciamos Stripe si cambia el envío
+    setClientSecret(null);
+    setPaymentIntentId(null);
+  };
+
   // 👉 Cotizar envío
   const calcularEnvio = async () => {
     try {
@@ -142,16 +153,6 @@ const Carrito = () => {
     } finally {
       setLoadingShipping(false);
     }
-  };
-
-  const handleRateChange = (e) => {
-    const idx = Number(e.target.value);
-    setSelectedRateIndex(idx);
-    const rate = shippingRates[idx];
-    setShippingTotal(rate ? rate.total : 0);
-
-    setClientSecret(null);
-    setPaymentIntentId(null);
   };
 
   // 👉 Crear PaymentIntent (Stripe)
@@ -315,16 +316,39 @@ const Carrito = () => {
 
             {/* RIGHT - Envío + Pago */}
             <div className="flex flex-col gap-4">
-
               {/* ENVÍO */}
               <div className="bg-white rounded-2xl shadow p-6 space-y-4">
                 <h2 className="text-xl font-semibold">Datos de envío</h2>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <input name="postal_code" placeholder="CP" value={addressTo.postal_code} onChange={handleAddressChange} className="border p-2 rounded" />
-                  <input name="estado" placeholder="Estado" value={addressTo.estado} onChange={handleAddressChange} className="border p-2 rounded" />
-                  <input name="ciudad" placeholder="Ciudad" value={addressTo.ciudad} onChange={handleAddressChange} className="border p-2 rounded" />
-                  <input name="colonia" placeholder="Colonia" value={addressTo.colonia} onChange={handleAddressChange} className="border p-2 rounded" />
+                  <input
+                    name="postal_code"
+                    placeholder="CP"
+                    value={addressTo.postal_code}
+                    onChange={handleAddressChange}
+                    className="border p-2 rounded"
+                  />
+                  <input
+                    name="estado"
+                    placeholder="Estado"
+                    value={addressTo.estado}
+                    onChange={handleAddressChange}
+                    className="border p-2 rounded"
+                  />
+                  <input
+                    name="ciudad"
+                    placeholder="Ciudad"
+                    value={addressTo.ciudad}
+                    onChange={handleAddressChange}
+                    className="border p-2 rounded"
+                  />
+                  <input
+                    name="colonia"
+                    placeholder="Colonia"
+                    value={addressTo.colonia}
+                    onChange={handleAddressChange}
+                    className="border p-2 rounded"
+                  />
                 </div>
 
                 <button
@@ -334,19 +358,70 @@ const Carrito = () => {
                   {loadingShipping ? "Calculando..." : "Calcular envío"}
                 </button>
 
+                {errorShipping && (
+                  <p className="text-sm text-red-500">{errorShipping}</p>
+                )}
+
                 {shippingRates.length > 0 && (
-                  <select
-                    className="border p-2 rounded w-full"
-                    value={selectedRateIndex ?? ""}
-                    onChange={handleRateChange}
-                  >
-                    {shippingRates.map((r, i) => (
-                      <option key={r.id} value={i}>
-                        {r.provider} - {r.service} ({r.days} días) — $
-                        {formatCurrency(r.total)}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="space-y-3">
+                    <p className="text-xs text-gray-500">
+                      Elige la paquetería para tu envío:
+                    </p>
+
+                    {shippingRates.map((r, i) => {
+                      const isSelected = selectedRateIndex === i;
+                      return (
+                        <button
+                          key={r.id || i}
+                          type="button"
+                          onClick={() => handleRateClick(i)}
+                          className={`w-full text-left border rounded-xl px-4 py-3 flex items-center justify-between gap-3 transition
+                            ${
+                              isSelected
+                                ? "border-cyan-500 bg-cyan-50 shadow-sm"
+                                : "border-gray-200 bg-white hover:border-cyan-400 hover:bg-gray-50"
+                            }`}
+                        >
+                          {/* Izquierda: info del servicio */}
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-gray-800">
+                                {r.provider || "Paquetería"}
+                              </span>
+                              {isSelected && (
+                                <span className="text-[10px] font-bold uppercase bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded-full">
+                                  Seleccionado
+                                </span>
+                              )}
+                            </div>
+
+                            <p className="text-xs text-gray-500">
+                              {r.service || "Servicio estándar"}
+                            </p>
+
+                            <p className="text-xs text-gray-500">
+                              Entrega estimada:{" "}
+                              <span className="font-medium text-gray-700">
+                                {r.days != null
+                                  ? `${r.days} día${
+                                      r.days === 1 ? "" : "s"
+                                    }`
+                                  : "N/D"}
+                              </span>
+                            </p>
+                          </div>
+
+                          {/* Derecha: precio */}
+                          <div className="text-right">
+                            <p className="text-sm font-bold text-gray-800">
+                              ${formatCurrency(r.total)} MXN
+                            </p>
+                            <p className="text-[11px] text-gray-400">Envío</p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
 
                 <p className="font-bold">
@@ -379,6 +454,9 @@ const Carrito = () => {
                 </div>
               )}
 
+              {errorPI && (
+                <p className="text-sm text-red-500">{errorPI}</p>
+              )}
             </div>
           </div>
         )}
