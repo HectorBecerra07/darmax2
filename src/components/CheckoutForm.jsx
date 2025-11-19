@@ -106,12 +106,7 @@ const CheckoutForm = ({
     }
   };
 
-<<<<<<< HEAD
   const guardarPedidoLocal = (paymentId) => {
-=======
-  // 👉 Guardar pedido local (incluyendo envío)
-  const guardarPedidoLocal = () => {
->>>>>>> c1a948b72118e919fbe9cb68767719934a601298
     let numeroOrden = Number(localStorage.getItem("numeroOrden")) || 1;
 
     const emailDestino = user?.email || formData.correo;
