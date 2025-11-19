@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import toast from "react-hot-toast";
 import WelcomeScreen from "../../components/WelcomeScreen";
+import Swal from "sweetalert2"; // Importar SweetAlert2
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -35,14 +36,20 @@ const Login = () => {
         throw new Error(data.message || "No se pudo iniciar sesión.");
       }
 
-      // El contexto se encargará de guardar el token y el usuario
-      login(data); 
+      login(data);
       
-      toast.dismiss(toastId); // Ocultar el toast de "cargando"
-      setShowWelcome(true); // Mostrar la pantalla de bienvenida
+      toast.dismiss(toastId);
+      setShowWelcome(true);
 
     } catch (error) {
-      toast.error(error.message, { id: toastId });
+      toast.dismiss(toastId); // Ocultar el toast de "cargando" primero
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al iniciar sesión',
+        text: error.message,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Entendido'
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -59,7 +66,6 @@ const Login = () => {
           backgroundImage: "url('/img/fondo-login.jpg')",
         }}
       >
-        {/* ... el resto del formulario no cambia ... */}
         <div className="backdrop-blur-md bg-white/30 border border-white/20 rounded-2xl shadow-2xl p-6 w-full max-w-lg mx-4 sm:mx-auto transition-all duration-300">
           <h2 className="text-xl font-semibold text-center text-black mb-4 drop-shadow">
             Iniciar sesión

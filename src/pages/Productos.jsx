@@ -85,7 +85,16 @@ export default function Productos() {
 
   const handleAgregarCarrito = (producto) => {
     agregarProducto(producto, 1);
-    toast.success(`${producto.nombre} añadido al carrito 🎉`);
+    toast.success(
+      <div className="flex items-center gap-3">
+        <img
+          src={producto.imagen || "https://via.placeholder.com/40"}
+          alt={producto.nombre}
+          className="h-8 w-8 rounded-full object-cover"
+        />
+        <span>{producto.nombre} añadido al carrito</span>
+      </div>
+    );
   };
 
   const handleVerMas = (producto) => {
