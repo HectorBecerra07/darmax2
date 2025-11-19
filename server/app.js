@@ -8,9 +8,8 @@ import cartRoutes from "./routes/carrito.js";
 import userRoutes from "./routes/users.js";
 import paymentRoutes from "./routes/payments.js";
 import orderEmailRoutes from "./routes/orderEmail.js";
-
-// 👇 IMPORTA EL NUEVO ROUTER
 import shippingRoutes from "./routes/shipping.js";
+import postalCodeRoutes from "./routes/postalcode.js";
 
 const app = express();
 app.use(cors());
@@ -23,9 +22,8 @@ app.use("/api/carrito", cartRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/orders", orderEmailRoutes);
-
-// 👇 MONTA EL ROUTER AQUÍ
 app.use("/api/shipping", shippingRoutes);
+app.use("/api/postalcode", postalCodeRoutes);
 
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");

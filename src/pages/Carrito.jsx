@@ -5,6 +5,8 @@ import CheckoutForm from "../components/CheckoutForm";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useUser } from "../context/UserContext";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
+
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
@@ -37,13 +39,41 @@ const Carrito = () => {
     [carrito]
   );
 
-  // 👉 Dirección destino (Skydropx)
-  const [addressTo, setAddressTo] = useState({
-    postal_code: "",
-    estado: "",
-    ciudad: "",
-    colonia: "",
-  });
+    // 👉 Estado unificado para la dirección de envío
+    const [addressTo, setAddressTo] = useState({
+        nombre: "",
+        email: "",
+        calle: "",
+        codigoPostal: "",
+        colonia: "",
+        ciudad: "",
+        estado: "",
+        telefono: "",
+    });
+
+    // Estado para la API de CP
+    const [cpLoading, setCpLoading] = useState(false);
+    const [cpError, setCpError] = useState("");
+    const [coloniasOptions, setColoniasOptions] = useState([]);
+
+
+    // 👉 Efecto para autocompletar la dirección si el usuario está logueado
+    useEffect(() => {
+        if (user) {
+            setAddressTo((prev) => ({
+                ...prev,
+                nombre: user.name || "",
+                email: user.email || "",
+                calle: user.direccion?.calle || "",
+                codigoPostal: user.direccion?.codigo_postal || "",
+                colonia: user.direccion?.colonia || "",
+                ciudad: user.direccion?.ciudad || "",
+                estado: user.direccion?.estado || "",
+                telefono: user.direccion?.telefono || "",
+            }));
+        }
+    }, [user]);
+
 
   const [shippingRates, setShippingRates] = useState([]);
   const [quotationId, setQuotationId] = useState(null);
@@ -75,10 +105,51 @@ const Carrito = () => {
   const [loadingPI, setLoadingPI] = useState(false);
   const [errorPI, setErrorPI] = useState(null);
 
+  // 👉 Lógica para buscar por Código Postal
+  const buscarPorCP = async (cp) => {
+    setCpError("");
+    setColoniasOptions([]);
+    if (cp.length !== 5) return;
+
+    setCpLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/postalcode/${cp}`);
+      const data = await res.json();
+
+      if (!res.ok || data.error || !data.data.postcodes || data.data.postcodes.length === 0) {
+        throw new Error(data.error || "No se encontraron datos para este código postal.");
+      }
+
+      const { postcodes } = data.data;
+      const colonias = [...new Set(postcodes.map(p => p.d_asenta))]; // Evita colonias duplicadas
+      setColoniasOptions(colonias);
+
+      setAddressTo(prev => ({
+        ...prev,
+        estado: postcodes[0].d_estado,
+        ciudad: postcodes[0].d_mnpio,
+        colonia: colonias[0] || "",
+      }));
+
+    } catch (err) {
+      setCpError(err.message);
+    } finally {
+      setCpLoading(false);
+    }
+  };
+
+
   // 👉 Inputs de dirección
   const handleAddressChange = (e) => {
     const { name, value } = e.target;
     setAddressTo((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "codigoPostal" && value.length === 5) {
+        buscarPorCP(value);
+    } else if (name === "codigoPostal") {
+        setColoniasOptions([]);
+        setCpError("");
+    }
   };
 
   // 👉 Seleccionar paquetería (card)
@@ -106,9 +177,10 @@ const Carrito = () => {
         area_level3: "Centro",
       };
 
+      // Usa el nuevo estado unificado de dirección
       const address_to = {
         country_code: "MX",
-        postal_code: addressTo.postal_code,
+        postal_code: addressTo.codigoPostal,
         area_level1: addressTo.estado,
         area_level2: addressTo.ciudad,
         area_level3: addressTo.colonia,
@@ -181,7 +253,7 @@ const Carrito = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               amount: amountInCents,
-              email: user?.email || null,
+              email: user?.email || addressTo.email, // Usa el email del formulario para invitados
               quotationId,
               rateId: selectedRate.id,
               shippingTotal,
@@ -209,255 +281,181 @@ const Carrito = () => {
     selectedRate,
     shippingTotal,
     user?.email,
+    addressTo.email, // Dependencia añadida
   ]);
 
+  const pasoActual = useMemo(() => {
+    if (carrito.length === 0) return 0;
+    if (clientSecret && paymentIntentId) return 3;
+    if (quotationId) return 2;
+    return 1;
+  }, [carrito.length, clientSecret, paymentIntentId, quotationId]);
+
+
   return (
-    <section className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-28 pb-10 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <section className="min-h-screen bg-gray-50 pt-28 pb-10 px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto">
         {/* HEADER */}
-        <header className="flex flex-col sm:flex-row justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase text-gray-400">
-              Carrito de compra
-            </p>
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
-              Tu Carrito
-            </h1>
-
-            {carrito.length > 0 && (
-              <p className="text-sm text-gray-500">
-                Revisa productos, calcula el envío y paga.
-              </p>
-            )}
-          </div>
-
-          <div className="text-right">
-            <p className="text-xs text-gray-400">Productos</p>
-            <p className="text-2xl font-extrabold text-cyan-600">
-              ${formatCurrency(totalProductos)} MXN
-            </p>
-            <p className="text-xs text-gray-500">
-              Total con envío:{" "}
-              <span className="font-semibold">
-                ${formatCurrency(totalConEnvio)} MXN
-              </span>
-            </p>
-
-            {carrito.length > 0 && (
-              <button
-                onClick={vaciarCarrito}
-                className="mt-2 text-xs px-4 py-2 rounded-full border border-red-300 text-red-500 hover:bg-red-50 transition"
-              >
-                Vaciar carrito
-              </button>
-            )}
-          </div>
+        <header className="text-center mb-8">
+          <h1 className="text-4xl font-extrabold text-gray-800 tracking-tight">
+            Carrito de Compra
+          </h1>
+          <p className="mt-2 text-lg text-gray-500">
+            Sigue los pasos para completar tu pedido de forma segura.
+          </p>
         </header>
 
         {/* Carrito vacío */}
         {carrito.length === 0 ? (
-          <div className="max-w-3xl mx-auto bg-white border rounded-2xl p-8 text-center shadow">
+          <div className="max-w-2xl mx-auto bg-white border rounded-2xl p-8 text-center shadow-sm">
             <h2 className="text-xl font-semibold text-gray-700">
               Tu carrito está vacío
             </h2>
             <p className="text-sm text-gray-500">
-              Agrega productos desde el catálogo.
+              Agrega productos desde el catálogo para continuar.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* LEFT - Productos */}
-            <div className="bg-white rounded-2xl shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Productos en tu carrito
-              </h2>
+          <div className="flex flex-col gap-8">
 
-              <div className="divide-y max-h-[340px] overflow-y-auto">
+            {/* --- PASO 1: RESUMEN DEL PEDIDO --- */}
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <span className={`flex items-center justify-center w-10 h-10 rounded-full text-lg font-bold ${pasoActual >= 1 ? 'bg-cyan-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
+                  {pasoActual > 1 ? <CheckCircleIcon className="w-6 h-6"/> : '1'}
+                </span>
+                <h2 className="text-2xl font-bold text-gray-800">Resumen de tu pedido</h2>
+              </div>
+
+              <div className="divide-y divide-gray-100 max-h-[340px] overflow-y-auto pr-2">
                 {carrito.map((p) => (
-                  <div key={p.id} className="py-4 flex justify-between">
-                    <div>
-                      <p className="font-medium">{p.nombre}</p>
-                      <p className="text-sm text-gray-500">
-                        ${formatCurrency(p.precio)} MXN × {p.cantidad}
-                      </p>
+                  <div key={p.id} className="py-4 flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                       <img src={p.imagen || 'https://via.placeholder.com/80'} alt={p.nombre} className="w-16 h-16 rounded-md object-cover"/>
+                        <div>
+                            <p className="font-semibold text-gray-800">{p.nombre}</p>
+                            <p className="text-sm text-gray-500">
+                                ${formatCurrency(p.precio)} MXN × {p.cantidad}
+                            </p>
+                        </div>
                     </div>
-
                     <div className="text-right">
-                      <p className="font-bold">
+                      <p className="font-bold text-lg text-gray-800">
                         ${formatCurrency(p.precio * p.cantidad)}
                       </p>
-
                       <div className="flex gap-2 justify-end mt-2">
-                        <button
-                          onClick={() => disminuirCantidad(p.id)}
-                          className="px-3 py-1 border rounded"
-                        >
-                          -
-                        </button>
-                        <button
-                          onClick={() => incrementarCantidad(p.id)}
-                          className="px-3 py-1 border rounded"
-                        >
-                          +
-                        </button>
+                          <button onClick={() => disminuirCantidad(p.id)} className="px-3 py-1 border rounded-md text-gray-600 hover:bg-gray-100">-</button>
+                          <button onClick={() => incrementarCantidad(p.id)} className="px-3 py-1 border rounded-md text-gray-600 hover:bg-gray-100">+</button>
                       </div>
-
-                      <button
-                        onClick={() => eliminarProducto(p.id)}
-                        className="text-xs text-red-500 mt-1"
-                      >
-                        Eliminar
+                      <button onClick={() => eliminarProducto(p.id)} className="text-xs text-red-500 hover:underline mt-1">
+                          Eliminar
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
+               <div className="pt-4 mt-4 border-t-2 border-dashed">
+                    <div className="flex justify-between items-center">
+                        <p className="text-lg font-medium text-gray-600">Subtotal:</p>
+                        <p className="text-2xl font-bold text-cyan-600">${formatCurrency(totalProductos)} MXN</p>
+                    </div>
+                     <button onClick={vaciarCarrito} className="mt-4 text-xs px-4 py-2 rounded-full border border-red-300 text-red-500 hover:bg-red-50 transition">
+                        Vaciar carrito
+                     </button>
+               </div>
             </div>
 
-            {/* RIGHT - Envío + Pago */}
-            <div className="flex flex-col gap-4">
-              {/* ENVÍO */}
-              <div className="bg-white rounded-2xl shadow p-6 space-y-4">
-                <h2 className="text-xl font-semibold">Datos de envío</h2>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    name="postal_code"
-                    placeholder="CP"
-                    value={addressTo.postal_code}
-                    onChange={handleAddressChange}
-                    className="border p-2 rounded"
-                  />
-                  <input
-                    name="estado"
-                    placeholder="Estado"
-                    value={addressTo.estado}
-                    onChange={handleAddressChange}
-                    className="border p-2 rounded"
-                  />
-                  <input
-                    name="ciudad"
-                    placeholder="Ciudad"
-                    value={addressTo.ciudad}
-                    onChange={handleAddressChange}
-                    className="border p-2 rounded"
-                  />
-                  <input
-                    name="colonia"
-                    placeholder="Colonia"
-                    value={addressTo.colonia}
-                    onChange={handleAddressChange}
-                    className="border p-2 rounded"
-                  />
+            {/* --- PASO 2: DIRECCIÓN Y ENVÍO --- */}
+            <div className={`bg-white border border-gray-200 rounded-2xl shadow-sm p-6 transition-opacity duration-500 ${pasoActual >= 1 ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
+                <div className="flex items-center gap-4 mb-6">
+                    <span className={`flex items-center justify-center w-10 h-10 rounded-full text-lg font-bold ${pasoActual >= 2 ? 'bg-cyan-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
+                        {pasoActual > 2 ? <CheckCircleIcon className="w-6 h-6"/> : '2'}
+                    </span>
+                    <h2 className="text-2xl font-bold text-gray-800">Tus Datos</h2>
                 </div>
 
-                <button
-                  onClick={calcularEnvio}
-                  className="bg-cyan-600 text-white px-4 py-2 rounded-full"
-                >
-                  {loadingShipping ? "Calculando..." : "Calcular envío"}
-                </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                     <input name="nombre" placeholder="Nombre de quien recibe" value={addressTo.nombre} onChange={handleAddressChange} className="border p-2 rounded-md w-full"/>
+                     <input type="email" name="email" placeholder="Correo electrónico" value={addressTo.email} onChange={handleAddressChange} className="border p-2 rounded-md w-full disabled:bg-gray-100" disabled={!!user} />
+                     <input name="calle" placeholder="Calle y Número" value={addressTo.calle} onChange={handleAddressChange} className="border p-2 rounded-md w-full md:col-span-2"/>
+                     <div>
+                        <input name="codigoPostal" placeholder="Código Postal" value={addressTo.codigoPostal} onChange={handleAddressChange} className="border p-2 rounded-md w-full"/>
+                        {cpLoading && <p className="text-xs text-gray-500 mt-1">Buscando...</p>}
+                        {cpError && <p className="text-xs text-red-500 mt-1">{cpError}</p>}
+                     </div>
+                     {coloniasOptions.length > 1 ? (
+                        <select name="colonia" value={addressTo.colonia} onChange={handleAddressChange} className="border p-2 rounded-md w-full bg-white">
+                            {coloniasOptions.map(col => <option key={col} value={col}>{col}</option>)}
+                        </select>
+                     ) : (
+                        <input name="colonia" placeholder="Colonia" value={addressTo.colonia} onChange={handleAddressChange} className="border p-2 rounded-md w-full"/>
+                     )}
+                     <input name="ciudad" placeholder="Ciudad / Municipio" value={addressTo.ciudad} onChange={handleAddressChange} className="border p-2 rounded-md"/>
+                     <input name="estado" placeholder="Estado" value={addressTo.estado} onChange={handleAddressChange} className="border p-2 rounded-md"/>
+                     <input name="telefono" placeholder="Teléfono de contacto" value={addressTo.telefono} onChange={handleAddressChange} className="border p-2 rounded-md w-full md:col-span-2"/>
+                </div>
 
-                {errorShipping && (
-                  <p className="text-sm text-red-500">{errorShipping}</p>
-                )}
+                <button onClick={calcularEnvio} disabled={loadingShipping} className="bg-cyan-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-cyan-700 disabled:bg-cyan-400">
+                  {loadingShipping ? "Calculando..." : "Calcular Tipos de Envío"}
+                </button>
+                {errorShipping && <p className="text-sm text-red-500 mt-2">{errorShipping}</p>}
 
                 {shippingRates.length > 0 && (
-                  <div className="space-y-3">
-                    <p className="text-xs text-gray-500">
-                      Elige la paquetería para tu envío:
-                    </p>
-
+                  <div className="mt-6 space-y-3">
+                    <h3 className="text-lg font-semibold text-gray-700">Elige la paquetería:</h3>
                     {shippingRates.map((r, i) => {
                       const isSelected = selectedRateIndex === i;
                       return (
-                        <button
-                          key={r.id || i}
-                          type="button"
-                          onClick={() => handleRateClick(i)}
-                          className={`w-full text-left border rounded-xl px-4 py-3 flex items-center justify-between gap-3 transition
-                            ${
-                              isSelected
-                                ? "border-cyan-500 bg-cyan-50 shadow-sm"
-                                : "border-gray-200 bg-white hover:border-cyan-400 hover:bg-gray-50"
-                            }`}
-                        >
-                          {/* Izquierda: info del servicio */}
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-gray-800">
-                                {r.provider || "Paquetería"}
-                              </span>
-                              {isSelected && (
-                                <span className="text-[10px] font-bold uppercase bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded-full">
-                                  Seleccionado
-                                </span>
-                              )}
-                            </div>
-
-                            <p className="text-xs text-gray-500">
-                              {r.service || "Servicio estándar"}
-                            </p>
-
-                            <p className="text-xs text-gray-500">
-                              Entrega estimada:{" "}
-                              <span className="font-medium text-gray-700">
-                                {r.days != null
-                                  ? `${r.days} día${
-                                      r.days === 1 ? "" : "s"
-                                    }`
-                                  : "N/D"}
-                              </span>
-                            </p>
+                        <button key={r.id || i} type="button" onClick={() => handleRateClick(i)}
+                          className={`w-full text-left border rounded-xl p-4 flex items-center justify-between gap-3 transition ${ isSelected ? "border-cyan-500 bg-cyan-50 ring-2 ring-cyan-300" : "border-gray-200 bg-white hover:border-cyan-400"}`}>
+                          <div className="flex-1">
+                              <p className="font-semibold text-gray-800">{r.provider || "Paquetería"}</p>
+                              <p className="text-sm text-gray-500">{r.service || "Servicio estándar"}</p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                  Entrega estimada: <span className="font-medium">{r.days != null ? `${r.days} día(s)`: "N/D"}</span>
+                              </p>
                           </div>
-
-                          {/* Derecha: precio */}
                           <div className="text-right">
-                            <p className="text-sm font-bold text-gray-800">
-                              ${formatCurrency(r.total)} MXN
-                            </p>
-                            <p className="text-[11px] text-gray-400">Envío</p>
+                            <p className="text-lg font-bold text-gray-800">${formatCurrency(r.total)}</p>
+                            <p className="text-xs text-gray-500">MXN</p>
                           </div>
                         </button>
                       );
                     })}
                   </div>
                 )}
-
-                <p className="font-bold">
-                  Envío: ${formatCurrency(shippingTotal)} MXN
-                </p>
-              </div>
-
-              {/* STRIPE PAYMENT */}
-              {clientSecret && paymentIntentId ? (
-                <Elements
-                  stripe={stripePromise}
-                  options={{
-                    clientSecret,
-                    appearance: { theme: "stripe" },
-                  }}
-                >
-                  <CheckoutForm
-                    amount={amountInCents}
-                    cartItems={carrito}
-                    paymentIntentId={paymentIntentId}
-                    quotationId={quotationId}
-                    rateId={selectedRate?.id}
-                    shippingTotal={shippingTotal}
-                    totalConEnvio={totalConEnvio}
-                  />
-                </Elements>
-              ) : (
-                <div className="bg-yellow-100 p-4 rounded-xl text-sm">
-                  Calcula tu envío para continuar con el pago.
-                </div>
-              )}
-
-              {errorPI && (
-                <p className="text-sm text-red-500">{errorPI}</p>
-              )}
             </div>
+
+            {/* --- PASO 3: PAGO --- */}
+            <div className={`bg-white border border-gray-200 rounded-2xl shadow-sm p-6 transition-opacity duration-500 ${pasoActual >= 2 ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
+                 <div className="flex items-center gap-4 mb-6">
+                    <span className={`flex items-center justify-center w-10 h-10 rounded-full text-lg font-bold ${pasoActual >= 3 ? 'bg-cyan-600 text-white' : 'bg-gray-200 text-gray-500'}`}>3</span>
+                    <h2 className="text-2xl font-bold text-gray-800">Método de Pago</h2>
+                </div>
+
+                {loadingPI && <p>Cargando formulario de pago...</p>}
+                {errorPI && <p className="text-sm text-red-500">{errorPI}</p>}
+
+                {clientSecret && paymentIntentId ? (
+                  <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe" } }}>
+                    <CheckoutForm
+                      shippingAddress={addressTo} // Pasando la dirección unificada
+                      amount={amountInCents}
+                      cartItems={carrito}
+                      paymentIntentId={paymentIntentId}
+                      quotationId={quotationId}
+                      rateId={selectedRate?.id}
+                      shippingTotal={shippingTotal}
+                      totalConEnvio={totalConEnvio}
+                    />
+                  </Elements>
+                ) : (
+                  <div className="bg-gray-100 p-4 rounded-lg text-sm text-gray-600">
+                    <p>Por favor, calcula tu envío para poder continuar con el pago.</p>
+                  </div>
+                )}
+            </div>
+
           </div>
         )}
       </div>
