@@ -1,8 +1,7 @@
+// src/App.jsx
 import { HelmetProvider } from "react-helmet-async";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import { useEffect } from "react";
 
 // Layout general con Navbar y Footer
@@ -32,6 +31,8 @@ import Videos from "./pages/Videos";
 import VideoDetalle from "./pages/VideoDetalle";
 import NotFound from "./pages/NotFound";
 import PurificadoresCaseros from "./components/PurificadoresCaseros";
+import Checkout from "./pages/StripeCheckoutPage";
+import GraciasCompra from "./pages/GraciasCompra"; // 👈 NUEVA PÁGINA
 
 // Admin
 import LoginAdmin from "./administrador/LoginAdmin";
@@ -42,12 +43,10 @@ import ReportesAdmin from "./administrador/pages/ReportesAdmin";
 import ClientesAdmin from "./administrador/pages/ClientesAdmin";
 import CategoriasAdmin from "./administrador/pages/CategoriasAdmin";
 
-const stripePromise = loadStripe("TU_CLAVE_PUBLICA_DE_STRIPE");
-
 const PageWrapper = ({ children }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
-}, []);
+  }, []);
 
   return (
     <motion.div
@@ -92,35 +91,205 @@ function AppContent() {
             element={
               <Layout>
                 <Routes>
-                  <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
-                  <Route path="/nosotros" element={<PageWrapper><Nosotros /></PageWrapper>} />
-                  <Route path="/productos" element={<PageWrapper><Productos /></PageWrapper>} />
-                  <Route path="/productos/:id" element={<PageWrapper><ProductPage /></PageWrapper>} />
-                  <Route path="/inicia-tu-negocio" element={<PageWrapper><IniciaNegocio /></PageWrapper>} />
-                  <Route path="/vending-info" element={<PageWrapper><VendingInfo /></PageWrapper>} />
-                  <Route path="/purificadora-info" element={<PageWrapper><PurificadoraInfo /></PageWrapper>} />
-                  <Route path="/vending-limpieza-info" element={<PageWrapper><VendingLimpiezaInfo /></PageWrapper>} />
-                  <Route path="/promociones" element={<PageWrapper><Promociones /></PageWrapper>} />
-                  <Route path="/proyectos-empresariales" element={<PageWrapper><ProyectosEmpresariales /></PageWrapper>} />
-                  <Route path="/perfil" element={<PageWrapper><PerfilCliente /></PageWrapper>} />
-                  <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
-                  <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
-                  <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
-                  <Route path="/reset-password" element={<PageWrapper><ResetPassword /></PageWrapper>} />
-                  <Route path="/videos" element={<PageWrapper><Videos /></PageWrapper>} />
-                  <Route path="/videos/:id" element={<PageWrapper><VideoDetalle /></PageWrapper>} />
-                  <Route path="/configurar/:id" element={<PageWrapper><Configurar /></PageWrapper>} />
-                  <Route path="/configurar-maquina/:id" element={<PageWrapper><WizardGeneral /></PageWrapper>} />
+                  <Route
+                    path="/"
+                    element={
+                      <PageWrapper>
+                        <LandingPage />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/nosotros"
+                    element={
+                      <PageWrapper>
+                        <Nosotros />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/productos"
+                    element={
+                      <PageWrapper>
+                        <Productos />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/productos/:id"
+                    element={
+                      <PageWrapper>
+                        <ProductPage />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/inicia-tu-negocio"
+                    element={
+                      <PageWrapper>
+                        <IniciaNegocio />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/vending-info"
+                    element={
+                      <PageWrapper>
+                        <VendingInfo />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/purificadora-info"
+                    element={
+                      <PageWrapper>
+                        <PurificadoraInfo />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/vending-limpieza-info"
+                    element={
+                      <PageWrapper>
+                        <VendingLimpiezaInfo />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/promociones"
+                    element={
+                      <PageWrapper>
+                        <Promociones />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/proyectos-empresariales"
+                    element={
+                      <PageWrapper>
+                        <ProyectosEmpresariales />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/perfil"
+                    element={
+                      <PageWrapper>
+                        <PerfilCliente />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/login"
+                    element={
+                      <PageWrapper>
+                        <Login />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/register"
+                    element={
+                      <PageWrapper>
+                        <Register />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/forgot-password"
+                    element={
+                      <PageWrapper>
+                        <ForgotPassword />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/reset-password"
+                    element={
+                      <PageWrapper>
+                        <ResetPassword />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/videos"
+                    element={
+                      <PageWrapper>
+                        <Videos />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/videos/:id"
+                    element={
+                      <PageWrapper>
+                        <VideoDetalle />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/configurar/:id"
+                    element={
+                      <PageWrapper>
+                        <Configurar />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/configurar-maquina/:id"
+                    element={
+                      <PageWrapper>
+                        <WizardGeneral />
+                      </PageWrapper>
+                    }
+                  />
+
+                  {/* Checkout independiente (si lo sigues usando) */}
+                  <Route
+                    path="/checkout"
+                    element={
+                      <PageWrapper>
+                        <Checkout />
+                      </PageWrapper>
+                    }
+                  />
+
+                  {/* Carrito: Stripe se maneja dentro de Carrito.jsx */}
                   <Route
                     path="/carrito"
                     element={
-                      <Elements stripe={stripePromise}>
-                        <PageWrapper><Carrito /></PageWrapper>
-                      </Elements>
+                      <PageWrapper>
+                        <Carrito />
+                      </PageWrapper>
                     }
                   />
-                  <Route path="/purificadores-caseros" element={<PageWrapper><PurificadoresCaseros /></PageWrapper>} />
-                  <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
+
+                  {/* ✅ Página de gracias/confirmación de compra */}
+                  <Route
+                    path="/gracias-compra"
+                    element={
+                      <PageWrapper>
+                        <GraciasCompra />
+                      </PageWrapper>
+                    }
+                  />
+
+                  <Route
+                    path="/purificadores-caseros"
+                    element={
+                      <PageWrapper>
+                        <PurificadoresCaseros />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="*"
+                    element={
+                      <PageWrapper>
+                        <NotFound />
+                      </PageWrapper>
+                    }
+                  />
                 </Routes>
               </Layout>
             }
