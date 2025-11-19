@@ -15,7 +15,15 @@ const currencyFixed = (cents) =>
     maximumFractionDigits: 2,
   }).format(Number(cents || 0) / 100);
 
-const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
+const CheckoutForm = ({
+  amount,            // total con envío en CENTAVOS (viene de Carrito)
+  cartItems = [],
+  paymentIntentId,
+  quotationId,
+  rateId,
+  shippingTotal,     // envío en PESOS (número)
+  totalConEnvio,     // total en PESOS (productos + envío)
+}) => {
   const { vaciarCarrito } = useCarrito();
   const { user } = useUser();
   const navigate = useNavigate();
@@ -45,7 +53,7 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
     setFormData((s) => ({ ...s, [name]: value }));
   };
 
-  // 🔎 Buscar colonia/ciudad/estado por CP usando Copomex (formato correcto)
+  // 🔎 Buscar colonia/ciudad/estado por CP usando Copomex (igual que antes)
   const buscarPorCP = async (cp) => {
     setCpError("");
     setColoniasOptions([]);
@@ -55,7 +63,6 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
       return;
     }
 
-    // Solo buscamos cuando tiene 5 dígitos
     if (cp.length !== 5) return;
 
     try {
@@ -65,9 +72,6 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
       const res = await fetch(url);
       const data = await res.json();
 
-      console.log("Respuesta COPOMEX:", data);
-
-      // Si hay error desde la API
       if (!res.ok || data.error || !data.response) {
         setCpError(
           data.error || "No encontramos datos para ese código postal."
@@ -75,9 +79,8 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
         return;
       }
 
-      const info = data.response; // 👈 es un objeto, no un array
+      const info = data.response;
 
-      // Colonias: pueden venir como array o string
       let colonias = [];
       if (Array.isArray(info.asentamiento)) {
         colonias = info.asentamiento;
@@ -103,7 +106,12 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
     }
   };
 
+<<<<<<< HEAD
   const guardarPedidoLocal = (paymentId) => {
+=======
+  // 👉 Guardar pedido local (incluyendo envío)
+  const guardarPedidoLocal = () => {
+>>>>>>> c1a948b72118e919fbe9cb68767719934a601298
     let numeroOrden = Number(localStorage.getItem("numeroOrden")) || 1;
 
     const emailDestino = user?.email || formData.correo;
@@ -121,9 +129,12 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
       estadoDireccion: formData.estadoDireccion,
       codigoPostal: formData.codigoPostal,
       productos: cartItems.map((p) => p.nombre),
-      total: currencyFixed(amount),
+      envio: shippingTotal,                        // en pesos
+      total: totalConEnvio,                        // en pesos (productos + envío)
       estadoPedido: "Pendiente",
       creadoEn: new Date().toISOString(),
+      quotationId: quotationId || null,
+      rateId: rateId || null,
     };
 
     const pedidosAdmin = JSON.parse(localStorage.getItem("pedidos")) || [];
@@ -140,8 +151,6 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
     );
 
     localStorage.setItem("numeroOrden", String(numeroOrden + 1));
-
-    // Guardamos también el último pedido para poder mostrarlo en /gracias-compra si recarga
     localStorage.setItem("ultimoPedido", JSON.stringify(nuevoPedido));
 
     return nuevoPedido;
@@ -157,7 +166,7 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
 
     setLoading(true);
 
-    // 1) Actualizar PaymentIntent con email (logueado o invitado)
+    // 1) Actualizar PaymentIntent con email y metadatos si hace falta
     try {
       const emailToUse = user?.email || formData.correo;
 
@@ -193,7 +202,7 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
       const nuevoPedido = guardarPedidoLocal(paymentIntent.id);
       const emailDestino = user?.email || formData.correo;
 
-      // 4) Enviar correo de pedido (Nodemailer + Gmail)
+      // 4) Enviar correo de pedido
       try {
         if (emailDestino) {
           await fetch(`${API_URL}/api/orders/send-email`, {
@@ -209,7 +218,7 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
         console.error("Error enviando correo de pedido:", err);
       }
 
-      // 5) Limpiar carrito y redirigir a página de confirmación
+      // 5) Limpiar carrito y redirigir
       vaciarCarrito();
       navigate("/gracias-compra", { state: { order: nuevoPedido } });
     } else {
@@ -218,6 +227,10 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
 
     setLoading(false);
   };
+
+  // 👉 Cálculos para mostrar resumen
+  const envioEnCentavos = Math.round((shippingTotal || 0) * 100);
+  const subtotalCents = amount - envioEnCentavos;
 
   return (
     <form
@@ -248,14 +261,14 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
         <div className="mt-2 sm:mt-0 text-right">
           <p className="text-xs text-gray-400">Total a pagar</p>
           <p className="text-2xl font-extrabold text-lime-500">
-            ${currencyFixed(amount)} MXN
+            ${totalConEnvio.toFixed(2)} MXN
           </p>
         </div>
       </div>
 
-      {/* Contenido principal: responsive */}
+      {/* Contenido principal */}
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-6 lg:gap-8">
-        {/* Columna izquierda: Datos de envío */}
+        {/* Datos de envío */}
         <div className="space-y-5">
           <div className="flex items-center gap-2">
             <span className="w-8 h-8 rounded-full bg-lime-100 text-lime-600 flex items-center justify-center text-sm font-bold">
@@ -429,7 +442,7 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
           </div>
         </div>
 
-        {/* Columna derecha: Resumen + pago */}
+        {/* Resumen + pago */}
         <div className="space-y-5 lg:space-y-6">
           {/* Resumen de compra */}
           <div className="border border-gray-100 rounded-2xl shadow-sm bg-gradient-to-b from-gray-50/70 to-white p-4 sm:p-5">
@@ -472,16 +485,16 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
             <div className="mt-4 pt-3 border-t border-gray-200 space-y-1">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Subtotal</span>
-                <span>${currencyFixed(amount)} MXN</span>
+                <span>${currencyFixed(subtotalCents)} MXN</span>
               </div>
               <div className="flex justify-between text-sm text-gray-600">
                 <span>Envío</span>
-                <span>Incluido</span>
+                <span>${shippingTotal.toFixed(2)} MXN</span>
               </div>
               <div className="flex justify-between items-center text-base sm:text-lg font-bold text-gray-800 mt-1">
                 <span>Total a pagar</span>
                 <span className="text-lime-500">
-                  ${currencyFixed(amount)} MXN
+                  ${totalConEnvio.toFixed(2)} MXN
                 </span>
               </div>
             </div>

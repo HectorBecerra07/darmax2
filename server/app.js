@@ -1,7 +1,3 @@
-// server/app.js
-import dotenv from "dotenv";
-dotenv.config({ path: "./server/.env" }); // asegura que lee el correcto
-
 import express from "express";
 import cors from "cors";
 
@@ -13,6 +9,9 @@ import userRoutes from "./routes/users.js";
 import paymentRoutes from "./routes/payments.js";
 import orderEmailRoutes from "./routes/orderEmail.js";
 
+// 👇 IMPORTA EL NUEVO ROUTER
+import shippingRoutes from "./routes/shipping.js";
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -23,7 +22,10 @@ app.use("/api/categorias", categoryRoutes);
 app.use("/api/carrito", cartRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
-app.use("/api/orders", orderEmailRoutes); // 👈 aquí se monta la ruta de correos
+app.use("/api/orders", orderEmailRoutes);
+
+// 👇 MONTA EL ROUTER AQUÍ
+app.use("/api/shipping", shippingRoutes);
 
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");
