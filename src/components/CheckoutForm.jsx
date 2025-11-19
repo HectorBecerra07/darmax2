@@ -103,7 +103,7 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
     }
   };
 
-  const guardarPedidoLocal = () => {
+  const guardarPedidoLocal = (paymentId) => {
     let numeroOrden = Number(localStorage.getItem("numeroOrden")) || 1;
 
     const emailDestino = user?.email || formData.correo;
@@ -111,6 +111,7 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
     const nuevoPedido = {
       id: Date.now(),
       orden: numeroOrden,
+      paymentId: paymentId, // 👈 AÑADIDO
       cliente: formData.nombre || user?.name || "",
       correo: emailDestino,
       telefono: formData.telefono,
@@ -188,8 +189,8 @@ const CheckoutForm = ({ amount, cartItems = [], paymentIntentId }) => {
     }
 
     if (paymentIntent && paymentIntent.status === "succeeded") {
-      // 3) Guardar pedido local
-      const nuevoPedido = guardarPedidoLocal();
+      // 3) Guardar pedido local, pasando el ID de pago
+      const nuevoPedido = guardarPedidoLocal(paymentIntent.id);
       const emailDestino = user?.email || formData.correo;
 
       // 4) Enviar correo de pedido (Nodemailer + Gmail)

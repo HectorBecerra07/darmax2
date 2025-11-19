@@ -1,6 +1,7 @@
 // server/routes/orderEmail.js
 import express from "express";
 import { sendOrderEmail } from "../utils/mailer.js";
+import { getOrderEmailTemplate } from "../utils/templates/orderEmailTemplate.js"; // Importar el template
 
 const router = express.Router();
 
@@ -17,53 +18,32 @@ router.post("/send-email", async (req, res) => {
     const {
       orden,
       cliente,
-      correo,
-      telefono,
-      direccion,
-      colonia,
-      ciudad,
-      estadoDireccion,
-      codigoPostal,
-      productos,
       total,
+      productos,
+      paymentId, // 👈 Extraer paymentId
     } = order;
 
     const adminEmail = process.env.GMAIL_USER;
 
-    const htmlCliente = `
-      <h2>Gracias por tu compra, ${cliente || ""}!</h2>
-      <p>Tu número de orden es <strong>#${orden}</strong>.</p>
-      <p><strong>Total:</strong> $${total} MXN</p>
-      <p><strong>Productos:</strong></p>
-      <ul>
-        ${(productos || []).map((p) => `<li>${p}</li>`).join("")}
-      </ul>
-      <p><strong>Envío a:</strong><br/>
-        ${direccion || ""}<br/>
-        ${colonia || ""}<br/>
-        ${ciudad || ""}, ${estadoDireccion || ""}<br/>
-        CP: ${codigoPostal || ""}
-      </p>
-      <p>Teléfono de contacto: ${telefono || "N/A"}</p>
-    `;
+    // Datos para la plantilla
+    const templateData = {
+      name: cliente,
+      orderId: orden,
+      paymentId: paymentId, // 👈 Añadir a templateData
+      date: new Date().toLocaleDateString('es-MX'),
+      total: `$${total} MXN`,
+      product: (productos || []).join(", "),
+      url: `https://darmax.mx/pedidos/${orden}`, // URL de ejemplo
+    };
 
-    const htmlAdmin = `
-      <h2>Nuevo pedido recibido</h2>
-      <p><strong>Orden:</strong> #${orden}</p>
-      <p><strong>Cliente:</strong> ${cliente || ""}</p>
-      <p><strong>Email cliente:</strong> ${correo}</p>
-      <p><strong>Total:</strong> $${total} MXN</p>
-      <p><strong>Productos:</strong></p>
-      <ul>
-        ${(productos || []).map((p) => `<li>${p}</li>`).join("")}
-      </ul>
-      <p><strong>Dirección de envío:</strong><br/>
-        ${direccion || ""}<br/>
-        ${colonia || ""}<br/>
-        ${ciudad || ""}, ${estadoDireccion || ""}<br/>
-        CP: ${codigoPostal || ""}
-      </p>
-    `;
+    // Generar HTML usando la plantilla
+    const htmlCliente = getOrderEmailTemplate(templateData);
+
+    // Para el admin, podemos reutilizar la plantilla o crear una versión diferente
+    // Aquí reutilizamos la misma, pero podríamos añadir más detalles si quisiéramos
+    const adminTemplateData = { ...templateData, name: `Admin (Pedido de ${cliente})` };
+    const htmlAdmin = getOrderEmailTemplate(adminTemplateData);
+
 
     // Cliente
     await sendOrderEmail({
@@ -75,13 +55,13 @@ router.post("/send-email", async (req, res) => {
     // Admin
     await sendOrderEmail({
       to: adminEmail,
-      subject: `Nuevo pedido #${orden}`,
+      subject: `Nuevo pedido #${orden} de ${cliente}`,
       html: htmlAdmin,
     });
 
     res.json({ success: true });
   } catch (error) {
-    console.error("Error enviando correo:", error);
+    console.error("Error enviando correo:", error); // Loguear el error completo
     res.status(500).json({ error: "Error enviando correo" });
   }
 });
