@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"; // Importar iconos de ojo
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -10,6 +11,7 @@ const Register = () => {
   const [telefono, setTelefono] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -93,14 +95,28 @@ const Register = () => {
             className="w-full px-4 py-3 bg-white/80 border border-white/40 rounded-lg text-sm text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#24d4da]"
             disabled={isSubmitting}
           />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 bg-white/80 border border-white/40 rounded-lg text-sm text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#24d4da]"
-            disabled={isSubmitting}
-          />
+          <div className="relative"> {/* Contenedor para input y botón */}
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 bg-white/80 border border-white/40 rounded-lg text-sm text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#24d4da] pr-10" // Añadir pr-10 para el espacio del botón
+              disabled={isSubmitting}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            >
+              {showPassword ? (
+                <EyeSlashIcon className="h-5 w-5" />
+              ) : (
+                <EyeIcon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
 
           <label className="flex items-center text-sm text-black mt-2">
             <input type="checkbox" className="mr-2 accent-black" required disabled={isSubmitting} />

@@ -45,8 +45,8 @@ const extrasPorMaquina = {
   ],
    // aqui inicia vendings touch
   AtlantisTouch: [
-    { id: "tinaco-1100", nombre: "2 Tinacos 1100L", descripcion: "Para almacenamiento", precio: 1100 },
-    { id: "tinaco-2500", nombre: "2 Tinaco 5000L", descripcion: "Para almacenamiento", precio: 10500 },
+    { id: "tinaco-1100", nombre: "1 Tinaco 1100L", descripcion: "Para almacenamiento", precio: 1100 },
+    { id: "tinaco-2500", nombre: "1 Tinaco 2500L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "tinaco-5000", nombre: "1 Tinaco 5000L", descripcion: "Para almacenamiento", precio: 21000 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
     { id: "Tramites", nombre: "Permisos, Trámites y Requerimientos", descripcion: "Requisitos legales y tramites", precio: 3500 },
@@ -55,9 +55,9 @@ const extrasPorMaquina = {
     { id: "Seguro-Anual", nombre: "Seguro Anual", descripcion: "Plan de seguro anual", precio: 5800 },
   ],
   AtlantisMaxTouch: [
-    { id: "tinaco-1100", nombre: "2 Tinacos 1100L", descripcion: "Para almacenamiento", precio: 1100 },
+    { id: "tinaco-2500-1100", nombre: "1 Tinaco 2500L + 1 Tinaco 1100L", descripcion: "Para almacenamiento", precio: 1100 },
     { id: "tinaco-2500", nombre: "2 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 10500 },
-    { id: "tinaco-5000", nombre: "2 Tinacos 5000L", descripcion: "Para almacenamiento", precio: 21000 },
+    { id: "tinaco-5000-2500", nombre: "1 Tinaco 5000L + 1 Tinaco 2500L", descripcion: "Para almacenamiento", precio: 1100 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
     { id: "Tramites", nombre: "Permisos, Trámites y Requerimientos", descripcion: "Requisitos legales y tramites", precio: 3500 },
     { id: "Kit", nombre: "Insumos anuales", descripcion: "Kit de insumos anuales", precio: 4500 },
@@ -97,7 +97,7 @@ const TINACO_IMAGES = {
     "tinaco-5000": "/img/TINACOS/0028.png",
   },
   Atlantis: {
-    "tinaco-1100": "/img/TINACOS/0035.png",
+    "tinaco-1100": "/img/TINACOS/atlantis/202.png",
     "tinaco-2500": "/img/TINACOS/atlantis/203.png",
     "tinaco-5000": "/img/TINACOS/atlantis/204.png",
   },
@@ -107,17 +107,17 @@ const TINACO_IMAGES = {
     "tinaco-5000": "/img/TINACOS/atlantis/213.png",
   },
   AtlantisTouch: {
-    "tinaco-1100": "/img/TINACOS/0035.png",
+    "tinaco-1100": "/img/TINACOS/atlantis/202.png",
     "tinaco-2500": "/img/TINACOS/atlantis/203.png",
     "tinaco-5000": "/img/TINACOS/atlantis/204.png",
   },
   AtlantisMaxTouch:{
-    "tinaco-1100": "/img/TINACOS/0035.png",
+    "tinaco-2500-1100": "/img/TINACOS/atlantis/210.png",
+    "tinaco-5000-2500": "/img/TINACOS/atlantis/212.png",
     "tinaco-2500": "/img/TINACOS/atlantis/211.png",
     "tinaco-5000": "/img/TINACOS/atlantis/213.png",
   }
 };
-
 /*
  * TINACO_ALCALINA_IMAGES: Define las rutas de las imágenes para los tinacos
  * cuando se selecciona el extra de "Agua alcalina".
@@ -150,18 +150,38 @@ const TINACO_ALCALINA_IMAGES = {
     "tinaco-5000": "/img/TINACOS/atlantis/218.png",
   },
   AtlantisTouch: {
-    "tinaco-1100": "/img/TINACOS/0035.png",
+    "tinaco-1100": "/img/TINACOS/atlantis/206.png",
     "tinaco-2500": "/img/TINACOS/atlantis/207.png",
     "tinaco-5000": "/img/TINACOS/atlantis/208.png",
   },
   AtlantisMaxTouch:{
-    "tinaco-1100": "/img/TINACOS/0035.png",
+    "tinaco-2500-1100": "/img/TINACOS/atlantis/216.png",
+    "tinaco-5000-2500": "/img/TINACOS/atlantis/217.png",
     "tinaco-2500": "/img/TINACOS/atlantis/216.png",
     "tinaco-5000": "/img/TINACOS/atlantis/218.png",
   }
 };
 
-const TINACO_IDS = ["tinaco-2500", "tinaco-5000","tinaco-1100",];
+/*
+ * MODEL_DEFAULT_IMAGES: Define las rutas de las imágenes por defecto para cada modelo.
+ * El usuario se encargará de proporcionar las rutas de las imágenes reales.
+ */
+const MODEL_DEFAULT_IMAGES = {
+  AtlantisTouch: "/img/TINACOS/atlantis/201.png",
+  AtlantisMaxTouch: "/img/TINACOS/atlantis/209.png"
+};
+/*
+ * AGUA_ALCALINA_DEFAULT_IMAGES: Define las rutas de las imágenes de los modelos
+ * cuando solo se selecciona el extra "Agua alcalina" (sin tinaco).
+ * El usuario se encargará de proporcionar las rutas de las imágenes reales.
+ */
+const AGUA_ALCALINA_DEFAULT_IMAGES = {
+  AtlantisTouch: "/img/TINACOS/atlantis/205.png",
+  AtlantisMaxTouch: "/img/TINACOS/atlantis/214.png"
+};
+
+
+const TINACO_IDS = ["tinaco-2500", "tinaco-5000","tinaco-1100", "tinaco-2500-1100", "tinaco-5000-2500"];
 
 export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onNext, onBack }) {
   const extras = extrasPorMaquina[selectedModelId] || [];
@@ -175,49 +195,70 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
   );
 
   /*
-   * tinacoImg: Calcula la ruta de la imagen del tinaco a mostrar.
+   * displayImageSrc: Calcula la ruta de la imagen a mostrar.
    * Si el extra "agua-alcalina" está seleccionado, usa las imágenes de TINACO_ALCALINA_IMAGES.
-   * De lo contrario, usa las imágenes estándar de TINACO_IMAGES.
+   * De lo contrario, usa las imágenes estándar de TINACO_IMAGES si hay un tinaco seleccionado.
+   * Si no hay tinaco seleccionado, usa la imagen por defecto del modelo.
    */
-  const tinacoImg = useMemo(() => {
-    if (!modeloSoportaTinacos || !selectedTinacoId) return null;
-
+  const displayImageSrc = useMemo(() => {
     const hasAguaAlcalina = seleccionados.includes("agua-alcalina");
 
-    let imageSource = TINACO_IMAGES;
-    if (hasAguaAlcalina) {
-      imageSource = TINACO_ALCALINA_IMAGES;
+    // Case 1: Tinaco is selected
+    if (selectedTinacoId) {
+      let imageSource = TINACO_IMAGES;
+      if (hasAguaAlcalina) {
+        imageSource = TINACO_ALCALINA_IMAGES;
+      }
+      const porMaquina = imageSource[selectedModelId];
+      return (porMaquina && porMaquina[selectedTinacoId]) || imageSource.default[selectedTinacoId] || null;
     }
-
-    const porMaquina = imageSource[selectedModelId];
-    return (porMaquina && porMaquina[selectedTinacoId]) || imageSource.default[selectedTinacoId] || null;
-  }, [modeloSoportaTinacos, selectedModelId, selectedTinacoId, seleccionados]);
+    // Case 2: No tinaco selected
+    else {
+      // Sub-case 2.1: Only "Agua alcalina" is selected (and no tinaco)
+      if (hasAguaAlcalina && AGUA_ALCALINA_DEFAULT_IMAGES[selectedModelId]) {
+        return AGUA_ALCALINA_DEFAULT_IMAGES[selectedModelId];
+      }
+      // Sub-case 2.2: No tinaco and no "Agua alcalina" (or no specific image for it)
+      return MODEL_DEFAULT_IMAGES[selectedModelId] || null;
+    }
+  }, [selectedModelId, selectedTinacoId, seleccionados]);
 
   /*
-   * displayString: Genera el texto de sugerencia visual para el tinaco.
+   * currentDisplayString: Genera el texto de sugerencia visual.
    * Incluye el nombre del tinaco seleccionado y los nombres de otros extras seleccionados,
-   * unidos por "+".
+   * unidos por "+", o una descripción base si no hay tinaco seleccionado.
    */
-  const displayString = useMemo(() => {
-    if (!selectedTinacoId) return "";
+  const currentDisplayString = useMemo(() => {
+    const hasAguaAlcalina = seleccionados.includes("agua-alcalina");
 
-    const selectedTinacoExtra = extras.find((extra) => extra.id === selectedTinacoId);
-    const tinacoNombre = selectedTinacoExtra ? selectedTinacoExtra.nombre : "";
+    if (selectedTinacoId) {
+      // Existing logic for tinaco
+      const selectedTinacoExtra = extras.find((extra) => extra.id === selectedTinacoId);
+      const tinacoNombre = selectedTinacoExtra ? selectedTinacoExtra.nombre : "";
 
-    const otherSelectedExtras = seleccionados.filter(
-      (id) => id !== selectedTinacoId
-    );
+      const otherSelectedExtras = seleccionados.filter(
+        (id) => id !== selectedTinacoId
+      );
 
-    const otherExtrasNames = otherSelectedExtras
-      .map((id) => extras.find((extra) => extra.id === id)?.nombre)
-      .filter(Boolean);
+      const otherExtrasNames = otherSelectedExtras
+        .map((id) => extras.find((extra) => extra.id === id)?.nombre)
+        .filter(Boolean);
 
-    let result = tinacoNombre;
-    if (otherExtrasNames.length > 0) {
-      result += " + " + otherExtrasNames.join(" + ");
+      let result = tinacoNombre;
+      if (otherExtrasNames.length > 0) {
+        result += " + " + otherExtrasNames.join(" + ");
+      }
+      return result;
     }
-    return result;
-  }, [selectedTinacoId, seleccionados, extras]);
+    // Case: No tinaco selected
+    else {
+      if (hasAguaAlcalina) {
+        return `Configuración base de ${selectedModelId} + Agua Alcalina`;
+      }
+      // Default string if no tinaco and no "Agua alcalina"
+      return `Configuración base de ${selectedModelId}`;
+    }
+  }, [selectedTinacoId, seleccionados, extras, selectedModelId]);
 
   const toggleExtra = (id) => {
     const extraSeleccionado = extras.find((e) => e.id === id);
@@ -253,14 +294,14 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
       <h2 className="text-3xl font-bold text-gray-800">Extras Opcionales</h2>
 
       {/* ✅ Vista previa ARRIBA */}
-      {modeloSoportaTinacos && selectedTinacoId && tinacoImg && (
+      {displayImageSrc && (
         <div className="max-w-3xl mx-auto">
-          <h3 className="text-lg font-semibold text-gray-800">Vista previa del tinaco</h3>
+          <h3 className="text-lg font-semibold text-gray-800">Vista previa del modelo</h3>
           <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3">
             <div className="aspect-[16/9] w-full overflow-hidden rounded-lg bg-gray-50">
               <img
-                src={tinacoImg}
-                alt={`Imagen ${selectedTinacoId} para ${selectedModelId}`}
+                src={displayImageSrc}
+                alt={`Imagen de ${selectedModelId} - ${currentDisplayString}`}
                 className="h-full w-full object-contain"
                 loading="lazy"
                 decoding="async"
@@ -269,7 +310,7 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
             </div>
             {/* Muestra la sugerencia visual del tinaco y los extras seleccionados */}
             <p className="text-xs text-gray-500 mt-2">
-              Sugerencia visual para {selectedModelId} – {displayString}.
+              Sugerencia visual: {currentDisplayString}.
             </p>
           </div>
         </div>
