@@ -182,15 +182,25 @@ export default function Productos() {
                   {money(p.precio)}
                 </p>
 
+                {/* Stock Display */}
+                <p className="text-center text-gray-600 text-sm">
+                  Stock: <span className={`${(p.stock ?? 0) === 0 ? 'text-red-500' : ''}`}>{p.stock ?? 0}</span> unidades
+                </p>
+
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleAgregarCarrito(p);
                   }}
-                  className="text-black px-5 py-2 rounded-full text-sm font-semibold hover:brightness-90 transition"
-                  style={{ backgroundColor: "#ccff00" }}
+                  disabled={(p.stock ?? 0) === 0} // Disable if stock is 0
+                  className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
+                    (p.stock ?? 0) === 0
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed" // Disabled style
+                      : "text-black hover:brightness-90" // Enabled style
+                  }`}
+                  style={{ backgroundColor: (p.stock ?? 0) === 0 ? undefined : "#ccff00" }} // Apply yellow background only if not disabled
                 >
-                  Añadir al carrito
+                  {(p.stock ?? 0) === 0 ? "Agotado" : "Añadir al carrito"}
                 </button>
               </div>
             ))}
