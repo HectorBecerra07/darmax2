@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from "react";
 
 const extrasPorMaquina = {
+  //mostrador y purificadora
   Neptuno: [
-    { id: "tinaco-2500", nombre: "1 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 5500 },
+    { id: "tinaco-1100", nombre: "2 Tinacos 1100L", descripcion: "Para almacenamiento", precio: 1100 },
+    { id: "tinaco-2500", nombre: "2 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "tinaco-5000", nombre: "1 Tinacos 5000L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
     { id: "Tramites", nombre: "Permisos, Trámites y Requerimientos", descripcion: "Requisitos legales y tramites", precio: 3500 },
@@ -11,6 +13,7 @@ const extrasPorMaquina = {
     { id: "Seguro-Anual", nombre: "Seguro Anual", descripcion: "Plan de seguro anual", precio: 5800 },
   ],
   NeptunoAPlus: [
+    { id: "tinaco-1100", nombre: "2 Tinacos 1100L", descripcion: "Para almacenamiento", precio: 1100 },
     { id: "tinaco-2500", nombre: "2 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "tinaco-5000", nombre: "2 Tinacos 5000L", descripcion: "Para almacenamiento", precio: 21000 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
@@ -19,8 +22,9 @@ const extrasPorMaquina = {
     { id: "Plan", nombre: "Plan de mantenimiento ", descripcion: "Plan de mantenimiento anual", precio: 4500 },
     { id: "Seguro-Anual", nombre: "Seguro Anual", descripcion: "Plan de seguro anual", precio: 5800 },
   ],
-
+// aqui inicia vendings
   Atlantis: [
+    { id: "tinaco-1100", nombre: "2 Tinacos 1100L", descripcion: "Para almacenamiento", precio: 1100 },
     { id: "tinaco-2500", nombre: "1 Tinaco 2500L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "tinaco-5000", nombre: "1 Tinaco 5000L", descripcion: "Para almacenamiento", precio: 21000 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
@@ -30,6 +34,7 @@ const extrasPorMaquina = {
     { id: "Seguro-Anual", nombre: "Seguro Anual", descripcion: "Plan de seguro anual", precio: 5800 },
   ],
   AtlantisMax: [
+    { id: "tinaco-1100", nombre: "2 Tinacos 1100L", descripcion: "Para almacenamiento", precio: 1100 },
     { id: "tinaco-2500", nombre: "2 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "tinaco-5000", nombre: "2 Tinacos 5000L", descripcion: "Para almacenamiento", precio: 21000 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
@@ -38,8 +43,9 @@ const extrasPorMaquina = {
     { id: "Plan", nombre: "Plan de mantenimiento ", descripcion: "Plan de mantenimiento anual", precio: 4500 },
     { id: "Seguro-Anual", nombre: "Seguro Anual", descripcion: "Plan de seguro anual", precio: 5800 },
   ],
-
+   // aqui inicia vendings touch
   AtlantisTouch: [
+    { id: "tinaco-1100", nombre: "2 Tinacos 1100L", descripcion: "Para almacenamiento", precio: 1100 },
     { id: "tinaco-2500", nombre: "2 Tinaco 5000L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "tinaco-5000", nombre: "1 Tinaco 5000L", descripcion: "Para almacenamiento", precio: 21000 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
@@ -49,6 +55,7 @@ const extrasPorMaquina = {
     { id: "Seguro-Anual", nombre: "Seguro Anual", descripcion: "Plan de seguro anual", precio: 5800 },
   ],
   AtlantisMaxTouch: [
+    { id: "tinaco-1100", nombre: "2 Tinacos 1100L", descripcion: "Para almacenamiento", precio: 1100 },
     { id: "tinaco-2500", nombre: "2 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "tinaco-5000", nombre: "2 Tinacos 5000L", descripcion: "Para almacenamiento", precio: 21000 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
@@ -58,7 +65,7 @@ const extrasPorMaquina = {
     { id: "Seguro-Anual", nombre: "Seguro Anual", descripcion: "Plan de seguro anual", precio: 5800 },
   ],
   
-
+   // aqui inicia vending limpieza
   Vending5: [
     { id: "permisos", nombre: "Permisos y Trámites", descripcion: "Requisitos legales incluidos", precio: 3000 },
     { id: "Volantes", nombre: "Volantes publicitarios", descripcion: "Diseño y creación de volantes publicitarios", precio: 1500 },
@@ -75,30 +82,37 @@ const extrasPorMaquina = {
 /* Imágenes por máquina/capacidad */
 const TINACO_IMAGES = {
   default: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/0035.png",
     "tinaco-5000": "/img/TINACOS/0036.png",
   },
   Neptuno: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/0035.png",
     "tinaco-5000": "/img/TINACOS/0036.png",
   },
   NeptunoAPlus: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/0026.png",
     "tinaco-5000": "/img/TINACOS/0028.png",
   },
   Atlantis: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/atlantis/203.png",
     "tinaco-5000": "/img/TINACOS/atlantis/204.png",
   },
   AtlantisMax: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/atlantis/211.png",
     "tinaco-5000": "/img/TINACOS/atlantis/213.png",
   },
   AtlantisTouch: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/atlantis/203.png",
     "tinaco-5000": "/img/TINACOS/atlantis/204.png",
   },
   AtlantisMaxTouch:{
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/atlantis/211.png",
     "tinaco-5000": "/img/TINACOS/atlantis/213.png",
   }
@@ -111,36 +125,43 @@ const TINACO_IMAGES = {
  */
 const TINACO_ALCALINA_IMAGES = {
   default: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/alcalina/207.png", // Placeholder: Reemplazar con imagen real de tinaco-2500 con agua alcalina
     "tinaco-5000": "/img/TINACOS/0036-alcalina.png", // Placeholder: Reemplazar con imagen real de tinaco-5000 con agua alcalina
   },
   Neptuno: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/alcalina/231.png",
     "tinaco-5000": "/img/TINACOS/alcalina/232.png",
   },
   NeptunoAPlus: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/alcalina/221.png",
     "tinaco-5000": "/img/TINACOS/alcalina/223.png",
   },
   Atlantis: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/atlantis/207.png",
     "tinaco-5000": "/img/TINACOS/atlantis/208.png",
   },
   AtlantisMax: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/atlantis/216.png",
     "tinaco-5000": "/img/TINACOS/atlantis/218.png",
   },
   AtlantisTouch: {
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/atlantis/207.png",
     "tinaco-5000": "/img/TINACOS/atlantis/208.png",
   },
   AtlantisMaxTouch:{
+    "tinaco-1100": "/img/TINACOS/0035.png",
     "tinaco-2500": "/img/TINACOS/atlantis/216.png",
     "tinaco-5000": "/img/TINACOS/atlantis/218.png",
   }
 };
 
-const TINACO_IDS = ["tinaco-2500", "tinaco-5000"];
+const TINACO_IDS = ["tinaco-2500", "tinaco-5000","tinaco-1100",];
 
 export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onNext, onBack }) {
   const extras = extrasPorMaquina[selectedModelId] || [];
