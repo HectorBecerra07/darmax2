@@ -27,6 +27,10 @@ const ProductModal = ({ show, onClose, producto, onAddToCart }) => {
               <h2 className="text-3xl font-bold">{producto.nombre}</h2>
               <p className="text-gray-600 text-sm leading-relaxed">{producto.descripcion}</p>
               <p className="text-xl font-semibold text-black">MXN ${Number(producto.precio).toFixed(2)}</p>
+              {/* Stock Display */}
+              <p className="text-sm text-gray-600">
+                Stock: <span className={`${(producto.stock ?? 0) === 0 ? 'text-red-500' : ''}`}>{producto.stock ?? 0}</span> unidades
+              </p>
             </div>
 
             <button
@@ -34,9 +38,14 @@ const ProductModal = ({ show, onClose, producto, onAddToCart }) => {
                 onAddToCart(producto);
                 onClose();
               }}
-              className="bg-[#ccff00] text-black font-bold py-3 px-5 rounded-lg hover:brightness-90 transition"
+              disabled={(producto.stock ?? 0) === 0} // Disable if stock is 0
+              className={`text-black font-bold py-3 px-5 rounded-lg hover:brightness-90 transition ${
+                (producto.stock ?? 0) === 0
+                  ? "bg-gray-300 text-gray-600 cursor-not-allowed" // Disabled style
+                  : "bg-[#ccff00]" // Enabled style
+              }`}
             >
-              Añadir al carrito
+              {(producto.stock ?? 0) === 0 ? "Agotado" : "Añadir al carrito"}
             </button>
           </div>
         </div>

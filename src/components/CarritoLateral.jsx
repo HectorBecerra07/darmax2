@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useCarrito } from "../context/CarritoContext";
 import { useNavigate } from "react-router-dom";
 import { XMarkIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 
 const CarritoLateral = ({ isOpen, onClose }) => {
   const {
@@ -15,12 +16,20 @@ const CarritoLateral = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const cartRef = useRef(null);
 
-  // Efecto para validar el carrito cuando se abre
+  // Efecto para validar y limpiar el carrito cuando se abre
   useEffect(() => {
     if (isOpen) {
-      validateCart();
+      validateCart(); // Actualiza el carrito con datos frescos (ej. stock)
+
+      // Eliminar productos cuyo stock se haya agotado
+      const itemsToRemove = carrito.filter(item => (item.stock ?? 0) === 0);
+      if (itemsToRemove.length > 0) {
+        itemsToRemove.forEach(item => eliminarProducto(item.id));
+        toast.info("Algunos productos se quitaron por falta de stock.", { icon: "ℹ️" });
+      }
     }
-  }, [isOpen, validateCart]);
+  }, [isOpen, carrito, validateCart, eliminarProducto]);
+
 
   // Efecto para cerrar el carrito al hacer clic fuera
   useEffect(() => {
@@ -102,7 +111,8 @@ const CarritoLateral = ({ isOpen, onClose }) => {
                   <button
                     type="button"
                     onClick={() => incrementarCantidad(p.id)}
-                    className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-600 text-gray-300 hover:bg-gray-700"
+                    disabled={(p.cantidad ?? 0) >= (p.stock ?? 0)}
+                    className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-600 text-gray-300 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     +
                   </button>
