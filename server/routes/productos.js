@@ -100,4 +100,40 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// POST /api/productos/validate
+router.post("/validate", async (req, res) => {
+    const { productIds } = req.body;
+  
+    if (!Array.isArray(productIds)) {
+      return res.status(400).json({ message: "Se esperaba un array de productIds." });
+    }
+  
+    if (productIds.length === 0) {
+      return res.json({ validProducts: [] });
+    }
+  
+    try {
+      const availableProducts = await prisma.producto.findMany({
+        where: {
+          id: {
+            in: productIds,
+          },
+          stock: {
+            gt: 0,
+          },
+        },
+        select: {
+          id: true,
+          nombre: true,
+          stock: true,
+        },
+      });
+  
+      res.json({ validProducts: availableProducts });
+    } catch (error) {
+      console.error("Error validating products:", error);
+      res.status(500).json({ message: "Error del servidor al validar productos." });
+    }
+  });
+
 export default router;

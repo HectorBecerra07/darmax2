@@ -145,24 +145,24 @@ export const CarritoProvider = ({ children }) => {
     }
   };
 
-  const eliminarProducto = async (productoId) => {
+  const eliminarProducto = async (productoId, options = { showToast: true }) => {
     if (isAuthenticated) {
-      const toastId = toast.loading("Eliminando producto...");
+      const toastId = options.showToast ? toast.loading("Eliminando producto...") : null;
       try {
         const res = await fetch(`/api/carrito/${productoId}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Error al eliminar el producto.");
-        toast.success("Producto eliminado", { id: toastId });
+        if (options.showToast) toast.success("Producto eliminado", { id: toastId });
         await fetchApiCart();
       } catch (error) {
-        toast.error(error.message, { id: toastId });
+        if (options.showToast) toast.error(error.message, { id: toastId });
       }
     } else {
       const newCart = carrito.filter(p => p.id !== productoId);
       updateGuestCart(newCart);
-      toast.success("Producto eliminado");
+      if (options.showToast) toast.success("Producto eliminado");
     }
   };
 
@@ -185,6 +185,45 @@ export const CarritoProvider = ({ children }) => {
       toast.success("Carrito vacío");
     }
   };
+
+  const validateCart = useCallback(async () => {
+    if (carrito.length === 0) return;
+
+    const productIds = carrito.map(item => item.id);
+
+    try {
+      const res = await fetch('/api/productos/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productIds }),
+      });
+
+      if (!res.ok) {
+        console.error("Error al validar el carrito con el servidor.");
+        return;
+      }
+
+      const { validProducts } = await res.json();
+      const validProductIds = new Set(validProducts.map(p => p.id));
+      const invalidItems = carrito.filter(item => !validProductIds.has(item.id));
+
+      if (invalidItems.length > 0) {
+        toast.error("Algunos productos ya no están disponibles y fueron eliminados.", {
+          duration: 4000,
+          position: 'top-center',
+        });
+        // Usamos un bucle para eliminar los productos inválidos uno por uno.
+        for (const item of invalidItems) {
+          // No necesitamos esperar `await` porque la actualización del estado se manejará en `eliminarProducto`.
+          // Pasamos `showToast: false` para evitar una notificación por cada producto.
+          eliminarProducto(item.id, { showToast: false });
+        }
+      }
+    } catch (error) {
+      console.error("Error en la función de validación del carrito:", error);
+    }
+  }, [carrito, isAuthenticated, token]);
+
 
   const incrementarCantidad = (productoId) => {
     const item = carrito.find(p => p.id === productoId);
@@ -214,6 +253,7 @@ export const CarritoProvider = ({ children }) => {
         incrementarCantidad,
         disminuirCantidad,
         actualizarCantidad,
+        validateCart,
       }}
     >
       {children}

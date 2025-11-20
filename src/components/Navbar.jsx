@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ShoppingBagIcon,
   Bars3Icon,
@@ -14,10 +14,12 @@ export default function NavBar() {
   const [navOpen, setNavOpen] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { carrito } = useCarrito();
-  const { user, logout } = useUser(); // Assuming logout is available in context
+  const { user, logout } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
+  const userMenuRef = useRef(null);
 
   const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
   const firstName = (user?.name || "").split(" ")[0] || "";
@@ -28,6 +30,18 @@ export default function NavBar() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const navLinks = [
@@ -50,11 +64,8 @@ export default function NavBar() {
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-black/50 backdrop-blur-md' : 'bg-black'}`}>
         <div className="max-w-7xl mx-auto grid grid-cols-3 items-center h-20 px-4 sm:px-6 nav:px-8 md:flex md:justify-between">
           
-          {/* Elemento vacío para la columna izquierda en móvil, si no hay nada */}
-          <div className="md:hidden"></div>
-
           {/* Logo */}
-          <Link to="/" className="shrink-0 flex items-center justify-center">
+          <Link to="/" className="shrink-0 flex items-center justify-start">
             <img
               src="/img/logo4.png"
               alt="Logo Darmax"
@@ -92,28 +103,69 @@ export default function NavBar() {
                 </span>
               )}
             </button>
-
-            {user ? (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => navigate("/perfil")}
-                  className={`font-medium text-white ${hoverLinkClass}`}
-                >
-                  Mi Perfil
-                </button>
-              </div>
-            ) : (
-              <Link to="/login" className={`text-white ${hoverLinkClass}`} aria-label="Iniciar sesión">
+            
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className={`relative text-white ${hoverLinkClass}`}
+                aria-label="Menú de usuario"
+              >
                 <UserIcon className="w-7 h-7" />
-              </Link>
-            )}
+              </button>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 text-black">
+                  {user ? (
+                    <>
+                      <div className="px-4 py-2 text-sm text-gray-700 border-b">
+                        Hola, <span className="font-semibold">{firstName}</span>
+                      </div>
+                      <Link
+                        to="/perfil"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        Mi Perfil
+                      </Link>
+                      <button
+                        onClick={() => {
+                          logout();
+                          navigate('/');
+                          setUserMenuOpen(false);
+                        }}
+                        className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Cerrar Sesión
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        Iniciar Sesión
+                      </Link>
+                      <Link
+                        to="/register"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        Registrarse
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Botón menú móvil */}
-          <div className="flex items-center justify-end nav:hidden">
+          <div className="flex items-center justify-end nav:hidden col-span-2">
             <button
               onClick={() => setShowCart(true)}
-              className="relative text-white hover:text-[#ccff00] mr-4"
+              className="relative text-white hover:text-[#ccff00]"
               aria-label="Abrir carrito"
             >
               <ShoppingBagIcon className="w-7 h-7" />
@@ -159,6 +211,9 @@ export default function NavBar() {
           <div className="border-t border-gray-700 my-4"></div>
           {user ? (
             <>
+              <div className="px-3 py-2 text-white">
+                Hola, <span className="font-semibold">{firstName}</span>
+              </div>
               <Link to="/perfil" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
                 Mi Perfil
               </Link>
@@ -167,9 +222,14 @@ export default function NavBar() {
               </button>
             </>
           ) : (
-            <Link to="/login" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
-              Iniciar Sesión
-            </Link>
+            <>
+              <Link to="/login" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
+                Iniciar Sesión
+              </Link>
+              <Link to="/register" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
+                Registrarse
+              </Link>
+            </>
           )}
         </nav>
       </div>

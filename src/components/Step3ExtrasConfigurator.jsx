@@ -40,7 +40,7 @@ const extrasPorMaquina = {
   ],
 
   AtlantisTouch: [
-    { id: "tinaco-2500", nombre: "1 Tinaco 2500L", descripcion: "Para almacenamiento", precio: 10500 },
+    { id: "tinaco-2500", nombre: "2 Tinaco 5000L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "tinaco-5000", nombre: "1 Tinaco 5000L", descripcion: "Para almacenamiento", precio: 21000 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
     { id: "Tramites", nombre: "Permisos, Trámites y Requerimientos", descripcion: "Requisitos legales y tramites", precio: 3500 },

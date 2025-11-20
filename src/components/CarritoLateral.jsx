@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useCarrito } from "../context/CarritoContext";
 import { useNavigate } from "react-router-dom";
 import { XMarkIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
@@ -10,8 +10,34 @@ const CarritoLateral = ({ isOpen, onClose }) => {
     vaciarCarrito,
     incrementarCantidad,
     disminuirCantidad,
+    validateCart,
   } = useCarrito();
   const navigate = useNavigate();
+  const cartRef = useRef(null);
+
+  // Efecto para validar el carrito cuando se abre
+  useEffect(() => {
+    if (isOpen) {
+      validateCart();
+    }
+  }, [isOpen, validateCart]);
+
+  // Efecto para cerrar el carrito al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (cartRef.current && !cartRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   const total = carrito.reduce(
     (acc, p) => acc + Number(p.precio || 0) * p.cantidad,
@@ -21,7 +47,7 @@ const CarritoLateral = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-0 top-0 w-full sm:w-96 h-full bg-gray-900/95 backdrop-blur-lg shadow-2xl z-50 flex flex-col border-l border-gray-700">
+    <div ref={cartRef} className="fixed right-0 top-0 w-full sm:w-96 h-full bg-gray-900/95 backdrop-blur-lg shadow-2xl z-50 flex flex-col border-l border-gray-700">
       <div className="flex items-center justify-between p-5 border-b border-gray-700">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
           <ShoppingCartIcon className="w-6 h-6 text-cyan-400" />
@@ -118,4 +144,3 @@ const CarritoLateral = ({ isOpen, onClose }) => {
 };
 
 export default CarritoLateral;
-
