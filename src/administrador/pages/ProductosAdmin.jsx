@@ -85,10 +85,10 @@ export default function ProductosAdmin() {
   };
 
   return (
-    <div className="p-10">
+    <div className="">
       <h2 className="text-2xl font-bold mb-6">Gestión de Productos</h2>
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <button
           className="px-4 py-2 rounded bg-cyan-500 text-white hover:bg-cyan-600"
           onClick={() => {

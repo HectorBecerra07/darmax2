@@ -20,7 +20,7 @@ const SidebarAdmin = () => {
     <aside
       className={`sidebar-hud ${
         modoClaro ? "sidebar-light" : "sidebar-dark"
-      } w-64 md:h-screen text-gray-100 p-6 flex flex-col justify-between`}
+      } w-full h-full text-gray-100 p-6 flex flex-col justify-between`}
     >
       <div className="sidebar-hud-content space-y-6">
         <div className="flex flex-col items-center gap-2">

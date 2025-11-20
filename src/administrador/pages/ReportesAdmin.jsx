@@ -21,7 +21,7 @@ const ReportesAdmin = () => {
   const totalVentas = reportesSimulados.reduce((acc, item) => acc + item.ingresos, 0);
 
   return (
-    <div className="p-10">
+    <div className="">
       <h2 className="text-2xl font-bold mb-6">Reportes de Ventas</h2>
 
       <div className="bg-gray-100 p-6 rounded-xl shadow-inner mb-10">
