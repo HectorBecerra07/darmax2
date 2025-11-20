@@ -34,10 +34,10 @@ const LoginAdmin = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-md space-y-4 w-full max-w-md"
+        className="bg-white p-6 sm:p-8 rounded-xl shadow-md space-y-4 w-full max-w-md"
       >
         <h2 className="text-2xl font-bold text-gray-700 text-center">
           Panel Administrador

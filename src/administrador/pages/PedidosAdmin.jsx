@@ -61,10 +61,10 @@ const PedidosAdmin = () => {
   };
 
   return (
-    <div className="p-10">
+    <div className="">
       <h2 className="text-2xl font-bold mb-6">Pedidos Recibidos</h2>
 
-      <div ref={tableContainerRef} style={{ maxHeight: "60vh", overflow: "hidden" }}>
+      <div ref={tableContainerRef} className="overflow-auto" style={{ maxHeight: "60vh" }}>
         <table className="w-full border text-sm rounded-xl overflow-hidden">
           <thead className="bg-gray-100">
             <tr>

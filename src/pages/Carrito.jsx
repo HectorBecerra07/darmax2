@@ -171,10 +171,10 @@ const Carrito = () => {
 
       const address_from = {
         country_code: "MX",
-        postal_code: "64000",
-        area_level1: "Nuevo León",
-        area_level2: "Monterrey",
-        area_level3: "Centro",
+        postal_code: "57170",
+        area_level1: "Estado de México",
+        area_level2: "Cdad. Nezahualcóyotl",
+        area_level3: "Bosques de Aragon",
       };
 
       // Usa el nuevo estado unificado de dirección

@@ -149,8 +149,8 @@ const ModalProductoForm = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 w-[28rem] max-w-full space-y-4 shadow-lg max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg p-6 w-[28rem] max-w-full space-y-4 shadow-lg max-h-[90vh] overflow-y-auto">
         <h3 className="text-lg font-bold">{producto ? "Editar Producto" : "Nuevo Producto"}</h3>
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -206,8 +206,8 @@ const ModalProductoForm = ({
           </div>
 
           {/* Envíos */}
-          <div className="grid grid-cols-3 gap-2 pt-2 border-t mt-4">
-            <div className="col-span-3"><label className="text-sm font-medium text-gray-600">Datos de Envío (Opcional)</label></div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-2 border-t mt-4">
+            <div className="col-span-2 md:col-span-3"><label className="text-sm font-medium text-gray-600">Datos de Envío (Opcional)</label></div>
             <div>
               <label className="text-xs font-medium">Peso (kg)</label>
               <input type="number" step="0.01" min="0" value={pesoKg} onChange={(e) => setPesoKg(e.target.value)} className="w-full border rounded p-2" />
@@ -220,7 +220,7 @@ const ModalProductoForm = ({
               <label className="text-xs font-medium">Ancho (cm)</label>
               <input type="number" step="0.1" min="0" value={anchoCm} onChange={(e) => setAnchoCm(e.target.value)} className="w-full border rounded p-2" />
             </div>
-            <div className="col-span-3">
+            <div className="col-span-2 md:col-span-1">
               <label className="text-xs font-medium">Alto (cm)</label>
               <input type="number" step="0.1" min="0" value={altoCm} onChange={(e) => setAltoCm(e.target.value)} className="w-full border rounded p-2" />
             </div>

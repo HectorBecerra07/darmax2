@@ -93,7 +93,7 @@ const CategoriasAdmin = () => {
   };
 
   return (
-    <div className="p-10">
+    <div className="">
       <h2 className="text-2xl font-bold mb-6">Gestión de Categorías</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

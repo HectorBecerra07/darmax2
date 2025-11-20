@@ -1,8 +1,17 @@
 // server/routes/shipping.js
 import express from "express";
-import { skydropxRequest } from '../utils/skydropx.js';
+import { skydropxRequest } from "../utils/skydropx.js";
 
 const router = express.Router();
+
+// Paqueterías que SÍ quieres mostrar
+const MAIN_PROVIDERS = [
+  "Paquetexpress",
+  "FedEx",
+  "Estafeta",
+  "99minutos.com",
+  "DHL",
+];
 
 // GET de prueba para ver si el router está montado
 router.get("/test", (req, res) => {
@@ -17,7 +26,8 @@ router.post("/cotizar", async (req, res) => {
 
     if (!address_from || !address_to || !parcels) {
       return res.status(400).json({
-        error: "Faltan datos: address_from, address_to o parcels no fueron enviados",
+        error:
+          "Faltan datos: address_from, address_to o parcels no fueron enviados",
       });
     }
 
@@ -34,29 +44,50 @@ router.post("/cotizar", async (req, res) => {
       JSON.stringify(requestBody, null, 2)
     );
 
-    // Usamos la nueva utilidad que maneja la autenticación de forma automática
-    const data = await skydropxRequest('POST', '/api/v1/quotations', requestBody);
-    
-    const quotationId = data.id || null;
-    const rates = (data.rates || []).map((r) => ({
-      id: r.id,
-      provider: r.provider_display_name || r.provider_name,
-      service: r.provider_service_name,
-      days: r.days,
-      total: Number(r.total || r.amount || 0),
-      currency: r.currency_code || "MXN",
-    }));
+    const data = await skydropxRequest(
+      "POST",
+      "/api/v1/quotations",
+      requestBody
+    );
 
-    console.log("✅ Cotización PROCESADA. quotationId:", quotationId);
-    
+    const quotationId = data.id || null;
+
+    // 1) Normalizamos las rates que vienen de Skydropx
+    let rates = (data.rates || []).map((r) => {
+      const total = Number(r.total || r.amount || 0);
+
+      return {
+        id: r.id,
+        provider: r.provider_display_name || r.provider_name,
+        service: r.provider_service_name,
+        days: r.days,
+        total,
+        currency: r.currency_code || "MXN",
+      };
+    });
+
+    // 2) Filtramos: solo rates con precio > 0
+    rates = rates.filter((r) => r.total > 0);
+
+    // 3) (Opcional) Solo ciertas paqueterías “principales”
+    rates = rates.filter((r) => MAIN_PROVIDERS.includes(r.provider));
+
+    // 4) (Opcional) Ordenar por precio menor a mayor
+    rates.sort((a, b) => a.total - b.total);
+
+    console.log(
+      "✅ Cotización PROCESADA. quotationId:",
+      quotationId,
+      "rates filtradas:",
+      rates.length
+    );
+
     return res.json({
       quotationId,
       rates,
-      raw: data,
+      rawCount: (data.rates || []).length, // para debug
     });
-
   } catch (error) {
-    // El error ya se loguea en skydropxRequest, aquí solo respondemos al cliente
     const status = error.response?.status || 500;
     const detail = error.response?.data || String(error);
 
