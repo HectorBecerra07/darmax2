@@ -5,7 +5,7 @@ const extrasPorMaquina = {
   Neptuno: [
     { id: "tinaco-1100", nombre: "2 Tinacos 1100L", descripcion: "Para almacenamiento", precio: 1100 },
     { id: "tinaco-2500", nombre: "2 Tinacos 2500L", descripcion: "Para almacenamiento", precio: 10500 },
-    { id: "tinaco-5000", nombre: "1 Tinacos 5000L", descripcion: "Para almacenamiento", precio: 10500 },
+    { id: "tinaco-5000", nombre: "1 Tinaco 5000L", descripcion: "Para almacenamiento", precio: 10500 },
     { id: "agua-alcalina", nombre: "Agua alcalina", descripcion: "Sistema de producción de agua alcalina", precio: 12000 },
     { id: "Tramites", nombre: "Permisos, Trámites y Requerimientos", descripcion: "Requisitos legales y tramites", precio: 3500 },
     { id: "Kit", nombre: "Insumos anuales", descripcion: "Kit de insumos anuales", precio: 4500 },
@@ -180,6 +180,27 @@ const AGUA_ALCALINA_DEFAULT_IMAGES = {
   AtlantisMaxTouch: "/img/TINACOS/atlantis/214.png"
 };
 
+/*
+ * ATLANTIS_SECONDARY_IMAGES: Define las rutas de las imágenes secundarias para los modelos Atlantis.
+ * El usuario se encargará de proporcionar las rutas.
+ */
+const ATLANTIS_SECONDARY_IMAGES = {
+  Atlantis: "/img/vending/ATLANTIS300MAX.png",
+  AtlantisMax: "/img/vending/ATLANTIS300MAX.png",
+  AtlantisMaxTouch: "/img/vending/ATLANTIS300MAX.png"
+};
+
+/*
+ * ATLANTIS_SECONDARY_ALCALINA_IMAGES: Define las rutas de las imágenes secundarias para los modelos Atlantis
+ * cuando se selecciona el extra "Agua alcalina".
+ * El usuario se encargará de proporcionar las rutas.
+ */
+const ATLANTIS_SECONDARY_ALCALINA_IMAGES = {
+  // Ejemplo: Atlantis: "/img/ruta/a/atlantis-secundaria-alcalina.png",
+};
+
+const ATLANTIS_MODELS = ["Atlantis", "AtlantisMax", "AtlantisTouch", "AtlantisMaxTouch"];
+
 
 const TINACO_IDS = ["tinaco-2500", "tinaco-5000","tinaco-1100", "tinaco-2500-1100", "tinaco-5000-2500"];
 
@@ -196,9 +217,6 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
 
   /*
    * displayImageSrc: Calcula la ruta de la imagen a mostrar.
-   * Si el extra "agua-alcalina" está seleccionado, usa las imágenes de TINACO_ALCALINA_IMAGES.
-   * De lo contrario, usa las imágenes estándar de TINACO_IMAGES si hay un tinaco seleccionado.
-   * Si no hay tinaco seleccionado, usa la imagen por defecto del modelo.
    */
   const displayImageSrc = useMemo(() => {
     const hasAguaAlcalina = seleccionados.includes("agua-alcalina");
@@ -223,10 +241,18 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
     }
   }, [selectedModelId, selectedTinacoId, seleccionados]);
 
+  const secondaryImageSrc = useMemo(() => {
+    if (!ATLANTIS_MODELS.includes(selectedModelId)) return null;
+
+    const hasAguaAlcalina = seleccionados.includes("agua-alcalina");
+    if (hasAguaAlcalina && ATLANTIS_SECONDARY_ALCALINA_IMAGES[selectedModelId]) {
+        return ATLANTIS_SECONDARY_ALCALINA_IMAGES[selectedModelId];
+    }
+    return ATLANTIS_SECONDARY_IMAGES[selectedModelId] || null;
+  }, [selectedModelId, seleccionados]);
+
   /*
    * currentDisplayString: Genera el texto de sugerencia visual.
-   * Incluye el nombre del tinaco seleccionado y los nombres de otros extras seleccionados,
-   * unidos por "+", o una descripción base si no hay tinaco seleccionado.
    */
   const currentDisplayString = useMemo(() => {
     const hasAguaAlcalina = seleccionados.includes("agua-alcalina");
@@ -294,25 +320,51 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
       <h2 className="text-3xl font-bold text-gray-800">Extras Opcionales</h2>
 
       {/* ✅ Vista previa ARRIBA */}
-      {displayImageSrc && (
-        <div className="max-w-3xl mx-auto">
-          <h3 className="text-lg font-semibold text-gray-800">Vista previa del modelo</h3>
-          <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3">
-            <div className="aspect-[16/9] w-full overflow-hidden rounded-lg bg-gray-50">
-              <img
-                src={displayImageSrc}
-                alt={`Imagen de ${selectedModelId} - ${currentDisplayString}`}
-                className="h-full w-full object-contain"
-                loading="lazy"
-                decoding="async"
-                draggable="false"
-              />
+      {(displayImageSrc || secondaryImageSrc) && (
+        <div className="max-w-7xl mx-auto md:flex md:gap-4">
+          {/* Existing Model Preview */}
+          {displayImageSrc && (
+            <div className="md:w-1/2">
+              <h3 className="text-lg font-semibold text-gray-800">Vista previa del modelo</h3>
+              <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3">
+                <div className="aspect-[16/9] w-full overflow-hidden rounded-lg bg-gray-50">
+                  <img
+                    src={displayImageSrc}
+                    alt={`Imagen de ${selectedModelId} - ${currentDisplayString}`}
+                    className="h-full w-full object-contain"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Sugerencia visual: {currentDisplayString}.
+                </p>
+              </div>
             </div>
-            {/* Muestra la sugerencia visual del tinaco y los extras seleccionados */}
-            <p className="text-xs text-gray-500 mt-2">
-              Sugerencia visual: {currentDisplayString}.
-            </p>
-          </div>
+          )}
+
+          {/* New Secondary Image for Atlantis Models */}
+          {secondaryImageSrc && (
+            <div className="md:w-1/2 mt-8 md:mt-0">
+              <h3 className="text-lg font-semibold text-gray-800">Vista Previa de la Vending</h3>
+              <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3">
+                <div className="aspect-[16/9] w-full overflow-hidden rounded-lg bg-gray-50">
+                  <img
+                    src={secondaryImageSrc}
+                    alt={`Imagen secundaria para ${selectedModelId}`}
+                    className="h-full w-full object-contain"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Componente adicional para {selectedModelId}.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
