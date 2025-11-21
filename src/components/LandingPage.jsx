@@ -23,20 +23,20 @@ export default function LandingPage() {
 
       {/* HERO */}
       <section
-        className=" text-white px-4 md:px-50 pt-32 pb-40"
+        className=" text-white px-4 md:px-50 aspect-[2.5/1] md:aspect-[3.5/1]"
         style={{
           backgroundImage: 'url("/img/fondos.jpg")',
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 w-full max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 w-full max-w-7xl mx-auto h-full">
           <div className="max-w-xl text-center md:text-left flex flex-col items-center md:items-start">
-            <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold leading-tight mb-4">
               EMPRENDE TU{" "}
               <span className="text-accent -skew-x-6 inline-block">NEGOCIO</span>
             </h2>
-            <p className="text-[#ccff00] text-base md:text-lg mb-6">
+            <p className="text-[#ccff00] text-sm md:text-lg mb-6">
               DA EL PRIMER PASO A LA TU LIBERTAD FINANCIERA Y <br></br>
               LLEVA TU EMPRENDIEMITO AL SIGUIENTE NIVEL CON 
             </p>
@@ -52,7 +52,7 @@ export default function LandingPage() {
             <img
               src="/img/darmax-logo.png"
               alt="Logo Darmax"
-              className="w-[400px] h-auto object-contain"
+              className="w-[300px] h-auto object-contain"
             />
           </div>
         </div>
