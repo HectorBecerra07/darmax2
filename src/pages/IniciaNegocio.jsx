@@ -315,8 +315,8 @@ const IniciaNegocio = ({ inicioRef }) => {
         <section id="catalogo" className="py-24 px-4 max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-slate-200 pb-8">
              <div>
-                <h2 className="text-3xl font-bold text-slate-900">Elige tu Ecosistema</h2>
-                <p className="text-slate-500 mt-2">Hardware de alto rendimiento para cada necesidad.</p>
+                <h2 className="text-3xl font-bold text-slate-900">Elige tu modelo de negocio</h2>
+                <p className="text-slate-500 mt-2">Emprende a tus posibilidades con darmax.</p>
              </div>
              {selected.length > 0 && (
                  <div className="mt-4 md:mt-0 px-4 py-2 bg-[#24d4da]/10 text-[#24d4da] rounded-lg font-medium text-sm animate-fade-in">
