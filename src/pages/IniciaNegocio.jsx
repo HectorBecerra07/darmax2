@@ -22,6 +22,16 @@ const formatMXN = (n) =>
 
 const modelos = [
   {
+    id: "Vending",
+    nombre: "Vending Touch ",
+    etiqueta: "Máquina Vending",
+    imagen: "/img/vending/TOUCHAGUA.png",
+    precio: 54950,
+    descripcion: "Automatización total 24/7. Genera ingresos pasivos con tecnología de despacho automático y cero personal.",
+    rutaInfo: "/vending-info",
+    badge: "Tecnología 24/7",
+  },
+    {
     id: "Purificadora",
     nombre: "Mostrador Darmax",
     etiqueta: "Purificadora",
@@ -32,16 +42,6 @@ const modelos = [
     badge: "Más Popular",
   },
   {
-    id: "Vending",
-    nombre: "Vending Touch ",
-    etiqueta: "Máquina Vending",
-    imagen: "/img/vending/TOUCHAGUA.png",
-    precio: 54950,
-    descripcion: "Automatización total 24/7. Genera ingresos pasivos con tecnología de despacho automático y cero personal.",
-    rutaInfo: "/vending-info",
-    badge: "Tecnología 24/7",
-  },
-  {
     id: "Vending-Limpieza",
     nombre: "Vending Limpieza",
     etiqueta: "Vending Limpieza",
@@ -50,6 +50,39 @@ const modelos = [
     descripcion: "Diversifica tu portafolio. Despacho automático de productos de limpieza a granel de alta demanda.",
     rutaInfo: "/vending-limpieza-info",
     badge: "Nuevo",
+  },
+];
+
+const combos = [
+  {
+    id: "Combo1",
+    nombre: "Combo 1",
+    etiqueta: "Purificadora + Vending",
+    imagen: "/img/vending/mostrador.png", // Placeholder
+    precio: 95900,
+    descripcion: "La solución completa. Combina una purificadora de mostrador con una máquina vending para maximizar tus ingresos.",
+    rutaInfo: "/combo-info/1",
+    badge: "Paquete Emprendedor",
+  },
+  {
+    id: "Combo2",
+    nombre: "Combo 2",
+    etiqueta: "Vending + Vending Limpieza",
+    imagen: "/img/vending/TOUCHAGUA.png", // Placeholder
+    precio: 84900,
+    descripcion: "Diversificación total. Ofrece agua purificada y productos de limpieza a granel en un solo punto de venta automatizado.",
+    rutaInfo: "/combo-info/2",
+    badge: "Doble Ingreso",
+  },
+  {
+    id: "Combo3",
+    nombre: "Combo 3",
+    etiqueta: "Paquete Doble Purificadora",
+    imagen: "/img/purificadoras/MOSTRADOR NEPTUNO A-PLUS/NEPTUNOAPLUS.png", // Placeholder
+    precio: 101900,
+    descripcion: "Duplica tu capacidad de producción. Ideal para zonas de alta demanda, con dos purificadoras de alto rendimiento.",
+    rutaInfo: "/combo-info/3",
+    badge: "Alta Capacidad",
   },
 ];
 
@@ -312,7 +345,7 @@ const IniciaNegocio = ({ inicioRef }) => {
         </header>
 
         {/* SECCIÓN DE MODELOS */}
-        <section id="catalogo" className="py-24 px-4 max-w-7xl mx-auto">
+        <section id="catalogo" className="py-12 px-4 max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-slate-200 pb-8">
              <div>
                 <h2 className="text-3xl font-bold text-slate-900">Elige tu Ecosistema</h2>
@@ -338,8 +371,35 @@ const IniciaNegocio = ({ inicioRef }) => {
           </div>
         </section>
 
+<<<<<<< HEAD
         {/* VENTAJAS */}
         <VentajasSection />
+=======
+        {/* SECCIÓN DE COMBOS */}
+        <section id="combos" className="py-12 px-4 max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-slate-200 pb-8">
+            <div>
+              <h2 className="text-3xl font-bold text-slate-900">Combos</h2>
+              <p className="text-slate-500 mt-2">Paquetes diseñados para acelerar tu crecimiento.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {combos.map((modelo) => (
+              <TarjetaModelo
+                key={modelo.id}
+                modelo={modelo}
+                navigate={navigate}
+                selected={selected}
+                onToggleSelect={toggleSelect}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* BENEFICIOS */}
+        <Beneficios />
+>>>>>>> a8c8553e0687f1a67d1e038343da285ef6f8d756
 
         {/* CTA FINAL (Clean) */}
         <section className="py-20 px-4 bg-white">
