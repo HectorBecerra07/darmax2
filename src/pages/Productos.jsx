@@ -24,7 +24,7 @@ export default function Productos() {
   const [loading, setLoading] = useState(true); // ⬅️ NUEVO
 
   const productosPorPagina = 10;
-  const { agregarProducto } = useCarrito();
+  const { agregarProducto, carrito } = useCarrito();
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -84,6 +84,15 @@ export default function Productos() {
   const productosPaginados = productosFiltrados.slice(inicio, fin);
 
   const handleAgregarCarrito = (producto) => {
+    const itemEnCarrito = carrito.find(item => item.id === producto.id);
+    const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+    const stockEfectivo = (producto.stock ?? 0) - cantidadEnCarrito;
+
+    if (stockEfectivo <= 0) {
+      toast.error("No hay más stock disponible para este producto.");
+      return;
+    }
+
     agregarProducto(producto, 1);
     toast.success(
       <div className="flex items-center gap-3">
@@ -159,7 +168,12 @@ export default function Productos() {
 
           {/* GRID DE PRODUCTOS */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {productosPaginados.map((p) => (
+            {productosPaginados.map((p) => {
+              const itemEnCarrito = carrito.find(item => item.id === p.id);
+              const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+              const stockEfectivo = (p.stock ?? 0) - cantidadEnCarrito;
+
+              return (
               <div
                 key={p.id}
                 className="flex flex-col items-center gap-3 cursor-pointer group"
@@ -184,7 +198,7 @@ export default function Productos() {
 
                 {/* Stock Display */}
                 <p className="text-center text-gray-600 text-sm">
-                  Stock: <span className={`${(p.stock ?? 0) === 0 ? 'text-red-500' : ''}`}>{p.stock ?? 0}</span> unidades
+                  Disponibles: <span className={`${stockEfectivo <= 0 ? 'text-red-500 font-bold' : ''}`}>{stockEfectivo}</span>
                 </p>
 
                 <button
@@ -192,18 +206,19 @@ export default function Productos() {
                     e.stopPropagation();
                     handleAgregarCarrito(p);
                   }}
-                  disabled={(p.stock ?? 0) === 0} // Disable if stock is 0
+                  disabled={stockEfectivo <= 0}
                   className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
-                    (p.stock ?? 0) === 0
-                      ? "bg-gray-300 text-gray-600 cursor-not-allowed" // Disabled style
-                      : "text-black hover:brightness-90" // Enabled style
+                    stockEfectivo <= 0
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : "text-black hover:brightness-90"
                   }`}
-                  style={{ backgroundColor: (p.stock ?? 0) === 0 ? undefined : "#ccff00" }} // Apply yellow background only if not disabled
+                  style={{ backgroundColor: stockEfectivo <= 0 ? undefined : "#ccff00" }}
                 >
-                  {(p.stock ?? 0) === 0 ? "Agotado" : "Añadir al carrito"}
+                  {stockEfectivo <= 0 ? "Agotado" : "Añadir al carrito"}
                 </button>
               </div>
-            ))}
+              )
+            })}
             {productosPaginados.length === 0 && (
               <div className="col-span-full text-center text-gray-500">
                 No hay productos para esta categoría.
