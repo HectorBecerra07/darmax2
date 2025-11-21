@@ -162,34 +162,70 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
 };
 
 /* =========================
-   SECCIÓN BENEFICIOS (Grid Bento)
+   SECCIÓN VENTAJAS (Nuevo Diseño)
 ========================= */
-function Beneficios() {
-  const items = [
-    { title: "ROI Acelerado", desc: "Retorno de inversión estimado en 12-15 meses.", col: "md:col-span-2 bg-slate-900 text-white" },
-    { title: "Ingresos 24/7", desc: "Tu negocio trabaja mientras duermes.", col: "md:col-span-1 bg-slate-100 text-slate-900" },
-    { title: "Garantía Premium", desc: "3 años en componentes principales.", col: "md:col-span-1 bg-slate-100 text-slate-900" },
-    { title: "Soporte Vitalicio", desc: "Acompañamiento técnico siempre.", col: "md:col-span-2 border border-slate-200 bg-white text-slate-900" },
+function VentajasSection() {
+  const ventajas = [
+    {
+      img: "/img/Iniciatunegocio/ACOMP.png",
+      title: "Acompañamiento 360°",
+      desc: "Te guiamos en cada paso, desde la instalación hasta la optimización de tu marketing para que solo te dediques a crecer."
+    },
+    {
+      img: "/img/Iniciatunegocio/CALID.png",
+      title: "Calidad Premium",
+      desc: "Componentes de grado industrial y los más altos estándares de purificación para un producto final insuperable."
+    },
+    {
+      img: "/img/Iniciatunegocio/DEMCON.png",
+      title: "Dominio Total del Negocio",
+      desc: "Recibe capacitación completa y acceso a nuestra base de conocimiento. Conviértete en un experto del agua."
+    },
+    {
+      img: "/img/Iniciatunegocio/NEGESC.png",
+      title: "Modelo de Negocio Escalable",
+      desc: "Inicia con una inversión inteligente y expande tu operación a medida que tus ganancias aumentan. El límite lo pones tú."
+    },
+    {
+      img: "/img/Iniciatunegocio/OPSIMP.png",
+      title: "Operación Simplificada",
+      desc: "Nuestros sistemas son tan intuitivos que podrás gestionarlos sin necesidad de personal técnico especializado."
+    },
+    {
+      img: "/img/Iniciatunegocio/RAP.png",
+      title: "Rápida Puesta en Marcha",
+      desc: "Implementamos tu planta en tiempo récord para que empieces a generar ingresos lo antes posible."
+    },
+    
   ];
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 py-20">
-      <SectionTitle subtitle="Por qué Darmax" title="Ingeniería para el éxito" />
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {items.map((item, i) => (
-            <div key={i} className={`rounded-[2rem] p-8 md:p-10 flex flex-col justify-between group hover:-translate-y-1 transition-transform duration-500 ${item.col}`}>
-                <div className="mb-8">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl mb-4 ${item.col.includes('slate-900') ? 'bg-white/10 text-[#24d4da]' : 'bg-[#24d4da]/10 text-[#24d4da]'}`}>
-                        ✦
-                    </div>
-                    <h3 className="text-2xl font-bold tracking-tight mb-2">{item.title}</h3>
-                    <p className={`text-sm leading-relaxed ${item.col.includes('slate-900') ? 'text-slate-400' : 'text-slate-500'}`}>
-                        {item.desc}
-                    </p>
-                </div>
-            </div>
-        ))}
+    <section className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl lg:text-center">
+          <h2 className="text-base font-semibold leading-7 text-[#24d4da]">Tu Éxito, Nuestra Misión</h2>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+            Todo lo que necesitas para dominar el mercado del agua
+          </p>
+          <p className="mt-6 text-lg leading-8 text-slate-600">
+            Hemos perfeccionado cada aspecto del negocio para que tu única preocupación sea ver crecer tus ganancias.
+          </p>
+        </div>
+        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+            {ventajas.map((ventaja) => (
+              <div key={ventaja.title} className="flex flex-col p-8 rounded-3xl border border-slate-100 hover:shadow-2xl hover:shadow-slate-200/80 transition-shadow duration-500">
+                <dt className="flex items-center gap-x-3 text-lg font-semibold leading-7 text-slate-900">
+                  <img src={ventaja.img} alt={ventaja.title} className="h-12 w-12 object-contain" />
+                  {ventaja.title}
+                </dt>
+                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                  <p className="flex-auto">{ventaja.desc}</p>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </div>
     </section>
   );
@@ -302,8 +338,8 @@ const IniciaNegocio = ({ inicioRef }) => {
           </div>
         </section>
 
-        {/* BENEFICIOS */}
-        <Beneficios />
+        {/* VENTAJAS */}
+        <VentajasSection />
 
         {/* CTA FINAL (Clean) */}
         <section className="py-20 px-4 bg-white">
