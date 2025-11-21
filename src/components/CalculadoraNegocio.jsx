@@ -166,12 +166,13 @@ function CalculadoraAgua({ isActive }) {
   const [garrafonesDia, setGarrafonesDia] = useState("");
   const [costoServicios, setCostoServicios] = useState("");
   const [costoRenta, setCostoRenta] = useState("");
+  const [costoInsumos, setCostoInsumos] = useState("");
 
   // Reset on tab change logic if needed, keeping simple for now
   
   const safeValue = (v) => (v === "" ? 0 : Number(v));
   const ingresosDiarios = safeValue(garrafonesDia) * precioGarrafon;
-  const gastosDiarios = (safeValue(costoServicios) / 30) + (safeValue(costoRenta) / 30);
+  const gastosDiarios = (safeValue(costoServicios) / 30) + (safeValue(costoRenta) / 30) + (safeValue(costoInsumos) / 30);
   const utilidadDiaria = ingresosDiarios - gastosDiarios;
 
   const themeData = {
@@ -213,10 +214,7 @@ function CalculadoraAgua({ isActive }) {
                 <StyledInput label="Servicios (Mes)" value={costoServicios} setValue={setCostoServicios} color={THEME.agua.primary} />
                 <StyledInput label="Renta (Mes)" value={costoRenta} setValue={setCostoRenta} color={THEME.agua.primary} />
              </div>
-             {/* Campo Insumos Desactivado (Visualmente sutil) */}
-             <div className="opacity-50 pointer-events-none grayscale">
-                <StyledInput label="Insumos (Agua Cruda)" value="0" setValue={()=>{}} color="#ccc" />
-             </div>
+             <StyledInput label="Insumos (Agua Cruda, etc.) (Mes)" value={costoInsumos} setValue={setCostoInsumos} color={THEME.agua.primary} />
          </div>
       </div>
 
@@ -227,7 +225,6 @@ function CalculadoraAgua({ isActive }) {
     </div>
   );
 }
-
 function CalculadoraLimpieza({ isActive }) {
   const [precioLitro, setPrecioLitro] = useState(25);
   const [litrosDia, setLitrosDia] = useState("");
