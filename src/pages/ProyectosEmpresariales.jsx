@@ -102,7 +102,7 @@ export default function ProyectosEmpresariales() {
   };
 
   return (
-    <section className="mt-20 bg-white py-14">
+    <section className="bg-white py-14">
       <div className="mx-auto px-6 md:px-10 max-w-screen-2xl">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center">

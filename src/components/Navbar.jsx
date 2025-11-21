@@ -20,6 +20,7 @@ export default function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const userMenuRef = useRef(null);
+  const navMenuRef = useRef(null);
 
   const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
   const firstName = (user?.name || "").split(" ")[0] || "";
@@ -44,6 +45,18 @@ export default function NavBar() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (navMenuRef.current && !navMenuRef.current.contains(event.target) && navOpen) {
+        setNavOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [navOpen]);
+
   const navLinks = [
     { href: "/inicia-tu-negocio", text: "INICIA TU NEGOCIO" },
     { href: "/productos", text: "PRODUCTOS" },
@@ -61,7 +74,7 @@ export default function NavBar() {
   return (
     <>
       {/* NAVBAR */}
-      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-black/50 backdrop-blur-md' : 'bg-black'}`}>
+      <nav className={`fixed top-0 left-0 w-full z-30 transition-all duration-300 bg-gray-900/95 backdrop-blur-lg`}>
         <div className="max-w-7xl mx-auto grid grid-cols-3 items-center h-20 px-4 sm:px-6 nav:px-8 md:flex md:justify-between">
           
           {/* Logo */}
@@ -162,10 +175,10 @@ export default function NavBar() {
           </div>
 
           {/* Botón menú móvil */}
-          <div className="flex items-center justify-end nav:hidden col-span-2">
+          <div className="flex items-center justify-end nav:hidden col-span-2 gap-x-4">
             <button
               onClick={() => setShowCart(true)}
-              className="relative text-white hover:text-[#ccff00]"
+              className="relative text-white hover:text-[#24d4da]"
               aria-label="Abrir carrito"
             >
               <ShoppingBagIcon className="w-7 h-7" />
@@ -188,6 +201,7 @@ export default function NavBar() {
 
       {/* Menú móvil (Slide-in from right) */}
       <div 
+        ref={navMenuRef}
         className={`fixed top-0 right-0 h-full w-full max-w-xs bg-gray-900/95 backdrop-blur-lg z-40 transform transition-transform duration-300 ease-in-out ${
           navOpen ? "translate-x-0" : "translate-x-full"
         }`}
