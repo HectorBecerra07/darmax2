@@ -21,6 +21,16 @@ const formatMXN = (n) =>
   });
 
 const modelos = [
+    {
+    id: "Vending",
+    nombre: "Vending Touch ",
+    etiqueta: "Máquina Vending",
+    imagen: "/img/vending/TOUCHAGUA.png",
+    precio: 54950,
+    descripcion: "Automatización total 24/7. Genera ingresos pasivos con tecnología de despacho automático y cero personal.",
+    rutaInfo: "/vending-info",
+    badge: "Más popular",
+  },
   {
     id: "Purificadora",
     nombre: "Mostrador Darmax",
@@ -30,16 +40,6 @@ const modelos = [
     descripcion: "El punto de entrada perfecto. Capacidad industrial de 600 garrafones, diseño compacto para locales comerciales.",
     rutaInfo: "/purificadora-info",
     badge: "Más rentable",
-  },
-  {
-    id: "Vending",
-    nombre: "Vending Touch ",
-    etiqueta: "Máquina Vending",
-    imagen: "/img/vending/TOUCHAGUA.png",
-    precio: 54950,
-    descripcion: "Automatización total 24/7. Genera ingresos pasivos con tecnología de despacho automático y cero personal.",
-    rutaInfo: "/vending-info",
-    badge: "Más popular",
   },
   {
     id: "Vending-Limpieza",
