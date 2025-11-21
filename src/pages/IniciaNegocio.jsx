@@ -21,6 +21,16 @@ const formatMXN = (n) =>
   });
 
 const modelos = [
+    {
+    id: "Vending",
+    nombre: "Vending Touch ",
+    etiqueta: "Máquina Vending",
+    imagen: "/img/vending/TOUCHAGUA.png",
+    precio: 54950,
+    descripcion: "Automatización total 24/7. Genera ingresos pasivos con tecnología de despacho automático y cero personal.",
+    rutaInfo: "/vending-info",
+    badge: "Tecnología 24/7",
+  },
   {
     id: "Purificadora",
     nombre: "Mostrador Darmax",
@@ -32,6 +42,7 @@ const modelos = [
     badge: "Más rentable",
   },
   {
+<<<<<<< HEAD
     id: "Vending",
     nombre: "Vending Touch ",
     etiqueta: "Máquina Vending",
@@ -42,6 +53,8 @@ const modelos = [
     badge: "Más popular",
   },
   {
+=======
+>>>>>>> 99216078286e602f5c0f05f352eb95ef18daab3b
     id: "Vending-Limpieza",
     nombre: "Vending Limpieza",
     etiqueta: "Vending Limpieza",
