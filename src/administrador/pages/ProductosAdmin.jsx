@@ -85,26 +85,37 @@ export default function ProductosAdmin() {
   };
 
   return (
-    <div className="">
-      <h2 className="text-2xl font-bold mb-6">Gestión de Productos</h2>
-
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+    <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+      {/* --- Header --- */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-slate-200 dark:border-slate-700 pb-4">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Gestión de Productos</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Agrega, edita y elimina productos de tu catálogo.
+          </p>
+        </div>
         <button
-          className="px-4 py-2 rounded bg-cyan-500 text-white hover:bg-cyan-600"
+          className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 text-white font-semibold hover:bg-cyan-600 transition-colors shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
           onClick={() => {
             setProductoEditando(null);
             setModalOpen(true);
           }}
         >
-          + Agregar Producto
+          <span className="text-xl leading-none">+</span> Agregar Producto
         </button>
+      </div>
 
+      {/* --- Filters --- */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1">
+          Filtrar por categoría:
+        </label>
         <select
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
-          className="border px-3 py-2 rounded"
+          className="w-full sm:w-64 bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 px-3 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition text-slate-800 dark:text-slate-200"
         >
-          <option value="todos">Todos</option>
+          <option value="todos">Todas las categorías</option>
           {categorias.map((c) => (
             <option key={c.id} value={c.nombre}>
               {c.nombre}
@@ -113,68 +124,80 @@ export default function ProductosAdmin() {
         </select>
       </div>
 
-      <div className="w-full overflow-auto">
-        <table className="w-full min-w-[1000px] border text-sm">
-          <thead className="bg-gray-100">
+      {/* --- Card Layout (Mobile) --- */}
+      <div className="grid gap-6 md:hidden">
+        {productosFiltrados.map((p) => (
+          <div key={p.id} className="bg-slate-50 dark:bg-slate-700/50 rounded-lg shadow-sm p-4 border border-slate-200 dark:border-slate-700 space-y-3">
+            <div className="flex gap-4">
+              <img
+                src={p.imagen || "https://via.placeholder.com/150"}
+                alt={p.nombre}
+                className="h-20 w-20 object-cover rounded-md flex-shrink-0"
+              />
+              <div className="flex-1">
+                <h3 className="font-bold text-slate-800 dark:text-slate-100">{p.nombre}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{p.categoria.nombre}</p>
+                <p className="text-lg font-semibold text-cyan-600 dark:text-cyan-400 mt-1">{fmtMoney(p.precio)}</p>
+              </div>
+            </div>
+            <div className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
+              <p><span className="font-semibold dark:text-slate-300">Stock:</span> {p.stock ?? "N/A"}</p>
+              <p><span className="font-semibold dark:text-slate-300">Peso:</span> {p.pesoKg ? `${p.pesoKg} kg` : "N/A"}</p>
+              <p><span className="font-semibold dark:text-slate-300">Dims:</span> {fmtDims(p)}</p>
+            </div>
+            <div className="flex justify-end gap-3 border-t border-slate-200 dark:border-slate-600 pt-3">
+              <button onClick={() => handleEditar(p)} className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Editar</button>
+              <button onClick={() => handleEliminar(p.id)} className="text-sm font-semibold text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">Eliminar</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* --- Table Layout (Desktop) --- */}
+      <div className="w-full overflow-auto hidden md:block">
+        <table className="w-full min-w-[1000px] text-sm text-left">
+          <thead className="bg-slate-50 dark:bg-slate-700/50 text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             <tr>
-              <th className="border p-2">Nombre</th>
-              <th className="border p-2">Precio</th>
-              <th className="border p-2">Categoría</th>
-              <th className="border p-2">Descripción</th>
-              <th className="border p-2">Stock</th>
-              <th className="border p-2">Peso (kg)</th>
-              <th className="border p-2">Dimensiones (L×A×H cm)</th>
-              <th className="border p-2">Imagen</th>
-              <th className="border p-2">Acciones</th>
+              <th className="px-6 py-3">Producto</th>
+              <th className="px-6 py-3">Precio</th>
+              <th className="px-6 py-3">Categoría</th>
+              <th className="px-6 py-3">Stock</th>
+              <th className="px-6 py-3">Peso</th>
+              <th className="px-6 py-3">Dimensiones</th>
+              <th className="px-6 py-3 text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
             {productosFiltrados.map((p) => (
-              <tr key={p.id} className="text-center">
-                <td className="border p-2">{p.nombre}</td>
-                <td className="border p-2">{fmtMoney(p.precio)}</td>
-                <td className="border p-2">{p.categoria.nombre}</td>
-                <td className="border p-2 text-left">{p.descripcion}</td>
-                <td className="border p-2">{p.stock ?? "-"}</td>
-                <td className="border p-2">{p.pesoKg ?? "-"}</td>
-                <td className="border p-2">{fmtDims(p)}</td>
-                <td className="border p-2">
-                  {p.imagen ? (
-                    <img
-                      src={p.imagen}
-                      alt={p.nombre}
-                      className="mx-auto h-16 w-16 object-cover"
-                    />
-                  ) : (
-                    "-"
-                  )}
+              <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center gap-3">
+                    <img src={p.imagen || "https://via.placeholder.com/150"} alt={p.nombre} className="h-10 w-10 object-cover rounded-md"/>
+                    <span className="font-medium text-slate-800 dark:text-slate-100">{p.nombre}</span>
+                  </div>
                 </td>
-                <td className="space-x-2 border p-2">
-                  <button
-                    onClick={() => handleEditar(p)}
-                    className="text-blue-600 hover:underline"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleEliminar(p.id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Eliminar
-                  </button>
+                <td className="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-300">{fmtMoney(p.precio)}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">{p.categoria.nombre}</span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-300">{p.stock ?? "-"}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-300">{p.pesoKg ? `${p.pesoKg} kg` : "-"}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-300">{fmtDims(p)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-right space-x-4">
+                  <button onClick={() => handleEditar(p)} className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">Editar</button>
+                  <button onClick={() => handleEliminar(p.id)} className="font-semibold text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors">Eliminar</button>
                 </td>
               </tr>
             ))}
-            {productosFiltrados.length === 0 && (
-              <tr>
-                <td className="p-6 text-center text-gray-500" colSpan={9}>
-                  No hay productos en esta vista.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
+      
+      {productosFiltrados.length === 0 && (
+        <div className="p-10 text-center text-slate-500 dark:text-slate-400 border-dashed border-2 border-slate-200 dark:border-slate-700 rounded-lg">
+          No hay productos que coincidan con el filtro seleccionado.
+        </div>
+      )}
 
       <ModalProductoForm
         show={modalOpen}
