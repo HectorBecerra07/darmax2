@@ -34,7 +34,7 @@ export default function LandingPage() {
           <div className="max-w-xl text-center md:text-left flex flex-col items-center md:items-start">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-black tracking-tight leading-tight mt-0 md:mt-4 mb-4 md:mb-6">
               EMPRENDE TU{" "}
-              <span className="text-accent">
+              <span style={{ color: '#ffff00' }}>
                 NEGOCIO
               </span>
             </h2>
@@ -44,7 +44,7 @@ export default function LandingPage() {
             </p>
             <button
               onClick={() => scrollToRef(calculadoraRef)}
-              className="inline-block text-black font-semibold py-2 px-4 md:px-6 rounded shadow transition hover:brightness-90 bg-accent text-sm md:text-base"
+              className="inline-block text-black font-semibold py-2 px-4 md:px-6 rounded shadow transition hover:brightness-90 bg-[#ffff00] text-sm md:text-base"
             >
               CALCULA TUS GANANCIAS
             </button>

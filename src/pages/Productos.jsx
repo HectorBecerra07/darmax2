@@ -29,7 +29,7 @@ export default function Productos() {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        setLoading(true); // ⬅️ empezamos a cargar
+        setLoading(true); // empezamos a cargar
         const res = await fetch(`${API_URL}/api/productos`);
         if (!res.ok) throw new Error("No se pudieron cargar los productos.");
         const data = await res.json();
@@ -37,7 +37,7 @@ export default function Productos() {
       } catch (error) {
         toast.error(error.message);
       } finally {
-        setLoading(false); // ⬅️ termine con éxito o error, se apaga el loading
+        setLoading(false); //termine con éxito o error, se apaga el loading
       }
     };
     fetchProductos();

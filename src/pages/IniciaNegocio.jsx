@@ -29,7 +29,7 @@ const modelos = [
     precio: 54950,
     descripcion: "Automatización total 24/7. Genera ingresos pasivos con tecnología de despacho automático y cero personal.",
     rutaInfo: "/vending-info",
-    badge: "Tecnología 24/7",
+    badge: "Más popular",
   },
   {
     id: "Purificadora",
@@ -39,7 +39,7 @@ const modelos = [
     precio: 52950,
     descripcion: "El punto de entrada perfecto. Capacidad industrial de 600 garrafones, diseño compacto para locales comerciales.",
     rutaInfo: "/purificadora-info",
-    badge: "Más Popular",
+    badge: "Más rentable",
   },
   {
     id: "Vending-Limpieza",
@@ -49,7 +49,7 @@ const modelos = [
     precio: 34950,
     descripcion: "Diversifica tu portafolio. Despacho automático de productos de limpieza a granel de alta demanda.",
     rutaInfo: "/vending-limpieza-info",
-    badge: "Nuevo",
+    badge: "economía inteligente",
   },
 ];
 
@@ -169,7 +169,7 @@ function VentajasSection() {
     {
       img: "/img/Iniciatunegocio/ACOMP.png",
       title: "Acompañamiento 360°",
-      desc: "Te guiamos en cada paso, desde la instalación hasta la optimización de tu marketing para que solo te dediques a crecer."
+      desc: "Te guiamos en cada paso, desde la instalación hasta la optimización de tu equipo."
     },
     {
       img: "/img/Iniciatunegocio/CALID.png",
@@ -205,7 +205,7 @@ function VentajasSection() {
         <div className="mx-auto max-w-2xl lg:text-center">
           <h2 className="text-base font-semibold leading-7 text-[#24d4da]">Tu Éxito, Nuestra Misión</h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-            Todo lo que necesitas para dominar el mercado del agua
+            Todo lo que necesitas para emprender.
           </p>
           <p className="mt-6 text-lg leading-8 text-slate-600">
             Hemos perfeccionado cada aspecto del negocio para que tu única preocupación sea ver crecer tus ganancias.
@@ -349,7 +349,7 @@ const IniciaNegocio = ({ inicioRef }) => {
                 
                 <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-6">¿Necesitas una cotización a medida?</h2>
                 <p className="text-slate-500 mb-8 max-w-xl mx-auto text-lg">
-                    Nuestros ingenieros pueden ayudarte a configurar la planta ideal según tu local y presupuesto.
+                    Nuestro equipo pueden ayudarte a configurar la planta ideal según tu local y presupuesto.
                 </p>
                 <a
                    href={buildWaUrl({})}
