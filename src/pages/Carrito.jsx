@@ -170,11 +170,18 @@ const Carrito = () => {
       setErrorShipping(null);
 
       const address_from = {
-        country_code: "MX",
-        postal_code: "57170",
-        area_level1: "Estado de México",
-        area_level2: "Cdad. Nezahualcóyotl",
-        area_level3: "Bosques de Aragon",
+        name: import.meta.env.VITE_SKYDROPX_SHIPPER_NAME,
+        company: import.meta.env.VITE_SKYDROPX_SHIPPER_COMPANY,
+        street: import.meta.env.VITE_SKYDROPX_SHIPPER_ADDRESS,
+        street_number: import.meta.env.VITE_SKYDROPX_SHIPPER_STREET_NUMBER,
+        suburb: import.meta.env.VITE_SKYDROPX_SHIPPER_SUBURB,
+        city: import.meta.env.VITE_SKYDROPX_SHIPPER_CITY,
+        state: import.meta.env.VITE_SKYDROPX_SHIPPER_STATE,
+        postal_code: import.meta.env.VITE_SKYDROPX_SHIPPER_POSTAL_CODE,
+        country: import.meta.env.VITE_SKYDROPX_SHIPPER_COUNTRY,
+        phone: import.meta.env.VITE_SKYDROPX_SHIPPER_PHONE,
+        email: import.meta.env.VITE_SKYDROPX_SHIPPER_EMAIL,
+        reference: import.meta.env.VITE_SKYDROPX_SHIPPER_REFERENCE,
       };
 
       // Usa el nuevo estado unificado de dirección
