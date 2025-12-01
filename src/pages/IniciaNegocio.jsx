@@ -154,7 +154,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
             onClick={() => navigate(modelo.rutaInfo)}
             className="w-full mt-4 text-xs font-semibold text-slate-400 hover:text-[#24d4da] transition-colors flex items-center justify-center gap-1"
         >
-            Ver especificaciones técnicas <span className="text-lg leading-none">›</span>
+            CONOCE MAS DE NUESTRO EQUIPO<span className="text-lg leading-none">›</span>
         </button>
       </div>
     </article>

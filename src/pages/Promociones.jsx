@@ -13,7 +13,7 @@ const promociones = [
     titulo: "¡Doble Purificadora!",
     descripcion: "Compra una purificadora seleccionada y llévate otra sin costo de equipo.",
     detalle: "Ideal para abrir dos sucursales simultáneas.",
-    imagen: "/img/PROMOCIONES/PROMOCION3.jpg",
+    imagen: "",
     etiqueta: "Oferta 2x1",
     // AQUÍ PONES LA RUTA DE TU PDF
     pdf: "/documentos/ficha-promocion-2x1.pdf", 
