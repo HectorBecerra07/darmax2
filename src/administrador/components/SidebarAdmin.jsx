@@ -27,7 +27,7 @@ const SidebarAdmin = ({ collapsed, theme, setTheme }) => {
     <aside
       className={`sidebar-hud ${
         isLight ? "sidebar-light" : "sidebar-dark"
-      } w-full h-full p-4 flex flex-col justify-between transition-all duration-300`}
+      } w-full h-full p-4 flex flex-col justify-between transition-all duration-300 overflow-y-auto`}
     >
       <div className="sidebar-hud-content space-y-6">
         <div className={`flex flex-col items-center gap-2 ${collapsed && "py-4"}`}>

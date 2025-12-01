@@ -1,7 +1,6 @@
 .sidebar-hud {
   position: relative;
   z-index: 0;
-  overflow: hidden;
 }
 
 .sidebar-hud::before {
@@ -55,26 +54,5 @@
   display: none;
 }
 
-@media (max-width: 768px) {
-  .sidebar-hud {
-    width: 100%;
-    height: auto;
-    padding: 1rem;
-  }
 
-  .sidebar-hud-content nav {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-  }
-
-  .sidebar-hud-content .flex-col {
-    align-items: center;
-    text-align: center;
-  }
-
-  .sidebar-hud-content button {
-    width: 100%;
-  }
-}
 

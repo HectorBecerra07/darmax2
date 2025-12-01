@@ -36,15 +36,17 @@ const DashboardAdmin = () => {
         aria-modal="true"
       >
         <div className="relative flex w-full max-w-xs flex-1 flex-col">
-          <div className="absolute top-0 right-0 -mr-14 p-1">
-            <button
-              type="button"
-              className="flex h-12 w-12 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
-            </button>
-          </div>
+          {sidebarOpen && (
+            <div className="absolute top-0 right-0 -mr-14 p-1">
+              <button
+                type="button"
+                className="flex h-12 w-12 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
+              </button>
+            </div>
+          )}
           <SidebarAdmin collapsed={false} theme={theme} setTheme={setTheme} />
         </div>
       </div>
@@ -68,40 +70,48 @@ const DashboardAdmin = () => {
       </div>
 
       {/* --- Main Content --- */}
-      <div
-        className={`flex flex-1 flex-col transition-all duration-300 ease-in-out ${
-          sidebarCollapsed ? "md:pl-20" : "md:pl-64"
-        }`}
-      >
-        {/* Sticky Header */}
-        <div className="sticky top-0 z-30 flex h-16 flex-shrink-0 items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 shadow-sm sm:px-6">
-          <div className="flex items-center">
-            {/* Mobile Hamburger */}
-            <button
-              type="button"
-              className="-ml-2 rounded-md p-2 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500 md:hidden"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-            </button>
-            {/* Desktop Collapse Toggle */}
-            <button
-              type="button"
-              className="hidden md:flex -ml-2 rounded-md p-2 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            >
-              <ChevronDoubleLeftIcon className={`h-6 w-6 transition-transform duration-300 ${sidebarCollapsed && "rotate-180"}`} />
-            </button>
-            <h1 className="ml-4 text-lg font-semibold text-slate-800 dark:text-slate-100">Dashboard</h1>
-          </div>
-        </div>
-
-        <main className="flex-1">
-          <div className="p-4 sm:p-6 md:p-8">
-            <Outlet />
-          </div>
-        </main>
-      </div>
+              <div className={`flex flex-1 flex-col transition-all duration-300 ease-in-out ${sidebarCollapsed ? "md:pl-20" : "md:pl-64"}`}>
+                {/* Sticky Header */}
+                <div className="sticky top-0 z-30 flex h-16 flex-shrink-0 items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 shadow-sm sm:px-6 relative">
+                  {/* Left section: Mobile Hamburger (mobile) / Desktop Collapse Toggle (desktop) */}
+                  <div className="flex items-center">
+                    {/* Mobile Hamburger */}
+                    <button
+                      type="button"
+                      className="-ml-2 rounded-md p-2 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500 md:hidden"
+                      onClick={() => setSidebarOpen(true)}
+                      aria-label="Open sidebar"
+                    >
+                      <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+                    </button>
+                    {/* Desktop Collapse Toggle */}
+                    <button
+                      type="button"
+                      className="hidden md:flex -ml-2 rounded-md p-2 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                      onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                      aria-label="Toggle sidebar collapse"
+                    >
+                      <ChevronDoubleLeftIcon className={`h-6 w-6 transition-transform duration-300 ${sidebarCollapsed && "rotate-180"}`} />
+                    </button>
+                  </div>
+      
+                  {/* Center section: Dashboard Title */}
+                  <div className="absolute left-1/2 -translate-x-1/2">
+                    <h1 className="text-lg font-semibold text-slate-800 dark:text-slate-100">Dashboard</h1>
+                  </div>
+      
+                  {/* Right section: (Currently empty, but could be user avatar, etc.) */}
+                  <div className="flex items-center">
+                    {/* Optional right-side elements */}
+                  </div>
+                </div>
+      
+                <main className="flex-1">
+                  <div className="p-4 sm:p-6 md:p-8">
+                    <Outlet />
+                  </div>
+                </main>
+              </div>
     </div>
   );
 };
