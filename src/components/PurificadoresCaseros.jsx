@@ -19,6 +19,7 @@ export default function PurificadoresCaseros() {
   const navigate = useNavigate();
   const { agregarProducto } = useCarrito();
   const [purificadores, setPurificadores] = useState([]);
+  const [loading, setLoading] = useState(true); // Nuevo estado de carga
 
   // Calculadora de ahorro
   const [garrafonesPorSemana, setGarrafonesPorSemana] = useState(3);
@@ -46,6 +47,8 @@ export default function PurificadoresCaseros() {
         setPurificadores(filtrados);
       } catch (error) {
         toast.error(error.message);
+      } finally {
+        setLoading(false); // Siempre termina el estado de carga
       }
     };
 
@@ -88,7 +91,12 @@ export default function PurificadoresCaseros() {
         Purificadores Caseros
       </h2>
 
-      {purificadores.length === 0 ? (
+      {loading ? (
+        <div className="flex flex-col items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#24d4da]"></div>
+          <p className="mt-4 text-lg text-gray-600">Cargando purificadores...</p>
+        </div>
+      ) : purificadores.length === 0 ? (
         <p className="text-center text-gray-500">
           No hay purificadores disponibles en este momento.
         </p>
@@ -129,7 +137,7 @@ export default function PurificadoresCaseros() {
                     onClick={() => navigate(`/videos/${item.id}`)}
                     className="w-full px-6 py-2 rounded-xl font-medium text-[#000000] hover:underline"
                   >
-                    Ver video y detalles
+                    
                   </button>
                 </div>
                 {(item.pesoKg || item.largoCm) && (
@@ -336,15 +344,6 @@ export default function PurificadoresCaseros() {
             </Faq>
           </div>
         </section>
-
-        <div className="text-center">
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="bg-[#24d4da] hover:brightness-90 text-black px-8 py-3 rounded-xl font-semibold shadow-lg"
-          >
-            Ver modelos disponibles
-          </button>
-        </div>
       </div>
     </section>
   );

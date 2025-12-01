@@ -12,17 +12,17 @@ export default function VideoDetalle() {
   const videos = {
     "purificador-eco": {
       titulo: "Purificador Compacto Eco",
-      video: "https://www.youtube.com/embed/VIDEO_ID_1",
+      video: "https://www.youtube.com/embed/MJYdWsrvBr8?si=afWbBtGRHprqgrBq",
       descripcion: "Detalles técnicos, instalación y mantenimiento del modelo Eco.",
     },
     "purificador-plus": {
       titulo: "Purificador Familiar Plus",
-      video: "https://www.youtube.com/embed/VIDEO_ID_2",
+      video: "https://www.youtube.com/embed/MJYdWsrvBr8?si=afWbBtGRHprqgrBq",
       descripcion: "Demostración del modelo Plus y consejos de uso doméstico.",
     },
     "purificador-premium": {
       titulo: "Purificador Premium UV",
-      video: "https://www.youtube.com/embed/VIDEO_ID_3",
+      video: "https://www.youtube.com/embed/MJYdWsrvBr8?si=afWbBtGRHprqgrBq",
       descripcion: "Funcionamiento interno con luz UV y mantenimiento recomendado.",
     },
   };
