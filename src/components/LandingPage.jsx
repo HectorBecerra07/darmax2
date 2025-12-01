@@ -58,9 +58,6 @@ export default function LandingPage() {
             />
           </div>
         </div>
-
-        
-
       </section>
 
       {/* SECCIONES CON REF */}
@@ -68,9 +65,9 @@ export default function LandingPage() {
         <IniciaNegocio />
       </div>
 
-      
+      //-- NUEVO ---
       <Carruselimg />
-
+      //-- FIN NUEVO ---
       <div ref={calculadoraRef} className="scroll-mt-1">
         <CalculadoraNegocio />
       </div>

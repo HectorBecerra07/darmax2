@@ -168,7 +168,9 @@ const TINACO_ALCALINA_IMAGES = {
  */
 const MODEL_DEFAULT_IMAGES = {
   AtlantisTouch: "/img/TINACOS/atlantis/201.png",
-  AtlantisMaxTouch: "/img/TINACOS/atlantis/209.png"
+  AtlantisMaxTouch: "/img/TINACOS/atlantis/209.png",
+  Atlantis: "/img/TINACOS/atlantis/201.png",
+  AtlantisMax: "/img/TINACOS/atlantis/209.png",
 };
 /*
  * AGUA_ALCALINA_DEFAULT_IMAGES: Define las rutas de las imágenes de los modelos
@@ -177,7 +179,9 @@ const MODEL_DEFAULT_IMAGES = {
  */
 const AGUA_ALCALINA_DEFAULT_IMAGES = {
   AtlantisTouch: "/img/TINACOS/atlantis/205.png",
-  AtlantisMaxTouch: "/img/TINACOS/atlantis/214.png"
+  AtlantisMaxTouch: "/img/TINACOS/atlantis/214.png",
+  Atlantis: "/img/TINACOS/atlantis/205.png",
+  AtlantisMax: "/img/TINACOS/atlantis/214.png",
 };
 
 /*
