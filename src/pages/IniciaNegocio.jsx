@@ -59,7 +59,7 @@ const modelos = [
 
 const SectionTitle = ({ subtitle, title, align = "center" }) => (
   <div className={`mb-12 ${align === "center" ? "text-center" : "text-left"}`}>
-    <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
+    <span className="text-[] font-bold tracking-widest text-xs uppercase mb-3 block">
       {subtitle}
     </span>
     <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">

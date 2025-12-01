@@ -97,7 +97,7 @@ export default function CarruselResponsive() {
               Galería de Proyectos
            </span>
            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-              Nuestros Trabajos
+              Nuestros Trabajos Recientes
            </h2>
         </div>
 

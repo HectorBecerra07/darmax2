@@ -99,41 +99,49 @@ export default function PurificadoresCaseros() {
             return (
               <article
                 key={item.id}
-                className="bg-white border border-gray-200 rounded-3xl shadow-xl p-6 flex flex-col items-center text-center transition hover:scale-[1.02]"
+                className="bg-white border border-gray-200 rounded-3xl shadow-lg p-6 flex flex-col text-center transition-shadow duration-300 hover:shadow-2xl"
               >
                 <img
                   src={item.imagen || "/placeholder.jpg"}
                   alt={item.nombre}
-                  className="w-full h-48 object-cover rounded-2xl mb-4 shadow-sm"
+                  className="w-full h-48 object-cover rounded-2xl mb-4"
                   loading="lazy"
                 />
-                <h3 className="text-xl font-semibold text-black mb-2">
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
                   {item.nombre}
                 </h3>
                 {item.descripcion && (
-                  <p className="text-sm text-gray-700 mb-3">{item.descripcion}</p>
+                  <p className="text-sm text-gray-600 mb-4 flex-grow">
+                    {item.descripcion}
+                  </p>
                 )}
-                <p className="text-lg font-bold text-green-600 mb-4">
+                <p className="text-3xl font-bold text-[#000000] my-4">
                   {mxn(precioN)}
                 </p>
-                <button
-                  onClick={() => handleAgregar(item)}
-                  className="mb-2 px-6 py-2 rounded-xl font-semibold bg-[#ccff00] text-black hover:brightness-90 transition"
-                >
-                  Agregar al carrito
-                </button>
-                <button
-                  onClick={() => navigate(`/videos/${item.id}`)}
-                  className="text-blue-700 hover:underline text-sm font-medium"
-                >
-                  Ver video y detalles
-                </button>
+                <div className="w-full mt-auto space-y-2">
+                  <button
+                    onClick={() => handleAgregar(item)}
+                    className="w-full px-6 py-3 rounded-xl font-bold bg-[#24d4da] text-black hover:brightness-90 transition shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#24d4da] focus:ring-opacity-50"
+                  >
+                    Agregar al carrito
+                  </button>
+                  <button
+                    onClick={() => navigate(`/videos/${item.id}`)}
+                    className="w-full px-6 py-2 rounded-xl font-medium text-[#000000] hover:underline"
+                  >
+                    Ver video y detalles
+                  </button>
+                </div>
                 {(item.pesoKg || item.largoCm) && (
-                  <div className="mt-4 text-xs text-gray-600">
-                    {item.pesoKg ? <div>Peso: {item.pesoKg} kg</div> : null}
+                  <div className="mt-4 text-xs text-gray-500 text-left w-full border-t pt-3">
+                    {item.pesoKg ? (
+                      <div>
+                        <strong>Peso:</strong> {item.pesoKg} kg
+                      </div>
+                    ) : null}
                     {(item.largoCm || item.anchoCm || item.altoCm) && (
                       <div>
-                        Dimensiones:{" "}
+                        <strong>Dimensiones:</strong>{" "}
                         {[item.largoCm, item.anchoCm, item.altoCm]
                           .filter((v) => v != null && v !== "")
                           .join(" × ")}{" "}
@@ -151,7 +159,7 @@ export default function PurificadoresCaseros() {
       <div className="mt-16 text-center">
         <button
           onClick={() => navigate("/videos")}
-          className="bg-[#ccff00] hover:brightness-90 text-black px-8 py-3 rounded-xl font-semibold shadow-lg"
+          className="bg-[#24d4da] hover:brightness-90 text-black px-8 py-3 rounded-xl font-semibold shadow-lg"
         >
           Ver todos los videos
         </button>
@@ -332,7 +340,7 @@ export default function PurificadoresCaseros() {
         <div className="text-center">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="bg-[#ccff00] hover:brightness-90 text-black px-8 py-3 rounded-xl font-semibold shadow-lg"
+            className="bg-[#24d4da] hover:brightness-90 text-black px-8 py-3 rounded-xl font-semibold shadow-lg"
           >
             Ver modelos disponibles
           </button>

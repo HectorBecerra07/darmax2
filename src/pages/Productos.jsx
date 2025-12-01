@@ -125,9 +125,9 @@ export default function Productos() {
   const money = (n) => `MXN $${Number(n || 0).toFixed(2)}`;
 
   return (
-    <section className="p-6 max-w-7xl mx-auto pt-28 pb-16">
+    <section className="p-6 max-w-7xl mx-auto pt-10 pb-16">
       <h2 className="text-3xl font-bold mb-12 text-center uppercase tracking-wide">
-        Componentes para Purificadoras
+        Nuestros productos
       </h2>
 
       {/* LOADING SPINNER */}
@@ -151,12 +151,12 @@ export default function Productos() {
                   onClick={() => setCategoriaActiva(cat)}
                   className={`px-6 py-2 rounded-full text-sm font-medium border transition ${
                     cat === categoriaActiva
-                      ? "text-black font-semibold"
+                      ? "text-white font-semibold"
                       : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
                   }`}
                   style={
                     cat === categoriaActiva
-                      ? { backgroundColor: "#ccff00", borderColor: "#ccff00" }
+                      ? { backgroundColor: "#24d4da", borderColor: "#24d4da" }
                       : {}
                   }
                 >
@@ -210,9 +210,9 @@ export default function Productos() {
                   className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
                     stockEfectivo <= 0
                       ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                      : "text-black hover:brightness-90"
+                      : "text-white hover:brightness-90"
                   }`}
-                  style={{ backgroundColor: stockEfectivo <= 0 ? undefined : "#ccff00" }}
+                  style={{ backgroundColor: stockEfectivo <= 0 ? undefined : "#24d4da" }}
                 >
                   {stockEfectivo <= 0 ? "Agotado" : "Añadir al carrito"}
                 </button>
