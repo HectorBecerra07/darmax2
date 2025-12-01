@@ -185,9 +185,12 @@ const AGUA_ALCALINA_DEFAULT_IMAGES = {
  * El usuario se encargará de proporcionar las rutas.
  */
 const ATLANTIS_SECONDARY_IMAGES = {
+  //BOTONONES
   Atlantis: "/img/vending/ATLANTIS300MAX.png",
   AtlantisMax: "/img/vending/ATLANTIS300MAX.png",
-  AtlantisMaxTouch: "/img/vending/ATLANTIS300MAX.png"
+  // TOUCH MODELS
+  AtlantisTouch: "/img/vending/atlantistouchvending.jpg",
+  AtlantisMaxTouch: "/img/vending/atlantistouchvending.jpg",
 };
 
 /*
@@ -195,6 +198,7 @@ const ATLANTIS_SECONDARY_IMAGES = {
  * cuando se selecciona el extra "Agua alcalina".
  * El usuario se encargará de proporcionar las rutas.
  */
+
 const ATLANTIS_SECONDARY_ALCALINA_IMAGES = {
   // Ejemplo: Atlantis: "/img/ruta/a/atlantis-secundaria-alcalina.png",
 };
