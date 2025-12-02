@@ -59,11 +59,12 @@ export default function NavBar() {
 
   const navLinks = [
     { href: "/inicia-tu-negocio", text: "INICIA TU NEGOCIO" },
+    { href: "/nosotros", text: "NOSOTROS" },
     { href: "/productos", text: "PRODUCTOS" },
     { href: "/purificadores-caseros", text: "PURIFICADORES CASEROS" },
     { href: "/promociones", text: "PROMOCIONES" },
     { href: "/proyectos-empresariales", text: "PROYECTOS" },
-    { href: "/nosotros", text: "NOSOTROS" },
+    
   ];
 
   const baseLinkClass = "font-semibold transition-colors duration-200";
