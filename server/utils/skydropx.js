@@ -1,28 +1,32 @@
 // server/utils/skydropx.js
 import axios from "axios";
 
-// Lee las credenciales y la URL base del entorno
 const {
+  // OAuth PRO (cotizaciones, etc.)
   SKYDROPX_CLIENT_ID,
   SKYDROPX_CLIENT_SECRET,
-  SKYDROPX_BASE_URL = "https://pro.skydropx.com", // default
+  SKYDROPX_BASE_URL = "https://pro.skydropx.com",
+
+  // API clásica (labels, shipments, etc.)
+  SKYDROPX_API_KEY,
+  SKYDROPX_API_BASE = "https://api.skydropx.com",
 } = process.env;
 
 if (!SKYDROPX_CLIENT_ID || !SKYDROPX_CLIENT_SECRET) {
   console.error("❌ No se encontraron SKYDROPX_CLIENT_ID o SKYDROPX_CLIENT_SECRET en process.env");
 }
 
-// Caché en memoria para el token
+// Caché en memoria para el token OAuth PRO
 let tokenCache = {
   accessToken: null,
   expiresAt: 0,
 };
 
 /**
- * Obtiene un nuevo token de acceso desde Skydropx.
+ * Obtiene un nuevo token de acceso desde Skydropx PRO (OAuth).
  */
 async function getNewToken() {
-  console.log("🔄 Generando nuevo token de Skydropx...");
+  console.log("🔄 Generando nuevo token de Skydropx PRO...");
 
   try {
     const params = new URLSearchParams();
@@ -42,28 +46,27 @@ async function getNewToken() {
 
     const { access_token, expires_in } = data;
 
-    // Restamos 60 segundos como margen de seguridad
-    const expiresAt = Date.now() + expires_in * 1000 - 60000;
+    const expiresAt = Date.now() + expires_in * 1000 - 60_000;
 
     tokenCache = {
       accessToken: access_token,
       expiresAt,
     };
 
-    console.log("✅ Nuevo token de Skydropx generado.");
+    console.log("✅ Nuevo token PRO generado.");
     return access_token;
   } catch (error) {
     console.error(
-      "❌ Error al generar el token de Skydropx:",
+      "❌ Error al generar el token PRO:",
       error.response?.status,
       error.response?.data
     );
-    throw new Error("No se pudo autenticar con Skydropx.");
+    throw new Error("No se pudo autenticar con Skydropx PRO.");
   }
 }
 
 /**
- * Obtiene un token válido (caché o nuevo).
+ * Obtiene un token válido (desde caché o nuevo).
  */
 async function getToken() {
   if (tokenCache.accessToken && Date.now() < tokenCache.expiresAt) {
@@ -73,15 +76,16 @@ async function getToken() {
 }
 
 /**
- * Realiza una solicitud autenticada a la API de Skydropx.
+ * Request a la API PRO (pro.skydropx.com) usando OAuth.
+ * Ej: cotizaciones /api/v1/quotations
  */
-export async function skydropxRequest(method, path, body = null) {
+export async function skydropxProRequest(method, path, body = null) {
   try {
     const token = await getToken();
 
     const { data } = await axios({
       method,
-      url: `${SKYDROPX_BASE_URL}${path}`, // El path debe empezar con /api/v1/...
+      url: `${SKYDROPX_BASE_URL}${path}`, // path empieza con /api/v1/...
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -92,18 +96,47 @@ export async function skydropxRequest(method, path, body = null) {
     return data;
   } catch (error) {
     console.error(
-      "❌ Error en solicitud a Skydropx:",
+      "❌ Error en solicitud PRO:",
       error.response?.status,
       error.response?.data
     );
-
     if (error.response?.status === 401) {
-      console.log(
-        "Token posiblemente expirado. Forzando renovación en la próxima solicitud."
-      );
+      console.log("Token PRO expirado. Forzando renovación.");
       tokenCache.expiresAt = 0;
     }
+    throw error;
+  }
+}
 
+/**
+ * Request a la API clásica (api.skydropx.com) usando API KEY.
+ * Ej: /v1/labels, /v1/shipments
+ */
+export async function skydropxApiRequest(method, path, body = null) {
+  if (!SKYDROPX_API_KEY) {
+    throw new Error(
+      "SKYDROPX_API_KEY no está configurada en las variables de entorno"
+    );
+  }
+
+  try {
+    const { data } = await axios({
+      method,
+      url: `${SKYDROPX_API_BASE}${path}`, // path empieza con /v1/...
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token token=${SKYDROPX_API_KEY}`,
+      },
+      data: body ?? undefined,
+    });
+
+    return data;
+  } catch (error) {
+    console.error(
+      "❌ Error en solicitud API clásica:",
+      error.response?.status,
+      error.response?.data
+    );
     throw error;
   }
 }

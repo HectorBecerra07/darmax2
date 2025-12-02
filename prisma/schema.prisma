@@ -70,7 +70,7 @@ model Producto {
   categoria   Categoria @relation(fields: [categoriaId], references: [id])
 
   // Relación con Pedidos y Carrito
-  pedidos     PedidosEnProductos[]
+  pedidos      PedidosEnProductos[]
   carritoItems CarritoItem[] // Un producto puede estar en muchos carritos
 }
 
@@ -109,6 +109,9 @@ model Pedido {
 
   // Relación con Productos
   productos PedidosEnProductos[]
+
+  // Relación 1-1 con Envio (opcional)
+  envio     Envio?
 }
 
 // Tabla intermedia para la relación muchos-a-muchos Pedido <-> Producto
@@ -139,7 +142,35 @@ model CarritoItem {
   productoId Int
   producto   Producto @relation(fields: [productoId], references: [id])
 
-  // Un usuario solo puede tener una línea por producto (ej: 3x "Producto A", no dos líneas de "Producto A")
+  // Un usuario solo puede tener una línea por producto (ej: 3x "Producto A")
   @@unique([userId, productoId])
 }
 
+// --- MODELO DE ENVÍOS (SKYDROPX, TRACKING, ETC.) ---
+
+model Envio {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  // Relación 1-1 con Pedido
+  pedidoId  Int    @unique
+  pedido    Pedido @relation(fields: [pedidoId], references: [id])
+
+  // Datos de cotización Skydropx
+  quotationId String        // ID de la cotización usada
+  rateId      String        // ID de la rate seleccionada
+  provider    String?       // Paquetería (DHL, Estafeta, etc.)
+  service     String?       // Nombre del servicio
+  days        Int?          // Días estimados
+
+  // Costos
+  costoEnvio  Float
+  moneda      String  @default("MXN")
+
+  // Datos del envío real / guía
+  labelId            String? // ID de la etiqueta (labels) en Skydropx
+  skydropxShipmentId String? // Si en algún momento usas /shipments
+  trackingNumber     String? // Número de rastreo
+  trackingUrl        String? // URL de rastreo
+  etiquetaUrl        String? // URL de la etiqueta (PDF/ZPL/etc.)
+}

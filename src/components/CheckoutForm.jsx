@@ -23,6 +23,8 @@ const CheckoutForm = ({
   rateId,
   shippingTotal,
   totalConEnvio,
+  rateInfo,   // 👈 nuevo: info de la rate seleccionada
+  userId,     // 👈 nuevo: id del usuario logueado (si existe)
 }) => {
   const { vaciarCarrito } = useCarrito();
   const { user } = useUser();
@@ -33,6 +35,7 @@ const CheckoutForm = ({
 
   const [loading, setLoading] = useState(false);
 
+  // Mantengo tu lógica de guardar pedido en localStorage
   const guardarPedidoLocal = (paymentId) => {
     let numeroOrden = Number(localStorage.getItem("numeroOrden")) || 1;
 
@@ -85,11 +88,17 @@ const CheckoutForm = ({
       alert("Stripe no está listo todavía. Intenta de nuevo en unos segundos.");
       return;
     }
-     if (!shippingAddress.nombre || !shippingAddress.email || !shippingAddress.calle || !shippingAddress.codigoPostal) {
-      alert("Por favor, completa todos los campos de dirección en el Paso 2 antes de pagar.");
+    if (
+      !shippingAddress.nombre ||
+      !shippingAddress.email ||
+      !shippingAddress.calle ||
+      !shippingAddress.codigoPostal
+    ) {
+      alert(
+        "Por favor, completa todos los campos de dirección en el Paso 2 antes de pagar."
+      );
       return;
     }
-
 
     setLoading(true);
 
@@ -111,8 +120,7 @@ const CheckoutForm = ({
       }
     }
 
-
-    // 2) Confirmar pago con Stripe
+    // 2) Confirmar pago con Stripe (PaymentElement)
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       redirect: "if_required",
@@ -126,17 +134,47 @@ const CheckoutForm = ({
     }
 
     if (paymentIntent && paymentIntent.status === "succeeded") {
-      // 3) Guardar pedido local, pasando el ID de pago
+      // 3) Registrar pedido en el BACKEND (Prisma: Pedido + Envio)
+      let pedidoBackend = null;
+      try {
+        const res = await fetch(`${API_URL}/api/orders/confirm`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            paymentIntentId: paymentIntent.id,
+            shippingAddress,
+            cartItems,
+            quotationId,
+            rateId,
+            shippingTotal,
+            totalConEnvio,
+            userId: userId || null,
+            rateInfo: rateInfo || null,
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          console.error("Error al crear pedido en backend:", data);
+        } else {
+          pedidoBackend = data.pedido;
+          console.log("✅ Pedido creado en backend:", pedidoBackend);
+        }
+      } catch (err) {
+        console.error("Error llamando a /api/orders/confirm:", err);
+      }
+
+      // 4) Guardar pedido localmente (para tu panel actual y gracias-compra)
       const nuevoPedido = guardarPedidoLocal(paymentIntent.id);
 
-      // 4) Enviar correo de pedido
+      // 5) Enviar correo de pedido (usando tu endpoint actual)
       try {
         if (emailToUse) {
           await fetch(`${API_URL}/api/orders/send-email`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              order: nuevoPedido,
+              order: nuevoPedido,      // mantenemos el formato que ya usas
               emailCliente: emailToUse,
             }),
           });
@@ -145,7 +183,7 @@ const CheckoutForm = ({
         console.error("Error enviando correo de pedido:", err);
       }
 
-      // 5) Limpiar carrito y redirigir
+      // 6) Limpiar carrito (context/local) y redirigir
       vaciarCarrito();
       navigate("/gracias-compra", { state: { order: nuevoPedido } });
     } else {
@@ -161,67 +199,71 @@ const CheckoutForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
-        {/* Resumen de compra */}
-        <div className="border border-gray-100 rounded-2xl bg-white p-4 sm:p-5">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">
-              Resumen de tu pedido
-            </h3>
+      {/* Resumen de compra */}
+      <div className="border border-gray-100 rounded-2xl bg-white p-4 sm:p-5">
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">
+          Resumen de tu pedido
+        </h3>
 
-            <div className="space-y-2 max-h-52 overflow-y-auto pr-1 text-sm">
-              {cartItems.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">
-                  No tienes productos en tu carrito.
-                </p>
-              ) : (
-                cartItems.map((item) => (
-                  <div key={item.id} className="flex justify-between items-start gap-3">
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-700">{item.nombre}</p>
-                      <p className="text-xs text-gray-500">
-                        Cant: {item.cantidad}
-                      </p>
-                    </div>
-                    <p className="font-semibold text-gray-700 whitespace-nowrap">
-                      ${currencyFixed(item.precio * 100 * item.cantidad)}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-gray-200 space-y-1">
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Subtotal</span>
-                <span>${currencyFixed(subtotalCents)}</span>
-              </div>
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Envío</span>
-                <span>${shippingTotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between items-center text-base font-bold text-gray-800 mt-1">
-                <span>Total</span>
-                <span>${totalConEnvio.toFixed(2)} MXN</span>
-              </div>
-            </div>
-        </div>
-
-
-        {/* Elemento de pago de Stripe */}
-        <div className="bg-white p-4 sm:p-5">
-            <div className="mb-4">
-              <PaymentElement />
-            </div>
-            <button
-              type="submit"
-              disabled={loading || !stripe || !elements}
-              className="w-full mt-2 inline-flex items-center justify-center bg-cyan-600 hover:bg-cyan-700 text-white py-3 rounded-lg font-bold shadow-md hover:shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? "Procesando pago..." : `Pagar $${totalConEnvio.toFixed(2)}`}
-            </button>
-            <p className="mt-2 text-[11px] text-gray-500 text-center">
-              Tu pago es procesado de forma segura con Stripe.
+        <div className="space-y-2 max-h-52 overflow-y-auto pr-1 text-sm">
+          {cartItems.length === 0 ? (
+            <p className="text-gray-500 text-center py-4">
+              No tienes productos en tu carrito.
             </p>
+          ) : (
+            cartItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex justify-between items-start gap-3"
+              >
+                <div className="flex-1">
+                  <p className="font-medium text-gray-700">{item.nombre}</p>
+                  <p className="text-xs text-gray-500">
+                    Cant: {item.cantidad}
+                  </p>
+                </div>
+                <p className="font-semibold text-gray-700 whitespace-nowrap">
+                  ${currencyFixed(item.precio * 100 * item.cantidad)}
+                </p>
+              </div>
+            ))
+          )}
         </div>
+
+        <div className="mt-4 pt-3 border-t border-gray-200 space-y-1">
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Subtotal</span>
+            <span>${currencyFixed(subtotalCents)}</span>
+          </div>
+          <div className="flex justify-between text-sm text-gray-600">
+            <span>Envío</span>
+            <span>${shippingTotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between items-center text-base font-bold text-gray-800 mt-1">
+            <span>Total</span>
+            <span>${totalConEnvio.toFixed(2)} MXN</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Elemento de pago de Stripe */}
+      <div className="bg-white p-4 sm:p-5">
+        <div className="mb-4">
+          <PaymentElement />
+        </div>
+        <button
+          type="submit"
+          disabled={loading || !stripe || !elements}
+          className="w-full mt-2 inline-flex items-center justify-center bg-cyan-600 hover:bg-cyan-700 text-white py-3 rounded-lg font-bold shadow-md hover:shadow-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loading
+            ? "Procesando pago..."
+            : `Pagar $${totalConEnvio.toFixed(2)}`}
+        </button>
+        <p className="mt-2 text-[11px] text-gray-500 text-center">
+          Tu pago es procesado de forma segura con Stripe.
+        </p>
+      </div>
     </form>
   );
 };
