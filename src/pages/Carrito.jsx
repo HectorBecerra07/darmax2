@@ -113,22 +113,32 @@ const Carrito = () => {
 
     setCpLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/postalcode/${cp}`);
+      const res = await fetch(`${API_URL}/api/postalcode/${cp}`); // Llama al proxy del backend
       const data = await res.json();
 
-      if (!res.ok || data.error || !data.data.postcodes || data.data.postcodes.length === 0) {
-        throw new Error(data.error || "No se encontraron datos para este código postal.");
+      if (!res.ok || data.error || !data.codigo_postal) {
+        throw new Error(data.error || data.message || "No se encontraron datos para este código postal.");
       }
 
-      const { postcodes } = data.data;
-      const colonias = [...new Set(postcodes.map(p => p.d_asenta))]; // Evita colonias duplicadas
-      setColoniasOptions(colonias);
+      const { codigo_postal } = data;
 
-      setAddressTo(prev => ({
+      let coloniasList = [];
+      if (Array.isArray(codigo_postal.colonias) && codigo_postal.colonias.length > 0) {
+        // Checa si el primer elemento es un string u objeto para manejar ambos formatos de respuesta
+        if (typeof codigo_postal.colonias[0] === 'string') {
+          coloniasList = [...new Set(codigo_postal.colonias)];
+        } else if (typeof codigo_postal.colonias[0] === 'object' && codigo_postal.colonias[0] !== null) {
+          coloniasList = [...new Set(codigo_postal.colonias.map(c => c.colonia).filter(Boolean))];
+        }
+      }
+      
+      setColoniasOptions(coloniasList);
+
+      setAddressTo((prev) => ({
         ...prev,
-        estado: postcodes[0].d_estado,
-        ciudad: postcodes[0].d_mnpio,
-        colonia: colonias[0] || "",
+        estado: codigo_postal.estado,
+        ciudad: codigo_postal.municipio,
+        colonia: coloniasList.length > 0 ? coloniasList[0] : "",
       }));
 
     } catch (err) {
@@ -169,22 +179,8 @@ const Carrito = () => {
       setLoadingShipping(true);
       setErrorShipping(null);
 
-      const address_from = {
-        name: import.meta.env.VITE_SKYDROPX_SHIPPER_NAME,
-        company: import.meta.env.VITE_SKYDROPX_SHIPPER_COMPANY,
-        street: import.meta.env.VITE_SKYDROPX_SHIPPER_ADDRESS,
-        street_number: import.meta.env.VITE_SKYDROPX_SHIPPER_STREET_NUMBER,
-        suburb: import.meta.env.VITE_SKYDROPX_SHIPPER_SUBURB,
-        city: import.meta.env.VITE_SKYDROPX_SHIPPER_CITY,
-        state: import.meta.env.VITE_SKYDROPX_SHIPPER_STATE,
-        postal_code: import.meta.env.VITE_SKYDROPX_SHIPPER_POSTAL_CODE,
-        country: import.meta.env.VITE_SKYDROPX_SHIPPER_COUNTRY,
-        phone: import.meta.env.VITE_SKYDROPX_SHIPPER_PHONE,
-        email: import.meta.env.VITE_SKYDROPX_SHIPPER_EMAIL,
-        reference: import.meta.env.VITE_SKYDROPX_SHIPPER_REFERENCE,
-      };
-
-      // Usa el nuevo estado unificado de dirección
+      // La dirección de origen (address_from) se define ahora en el backend.
+      // El frontend solo necesita enviar la dirección del cliente (address_to).
       const address_to = {
         country_code: "MX",
         postal_code: addressTo.codigoPostal,
@@ -205,7 +201,7 @@ const Carrito = () => {
       const res = await fetch(`${API_URL}/api/shipping/cotizar`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address_from, address_to, parcels }),
+        body: JSON.stringify({ address_to, parcels }),
       });
 
       const data = await res.json();

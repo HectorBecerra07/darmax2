@@ -22,12 +22,28 @@ router.get("/test", (req, res) => {
 router.post("/cotizar", async (req, res) => {
   console.log("ENTERING /cotizar handler");
   try {
-    const { address_from, address_to, parcels } = req.body;
+    // Según la nueva documentación, address_from solo requiere los campos de zona.
+    // Los campos como 'name', 'street', etc., no son válidos para la cotización.
+    const address_from = {
+      country_code: process.env.SKYDROPX_SHIPPER_COUNTRY,
+      postal_code: process.env.SKYDROPX_SHIPPER_POSTAL_CODE,
+      area_level1: process.env.SKYDROPX_SHIPPER_STATE,
+      area_level2: process.env.SKYDROPX_SHIPPER_CITY,
+      area_level3: process.env.SKYDROPX_SHIPPER_SECTOR,
+    };
+    
+    const { address_to, parcels } = req.body;
 
-    if (!address_from || !address_to || !parcels) {
+    // Validar que la dirección de origen esté configurada en el servidor
+    if (!address_from.postal_code || !address_from.area_level1) {
+      console.error("❌ Error: Faltan variables de entorno críticas del servidor para la dirección de origen (e.g., SKYDROPX_SHIPPER_POSTAL_CODE, SKYDROPX_SHIPPER_STATE)");
+      return res.status(500).json({ error: "La dirección de origen no está configurada en el servidor." });
+    }
+
+    if (!address_to || !parcels) {
       return res.status(400).json({
         error:
-          "Faltan datos: address_from, address_to o parcels no fueron enviados",
+          "Faltan datos: address_to o parcels no fueron enviados",
       });
     }
 
