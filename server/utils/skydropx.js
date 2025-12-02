@@ -1,10 +1,11 @@
+// server/utils/skydropx.js
 import axios from "axios";
 
 // Lee las credenciales y la URL base del entorno
 const {
   SKYDROPX_CLIENT_ID,
   SKYDROPX_CLIENT_SECRET,
-  SKYDROPX_BASE_URL = "https://pro.skydropx.com", // CORREGIDO: Usar pro.skydropx.com
+  SKYDROPX_BASE_URL = "https://pro.skydropx.com", // default
 } = process.env;
 
 if (!SKYDROPX_CLIENT_ID || !SKYDROPX_CLIENT_SECRET) {
@@ -22,28 +23,28 @@ let tokenCache = {
  */
 async function getNewToken() {
   console.log("🔄 Generando nuevo token de Skydropx...");
-  
+
   try {
     const params = new URLSearchParams();
-    params.append('grant_type', 'client_credentials');
-    params.append('client_id', SKYDROPX_CLIENT_ID);
-    params.append('client_secret', SKYDROPX_CLIENT_SECRET);
+    params.append("grant_type", "client_credentials");
+    params.append("client_id", SKYDROPX_CLIENT_ID);
+    params.append("client_secret", SKYDROPX_CLIENT_SECRET);
 
     const { data } = await axios.post(
-      `${SKYDROPX_BASE_URL}/api/v1/oauth/token`, // CORREGIDO: Usar SKYDROPX_BASE_URL
+      `${SKYDROPX_BASE_URL}/api/v1/oauth/token`,
       params,
       {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          "Content-Type": "application/x-www-form-urlencoded",
         },
       }
     );
 
     const { access_token, expires_in } = data;
-    // Guardamos el token y calculamos el tiempo de expiración
-    // Restamos 60 segundos como un margen de seguridad.
-    const expiresAt = Date.now() + (expires_in * 1000) - 60000; 
-    
+
+    // Restamos 60 segundos como margen de seguridad
+    const expiresAt = Date.now() + expires_in * 1000 - 60000;
+
     tokenCache = {
       accessToken: access_token,
       expiresAt,
@@ -51,22 +52,23 @@ async function getNewToken() {
 
     console.log("✅ Nuevo token de Skydropx generado.");
     return access_token;
-
   } catch (error) {
-    console.error("❌ Error al generar el token de Skydropx:", error.response?.status, error.response?.data);
+    console.error(
+      "❌ Error al generar el token de Skydropx:",
+      error.response?.status,
+      error.response?.data
+    );
     throw new Error("No se pudo autenticar con Skydropx.");
   }
 }
 
 /**
- * Obtiene un token válido, ya sea desde la caché o generando uno nuevo.
+ * Obtiene un token válido (caché o nuevo).
  */
 async function getToken() {
   if (tokenCache.accessToken && Date.now() < tokenCache.expiresAt) {
-    // Si el token en caché es válido, lo retornamos
     return tokenCache.accessToken;
   }
-  // Si no, generamos uno nuevo
   return await getNewToken();
 }
 
@@ -82,20 +84,26 @@ export async function skydropxRequest(method, path, body = null) {
       url: `${SKYDROPX_BASE_URL}${path}`, // El path debe empezar con /api/v1/...
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
       data: body ?? undefined,
     });
 
     return data;
   } catch (error) {
-    console.error("❌ Error en solicitud a Skydropx:", error.response?.status, error.response?.data);
-    // Si el error es 401, podría ser que el token expiró justo en ese momento.
-    // Forzamos la renovación para el siguiente intento.
+    console.error(
+      "❌ Error en solicitud a Skydropx:",
+      error.response?.status,
+      error.response?.data
+    );
+
     if (error.response?.status === 401) {
-        console.log("Token posiblemente expirado. Forzando renovación en la próxima solicitud.");
-        tokenCache.expiresAt = 0;
+      console.log(
+        "Token posiblemente expirado. Forzando renovación en la próxima solicitud."
+      );
+      tokenCache.expiresAt = 0;
     }
+
     throw error;
   }
 }

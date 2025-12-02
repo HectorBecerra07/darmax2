@@ -173,62 +173,77 @@ const Carrito = () => {
     setPaymentIntentId(null);
   };
 
+  
   // 👉 Cotizar envío
-  const calcularEnvio = async () => {
-    try {
-      setLoadingShipping(true);
-      setErrorShipping(null);
+const calcularEnvio = async () => {
+  try {
+    setLoadingShipping(true);
+    setErrorShipping(null);
 
-      // La dirección de origen (address_from) se define ahora en el backend.
-      // El frontend solo necesita enviar la dirección del cliente (address_to).
-      const address_to = {
-        country_code: "MX",
-        postal_code: addressTo.codigoPostal,
-        area_level1: addressTo.estado,
-        area_level2: addressTo.ciudad,
-        area_level3: addressTo.colonia,
-      };
-
-      const parcels = [
-        {
-          length: 10,
-          width: 10,
-          height: 10,
-          weight: 2,
-        },
-      ];
-
-      const res = await fetch(`${API_URL}/api/shipping/cotizar`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address_to, parcels }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error al cotizar");
-
-      setQuotationId(data.quotationId || null);
-      setShippingRates(data.rates || []);
-
-      if (data.rates?.length > 0) {
-        setSelectedRateIndex(0);
-        setShippingTotal(data.rates[0].total || 0);
-      } else {
-        setSelectedRateIndex(null);
-        setShippingTotal(0);
-      }
-
-      setClientSecret(null);
-      setPaymentIntentId(null);
-    } catch (err) {
-      setErrorShipping(err.message);
-      setQuotationId(null);
-      setShippingRates([]);
-      setShippingTotal(0);
-    } finally {
+    // Validaciones mínimas
+    if (!addressTo.codigoPostal || addressTo.codigoPostal.length !== 5) {
+      setErrorShipping("Ingresa un código postal válido de 5 dígitos.");
       setLoadingShipping(false);
+      return;
     }
-  };
+
+    if (!addressTo.estado || !addressTo.ciudad || !addressTo.colonia) {
+      setErrorShipping("Completa estado, ciudad y colonia para cotizar el envío.");
+      setLoadingShipping(false);
+      return;
+    }
+
+    const address_to = {
+      country_code: "MX",
+      postal_code: addressTo.codigoPostal,
+      area_level1: addressTo.estado,
+      area_level2: addressTo.ciudad,
+      area_level3: addressTo.colonia,
+    };
+
+    // 🔹 IMPORTANTE: incluir unidades de medida
+    const parcels = [
+      {
+        length: 10,
+        width: 10,
+        height: 10,
+        distance_unit: "cm", // o "in" si usas pulgadas
+        weight: 2,
+        mass_unit: "kg",     // o "lb" si usas libras
+      },
+    ];
+
+    const res = await fetch(`${API_URL}/api/shipping/cotizar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address_to, parcels }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Error al cotizar");
+
+    setQuotationId(data.quotationId || null);
+    setShippingRates(data.rates || []);
+
+    if (data.rates?.length > 0) {
+      setSelectedRateIndex(0);
+      setShippingTotal(data.rates[0].total || 0);
+    } else {
+      setSelectedRateIndex(null);
+      setShippingTotal(0);
+    }
+
+    setClientSecret(null);
+    setPaymentIntentId(null);
+  } catch (err) {
+    setErrorShipping(err.message);
+    setQuotationId(null);
+    setShippingRates([]);
+    setShippingTotal(0);
+  } finally {
+    setLoadingShipping(false);
+  }
+};
 
   // 👉 Crear PaymentIntent (Stripe)
   useEffect(() => {

@@ -1,4 +1,3 @@
-// server/routes/shipping.js
 import express from "express";
 import { skydropxRequest } from "../utils/skydropx.js";
 
@@ -13,7 +12,7 @@ const MAIN_PROVIDERS = [
   "DHL",
 ];
 
-// GET de prueba para ver si el router está montado
+// GET de prueba
 router.get("/test", (req, res) => {
   res.json({ ok: true, msg: "shipping router OK" });
 });
@@ -21,9 +20,8 @@ router.get("/test", (req, res) => {
 // POST /api/shipping/cotizar
 router.post("/cotizar", async (req, res) => {
   console.log("ENTERING /cotizar handler");
+
   try {
-    // Según la nueva documentación, address_from solo requiere los campos de zona.
-    // Los campos como 'name', 'street', etc., no son válidos para la cotización.
     const address_from = {
       country_code: process.env.SKYDROPX_SHIPPER_COUNTRY,
       postal_code: process.env.SKYDROPX_SHIPPER_POSTAL_CODE,
@@ -31,19 +29,24 @@ router.post("/cotizar", async (req, res) => {
       area_level2: process.env.SKYDROPX_SHIPPER_CITY,
       area_level3: process.env.SKYDROPX_SHIPPER_SECTOR,
     };
-    
+
     const { address_to, parcels } = req.body;
 
-    // Validar que la dirección de origen esté configurada en el servidor
+    // Validar origen
     if (!address_from.postal_code || !address_from.area_level1) {
-      console.error("❌ Error: Faltan variables de entorno críticas del servidor para la dirección de origen (e.g., SKYDROPX_SHIPPER_POSTAL_CODE, SKYDROPX_SHIPPER_STATE)");
-      return res.status(500).json({ error: "La dirección de origen no está configurada en el servidor." });
+      console.error(
+        "❌ Error: Faltan variables de entorno críticas del servidor para la dirección de origen."
+      );
+      return res.status(500).json({
+        error:
+          "La dirección de origen no está configurada en el servidor. Revisa las variables de entorno.",
+      });
     }
 
+    // Validar payload
     if (!address_to || !parcels) {
       return res.status(400).json({
-        error:
-          "Faltan datos: address_to o parcels no fueron enviados",
+        error: "Faltan datos: address_to o parcels no fueron enviados",
       });
     }
 
@@ -66,14 +69,19 @@ router.post("/cotizar", async (req, res) => {
       requestBody
     );
 
+    console.log("📨 Respuesta cruda de Skydropx:", JSON.stringify(data, null, 2));
+
     const quotationId = data.id || null;
 
-    // 1) Normalizamos las rates que vienen de Skydropx
+    // 1) Normalizamos las rates
     let rates = (data.rates || []).map((r) => {
       const total = Number(r.total || r.amount || 0);
-
       return {
         id: r.id,
+        providerRaw: {
+          provider_display_name: r.provider_display_name,
+          provider_name: r.provider_name,
+        },
         provider: r.provider_display_name || r.provider_name,
         service: r.provider_service_name,
         days: r.days,
@@ -82,13 +90,18 @@ router.post("/cotizar", async (req, res) => {
       };
     });
 
-    // 2) Filtramos: solo rates con precio > 0
+    console.log(
+      "🔍 Providers antes de filtrar:",
+      rates.map((r) => r.providerRaw)
+    );
+
+    // 2) Filtrar por precio > 0
     rates = rates.filter((r) => r.total > 0);
 
-    // 3) (Opcional) Solo ciertas paqueterías “principales”
+    // 3) Filtrar solo MAIN_PROVIDERS (puedes comentar esta línea para probar todo)
     rates = rates.filter((r) => MAIN_PROVIDERS.includes(r.provider));
 
-    // 4) (Opcional) Ordenar por precio menor a mayor
+    // 4) Ordenar por precio (menor a mayor)
     rates.sort((a, b) => a.total - b.total);
 
     console.log(
@@ -107,9 +120,11 @@ router.post("/cotizar", async (req, res) => {
     const status = error.response?.status || 500;
     const detail = error.response?.data || String(error);
 
+    console.error("❌ Error al cotizar envío:", status, detail);
+
     return res.status(status).json({
       error: "Error al cotizar envío",
-      detail: detail,
+      detail,
     });
   }
 });

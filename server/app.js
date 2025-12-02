@@ -8,7 +8,10 @@ import cartRoutes from "./routes/carrito.js";
 import userRoutes from "./routes/users.js";
 import paymentRoutes from "./routes/payments.js";
 import orderEmailRoutes from "./routes/orderEmail.js";
+
+// Shipping routes
 import shippingRoutes from "./routes/shipping.js";
+
 import postalCodeRoutes from "./routes/postalcode.js";
 
 const app = express();
@@ -24,6 +27,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/orders", orderEmailRoutes);
 app.use("/api/shipping", shippingRoutes);
 app.use("/api/postalcode", postalCodeRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");
