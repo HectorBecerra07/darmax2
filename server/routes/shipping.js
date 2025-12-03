@@ -1,11 +1,12 @@
 // server/routes/shipping.js
 import express from "express";
-import { skydropxProRequest, skydropxApiRequest } from "../utils/skydropx.js";
+import { skydropxProRequest } from "../utils/skydropx.js"; // 👈 OJO: ahora usamos skydropxProRequest
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const router = express.Router();
 
+// Paqueterías que SÍ quieres mostrar en el checkout
 const MAIN_PROVIDERS = [
   "Paquetexpress",
   "FedEx",
@@ -14,14 +15,17 @@ const MAIN_PROVIDERS = [
   "DHL",
 ];
 
-// GET de prueba
+// GET /api/shipping/test
 router.get("/test", (req, res) => {
   res.json({ ok: true, msg: "shipping router OK" });
 });
 
-// ---------- POST /api/shipping/cotizar ----------
+/**
+ * POST /api/shipping/cotizar
+ * Cotiza el envío usando Skydropx PRO (OAuth) -> /api/v1/quotations
+ */
 router.post("/cotizar", async (req, res) => {
-  console.log("ENTERING /cotizar handler");
+  console.log("ENTERING /api/shipping/cotizar");
 
   try {
     const address_from = {
@@ -34,6 +38,7 @@ router.post("/cotizar", async (req, res) => {
 
     const { address_to, parcels } = req.body;
 
+    // Validar origen
     if (!address_from.postal_code || !address_from.area_level1) {
       console.error(
         "❌ Error: Faltan variables de entorno críticas para address_from."
@@ -44,6 +49,7 @@ router.post("/cotizar", async (req, res) => {
       });
     }
 
+    // Validar payload
     if (!address_to || !parcels) {
       return res.status(400).json({
         error: "Faltan datos: address_to o parcels no fueron enviados",
@@ -59,11 +65,10 @@ router.post("/cotizar", async (req, res) => {
     };
 
     console.log(
-      "📦 Enviando cotización a Skydropx PRO con:",
+      "📦 Enviando cotización a Skydropx PRO /api/v1/quotations con:",
       JSON.stringify(requestBody, null, 2)
     );
 
-    // 👉 API PRO (OAuth)
     const data = await skydropxProRequest(
       "POST",
       "/api/v1/quotations",
@@ -77,6 +82,7 @@ router.post("/cotizar", async (req, res) => {
 
     const quotationId = data.id || null;
 
+    // Normalizamos las tarifas
     let rates = (data.rates || []).map((r) => {
       const total = Number(r.total || r.amount || 0);
       return {
@@ -98,8 +104,13 @@ router.post("/cotizar", async (req, res) => {
       rates.map((r) => r.providerRaw)
     );
 
+    // Filtrar por precio > 0
     rates = rates.filter((r) => r.total > 0);
+
+    // Filtrar por paqueterías permitidas
     rates = rates.filter((r) => MAIN_PROVIDERS.includes(r.provider));
+
+    // Ordenar por precio (menor a mayor)
     rates.sort((a, b) => a.total - b.total);
 
     console.log(
@@ -127,8 +138,11 @@ router.post("/cotizar", async (req, res) => {
   }
 });
 
-// ---------- POST /api/shipping/create-label ----------
 /**
+ * POST /api/shipping/create-label
+ * Genera la guía en Skydropx usando el rateId guardado en Envio
+ * y guarda tracking + url de la etiqueta en la BD.
+ *
  * Body: { pedidoId: number }
  */
 router.post("/create-label", async (req, res) => {
@@ -144,6 +158,7 @@ router.post("/create-label", async (req, res) => {
       return res.status(400).json({ error: "pedidoId inválido" });
     }
 
+    // Traemos el pedido con su envío
     const pedido = await prisma.pedido.findUnique({
       where: { id },
       include: { envio: true },
@@ -160,6 +175,7 @@ router.post("/create-label", async (req, res) => {
 
     const envio = pedido.envio;
 
+    // Si ya tiene guía generada, no volvemos a crear
     if (envio.etiquetaUrl) {
       return res.status(400).json({
         error: "Este pedido ya tiene una guía generada",
@@ -173,35 +189,49 @@ router.post("/create-label", async (req, res) => {
       });
     }
 
-    console.log("🎫 Creando label en Skydropx (API clásica) para rateId:", envio.rateId);
+    console.log("🎫 Creando shipment en Skydropx para rateId:", envio.rateId);
 
-    // 👉 API CLÁSICA (api.skydropx.com)
-    const labelResponse = await skydropxApiRequest("POST", "/v1/labels", {
-      rate_id: envio.rateId,
-      label_format: "pdf",
-    });
-
-    console.log(
-      "📨 Respuesta cruda de Skydropx /v1/labels:",
-      JSON.stringify(labelResponse, null, 2)
+    // API PRO: POST /api/v1/shipments
+    const shipmentResponse = await skydropxProRequest(
+      "POST",
+      "/api/v1/shipments",
+      {
+        shipment: {
+          rate_id: envio.rateId,
+          label_format: "pdf",
+        },
+      }
     );
 
-    const labelData = labelResponse.data || labelResponse;
-    const attrs = labelData.attributes || labelData;
+    console.log(
+      "📨 Respuesta cruda de Skydropx /shipments:",
+      JSON.stringify(shipmentResponse, null, 2)
+    );
+
+    // Estructura esperada: { data: { id, attributes: { ... } } }
+    const shipmentData = shipmentResponse.data || shipmentResponse;
+    const attrs = shipmentData.attributes || shipmentData;
 
     const updatedEnvio = await prisma.envio.update({
       where: { id: envio.id },
       data: {
-        labelId: labelData.id ? String(labelData.id) : envio.labelId,
-        skydropxShipmentId: envio.skydropxShipmentId,
+        labelId: shipmentData.id
+          ? String(shipmentData.id)
+          : envio.labelId,
+        skydropxShipmentId: shipmentData.id
+          ? String(shipmentData.id)
+          : envio.skydropxShipmentId,
         trackingNumber: attrs.tracking_number || attrs.tracking || null,
         trackingUrl:
           attrs.tracking_url_provider ||
-          attrs.tracking_url ||
           attrs.tracking_view_url ||
+          attrs.tracking_url ||
           null,
         etiquetaUrl:
-          attrs.label_url || attrs.label_pdf_url || attrs.label || null,
+          attrs.label_url ||
+          attrs.label_pdf_url ||
+          attrs.label ||
+          null,
       },
     });
 
@@ -213,7 +243,7 @@ router.post("/create-label", async (req, res) => {
     const status = error.response?.status || 500;
     const detail = error.response?.data || String(error);
 
-    console.error("❌ Error creando label en Skydropx:", status, detail);
+    console.error("❌ Error creando shipment/label en Skydropx:", status, detail);
 
     return res.status(status).json({
       error: "Error al crear la guía en Skydropx",
