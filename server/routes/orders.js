@@ -64,6 +64,7 @@ router.post("/confirm", async (req, res) => {
         clienteTelefono: shippingAddress.telefono || null,
 
         direccion: direccionCompleta,
+        colonia: shippingAddress.colonia || null,
         ciudad: shippingAddress.ciudad,
         estadoEnvio: shippingAddress.estado,
         codigoPostal: shippingAddress.codigoPostal,

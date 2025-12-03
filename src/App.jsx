@@ -39,6 +39,7 @@ import LoginAdmin from "./administrador/LoginAdmin";
 import DashboardAdmin from "./administrador/DashboardAdmin";
 import ProductosAdmin from "./administrador/pages/ProductosAdmin";
 import PedidosAdmin from "./administrador/pages/PedidosAdmin";
+import EnviosAdmin from "./administrador/pages/EnviosAdmin";
 import ReportesAdmin from "./administrador/pages/ReportesAdmin";
 import ClientesAdmin from "./administrador/pages/ClientesAdmin";
 import CategoriasAdmin from "./administrador/pages/CategoriasAdmin";
@@ -82,6 +83,7 @@ function AppContent() {
             <Route path="productos" element={<ProductosAdmin />} />
             <Route path="categorias" element={<CategoriasAdmin />} />
             <Route path="pedidos" element={<PedidosAdmin />} />
+            <Route path="envios" element={<EnviosAdmin />} />
             <Route path="reportes" element={<ReportesAdmin />} />
             <Route path="clientes" element={<ClientesAdmin />} />
           </Route>

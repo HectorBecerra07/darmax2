@@ -98,10 +98,11 @@ model Pedido {
   clienteTelefono String?
 
   // Dirección de envío
-  direccion       String
-  ciudad          String
-  estadoEnvio     String
-  codigoPostal    String
+  direccion     String
+  colonia       String?
+  ciudad        String?
+  estadoEnvio   String?
+  codigoPostal  String?
 
   // Relación con User (opcional, para pedidos de invitados)
   userId    Int?

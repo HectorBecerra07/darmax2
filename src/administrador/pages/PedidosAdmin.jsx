@@ -126,12 +126,17 @@ const crearGuia = async (pedidoId) => {
 
     if (!res.ok) {
       console.error("Error create-label:", data || "(sin cuerpo JSON)");
-      const detalle =
-        data?.detail?.message ||
-        (typeof data?.detail === "string" && data.detail) ||
-        data?.error ||
-        "Error al crear la guía en Skydropx";
-      throw new Error(detalle);
+      
+      // --- Lógica de Alerta Mejorada (Reactivada para depuración) ---
+      let errorMessage = data?.error || "Error desconocido al crear la guía.";
+      if (data?.detail) {
+        errorMessage += `\n\nDetalles:\n${JSON.stringify(data.detail, null, 2)}`;
+      } else if (typeof data === 'string') {
+        errorMessage = data;
+      }
+      alert(errorMessage);
+      setCreandoGuiaId(null);
+      return; 
     }
 
     const envioActualizado = data.envio;
@@ -142,9 +147,11 @@ const crearGuia = async (pedidoId) => {
         p.id === pedidoId ? { ...p, envio: envioActualizado } : p
       )
     );
+    toast.success("¡Guía generada exitosamente!");
   } catch (err) {
-    console.error(err);
-    alert(err.message || "Error al crear la guía en Skydropx");
+    // Este catch es para errores de red o si el fetch mismo falla.
+    console.error("Error de red o fetch:", err);
+    alert(`Ocurrió un error de conexión: ${err.message}`);
   } finally {
     setCreandoGuiaId(null);
   }
