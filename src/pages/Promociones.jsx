@@ -514,8 +514,7 @@ export default function Promociones() {
             </div>
           )}
         </section>
-
-
+        
         {/* CTA CATÁLOGO GENERAL */}
         <section className="py-16 sm:py-20 bg-white text-center">
           <div className="max-w-2xl mx-auto px-4">
