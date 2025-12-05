@@ -43,6 +43,7 @@ import EnviosAdmin from "./administrador/pages/EnviosAdmin";
 import ReportesAdmin from "./administrador/pages/ReportesAdmin";
 import ClientesAdmin from "./administrador/pages/ClientesAdmin";
 import CategoriasAdmin from "./administrador/pages/CategoriasAdmin";
+import ConfiguradorAdmin from "./administrador/pages/ConfiguradorAdmin"; // <-- IMPORTAR
 
 const PageWrapper = ({ children }) => {
   useEffect(() => {
@@ -84,6 +85,7 @@ function AppContent() {
             <Route path="categorias" element={<CategoriasAdmin />} />
             <Route path="pedidos" element={<PedidosAdmin />} />
             <Route path="envios" element={<EnviosAdmin />} />
+            <Route path="configurador" element={<ConfiguradorAdmin />} /> {/* <-- AÑADIR RUTA */}
             <Route path="reportes" element={<ReportesAdmin />} />
             <Route path="clientes" element={<ClientesAdmin />} />
           </Route>

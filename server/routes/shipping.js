@@ -7,7 +7,20 @@ const prisma = new PrismaClient();
 const router = express.Router();
 
 // Paqueterías que SÍ quieres mostrar en el front
-const MAIN_PROVIDERS = ["Paquetexpress", "FedEx", "Estafeta", "99minutos.com", "DHL"];
+const MAIN_PROVIDERS = [
+  "Paquetexpress",
+  "FedEx",
+  "Estafeta",
+  "99minutos.com",
+  "DHL",
+];
+
+// Helper para límite de 30 caracteres (Skydropx)
+const truncate30 = (value) => {
+  if (!value) return "";
+  const str = value.toString();
+  return str.length > 30 ? str.slice(0, 30) : str;
+};
 
 // GET /api/shipping/test  -> para verificar que el router está montado
 router.get("/test", (req, res) => {
@@ -168,9 +181,9 @@ router.post("/create-label", async (req, res) => {
         .json({ error: "No hay registro de envío asociado a este pedido" });
     }
     if (!pedido.productos || pedido.productos.length === 0) {
-      return res
-        .status(400)
-        .json({ error: "El pedido no tiene productos para calcular el paquete." });
+      return res.status(400).json({
+        error: "El pedido no tiene productos para calcular el paquete.",
+      });
     }
 
     const envio = pedido.envio;
@@ -183,66 +196,74 @@ router.post("/create-label", async (req, res) => {
       });
     }
 
-    // --- VALIDACIÓN MEJORADA ---
-    if (!envio.rateId || typeof envio.rateId !== 'string' || !envio.rateId.trim()) {
+    // --- VALIDACIÓN rateId ---
+    if (!envio.rateId || typeof envio.rateId !== "string" || !envio.rateId.trim()) {
       return res.status(400).json({
-        error: "El envío no tiene un ID de tarifa (rateId) válido almacenado. No se puede generar la guía.",
+        error:
+          "El envío no tiene un ID de tarifa (rateId) válido almacenado. No se puede generar la guía.",
       });
     }
 
-    // --- ESTRUCTURA CORRECTA PARA /api/v1/shipments ---
+    // --- VALIDAR que existan consignment_note y package_type en env ---
+    if (!process.env.SKYDROPX_CONSIGNMENT_NOTE) {
+      return res.status(500).json({
+        error:
+          "Falta SKYDROPX_CONSIGNMENT_NOTE en las variables de entorno del servidor.",
+      });
+    }
 
-    // 1. Valores requeridos en cada package (estos se obtienen de la API de Skydropx)
-    // Para simplificar, usamos valores genéricos para "mercancía en general" y "caja"
-    const CONS_NOTE_CLASS_CODE = process.env.SKYDROPX_CONSIGNMENT_NOTE_CLASS_CODE || "85101600"; // Agua y hielo
-    const CONS_NOTE_PACKAGING_CODE = process.env.SKYDROPX_CONSIGNMENT_NOTE_PACKAGING_CODE || "CJ"; // Caja
-    const PACKAGE_TYPE_DEFAULT = "caja"; // "caja", "sobre", "tarima"
+    if (!process.env.SKYDROPX_PACKAGE_TYPE) {
+      return res.status(500).json({
+        error:
+          "Falta SKYDROPX_PACKAGE_TYPE en las variables de entorno del servidor.",
+      });
+    }
 
     console.log("🎫 Creando shipment en Skydropx PRO para rateId:", envio.rateId);
 
-    // 2. Dirección de ORIGEN (remitente) - COMPLETA con fallbacks robustos
+    // 2. Dirección de ORIGEN (remitente) - COMPLETA con fallbacks y truncate30
     const address_from = {
       country_code: process.env.SKYDROPX_SHIPPER_COUNTRY || "MX",
       postal_code: process.env.SKYDROPX_SHIPPER_POSTAL_CODE || "00000",
-      area_level1: process.env.SKYDROPX_SHIPPER_STATE || "Ciudad de México",      // Estado
-      area_level2: process.env.SKYDROPX_SHIPPER_CITY || "Cuauhtémoc",      // Ciudad
-      street1: process.env.SKYDROPX_SHIPPER_STREET1 || "Calle Origen 123",      // Calle y número
-      street2: process.env.SKYDROPX_SHIPPER_SECTOR || "Colonia Origen",       // Colonia
-      name: process.env.SKYDROPX_SHIPPER_NAME || "Mi Empresa",
+      area_level1: process.env.SKYDROPX_SHIPPER_STATE || "Ciudad de México", // Estado
+      area_level2: process.env.SKYDROPX_SHIPPER_CITY || "Cuauhtémoc", // Ciudad
+      street1: process.env.SKYDROPX_SHIPPER_STREET1 || "Calle Origen 123", // Calle y número
+      street2: process.env.SKYDROPX_SHIPPER_SECTOR || "Colonia Origen", // Colonia
+      name: truncate30(process.env.SKYDROPX_SHIPPER_NAME || "Mi Empresa"),
       phone: process.env.SKYDROPX_SHIPPER_PHONE || "5551234567",
       email: process.env.SKYDROPX_SHIPPER_EMAIL || "ventas@miempresa.com",
-      reference: process.env.SKYDROPX_SHIPPER_REFERENCE || "Sin referencias",
+      reference: truncate30(
+        process.env.SKYDROPX_SHIPPER_REFERENCE || "Sin referencias"
+      ),
     };
 
-    // 3. Dirección de DESTINO (cliente) desde el pedido - COMPLETA
+    // 3. Dirección de DESTINO (cliente) desde el pedido - COMPLETA y truncada
     const address_to = {
       country_code: "MX",
       postal_code: pedido.codigoPostal,
-      area_level1: pedido.estadoEnvio,   // Estado
-      area_level2: pedido.ciudad,        // Ciudad
-      street1: pedido.direccion,       // Calle y número
-      street2: pedido.colonia,         // Colonia
-      name: pedido.clienteNombre,
+      area_level1: pedido.estadoEnvio, // Estado
+      area_level2: pedido.ciudad, // Ciudad
+      street1: pedido.direccion, // Calle y número
+      street2: pedido.colonia, // Colonia
+      name: truncate30(pedido.clienteNombre),
       phone: pedido.clienteTelefono || "00000000",
       email: pedido.clienteEmail,
-      reference: `Orden #${pedido.orden || pedido.id}`,
+      reference: truncate30(`Orden ${pedido.orden || pedido.id}`),
     };
-    
-    // 4. Packages que pide la API /shipments
-    //    Hacen referencia al paquete que se cotizó.
-    //    Si solo cotizaste un paquete, el `package_number` es 1.
+
+    // 4. Construir el array 'packages' con la estructura que espera /shipments
     const packages = [
       {
         package_number: 1,
-        package_protected: false, 
+        package_protected: false,
         declared_value: Number(pedido.total || 0),
-        consignment_note_class_code: CONS_NOTE_CLASS_CODE,
-        consignment_note_packaging_code: "4G",
-        package_type: "caja", // Usando el valor correcto del comentario
+        // Códigos que vienen de tu .env, elegidos según tus catálogos
+        consignment_note: process.env.SKYDROPX_CONSIGNMENT_NOTE, // ej. "48101716"
+        package_type: process.env.SKYDROPX_PACKAGE_TYPE, // ej. "4G"
       },
     ];
 
-    // 5. Body FINAL para Skydropx
+    // 5. Body FINAL para Skydropx con la ESTRUCTURA ANIDADA
     const shipmentBody = {
       shipment: {
         rate_id: envio.rateId,
@@ -254,7 +275,6 @@ router.post("/create-label", async (req, res) => {
       },
     };
 
-    
     console.log(
       "📦 Body enviado a PRO /shipments:",
       JSON.stringify(shipmentBody, null, 2)
@@ -262,7 +282,7 @@ router.post("/create-label", async (req, res) => {
 
     const shipmentResponse = await skydropxProRequest(
       "POST",
-      "/api/v1/shipments/", // La ruta correcta puede requerir un slash al final
+      "/api/v1/shipments/",
       shipmentBody
     );
 
@@ -326,7 +346,7 @@ router.get("/shipments", async (req, res) => {
     );
 
     // Normalizamos los datos para que sean más fáciles de usar en el frontend
-    const shipments = response.data.map((shipment) => {
+    const shipments = (response.data || []).map((shipment) => {
       const attrs = shipment.attributes;
       return {
         id: shipment.id,

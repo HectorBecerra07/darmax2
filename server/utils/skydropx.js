@@ -4,12 +4,25 @@ import axios from "axios";
 const {
   SKYDROPX_CLIENT_ID,
   SKYDROPX_CLIENT_SECRET,
-  SKYDROPX_BASE_URL = "https://pro.skydropx.com",
+  SKYDROPX_BASE_URL,
+  SKYDROPX_ENV,
 } = process.env;
+
+// Elegimos base URL según ENV o BASE_URL explícito
+const DEFAULT_BASE_URL =
+  SKYDROPX_ENV === "sandbox"
+    ? "https://sb-pro.skydropx.com"
+    : "https://pro.skydropx.com";
+
+const BASE_URL = SKYDROPX_BASE_URL || DEFAULT_BASE_URL;
 
 if (!SKYDROPX_CLIENT_ID || !SKYDROPX_CLIENT_SECRET) {
   console.error(
     "❌ No se encontraron SKYDROPX_CLIENT_ID o SKYDROPX_CLIENT_SECRET en process.env"
+  );
+} else {
+  console.log(
+    `🌐 Skydropx PRO usando base URL: ${BASE_URL} (ENV=${SKYDROPX_ENV || "no definido"})`
   );
 }
 
@@ -28,7 +41,7 @@ async function getNewToken() {
   params.append("client_secret", SKYDROPX_CLIENT_SECRET);
 
   const { data } = await axios.post(
-    `${SKYDROPX_BASE_URL}/api/v1/oauth/token`,
+    `${BASE_URL}/api/v1/oauth/token`,
     params,
     {
       headers: {
@@ -38,6 +51,7 @@ async function getNewToken() {
   );
 
   const { access_token, expires_in } = data;
+  // Expira un minuto antes para evitar edge cases
   const expiresAt = Date.now() + expires_in * 1000 - 60_000;
 
   tokenCache = {
@@ -60,10 +74,13 @@ async function getToken() {
 export async function skydropxProRequest(method, path, body = null) {
   try {
     const token = await getToken();
+    const url = `${BASE_URL}${path}`; // path debe empezar con /api/v1/...
+
+    console.log(`🚀 SkydropxRequest -> ${method} ${url}`);
 
     const { data } = await axios({
       method,
-      url: `${SKYDROPX_BASE_URL}${path}`, // path debe empezar con /api/v1/...
+      url,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -76,7 +93,7 @@ export async function skydropxProRequest(method, path, body = null) {
     console.error(
       "❌ Error en solicitud PRO:",
       error.response?.status,
-      error.response?.data
+      error.response?.data || String(error)
     );
 
     // Si el token caduca, forzamos renovar en la siguiente
