@@ -175,3 +175,86 @@ model Envio {
   trackingUrl        String? // URL de rastreo
   etiquetaUrl        String? // URL de la etiqueta (PDF/ZPL/etc.)
 }
+
+
+enum ImageContext {
+  MODEL_BASE           // Imagen base del modelo (sin tinaco, sin alcalina)
+  MODEL_BASE_ALCALINA  // Modelo + solo agua alcalina (sin tinaco)
+  TINACO               // Tinaco normal
+  TINACO_ALCALINA      // Tinaco con agua alcalina
+  SECONDARY            // Imagen secundaria (vending, etc.)
+  SECONDARY_ALCALINA   // Secundaria cuando hay agua alcalina
+}
+
+model MachineModel {
+  id              String          @id @default(cuid())
+  slug            String          @unique  // "Neptuno", "AtlantisMaxTouch", etc.
+  name            String
+  supportsTinacos Boolean         @default(true)
+  isAtlantis      Boolean         @default(false)
+
+  extras          ModelExtra[]
+  images          ConfigurationImage[]
+}
+
+model Extra {
+  id          String   @id @default(cuid())
+  code        String   @unique          // "tinaco-2500", "agua-alcalina", etc.
+  name        String
+  description String
+  basePrice   Int
+  isTinaco    Boolean  @default(false)
+
+  // Datos adicionales útiles para tinacos (opcional)
+  tinacoKey            String?
+  tinacoCapacityLiters Int?
+
+  models ModelExtra[]
+  images ConfigurationImage[] @relation("TinacoImage")
+}
+
+model ModelExtra {
+  id         String       @id @default(cuid())
+
+  model      MachineModel @relation(fields: [modelId], references: [id])
+  modelId    String
+
+  extra      Extra        @relation(fields: [extraId], references: [id])
+  extraId    String
+
+  // Permite precio por modelo
+  priceOverride Int?
+  isDefault     Boolean   @default(false)
+  isRequired    Boolean   @default(false)
+  sortOrder     Int       @default(0)
+
+  @@unique([modelId, extraId])
+}
+
+model ConfigurationImage {
+  id      String       @id @default(cuid())
+
+  model   MachineModel @relation(fields: [modelId], references: [id])
+  modelId String
+
+  // Opcional: imagen vinculada a un tinaco concreto
+  tinacoExtra   Extra? @relation("TinacoImage", fields: [tinacoExtraId], references: [id])
+  tinacoExtraId String?
+
+  context           ImageContext
+  onlyWhenAlcalina Boolean  @default(false)
+
+  // Imagen secundaria (vending)
+  isSecondary        Boolean  @default(false)
+
+  // Variante de diseño secundaria (4 botones, 8 botones, touch, etc.)
+  secondaryVariantKey String?
+
+  url      String
+  alt      String
+  priority Int      @default(0)
+
+  @@index([modelId])
+  @@index([tinacoExtraId])
+  @@index([context])
+}
