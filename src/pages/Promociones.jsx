@@ -25,7 +25,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION1.png",
     etiqueta: "Promoción",
-    pdf: "/PDF/Dúo Emprendedor Vending Tradicional Atlantis 300 + Limpieza 8 productos.pdf",
+    pdf: "/PDF/duo-emprendedor-vending-tradicional-atlantis-300-limpieza-8-productos.pdf",
     color: "from-blue-600 to-blue-900"
   },
   {
@@ -35,7 +35,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION2.png",
     etiqueta: "Promoción",
-    pdf: "/PDF/Dúo Emprendedor Vending Tradicional Atlantis 300 + Limpieza 5 productos.pdf",
+    pdf: "/PDF/duo-emprendedor-vending-tradicional-atlantis-300-limpieza-5-productos.pdf",
     color: "from-emerald-600 to-teal-900"
   },
   {
@@ -45,7 +45,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION3.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Dúo Emprendedor Atlantis 300 Max + Limpieza 5 productos.pdf",
+    pdf: "/PDF/duo-emprendedor-atlantis-300-max-limpieza-5-productos.pdf",
     color: "from-purple-600 to-indigo-900"
   },
   {
@@ -55,7 +55,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION0.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Dúo Emprendedor Atlantis 300 + Limpieza 5 productos.pdf",
+    pdf: "/PDF/duo-emprendedor-atlantis-300-limpieza-5-productos.pdf",
     color: "from-pink-500 to-rose-800"
   },
   {
@@ -65,7 +65,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/vending/vending-tradicional-con-mostrador.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Vending Tradicional Atlantis 300 Max Con Ósmosis.pdf",
+    pdf: "/PDF/vending-tradicional-atlantis-300-max-con-osmosis.pdf",
     color: "from-blue-600 to-blue-900"
   },
   {
@@ -75,7 +75,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/vending/vending-touch-con-mostrador.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Dúo Emprendedor Atlantis 300 Max + Limpieza 8 productos.pdf",
+    pdf: "/PDF/duo-emprendedor-atlantis-300-max-limpieza-8-productos.pdf",
     color: "from-emerald-600 to-teal-900"
   },
   {
@@ -85,7 +85,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/purificadoras/MOSTRADOR POSEIDON/poseidon-pro.png",
     etiqueta: "Promoción",
-    pdf: "/PDF/Vending Touch Atlantis 300 Max Con Ósmosis.pdf",
+    pdf: "/PDF/vending-touch-atlantis-300-max-con-osmosis.pdf",
     color: "from-purple-600 to-indigo-900"
   },
   {
@@ -95,7 +95,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION1.png",
     etiqueta: "Promoción",
-    pdf: "/PDF/Vending Tradicional Atlantis 300.pdf",
+    pdf: "/PDF/vending-tradicional-atlantis-300.pdf",
     color: "from-pink-500 to-rose-800"
   },
   {
@@ -105,7 +105,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION2.png",
     etiqueta: "Promoción",
-    pdf: "/PDF/Vending Tradicional Atlantis 300 con Mostrador.pdf",
+    pdf: "/PDF/vending-tradicional-atlantis-300-con-mostrador.pdf",
     color: "from-blue-600 to-blue-900"
   },
   {
@@ -115,7 +115,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION3.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Dúo Emprendedor Vending Tradicional Atlantis 300 Max + Limpieza 8 productos.pdf",
+    pdf: "/PDF/duo-emprendedor-vending-tradicional-atlantis-300-max-limpieza-8-productos.pdf",
     color: "from-emerald-600 to-teal-900"
   },
   {
@@ -125,7 +125,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION0.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Dúo Emprendedor Vending Tradicional Atlantis 300 Max + Limpieza 5 productos.pdf",
+    pdf: "/PDF/duo-emprendedor-vending-tradicional-atlantis-300-max-limpieza-5-productos.pdf",
     color: "from-purple-600 to-indigo-900"
   },
   {
@@ -135,7 +135,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/vending/vending-tradicional-con-mostrador.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Vending 8 Productos de limpieza.pdf",
+    pdf: "/PDF/vending-8-productos-de-limpieza.pdf",
     color: "from-pink-500 to-rose-800"
   },
   {
@@ -145,7 +145,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/vending/vending-touch-con-mostrador.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Ficha Mostrador.pdf",
+    pdf: "/PDF/ficha-mostrador.pdf",
     color: "from-blue-600 to-blue-900"
   },
   {
@@ -155,7 +155,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/purificadoras/MOSTRADOR POSEIDON/poseidon-pro.png",
     etiqueta: "Promoción",
-    pdf: "/PDF/Vending Touch Atlantis 300.pdf",
+    pdf: "/PDF/vending-touch-atlantis-300.pdf",
     color: "from-emerald-600 to-teal-900"
   },
   {
@@ -165,7 +165,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION1.png",
     etiqueta: "Promoción",
-    pdf: "/PDF/Vending Touch Atlantis 300 Max con Mostrador.pdf",
+    pdf: "/PDF/vending-touch-atlantis-300-max-con-mostrador.pdf",
     color: "from-purple-600 to-indigo-900"
   },
   {
@@ -175,7 +175,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION2.png",
     etiqueta: "Promoción",
-    pdf: "/PDF/Vending 5 Productos de Limpieza.pdf",
+    pdf: "/PDF/vending-5-productos-de-limpieza.pdf",
     color: "from-pink-500 to-rose-800"
   },
   {
@@ -185,7 +185,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION3.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Vending Touch Atlantis 300 con Mostrador.pdf",
+    pdf: "/PDF/vending-touch-atlantis-300-con-mostrador.pdf",
     color: "from-blue-600 to-blue-900"
   },
   {
@@ -195,7 +195,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/PROMOCIONES/PROMOCION0.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Dúo Emprendedor Atlantis 300 + Limpieza 8 productos.pdf",
+    pdf: "/PDF/duo-emprendedor-atlantis-300-limpieza-8-productos.pdf",
     color: "from-emerald-600 to-teal-900"
   },
   {
@@ -205,7 +205,7 @@ const promocionesData = [
     detalle: "Ideal para iniciar o expandir tu negocio de agua purificada.",
     imagen: "/img/vending/vending-tradicional-con-mostrador.jpg",
     etiqueta: "Promoción",
-    pdf: "/PDF/Vending Tradicional Atlantis 300 Max Con Ósmosis con Mostrador.pdf",
+    pdf: "/PDF/vending-tradicional-atlantis-300-max-con-osmosis-con-mostrador.pdf",
     color: "from-purple-600 to-indigo-900"
   }
 ].map(promo => ({ ...promo, category: getCategory(promo.titulo) }));
