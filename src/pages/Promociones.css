@@ -1,23 +1,23 @@
-/* For Webkit-based browsers (Chrome, Safari) */
+/* Scrollbar horizontal de filtros */
 #category-filters::-webkit-scrollbar {
   height: 4px;
 }
 
 #category-filters::-webkit-scrollbar-track {
-  background: #f1f5f9; /* slate-100 */
+  background: #e5e7eb; /* slate-200 */
 }
 
 #category-filters::-webkit-scrollbar-thumb {
   background: #cbd5e1; /* slate-300 */
-  border-radius: 10px;
+  border-radius: 9999px;
 }
 
 #category-filters::-webkit-scrollbar-thumb:hover {
   background: #94a3b8; /* slate-400 */
 }
 
-/* For Firefox */
+/* Firefox */
 #category-filters {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 #f1f5f9;
+  scrollbar-color: #cbd5e1 #e5e7eb;
 }
