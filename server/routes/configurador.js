@@ -23,6 +23,9 @@ router.get('/models/:slug', async (req, res) => {
           orderBy: {
             priority: 'asc',
           },
+          include: {
+            tinacoExtra: true,
+          },
         },
       },
     });
@@ -52,6 +55,9 @@ router.get('/models', async (req, res) => {
         images: {
           orderBy: {
             priority: 'asc',
+          },
+          include: {
+            tinacoExtra: true,
           },
         },
       },

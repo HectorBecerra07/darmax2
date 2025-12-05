@@ -89,22 +89,26 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
 
   const displayImageSrc = useMemo(() => {
     if (!modelData) return null;
-
     let image = null;
 
-    // 1. Check for specific tinaco image
     if (selectedTinacoExtraId) {
+      // Prioritize specific alcalina version for tinaco
       image = getRelevantImage('TINACO', true, selectedTinacoExtraId, hasAguaAlcalina);
+      
+      // Fallback for tinaco if alcalina-specific one isn't found
+      if (!image && hasAguaAlcalina) {
+          image = getRelevantImage('TINACO', true, selectedTinacoExtraId, false);
+      }
       if (image) return image;
     }
-    
-    // 2. Check for base model image with alcalina (if selected)
+
+    // Prioritize specific alcalina version for base model
     if (hasAguaAlcalina) {
         image = getRelevantImage('MODEL_BASE_ALCALINA', true, null, true);
         if (image) return image;
     }
 
-    // 3. Fallback to base model image
+    // Fallback to base model image
     image = getRelevantImage('MODEL_BASE', true, null, false);
     return image;
 
@@ -112,7 +116,16 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
 
   const secondaryImageSrc = useMemo(() => {
     if (!modelData) return null;
-    return getRelevantImage('SECONDARY', true, null, hasAguaAlcalina, true);
+    
+    // Prioritize specific alcalina version for secondary image
+    let image = getRelevantImage('SECONDARY', true, null, hasAguaAlcalina, true);
+
+    // Fallback for secondary image if alcalina-specific one isn't found
+    if (!image && hasAguaAlcalina) {
+        image = getRelevantImage('SECONDARY', true, null, false, true);
+    }
+
+    return image;
   }, [modelData, hasAguaAlcalina, getRelevantImage]);
 
 
@@ -173,10 +186,10 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
 
       {/* Vista previa ARRIBA */}
       {(displayImageSrc || secondaryImageSrc) && (
-        <div className="max-w-7xl mx-auto md:flex md:gap-4">
+        <div className={`max-w-4xl mx-auto md:flex md:gap-4 ${!secondaryImageSrc ? 'md:justify-center' : ''}`}>
           {/* Vista previa del modelo */}
           {displayImageSrc && (
-            <div className="md:w-1/2">
+            <div className={`${!secondaryImageSrc ? 'md:w-full' : 'md:w-1/2'}`}>
               <h3 className="text-lg font-semibold text-gray-800">Vista previa del modelo</h3>
               <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3">
                 <div className="aspect-[16/9] w-full overflow-hidden rounded-lg bg-gray-50">
@@ -198,7 +211,7 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
 
           {/* Vista previa secundaria (vending Atlantis) */}
           {secondaryImageSrc && (
-            <div className="md:w-1/2 mt-8 md:mt-0">
+            <div className={`${!displayImageSrc ? 'md:w-full' : 'md:w-1/2'} ${displayImageSrc ? 'mt-8 md:mt-0' : ''}`}>
               <h3 className="text-lg font-semibold text-gray-800">Vista previa de la Vending</h3>
               <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3">
                 <div className="aspect-[16/9] w-full overflow-hidden rounded-lg bg-gray-50">
@@ -266,8 +279,15 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
         <button
           onClick={() => {
             const extrasSeleccionados = extras.filter((e) => seleccionados.includes(e.id));
-            // Pasar los objetos ModelExtra seleccionados completos
-            onSelect(extrasSeleccionados);
+            
+            // Pasar todos los datos relevantes al componente padre
+            onSelect({
+              model: modelData, // El objeto MachineModel completo
+              selectedExtras: extrasSeleccionados, // Los ModelExtra seleccionados
+              displayImage: displayImageSrc, // URL de la imagen principal
+              secondaryImage: secondaryImageSrc, // URL de la imagen secundaria
+              summaryString: currentDisplayString, // Cadena de resumen
+            });
             onNext();
           }}
           className="bg-black text-white rounded-lg px-6 py-3 hover:opacity-90"

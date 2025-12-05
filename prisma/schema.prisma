@@ -184,14 +184,25 @@ enum ImageContext {
   TINACO_ALCALINA      // Tinaco con agua alcalina
   SECONDARY            // Imagen secundaria (vending, etc.)
   SECONDARY_ALCALINA   // Secundaria cuando hay agua alcalina
+  CAROUSEL             // Para los carruseles de los primeros pasos
+}
+
+enum VendingType {
+  TRADICIONAL
+  TOUCH
+  NONE // Para Purificadoras o Vending-Limpieza
 }
 
 model MachineModel {
   id              String          @id @default(cuid())
   slug            String          @unique  // "Neptuno", "AtlantisMaxTouch", etc.
   name            String
+  basePrice       Int             @default(0)
+  description     String?
+  features        String[]        @default([])
   supportsTinacos Boolean         @default(true)
   isAtlantis      Boolean         @default(false)
+  vendingType     VendingType     @default(NONE)
 
   extras          ModelExtra[]
   images          ConfigurationImage[]

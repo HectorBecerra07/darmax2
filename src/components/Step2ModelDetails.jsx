@@ -1,172 +1,27 @@
 import { useState } from "react";
+import { VendingType as VendingTypeEnum } from "@prisma/client";
 
-const TOUCH_UPGRADE_PRICE = 10000;
+// const TOUCH_UPGRADE_PRICE = 10000; // Ya no es necesario, se gestiona como Extra
 const BRAND_BLUE = "#5188C9";
 const BRAND_TEAL = "#03A4A4";
 
-// Modelos que YA son touch
-const TOUCH_MODEL_IDS = new Set([
-  "AtlantisTouch",
-  "AtlantisMaxTouch",
-  "MegalodonTouch",
-  "MegalodonMaxTouch",
-]);
+// const TOUCH_MODEL_IDS = new Set([ ... ]); // Ya no es necesario
 
-const caracteristicasPorModelo = {
-  Atlantis: [
-    "500 garrafones por mes",
-    "Filtrado por carbón activado",
-    "Sistema UV incluido",
-    "Bajo consumo energético",
-    "Bomba 3/4 HP en acero inoxidable",
-    "Presurizador automático",
-    "Filtro de lecho profundo con gravas, arenas sílicas y zeolita (NSF)",
-    "Filtro de carbón activado (NSF)",
-    "Filtro suavizador con resina catiónica (NSF)",
-    "Tanque de salmuera",
-    'Portafiltro 10" Slim con cartucho polyspun',
-    "Lámpara UV de 16 LPM con balastro en acero inoxidable",
-    "Generador de ozono + ventury 3/4",
-    "Despachador automático 4 modalidades (1L, 4L, 10L, 20L)",
-    "Sensor de flujo, enjuague de garrafón y luz interna",
-    "Pantalla con sistema de botones y sensado de litros",
-    "Monedero antirrobo con sistema de cambio",
-    "Vinil personalizable",
-  ],
-  AtlantisMax: [
-    "800 garrafones por mes",
-    "Ósmosis inversa con bomba multietapas especial",
-    "Filtro lecho profundo + carbón + suavizador (NSF)",
-    '2 portafiltros polyspun (20” y 10” Slim)',
-    "UV de 16 LPM + generador de ozono + ventury 3/4",
-    "Despachador automático 4 modalidades",
-    "Pantalla de botones, sensor de flujo y luz interna",
-    "Monedero antirrobo con cambio",
-    "Vinil personalizable",
-  ],
-  AtlantisTouch: [
-    "500 garrafones por mes",
-    "Sistema completo de purificación + UV + ozono",
-    "Gabinete de acero grado alimenticio",
-    "Pantalla TOUCH interactiva de 8 pulgadas",
-    "Despachador con 4 modalidades (1L, 4L, 10L, 20L)",
-    "Sensado de litros, enjuague de garrafón",
-    "Sensor de flujo, luz interna, 2 solenoides",
-    "Monedero antirrobo con cambio",
-    "Dispensador de tapas",
-    "Marco en acero inoxidable",
-    "Sistema de verificación de fallas",
-    "Vinil personalizable contra luz UV",
-  ],
-  AtlantisMaxTouch: [
-    "800 garrafones por mes",
-    "Ósmosis inversa de alta producción",
-    "Pantalla TOUCH interactiva de 8 pulgadas",
-    "Gabinete de acero grado alimenticio",
-    "Filtro lecho profundo, carbón activado y suavizador (NSF)",
-    "UV 16 LPM + ozono + ventury",
-    '2 portafiltros polyspun (20” y 10” Slim)',
-    "Despachador automático 4 modalidades",
-    "Monedero antirrobo con cambio",
-    "Sensado de litros, luz interna, fallas, dispensador de tapas",
-    "Vinil UV personalizado",
-  ],
-  // Purificadoras
-  Neptuno: [
-    "Bomba de 1/2 hp",
-    "Presurizador automático",
-    "Filtro de lecho profundo 10x54 (gravas, arenas sílicas, zeolita con certificación NSF)",
-    "Filtro de carbón activado 10x54 (certificación NSF)",
-    "Filtro suavizador 10x54 con resina catiónica (NSF), válvula manual 5 pasos",
-    "Tanque de salmuera",
-    'Portafiltro 10” Slim con cartucho polyspun',
-    "Lámpara UV de 16 LPM con balastro en acero inoxidable",
-    "Ventury de 3/4",
-    "Generador de ozono",
-    "Tarja de acero inoxidable (2 lavados internos, 2 externos, 2 llenados)",
-  ],
-  NeptunoAPlus: [
-    "Bomba de 1/2 hp",
-    "Presurizador automático",
-    "Filtro de lecho profundo 10x54 (gravas, arenas sílicas, zeolita con certificación NSF)",
-    "Filtro de carbón activado 10x54 (certificación NSF)",
-    "Filtro suavizador 10x54 con resina catiónica (NSF), válvula manual 5 pasos",
-    "Tanque de salmuera",
-    "Filtro alcalino",
-    'Portafiltro 10” Slim con cartucho polyspun',
-    "Lámpara UV de 16 LPM con balastro en acero inoxidable",
-    "Ventury de 3/4",
-    "Generador de ozono",
-    "Tarja de acero inoxidable (2 lavados internos, 2 externos, 2 llenados)",
-  ],
-  Vending5: [
-    "Para 5 productos de limpieza",
-    "Estructura 100% acero inoxidable calibre 18",
-    "Vinil con acabado industrial",
-    "Mangueras, conexiones, bombas y conectores incluidos",
-    "Gabinete de acero inoxidable con llave (protección del dinero)",
-    "Pantalla de servicio y botones de servicio",
-    "Monedero: acepta monedas de $1, $2, $5 y $10 MXN y da cambio",
-    "Registra ventas",
-    "Fácil de operar",
-    "Pantalla inicial",
-    "Sensado de litros",
-    "Llenado de 1 litro",
-    "Precios de llenado configurables",
-    "Luz interna",
-    "Asesoría por videollamada para instalación (no incluye instalación)"
-  ],
-  Vending8: [
-    "Para 8 productos de limpieza",
-    "Estructura 100% acero inoxidable calibre 18",
-    "Vinil con acabado industrial",
-    "Mangueras, conexiones, bombas y conectores incluidos",
-    "Gabinete de acero inoxidable con llave (protección del dinero)",
-    "Pantalla de servicio y botones de servicio",
-    "Monedero: acepta monedas de $1, $2, $5 y $10 MXN y da cambio",
-    "Registra ventas",
-    "Fácil de operar",
-    "Pantalla inicial",
-    "Sensado de litros",
-    "Llenado de 1 litro",
-    "Precios de llenado configurables",
-    "Luz interna",
-    "Asesoría por videollamada para instalación (no incluye instalación)"
-  ],
-};
+// const caracteristicasPorModelo = { ... }; // Ya no es necesario
 
 export default function Step2ModelDetails({ modelo, vendingType, onNext, onBack }) {
-  const [isTouch, setIsTouch] = useState(false);
+  // const [isTouch, setIsTouch] = useState(false); // Ya no es necesario
 
-  const descripcionModelo =
-    modelo?.descripcion ??
-    modelo?.descripción ??
-    modelo?.desc ??
-    "";
+  const descripcionModelo = modelo?.description || ""; // Ahora viene del modelo
+  const precioBase = Number(modelo?.basePrice ?? 0); // Ahora viene del modelo
 
-  const precioBase = Number(modelo?.precio ?? 0);
+  // La lógica de "Touch Upgrade" se moverá a extras, así que esto se simplifica
+  // const isTouchModel = TOUCH_MODEL_IDS.has(modelo?.id) || /touch/i.test(modelo?.id || "");
+  // const allowTouchUpgrade = vendingType === "Tradicional" && !isTouchModel;
 
-  // ¿El modelo YA es touch?
-  const isTouchModel =
-    TOUCH_MODEL_IDS.has(modelo?.id) || /touch/i.test(modelo?.id || "");
-
-  // ¿Mostrar checkbox de upgrade?
-  const allowTouchUpgrade = vendingType === "Tradicional" && !isTouchModel;
-
-  // Incremento por touch (solo si NO es un modelo touch)
-  let touchIncrement = 0;
-  if (!isTouchModel) {
-    if (vendingType === "Touch") {
-      // Eligieron la variante touch de un modelo tradicional
-      touchIncrement = TOUCH_UPGRADE_PRICE;
-    } else if (allowTouchUpgrade && isTouch) {
-      // Tradicional + checkbox activado
-      touchIncrement = TOUCH_UPGRADE_PRICE;
-    }
-  }
-
-  const precioFinal = precioBase + touchIncrement;
-  const caracteristicas = caracteristicasPorModelo[modelo?.id] || [];
+  // let touchIncrement = 0; // Ya no es necesario
+  // const precioFinal = precioBase + touchIncrement; // Ahora es solo el precio base del modelo
+  const caracteristicas = modelo?.features || []; // Ahora viene del modelo
 
   return (
     <section className="w-full">
@@ -175,15 +30,15 @@ export default function Step2ModelDetails({ modelo, vendingType, onNext, onBack 
         <header className="mb-4 md:mb-6">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900">
-              {modelo?.nombre ?? "—"}
+              {modelo?.name ?? "—"}
             </h3>
 
-            {vendingType && (
+            {modelo?.vendingType && modelo.vendingType !== VendingTypeEnum.NONE && (
               <span
                 className="hidden sm:inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold text-white"
                 style={{ background: BRAND_BLUE }}
               >
-                {vendingType}
+                {modelo.vendingType}
               </span>
             )}
           </div>
@@ -198,56 +53,37 @@ export default function Step2ModelDetails({ modelo, vendingType, onNext, onBack 
         <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-5" />
 
         {/* Lista de características */}
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-gray-800">
-          {caracteristicas.map((c, i) => (
-            <li key={i} className="flex items-start gap-2">
-              <svg
-                className="mt-[2px] w-5 h-5 shrink-0"
-                viewBox="0 0 20 20"
-                fill={BRAND_TEAL}
-                aria-hidden="true"
-              >
-                <path d="M16.707 5.293a1 1 0 0 1 0 1.414l-7.25 7.25a1 1 0 0 1-1.414 0l-3-3A1 1 0 1 1 6.293 9.293l2.293 2.293 6.543-6.543a1 1 0 0 1 1.414 0z" />
-              </svg>
-              <span className="text-sm leading-relaxed">{c}</span>
-            </li>
-          ))}
-        </ul>
-
-        {/* Conversión a Touch (solo si aplica) */}
-        {allowTouchUpgrade && (
-          <div className="mt-6 flex items-center gap-3">
-            <input
-              id="touch"
-              type="checkbox"
-              checked={isTouch}
-              onChange={() => setIsTouch((v) => !v)}
-              className="h-5 w-5 rounded border-gray-300 text-black focus:ring-black"
-            />
-            <label htmlFor="touch" className="text-sm font-medium text-gray-900">
-              Convertir a pantalla Touch{" "}
-              <span className="text-gray-500">
-                (+ ${TOUCH_UPGRADE_PRICE.toLocaleString()} MXN)
-              </span>
-            </label>
-          </div>
+        {caracteristicas.length > 0 && (
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-gray-800">
+            {caracteristicas.map((c, i) => (
+                <li key={i} className="flex items-start gap-2">
+                <svg
+                    className="mt-[2px] w-5 h-5 shrink-0"
+                    viewBox="0 0 20 20"
+                    fill={BRAND_TEAL}
+                    aria-hidden="true"
+                >
+                    <path d="M16.707 5.293a1 1 0 0 1 0 1.414l-7.25 7.25a1 1 0 0 1-1.414 0l-3-3A1 1 0 1 1 6.293 9.293l2.293 2.293 6.543-6.543a1 1 0 0 1 1.414 0z" />
+                </svg>
+                <span className="text-sm leading-relaxed">{c}</span>
+                </li>
+            ))}
+            </ul>
         )}
+        
+        {/* Conversión a Touch (ya no aplica aquí, se gestiona como extra en Step3) */}
+        {/* {allowTouchUpgrade && ( ... )} */}
 
         {/* Precio */}
         <div className="mt-6">
           <div className="h-1.5 w-16 rounded-full" style={{ background: BRAND_TEAL }} />
           <p className="mt-3 text-lg md:text-xl font-semibold text-gray-700">
-            Desde{" "}
+            Precio Base:{" "}
             <span className="text-2xl md:text-3xl font-extrabold text-gray-900">
-              ${precioFinal.toLocaleString()} MXN
+              ${precioBase.toLocaleString()} MXN
             </span>
           </p>
-          {!!touchIncrement && (
-            <p className="text-xs text-gray-500 mt-1">
-              Incluye conversión a pantalla touch (+ $
-              {TOUCH_UPGRADE_PRICE.toLocaleString()}).
-            </p>
-          )}
+          {/* {!!touchIncrement && ( ... )} */}
         </div>
 
         {/* Botones */}
@@ -260,7 +96,7 @@ export default function Step2ModelDetails({ modelo, vendingType, onNext, onBack 
           </button>
 
           <button
-            onClick={() => onNext(touchIncrement)}
+            onClick={() => onNext()} // Ya no pasamos touchIncrement
             className="inline-flex justify-center items-center rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-md hover:shadow-lg active:scale-[0.99] transition"
             style={{ background: BRAND_BLUE }}
           >

@@ -43,7 +43,9 @@ import EnviosAdmin from "./administrador/pages/EnviosAdmin";
 import ReportesAdmin from "./administrador/pages/ReportesAdmin";
 import ClientesAdmin from "./administrador/pages/ClientesAdmin";
 import CategoriasAdmin from "./administrador/pages/CategoriasAdmin";
-import ConfiguradorAdmin from "./administrador/pages/ConfiguradorAdmin"; // <-- IMPORTAR
+import ModelsConfigAdmin from "./administrador/pages/ModelsConfigAdmin";
+import ExtrasAdmin from "./administrador/pages/ExtrasAdmin";
+import DetalleModeloAdmin from "./administrador/pages/DetalleModeloAdmin"; // Nueva página de detalle
 
 const PageWrapper = ({ children }) => {
   useEffect(() => {
@@ -85,7 +87,9 @@ function AppContent() {
             <Route path="categorias" element={<CategoriasAdmin />} />
             <Route path="pedidos" element={<PedidosAdmin />} />
             <Route path="envios" element={<EnviosAdmin />} />
-            <Route path="configurador" element={<ConfiguradorAdmin />} /> {/* <-- AÑADIR RUTA */}
+            <Route path="configurador" element={<ModelsConfigAdmin />} />
+            <Route path="configurador/model/:modelId" element={<DetalleModeloAdmin />} />
+            <Route path="extras" element={<ExtrasAdmin />} />
             <Route path="reportes" element={<ReportesAdmin />} />
             <Route path="clientes" element={<ClientesAdmin />} />
           </Route>

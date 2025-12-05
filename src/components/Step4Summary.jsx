@@ -5,128 +5,6 @@ import jsPDF from "jspdf";
 const BRAND_BLUE = "#5188C9";
 const BRAND_TEAL = "#03A4A4";
 
-const caracteristicasPorModelo = {
-  Atlantis: [
-    "500 garrafones por mes",
-    "Filtrado por carbón activado",
-    "Sistema UV incluido",
-    "Bajo consumo energético",
-    "Bomba 3/4 HP en acero inoxidable",
-    "Presurizador automático",
-    "Filtro de lecho profundo con gravas, arenas sílicas y zeolita (NSF)",
-    "Filtro de carbón activado (NSF)",
-    "Filtro suavizador con resina catiónica (NSF)",
-    "Tanque de salmuera",
-    'Portafiltro 10" Slim con cartucho polyspun',
-    "Lámpara UV de 16 LPM con balastro en acero inoxidable",
-    "Generador de ozono + ventury 3/4",
-    "Despachador automático 4 modalidades (1L, 4L, 10L, 20L)",
-    "Sensor de flujo, enjuague de garrafón y luz interna",
-    "Pantalla con sistema de botones y sensado de litros",
-    "Monedero antirrobo con sistema de cambio",
-    "Vinil personalizable",
-  ],
-  AtlantisMax: [
-    "800 garrafones por mes",
-    "Ósmosis inversa con bomba multietapas especial",
-    "Filtro lecho profundo + carbón + suavizador (NSF)",
-    '2 portafiltros polyspun (20” y 10” Slim)',
-    "UV de 16 LPM + generador de ozono + ventury 3/4",
-    "Despachador automático 4 modalidades",
-    "Pantalla de botones, sensor de flujo y luz interna",
-    "Monedero antirrobo con cambio",
-    "Vinil personalizable",
-  ],
-  AtlantisTouch: [
-    "500 garrafones por mes",
-    "Sistema completo de purificación + UV + ozono",
-    "Gabinete de acero grado alimenticio",
-    "Pantalla TOUCH interactiva de 8 pulgadas",
-    "Despachador con 4 modalidades (1L, 4L, 10L, 20L)",
-    "Sensado de litros, enjuague de garrafón",
-    "Sensor de flujo, luz interna, 2 solenoides",
-    "Monedero antirrobo con cambio",
-    "Dispensador de tapas",
-    "Marco en acero inoxidable",
-    "Sistema de verificación de fallas",
-    "Vinil personalizable contra luz UV",
-  ],
-  AtlantisMaxTouch: [
-    "800 garrafones por mes",
-    "Ósmosis inversa de alta producción",
-    "Pantalla TOUCH interactiva de 8 pulgadas",
-    "Gabinete de acero grado alimenticio",
-    "Filtro lecho profundo, carbón activado y suavizador (NSF)",
-    "UV 16 LPM + ozono + ventury",
-    '2 portafiltros polyspun (20” y 10” Slim)',
-    "Despachador automático 4 modalidades",
-    "Monedero antirrobo con cambio",
-    "Sensado de litros, luz interna, fallas, dispensador de tapas",
-    "Vinil UV personalizado",
-  ],
-  Neptuno: [
-    "Bomba de 1/2 hp",
-    "Presurizador automático",
-    "Filtro de lecho profundo 10x54 (gravas, arenas sílicas, zeolita con certificación NSF)",
-    "Filtro de carbón activado 10x54 (certificación NSF)",
-    "Filtro suavizador 10x54 con resina catiónica (NSF), válvula manual 5 pasos",
-    "Tanque de salmuera",
-    'Portafiltro 10” Slim con cartucho polyspun',
-    "Lámpara UV de 16 LPM con balastro en acero inoxidable",
-    "Ventury de 3/4",
-    "Generador de ozono",
-    "Tarja de acero inoxidable (2 lavados internos, 2 externos, 2 llenados)",
-  ],
-  NeptunoAPlus: [
-    "Bomba de 1/2 hp",
-    "Presurizador automático",
-    "Filtro de lecho profundo 10x54 (gravas, arenas sílicas, zeolita con certificación NSF)",
-    "Filtro de carbón activado 10x54 (certificación NSF)",
-    "Filtro suavizador 10x54 con resina catiónica (NSF), válvula manual 5 pasos",
-    "Tanque de salmuera",
-    "Filtro alcalino",
-    'Portafiltro 10” Slim con cartucho polyspun',
-    "Lámpara UV de 16 LPM con balastro en acero inoxidable",
-    "Ventury de 3/4",
-    "Generador de ozono",
-    "Tarja de acero inoxidable (2 lavados internos, 2 externos, 2 llenados)",
-  ],
-  Vending5: [
-    "Para 5 productos de limpieza",
-    "Estructura 100% acero inoxidable calibre 18",
-    "Vinil con acabado industrial",
-    "Mangueras, conexiones, bombas y conectores incluidos",
-    "Gabinete de acero inoxidable con llave (protección del dinero)",
-    "Pantalla de servicio y botones de servicio",
-    "Monedero: acepta monedas de $1, $2, $5 y $10 MXN y da cambio",
-    "Registra ventas",
-    "Fácil de operar",
-    "Pantalla inicial",
-    "Sensado de litros",
-    "Llenado de 1 litro",
-    "Precios de llenado configurables",
-    "Luz interna",
-    "Asesoría por videollamada para instalación (no incluye instalación)"
-  ],
-  Vending8: [
-    "Para 8 productos de limpieza",
-    "Estructura 100% acero inoxidable calibre 18",
-    "Vinil con acabado industrial",
-    "Mangueras, conexiones, bombas y conectores incluidos",
-    "Gabinete de acero inoxidable con llave (protección del dinero)",
-    "Pantalla de servicio y botones de servicio",
-    "Monedero: acepta monedas de $1, $2, $5 y $10 MXN y da cambio",
-    "Registra ventas",
-    "Fácil de operar",
-    "Pantalla inicial",
-    "Sensado de litros",
-    "Llenado de 1 litro",
-    "Precios de llenado configurables",
-    "Luz interna",
-    "Asesoría por videollamada para instalación (no incluye instalación)"
-  ],
-};
-
 /* Utilidades */
 const loadImage = (src) =>
   new Promise((resolve, reject) => {
@@ -144,26 +22,25 @@ function hexToRgb(hex) {
 }
 
 export default function Step4Summary({
-  modelo,
-  extras,
-  extraTouchPrice,
-  extrasPrice,
+  summaryData, // Objeto completo con model, selectedExtras, displayImage, secondaryImage
   onBack,
 }) {
-  if (!modelo) return null;
+  if (!summaryData || !summaryData.model) return null;
+
+  const { model, selectedExtras, displayImage, secondaryImage, summaryString } = summaryData;
 
   const toMoney = (n) =>
     (Number(n) || 0).toLocaleString("es-MX", { minimumFractionDigits: 0 });
 
-  const precioExtras =
-    typeof extrasPrice === "number"
-      ? extrasPrice
-      : extras.reduce((acc, curr) => acc + (curr.precio || 0), 0);
+  // Calcular precio de extras seleccionados
+  const precioExtras = selectedExtras.reduce(
+    (acc, curr) => acc + (curr.priceOverride ?? curr.extra.basePrice),
+    0
+  );
 
-  const precioTotal =
-    Number(modelo.precio || 0) + Number(extraTouchPrice || 0) + Number(precioExtras || 0);
+  const precioBaseModelo = model.basePrice ?? 0;
 
-  const caracteristicas = caracteristicasPorModelo[modelo.id] || [];
+  const precioTotal = precioBaseModelo + precioExtras;
 
   /* ====== PDF con líneas que no tocan el logo + líneas inferiores ====== */
   const generarPDF = async () => {
@@ -222,7 +99,7 @@ export default function Step4Summary({
       // Número de página
       doc.setFontSize(9);
       doc.setTextColor("#888");
-      doc.text(`Página ${pageNumber}`, pageW - M, pageH - 8, { align: "right" });
+      doc.text(`Página ${pageNumber}`, pageW / 2, pageH - 8, { align: "center" }); // Centered for less conflict
     };
 
     let y = 45; // contenido
@@ -288,28 +165,35 @@ export default function Step4Summary({
     writeTitle("DARMAX | Cotización");
 
     writeH2("Modelo seleccionado:");
-    write(`${modelo.nombre} — $${toMoney(modelo.precio)} MXN`, { bold: true });
-    if (modelo?.descripcion) write(modelo.descripcion);
+    write(`${model.name} — $${toMoney(precioBaseModelo)} MXN`, { bold: true });
+    if (model?.description) write(model.description);
 
-    if (caracteristicas.length > 0) {
+    if (model.features && model.features.length > 0) {
       writeH2("Características del modelo:");
-      writeBullets(caracteristicas);
-    }
+      writeBullets(model.features);
+    } 
 
-    writeH2("Extras seleccionados:");
-    if (extras.length > 0) {
-      writeBullets(extras.map((e) => `${e.nombre} — $${toMoney(e.precio)} MXN`));
+    if (selectedExtras.length > 0) {
+        writeH2("Extras seleccionados:");
+        writeBullets(selectedExtras.map((me) => `${me.extra.name} — $${toMoney(me.priceOverride ?? me.extra.basePrice)} MXN`));
     } else {
-      write("No seleccionaste extras.");
+        write("No seleccionaste extras.");
+    }
+    
+    if (displayImage) {
+        ensureSpace(80);
+        const img = await loadImage(displayImage);
+        const imgWidth = 100;
+        const imgHeight = (img.height / img.width) * imgWidth;
+        doc.addImage(img, "PNG", M, y, imgWidth, imgHeight);
+        y += imgHeight + 5;
     }
 
     writeH2("Resumen de precio:");
-    write(`Precio Base: $${toMoney(modelo.precio)} MXN`);
-    if (extraTouchPrice) write(`Touch: $${toMoney(extraTouchPrice)} MXN`);
+    write(`Precio Base: $${toMoney(precioBaseModelo)} MXN`);
     write(`Extras: $${toMoney(precioExtras)} MXN`);
     write(`Total: $${toMoney(precioTotal)} MXN`, { bold: true });
 
-    // Agradecimiento
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor("#888");
@@ -327,7 +211,7 @@ export default function Step4Summary({
     const numero = "5519655369";
     const mensaje =
       `Hola DARMAX, ya generé mi cotización.\n` +
-      `Modelo: ${modelo.nombre}\n` +
+      `Modelo: ${model.name}\n` +
       `Total: $${toMoney(precioTotal)} MXN\n` +
       `¿Me apoyan con seguimiento?`;
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
@@ -338,48 +222,62 @@ export default function Step4Summary({
     <div className="space-y-8 max-w-3xl mx-auto">
       <h2 className="text-3xl font-bold text-gray-800">Resumen de tu Configuración</h2>
 
-      <div className="p-6 border rounded-xl space-y-3">
-        <h3 className="font-semibold text-xl">Modelo Seleccionado</h3>
-        <p>
-          {modelo.nombre} — $
-          {toMoney(modelo.precio)} MXN
+      <div className="p-6 border rounded-xl space-y-4">
+        <h3 className="font-semibold text-xl text-gray-800">Modelo Seleccionado</h3>
+        <p className="text-gray-700">
+          <span className="font-medium">{model.name}</span> — $
+          {toMoney(precioBaseModelo)} MXN
         </p>
-        {modelo?.descripcion && (
-          <p className="text-slate-600">{modelo.descripcion}</p>
+        {model?.description && (
+          <p className="text-slate-600">{model.description}</p>
         )}
+
+        {displayImage && (
+          <div className="mt-4">
+            <p className="text-sm font-medium text-gray-700 mb-2">Vista Previa:</p>
+            <img src={displayImage} alt={model.name} className="max-w-full h-48 object-contain mx-auto border rounded-lg p-2" />
+          </div>
+        )}
+        {secondaryImage && (
+            <div className="mt-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Componente Adicional:</p>
+                <img src={secondaryImage} alt={`${model.name} componente adicional`} className="max-w-full h-48 object-contain mx-auto border rounded-lg p-2" />
+            </div>
+        )}
+
       </div>
 
-      {caracteristicas.length > 0 && (
+      {model.features && model.features.length > 0 && (
         <div className="p-6 border rounded-xl space-y-3">
-          <h3 className="font-semibold text-xl">Características</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            {caracteristicas.map((c, i) => (
+          <h3 className="font-semibold text-xl text-gray-800">Características</h3>
+          <ul className="list-disc pl-5 space-y-1 text-gray-700">
+            {model.features.map((c, i) => (
               <li key={i}>{c}</li>
             ))}
           </ul>
         </div>
       )}
 
+
       <div className="p-6 border rounded-xl space-y-3">
-        <h3 className="font-semibold text-xl">Extras Seleccionados</h3>
-        {extras.length > 0 ? (
-          <ul className="list-disc pl-5 space-y-1">
-            {extras.map((e) => (
-              <li key={e.id}>
-                {e.nombre} — ${toMoney(e.precio)} MXN
+        <h3 className="font-semibold text-xl text-gray-800">Extras Seleccionados</h3>
+        {selectedExtras.length > 0 ? (
+          <ul className="list-disc pl-5 space-y-1 text-gray-700">
+            {selectedExtras.map((me) => (
+              <li key={me.id}>
+                {me.extra.name} — ${toMoney(me.priceOverride ?? me.extra.basePrice)} MXN
               </li>
             ))}
           </ul>
         ) : (
-          <p>No seleccionaste extras.</p>
+          <p className="text-gray-600">No seleccionaste extras.</p>
         )}
       </div>
 
       <div className="p-6 border rounded-xl space-y-2">
-        <h3 className="font-semibold text-xl">Resumen de Precio</h3>
-        <p>Precio Base: ${toMoney(modelo.precio)} MXN</p>
-        {!!extraTouchPrice && <p>Touch: ${toMoney(extraTouchPrice)} MXN</p>}
-        <p>Extras: ${toMoney(precioExtras)} MXN</p>
+        <h3 className="font-semibold text-xl text-gray-800">Resumen de Precio</h3>
+        <p className="text-gray-700">Precio Base: ${toMoney(precioBaseModelo)} MXN</p>
+        <p className="text-gray-700">Extras: ${toMoney(precioExtras)} MXN</p>
         <p className="font-bold text-2xl text-black">
           Total: ${toMoney(precioTotal)} MXN
         </p>
