@@ -388,7 +388,7 @@ export default function Promociones() {
 
                         {promo.pdf ? (
                           <a
-                            href={promo.pdf}
+                            href={encodeURI(promo.pdf)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full text-center inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-red-600 bg-red-50 border border-red-100 hover:bg-red-100 hover:border-red-200 transition-colors text-sm"
@@ -426,7 +426,7 @@ export default function Promociones() {
                 <p className="text-slate-500 mt-2">Maximiza tu local con doble funcionalidad.</p>
               </div>
               <a 
-                href="/documentos/catalogo-combos-completo.pdf" 
+                href={encodeURI("/documentos/catalogo-combos-completo.pdf")} 
                 className="inline-flex items-center gap-2 text-blue-600 font-semibold hover:underline"
               >
                 <IconDownload /> Descargar Catálogo Completo
@@ -512,7 +512,7 @@ export default function Promociones() {
                     Cotizar Ahora
                   </a>
                   <a
-                    href={combo3en1.pdf || "#"}
+                    href={encodeURI(combo3en1.pdf || "#")}
                     className="px-7 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-semibold hover:bg-white/10 transition flex items-center gap-2 justify-center"
                   >
                     <IconPDF /> Descargar Ficha
