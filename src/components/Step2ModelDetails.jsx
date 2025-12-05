@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { VendingType as VendingTypeEnum } from "@prisma/client";
+
+// Reemplazar la importación de Prisma con una constante local
+const VendingTypeEnum = {
+  TRADICIONAL: 'TRADICIONAL',
+  TOUCH: 'TOUCH',
+  NONE: 'NONE',
+};
 
 // const TOUCH_UPGRADE_PRICE = 10000; // Ya no es necesario, se gestiona como Extra
 const BRAND_BLUE = "#5188C9";

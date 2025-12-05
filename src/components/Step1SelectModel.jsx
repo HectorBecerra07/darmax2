@@ -1,5 +1,11 @@
 import React from "react";
-import { VendingType as VendingTypeEnum } from "@prisma/client"; // Importar el enum
+
+// Reemplazar la importación de Prisma con una constante local
+const VendingTypeEnum = {
+  TRADICIONAL: 'TRADICIONAL',
+  TOUCH: 'TOUCH',
+  NONE: 'NONE',
+};
 
 export default function Step1SelectModel({ modelos, vendingType, onSelect, onNext }) {
   // Los modelos ya vienen filtrados por vendingType desde WizardGeneral.jsx

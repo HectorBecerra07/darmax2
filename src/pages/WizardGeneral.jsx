@@ -9,10 +9,16 @@ import Step3ExtrasConfigurator from "../components/Step3ExtrasConfigurator";
 import Step4Summary from "../components/Step4Summary";
 import CarouselImages from "../components/CarouselImages";
 import Breadcrumbs from "../components/Breadcrumbs";
-import { VendingType as VendingTypeEnum } from "@prisma/client";
 import toast from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+// Reemplazar la importación de Prisma con una constante local
+const VendingTypeEnum = {
+  TRADICIONAL: 'TRADICIONAL',
+  TOUCH: 'TOUCH',
+  NONE: 'NONE',
+};
 
 export default function WizardGeneral() {
   const { id } = useParams();
