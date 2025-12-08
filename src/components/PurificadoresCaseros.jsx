@@ -88,7 +88,7 @@ export default function PurificadoresCaseros() {
 
   return (
     <div className="bg-slate-50">
-      <section className="px-4 md:px-10 pt-28 pb-16 max-w-screen-2xl mx-auto">
+      <section className="px-4 md:px-10 pt-10 pb-16 max-w-screen-2xl mx-auto">
         <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">
                 Purificadores para tu Hogar
@@ -297,7 +297,7 @@ function Checklist({ children }) {
 }
 
 const CheckIcon = () => (
-    <svg className="w-6 h-6 text-lime-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className="w-6 h-6 text-[#24d4da] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 12.75L11.25 15L15 9.75"></path>
       <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor"></path>
     </svg>

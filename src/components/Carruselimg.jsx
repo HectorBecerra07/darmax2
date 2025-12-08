@@ -106,9 +106,6 @@ export default function CarruselResponsive() {
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
         >
-          {/* Gradientes laterales para indicar scroll (fade out) */}
-          <div className="pointer-events-none absolute left-0 top-0 h-full w-24 bg-gradient-to-r from-[#Fbfbfd] to-transparent z-10" />
-          <div className="pointer-events-none absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-[#Fbfbfd] to-transparent z-10" />
 
           {/* BOTONES DE NAVEGACIÓN MEJORADOS */}
           <button

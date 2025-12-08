@@ -30,16 +30,16 @@ export default function LandingPage() {
           backgroundPosition: "center",
         }}
       >
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-4 md:gap-8 w-full max-w-7xl mx-auto lg:h-full">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-4 md:gap-2 w-full max-w-7xl mx-auto lg:h-full">
           <div className="max-w-xl text-center md:text-left flex flex-col items-center md:items-start">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl font-black tracking-tight leading-tight mt-0 md:mt-4 mb-4 md:mb-6">
-              EMPRENDE TU{" "}
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7x2 font-black tracking-tight leading-tight mt-0 md:mt-1 mb-1 md:mb-3">
+              Emprende tu{" "}
               <span style={{ color: '#ffff00' }}>
-                NEGOCIO
+                Negocio
               </span>
             </h2>
             <p className="text-base md:text-lg lg:text-lg text-white leading-relaxed mb-6 md:mb-8">
-              Da el primer paso a tu libertad financiera y <br></br>
+              Da el primer paso a tu libertad financiera y <br />
               lleva tu emprendimiento al siguiente nivel con 
             </p>
             <button
@@ -54,7 +54,7 @@ export default function LandingPage() {
             <img
               src="/img/darmax-logo.png"
               alt="Logo Darmax"
-              className="w-[200px] sm:w-[250px] md:w-[300px] lg:w-[250px] h-auto object-contain"
+              className="w-[200px] sm:w-[250px] md:w-[300px] lg:w-[300px] h-auto object-contain"
             />
           </div>
         </div>
@@ -64,10 +64,8 @@ export default function LandingPage() {
       <div ref={inicioRef} className="scroll-mt-1">
         <IniciaNegocio />
       </div>
-
-      //-- NUEVO ---
       <Carruselimg />
-      //-- FIN NUEVO ---
+
       <div ref={calculadoraRef} className="scroll-mt-1">
         <CalculadoraNegocio />
       </div>
