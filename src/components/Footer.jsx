@@ -10,7 +10,7 @@ import { SiMercadopago } from "react-icons/si";
 
 const Footer = () => {
   return (
-    <footer className="relative bg-black text-gray-300 pt-12 pb-6 px-6">
+    <footer className="relative bg-gray-900/95 text-gray-300 pt-12 pb-6 px-6">
       {/* Degradado superior sutil */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-500/0 via-sky-500/60 to-sky-500/0" />
 
