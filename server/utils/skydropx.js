@@ -1,28 +1,36 @@
-// server/utils/skydropx.js
 import axios from "axios";
 
 const {
-  SKYDROPX_CLIENT_ID,
-  SKYDROPX_CLIENT_SECRET,
-  SKYDROPX_BASE_URL,
-  SKYDROPX_ENV,
+  SKYDROPX_ENV = "sandbox",
+
+  SKYDROPX_BASE_URL_PRO,
+  SKYDROPX_CLIENT_ID_PRO,
+  SKYDROPX_CLIENT_SECRET_PRO,
+
+  SKYDROPX_BASE_URL_SB,
+  SKYDROPX_CLIENT_ID_SB,
+  SKYDROPX_CLIENT_SECRET_SB,
 } = process.env;
 
-// Elegimos base URL según ENV o BASE_URL explícito
-const DEFAULT_BASE_URL =
-  SKYDROPX_ENV === "sandbox"
-    ? "https://sb-pro.skydropx.com"
-    : "https://pro.skydropx.com";
+const isProd = SKYDROPX_ENV === "production";
 
-const BASE_URL = SKYDROPX_BASE_URL || DEFAULT_BASE_URL;
+const BASE_URL = isProd
+  ? SKYDROPX_BASE_URL_PRO || "https://pro.skydropx.com"
+  : SKYDROPX_BASE_URL_SB || "https://sb-pro.skydropx.com";
+
+const SKYDROPX_CLIENT_ID = isProd ? SKYDROPX_CLIENT_ID_PRO : SKYDROPX_CLIENT_ID_SB;
+const SKYDROPX_CLIENT_SECRET = isProd
+  ? SKYDROPX_CLIENT_SECRET_PRO
+  : SKYDROPX_CLIENT_SECRET_SB;
 
 if (!SKYDROPX_CLIENT_ID || !SKYDROPX_CLIENT_SECRET) {
   console.error(
-    "❌ No se encontraron SKYDROPX_CLIENT_ID o SKYDROPX_CLIENT_SECRET en process.env"
+    "❌ No se encontraron credenciales de Skydropx para el entorno:",
+    SKYDROPX_ENV
   );
 } else {
   console.log(
-    `🌐 Skydropx PRO usando base URL: ${BASE_URL} (ENV=${SKYDROPX_ENV || "no definido"})`
+    `🌐 Skydropx PRO usando base URL: ${BASE_URL} (ENV=${SKYDROPX_ENV}) client_id=${SKYDROPX_CLIENT_ID.slice(0, 4)}***`
   );
 }
 
@@ -40,18 +48,13 @@ async function getNewToken() {
   params.append("client_id", SKYDROPX_CLIENT_ID);
   params.append("client_secret", SKYDROPX_CLIENT_SECRET);
 
-  const { data } = await axios.post(
-    `${BASE_URL}/api/v1/oauth/token`,
-    params,
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    }
-  );
+  const { data } = await axios.post(`${BASE_URL}/api/v1/oauth/token`, params, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
 
   const { access_token, expires_in } = data;
-  // Expira un minuto antes para evitar edge cases
   const expiresAt = Date.now() + expires_in * 1000 - 60_000;
 
   tokenCache = {
@@ -70,7 +73,6 @@ async function getToken() {
   return await getNewToken();
 }
 
-// 👉 Helper general para API PRO (cotizaciones, shipments, etc.)
 export async function skydropxProRequest(method, path, body = null) {
   try {
     const token = await getToken();
@@ -96,7 +98,6 @@ export async function skydropxProRequest(method, path, body = null) {
       error.response?.data || String(error)
     );
 
-    // Si el token caduca, forzamos renovar en la siguiente
     if (error.response?.status === 401) {
       tokenCache.expiresAt = 0;
     }
