@@ -102,7 +102,7 @@ const SlideCart = ({ isOpen, onClose }) => {
               <span>Total:</span>
               <span>${total.toFixed(2)}</span>
             </div>
-            <button className="w-full bg-[#ccff00] text-black font-bold py-2 rounded-lg hover:brightness-90">
+            <button className="w-full bg-[#24d4da] text-black font-bold py-2 rounded-lg hover:brightness-90">
               Finalizar pedido
             </button>
             <button

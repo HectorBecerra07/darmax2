@@ -42,7 +42,7 @@ const ProductModal = ({ show, onClose, producto, onAddToCart }) => {
               className={`text-black font-bold py-3 px-5 rounded-lg hover:brightness-90 transition ${
                 (producto.stock ?? 0) === 0
                   ? "bg-gray-300 text-gray-600 cursor-not-allowed" // Disabled style
-                  : "bg-[#ccff00]" // Enabled style
+                  : "bg-[#24d4da]" // Enabled style
               }`}
             >
               {(producto.stock ?? 0) === 0 ? "Agotado" : "Añadir al carrito"}

@@ -443,7 +443,7 @@ export default function Nosotros() {
           <div className="max-w-7xl mx-auto px-3 py-20 lg:py-24">
             <SectionTitle label="Nuestra cultura" title="Valores que nos definen" />
 
-            <div className="mt-20 grid sm:grid-cols-2 lg:grid-cols-3 gap-20">
+            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-20">
               {[
                 {
                   img: "/img/valor/DISCIPLINA.png",
@@ -479,17 +479,18 @@ export default function Nosotros() {
                 <motion.div
                   key={v.t}
                   {...fadeUp(0.05 * i)}
-                  className="group relative rounded-3xl p-6 pb-24 text-center bg-white border border-slate-200 shadow-[0_16px_40px_rgba(15,23,42,0.05)] overflow-visible transform transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(15,23,42,0.09)]"
+                  className="group relative rounded-3xl p-6 pb-32 text-center bg-white border border-slate-200 shadow-[0_16px_40px_rgba(15,23,42,0.05)] overflow-visible transform transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(15,23,42,0.09)]"
                 >
                   <h4 className="font-extrabold text-lg md:text-xl tracking-wide text-slate-900">
                     {v.t.toUpperCase()}
                   </h4>
-                  <p className="mt-3 text-xs md:text-sm leading-relaxed text-slate-700">
+                  <div>
+                    <p className="pt-3 pb-3 text-sm md:text-sm leading-relaxed text-slate-700">
                     {v.d}
                   </p>
-
+                  </div>
                   {/* Ícono circular lleno */}
-                  <div className="absolute left-1/2 -bottom-2 -translate-x-1/2 w-30 h-50 rounded-full bg-white border border-slate-200 shadow-[0_16px_40px_rgba(15,23,42,0.1)] overflow-hidden flex items-center justify-center group-hover:border-lime-300">
+                  <div className="absolute left-1/2 -translate-x-1/2 w-30 h-50 rounded-full bg-white border border-slate-200 shadow-[0_16px_40px_rgba(15,23,42,0.1)] overflow-hidden flex items-center justify-center group-hover:border-lime-300">
                     <img
                       src={v.img}
                       alt={v.t}

@@ -100,8 +100,8 @@ export default function PurificadoresCaseros() {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center h-96">
-            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-lime-400"></div>
-            <p className="mt-6 text-lg text-slate-600 font-medium">Cargando purificadores...</p>
+            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-[#24d4da]"></div>
+            <p className="mt-6 text-lg text-slate-600 font-medium">Cargando purificadores caseros...</p>
           </div>
         ) : purificadores.length === 0 ? (
           <div className="text-center py-24">
@@ -235,9 +235,6 @@ function ProductCard({ item, onAddToCart, onNavigate }) {
                 <div className="mt-auto space-y-3">
                     <button onClick={() => onAddToCart(item)} className="w-full px-6 py-3 rounded-lg font-bold bg-lime-300 text-black hover:bg-lime-400 transition-colors shadow-lg shadow-lime-500/10 hover:shadow-lime-500/20">
                         Agregar al carrito
-                    </button>
-                    <button onClick={() => onNavigate(`/videos/${item.id}`)} className="w-full px-6 py-2 rounded-lg font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">
-                        Ver Video
                     </button>
                 </div>
 
