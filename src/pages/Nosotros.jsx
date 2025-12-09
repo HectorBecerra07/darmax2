@@ -479,23 +479,27 @@ export default function Nosotros() {
                 <motion.div
                   key={v.t}
                   {...fadeUp(0.05 * i)}
-                  className="group relative rounded-3xl p-6 pb-32 text-center bg-white border border-slate-200 shadow-[0_16px_40px_rgba(15,23,42,0.05)] overflow-visible transform transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(15,23,42,0.09)]"
+                  className="group relative flex h-full flex-col rounded-3xl bg-white p-6 text-center border border-slate-200 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transform transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(15,23,42,0.09)]"
                 >
-                  <h4 className="font-extrabold text-lg md:text-xl tracking-wide text-slate-900">
-                    {v.t.toUpperCase()}
-                  </h4>
-                  <div>
+                  {/* Contenedor de texto que crece y centra su contenido */}
+                  <div className="flex-grow flex flex-col justify-center">
+                    <h4 className="font-extrabold text-lg md:text-xl tracking-wide text-slate-900">
+                      {v.t.toUpperCase()}
+                    </h4>
                     <p className="pt-3 pb-3 text-sm md:text-sm leading-relaxed text-slate-700">
-                    {v.d}
-                  </p>
+                      {v.d}
+                    </p>
                   </div>
-                  {/* Ícono circular lleno */}
-                  <div className="absolute left-1/2 -translate-x-1/2 w-30 h-50 rounded-full bg-white border border-slate-200 shadow-[0_16px_40px_rgba(15,23,42,0.1)] overflow-hidden flex items-center justify-center group-hover:border-lime-300">
-                    <img
-                      src={v.img}
-                      alt={v.t}
-                      className="w-20 h-20 object-contain opacity-100 group-hover:scale-110 transition-transform duration-300"
-                    />
+
+                  {/* Contenedor del ícono, en flujo normal y centrado */}
+                  <div className="flex-shrink-0">
+                    <div className="mx-auto w-24 h-24 rounded-full bg-white border border-slate-200 shadow-[0_16px_40px_rgba(15,23,42,0.1)] flex items-center justify-center group-hover:border-lime-300 transition-all duration-300">
+                      <img
+                        src={v.img}
+                        alt={v.t}
+                        className="w-20 h-20 object-contain opacity-100 group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
                   </div>
                 </motion.div>
               ))}

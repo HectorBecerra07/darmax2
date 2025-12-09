@@ -57,54 +57,66 @@ export default function NavBar() {
     };
   }, [navOpen]);
 
-  const navLinks = [
-    { href: "/inicia-tu-negocio", text: "INICIA TU NEGOCIO" },
-    { href: "/nosotros", text: "NOSOTROS" },
-    { href: "/productos", text: "PRODUCTOS" },
-    { href: "/purificadores-caseros", text: "PURIFICADORES CASEROS" },
-    { href: "/promociones", text: "PROMOCIONES" },
-    { href: "/proyectos-empresariales", text: "PROYECTOS" },
-    
-  ];
-
-  const baseLinkClass = "font-semibold transition-colors duration-200";
-  const hoverLinkClass = "hover:text-[#24d4da]";
-  const activeLinkClass = "text-[#24d4da]";
-  const inactiveLinkClass = "text-white";
-
-  return (
-    <>
-      {/* NAVBAR */}
-      <nav className={`fixed top-0 left-0 w-full z-30 transition-all duration-300 bg-gray-900/95 backdrop-blur-lg`}>
-        <div className="max-w-7xl mx-auto grid grid-cols-3 items-center h-20 px-4 sm:px-6 nav:px-8 md:flex md:justify-between">
-          
-          {/* Logo */}
-          <Link to="/" className="shrink-0 flex items-center justify-start">
-            <img
-              src="/img/logo4.png"
-              alt="Logo Darmax"
-              className="h-20 md:h-20 nav:h-24 w-auto object-contain"
-            />
-          </Link>
-
-          {/* Menú escritorio */}
-          <div className="hidden nav:flex items-center justify-center gap-6 nav:gap-10 flex-1">
-            {navLinks.map(link => {
-              const isActive = location.pathname.startsWith(link.href);
-              return (
-                <Link 
-                  key={link.href} 
-                  to={link.href} 
-                  className={`${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass} hover:bg-[#24d4da]/20 hover:rounded-md px-2 py-1 text-sm`}
-                >
-                  {link.text}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Usuario + carrito */}
-          <div className="hidden nav:flex items-center gap-4 nav:gap-8">
+    const navLinks = [
+      { href: "/", text: "INICIA TU NEGOCIO", scrollTarget: "inicioRef" },
+      { href: "/nosotros", text: "NOSOTROS" },
+      { href: "/productos", text: "PRODUCTOS" },
+      { href: "/purificadores-caseros", text: "PURIFICADORES CASEROS" },
+      { href: "/promociones", text: "PROMOCIONES" },
+      { href: "/proyectos-empresariales", text: "PROYECTOS" },
+  
+    ];
+  
+    const baseLinkClass = "font-semibold transition-colors duration-200";
+    const hoverLinkClass = "hover:text-[#24d4da]";
+    const activeLinkClass = "text-[#24d4da]";
+    const inactiveLinkClass = "text-white";
+  
+    return (
+      <>
+        {/* NAVBAR */}
+        <nav className={`fixed top-0 left-0 w-full z-30 transition-all duration-300 bg-gray-900/95 backdrop-blur-lg`}>
+          <div className="max-w-7xl mx-auto grid grid-cols-3 items-center h-20 px-4 sm:px-6 nav:px-8 md:flex md:justify-between">
+  
+            {/* Logo */}
+            <Link to="/" className="shrink-0 flex items-center justify-start">
+              <img
+                src="/img/logo4.png"
+                alt="Logo Darmax"
+                className="h-20 md:h-20 nav:h-24 w-auto object-contain"
+              />
+            </Link>
+  
+            {/* Menú escritorio */}
+            <div className="hidden nav:flex items-center justify-center gap-6 nav:gap-10 flex-1">
+              {navLinks.map(link => {
+                const isActive = location.pathname === link.href && (!link.scrollTarget || location.state?.scrollTo === link.scrollTarget);
+                if (link.scrollTarget) {
+                  return (
+                    <button
+                      key={link.text}
+                      onClick={() => {
+                        navigate(link.href, { state: { scrollTo: link.scrollTarget } });
+                      }}
+                      className={`${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass} hover:bg-[#24d4da]/20 hover:rounded-md px-2 py-1 text-sm`}
+                    >
+                      {link.text}
+                    </button>
+                  );
+                }
+                return (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    className={`${baseLinkClass} ${location.pathname.startsWith(link.href) ? activeLinkClass : inactiveLinkClass} hover:bg-[#24d4da]/20 hover:rounded-md px-2 py-1 text-sm`}
+                  >
+                    {link.text}
+                  </Link>
+                );
+              })}
+            </div>
+  
+            {/* Usuario + carrito */}          <div className="hidden nav:flex items-center gap-4 nav:gap-8">
             <button
               onClick={() => setShowCart(true)}
               className={`relative text-white ${hoverLinkClass}`}
