@@ -1,3 +1,4 @@
+// server/utils/templates/orderEmailTemplate.js
 export const getOrderEmailTemplate = ({
   name = "",
   orderId = "",
@@ -6,7 +7,8 @@ export const getOrderEmailTemplate = ({
   total = "",
   product = "",
   url = "#",
-  logoUrl = "https://res.cloudinary.com/defkuaytw/image/upload/v1765480861/logo3_qwtfum.png",
+  // por si algún día quieres cambiar el logo desde fuera:
+  logoUrl = "https://res.cloudinary.com/defkuaytw/image/upload/v1765489832/logo_darmax_vzpony.png",
   trackingNumber,
   trackingUrl,
   provider,
@@ -14,49 +16,62 @@ export const getOrderEmailTemplate = ({
   const year = new Date().getFullYear();
   const safeName = name || "cliente";
 
+  // Banner de gotas (header)
+  const bannerUrl =
+    "https://res.cloudinary.com/defkuaytw/image/upload/v1765489833/banner_klsini.png";
+
+  // Bloque de envío: sólo si tenemos tracking
   const shippingInfoHtml =
     trackingNumber && trackingUrl && provider
       ? `
-      <div style="background:#fafafa;padding:24px;border-radius:12px;margin:32px 0;border:1px solid #e5e7eb;">
-        <h2 style="font-size:18px;color:#111827;font-weight:600;margin:0 0 18px 0;text-align:left;">
-          Información de Envío
-        </h2>
+      <!-- Tarjeta: Información de envío -->
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top:24px;">
+        <tr>
+          <td align="center">
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:520px;background-color:#f7f7f7;border-radius:24px;">
+              <tr>
+                <td style="padding:32px 24px 28px 24px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+                  <h2 style="margin:0 0 16px 0;font-size:20px;color:#111827;font-weight:700;">Información de envío</h2>
 
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e5e7eb;font-size:15px;">
-          <span style="color:#6b7280;">Paquetería</span>
-          <span style="color:#111827;font-weight:500;">${provider}</span>
-        </div>
+                  <p style="margin:4px 0;font-size:15px;color:#111827;">
+                    <strong>Paquetería:</strong> ${provider}
+                  </p>
+                  <p style="margin:4px 0 24px 0;font-size:15px;color:#111827;">
+                    <strong>Número de rastreo:</strong> ${trackingNumber}
+                  </p>
 
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e5e7eb;font-size:15px;">
-          <span style="color:#6b7280;">Número de rastreo</span>
-          <span style="color:#111827;font-weight:500;">${trackingNumber}</span>
-        </div>
+                  <!-- Botón verde/amarillo: Rastrear -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" align="center" style="margin-top:4px;">
+                    <tr>
+                      <td align="center" bgcolor="#d3ff00" style="border-radius:999px;">
+                        <a href="${trackingUrl}"
+                          style="
+                            display:inline-block;
+                            padding:12px 32px;
+                            font-size:15px;
+                            font-weight:600;
+                            color:#111827;
+                            text-decoration:none;
+                            border-radius:999px;
+                            background-color:#d3ff00;
+                            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+                          ">
+                          Rastrear mi paquete
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
 
-        <!-- BOTÓN SECUNDARIO (RASTREAR) -->
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:18px;">
-          <tr>
-            <td align="center">
-              <a href="${trackingUrl}"
-                style="
-                  display:inline-block;
-                  background-color:#22c55e;
-                  color:#ffffff;
-                  text-decoration:none;
-                  padding:12px 24px;
-                  border-radius:999px;
-                  font-weight:600;
-                  font-size:15px;
-                ">
-                Rastrear mi paquete
-              </a>
-            </td>
-          </tr>
-        </table>
-      </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
     `
       : `
-      <p style="color:#6b7280; font-size:15px; text-align:center; margin:24px 0 0 0;">
-        Te enviaremos una notificación en cuanto tu pedido haya sido enviado.
+      <p style="margin:24px 0 0 0;font-size:15px;color:#6b7280;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+        Te enviaremos una notificación cuando tu pedido haya sido enviado.
       </p>
     `;
 
@@ -65,95 +80,136 @@ export const getOrderEmailTemplate = ({
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pedido #${orderId} - Darmax</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-<body style="margin:0; padding:0; background:#f5f6f8; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-  <div style="max-width:600px; margin:40px auto; background:#ffffff; border-radius:16px; padding:40px; box-shadow:0 6px 25px rgba(0,0,0,0.06);">
+<body style="margin:0;padding:0;background-color:#f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background-color:#f5f5f5;">
+    <tr>
+      <td align="center">
+        <!-- Contenedor principal -->
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;background-color:#ffffff;">
+          
+          <!-- HEADER con banner de gotas -->
+          <tr>
+            <td align="center"
+              background="${bannerUrl}"
+              style="
+                padding:32px 16px 56px 16px;
+                background-image:url('${bannerUrl}');
+                background-size:cover;
+                background-position:center center;
+                background-repeat:no-repeat;
+              ">
+              <img src="${logoUrl}" alt="Darmax Agua"
+                style="display:block;max-width:130px;height:auto;border-radius:999px;background-color:#000000;padding:8px;box-shadow:0 8px 20px rgba(0,0,0,0.4);" />
+            </td>
+          </tr>
 
-    <div style="text-align:center; margin-bottom:40px;">
-      <img src="${logoUrl}" alt="Darmax" style="max-width:140px; height:auto;" />
-    </div>
+          <!-- CONTENIDO PRINCIPAL -->
+          <tr>
+            <td align="center" style="padding:0 24px 40px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:560px;">
+                <tr>
+                  <td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;text-align:center;">
 
-    <h1 style="font-size:26px; color:#111827; text-align:center; margin:0 0 12px 0;">
-      Gracias por tu pedido, ${safeName}.
-    </h1>
-    <p style="font-size:15px; color:#4b5563; line-height:1.6; text-align:center; margin:0;">
-      Hemos recibido tu pedido <strong>#${orderId}</strong> y lo estamos preparando para ti.
-    </p>
+                    <!-- Título -->
+                    <h1 style="margin:32px 0 12px 0;font-size:26px;line-height:1.3;color:#111827;font-weight:700;">
+                      Gracias por tu pedido, ${safeName}.
+                    </h1>
 
-    <!-- RESUMEN DEL PEDIDO -->
-    <div style="background:#fafafa; padding:24px; border-radius:12px; margin:32px 0; border:1px solid #e5e7eb;">
-      <h2 style="font-size:18px; color:#111827; font-weight:600; margin:0 0 18px 0; text-align:left;">
-        Resumen del Pedido
-      </h2>
+                    <!-- Texto intro -->
+                    <p style="margin:0 0 28px 0;font-size:15px;line-height:1.6;color:#4b5563;">
+                      Hemos recibido tu pedido #${orderId} y lo estamos preparando para ti.<br />
+                      Te enviaremos una notificación cuando haya sido enviado.
+                    </p>
 
-      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e5e7eb; font-size:15px;">
-        <span style="color:#6b7280;">Número de Pedido</span>
-        <span style="color:#111827; font-weight:500;">#${orderId}</span>
-      </div>
+                    <!-- Tarjeta: Resumen del pedido -->
+                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:520px;background-color:#f7f7f7;border-radius:24px;">
+                      <tr>
+                        <td style="padding:32px 24px 28px 24px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+                          <h2 style="margin:0 0 16px 0;font-size:20px;color:#111827;font-weight:700;">
+                            Resumen del pedido
+                          </h2>
 
-      ${
-        paymentId
-          ? `
-      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e5e7eb; font-size:15px;">
-        <span style="color:#6b7280;">ID de Pago</span>
-        <span style="color:#111827; font-weight:500;">${paymentId}</span>
-      </div>`
-          : ""
-      }
+                          <p style="margin:4px 0;font-size:15px;color:#111827;">
+                            <strong>Número de Pedido:</strong> #${orderId}
+                          </p>
 
-      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e5e7eb; font-size:15px;">
-        <span style="color:#6b7280;">Fecha</span>
-        <span style="color:#111827; font-weight:500;">${date}</span>
-      </div>
+                          ${
+                            paymentId
+                              ? `<p style="margin:4px 0;font-size:15px;color:#111827;">
+                                  <strong>ID de Pago:</strong> ${paymentId}
+                                </p>`
+                              : ""
+                          }
 
-      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #e5e7eb; font-size:15px;">
-        <span style="color:#6b7280;">Producto(s)</span>
-        <span style="color:#111827; font-weight:500;">${product}</span>
-      </div>
+                          <p style="margin:4px 0;font-size:15px;color:#111827;">
+                            <strong>Fecha:</strong> ${date}
+                          </p>
+                          <p style="margin:4px 0;font-size:15px;color:#111827;">
+                            <strong>Producto(s):</strong> ${product}
+                          </p>
+                          <p style="margin:4px 0;font-size:15px;color:#111827;">
+                            <strong>Total:</strong> ${total}
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
 
-      <div style="display:flex; justify-content:space-between; padding:8px 0; font-size:15px;">
-        <span style="color:#6b7280;">Total</span>
-        <span style="color:#111827; font-weight:600;">${total}</span>
-      </div>
-    </div>
+                    <!-- Bloque de envío (si hay tracking) -->
+                    ${shippingInfoHtml}
 
-    ${shippingInfoHtml}
+                    <!-- Texto inferior -->
+                    <p style="margin:32px 0 20px 0;font-size:15px;color:#4b5563;line-height:1.6;">
+                      Puedes ver los detalles completos y el historial de tus pedidos en tu perfil.
+                    </p>
 
-    <!-- BOTÓN PRINCIPAL VER MIS PEDIDOS -->
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:10px;">
-      <tr>
-        <td align="center">
-          <a href="${url}"
-            style="
-              display:inline-block;
-              background-color:#2563eb;
-              color:#ffffff;
-              text-decoration:none;
-              padding:14px 32px;
-              border-radius:999px;
-              font-weight:600;
-              font-size:16px;
-              margin-top:10px;
-            ">
-            Ver mis pedidos
-          </a>
-        </td>
-      </tr>
-    </table>
+                    <!-- Botón degradado: Ver mis pedidos -->
+                    <table role="presentation" cellspacing="0" cellpadding="0" align="center" style="margin-bottom:16px;">
+                      <tr>
+                        <td align="center" style="border-radius:999px;overflow:hidden;">
+                          <a href="${url}"
+                            style="
+                              display:inline-block;
+                              padding:14px 40px;
+                              font-size:15px;
+                              font-weight:600;
+                              color:#ffffff;
+                              text-decoration:none;
+                              border-radius:999px;
+                              background-color:#004aad;
+                              background-image:linear-gradient(90deg,#5de0e6 0%,#004aad 100%);
+                              font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+                            ">
+                            Ver mis pedidos
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
 
-    <!-- FOOTER -->
-    <div style="text-align:center; padding:32px 0 10px; color:#9ca3af; font-size:13px;">
-      Si tienes alguna pregunta, por favor
-      <a href="mailto:${process.env.GMAIL_USER || "soporte@darmax.mx"}" style="color:#2563eb; text-decoration:none;">
-        contacta con nosotros
-      </a>.<br />
-      © ${year} Darmax. Todos los derechos reservados.
-    </div>
+                    <!-- Footer -->
+                    <p style="margin:24px 0 4px 0;font-size:12px;color:#9ca3af;">
+                      Si tienes alguna pregunta, por favor 
+                      <a href="mailto:${process.env.GMAIL_USER || "soporte@darmax.mx"}" style="color:#004aad;text-decoration:none;">
+                        contacta con nosotros
+                      </a>.
+                    </p>
+                    <p style="margin:0 0 0 0;font-size:12px;color:#9ca3af;">
+                      © ${year} Darmax, Todos los derechos reservados.
+                    </p>
 
-  </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
-`;
+  `;
 };
