@@ -28,7 +28,7 @@ export const getOrderEmailTemplate = ({
       <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-top:24px;">
         <tr>
           <td align="center">
-            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:520px;background-color:#f7f7f7;border-radius:24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:500px;background-color:#f7f7f7;border-radius:24px;">
               <tr>
                 <td style="padding:32px 24px 28px 24px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
                   <h2 style="margin:0 0 16px 0;font-size:20px;color:#111827;font-weight:700;">Información de envío</h2>
@@ -102,14 +102,15 @@ export const getOrderEmailTemplate = ({
                 background-repeat:no-repeat;
               ">
               <img src="${logoUrl}" alt="Darmax Agua"
-                style="display:block;max-width:130px;height:auto;border-radius:999px;background-color:#000000;padding:8px;box-shadow:0 8px 20px rgba(0,0,0,0.4);" />
+                style="display:block;max-width:160px;height:auto;border-radius:999px;padding:8px;box-shadow:0 8px 20px rgba(0,0,0,0.4);" />
             </td>
           </tr>
 
           <!-- CONTENIDO PRINCIPAL -->
           <tr>
-            <td align="center" style="padding:0 24px 40px 24px;">
-              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:560px;">
+            <!-- 🔹 más padding lateral para que se vea más reducido -->
+            <td align="center" style="padding:0 32px 48px 32px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:500px;">
                 <tr>
                   <td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;text-align:center;">
 
@@ -125,7 +126,7 @@ export const getOrderEmailTemplate = ({
                     </p>
 
                     <!-- Tarjeta: Resumen del pedido -->
-                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:520px;background-color:#f7f7f7;border-radius:24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:500px;background-color:#f7f7f7;border-radius:24px;">
                       <tr>
                         <td style="padding:32px 24px 28px 24px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
                           <h2 style="margin:0 0 16px 0;font-size:20px;color:#111827;font-weight:700;">
