@@ -6,6 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 // Mapeo de estados de Skydropx a colores y etiquetas legibles
 const statusConfig = {
   "created": { label: "Creado", className: "bg-blue-100 text-blue-700" },
+  "in_progress": { label: "En Progreso", className: "bg-orange-100 text-orange-700" },
   "pickup_scheduled": { label: "Recolección Agendada", className: "bg-cyan-100 text-cyan-700" },
   "in_transit": { label: "En Tránsito", className: "bg-purple-100 text-purple-700" },
   "delivered": { label: "Entregado", className: "bg-green-100 text-green-700" },

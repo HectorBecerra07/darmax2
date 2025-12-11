@@ -312,32 +312,43 @@ const crearGuia = async (pedidoId) => {
 
               {/* Info de envío / guía */}
               <div className="border-t border-slate-200 dark:border-slate-600 pt-2 text-sm space-y-1">
-                {envio?.etiquetaUrl ? (
-                  <>
-                    <p className="font-semibold text-slate-700 dark:text-slate-200">
-                      Envío generado
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <a
-                        href={envio.etiquetaUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-blue-600 dark:text-blue-400 underline"
-                      >
-                        Ver guía (PDF)
-                      </a>
-                      {envio.trackingUrl && (
+                {envio ? (
+                  envio.etiquetaUrl ? (
+                    <>
+                      <p className="font-semibold text-slate-700 dark:text-slate-200">
+                        Envío generado
+                      </p>
+                      <div className="flex flex-wrap gap-2">
                         <a
-                          href={envio.trackingUrl}
+                          href={envio.etiquetaUrl}
                           target="_blank"
                           rel="noreferrer"
                           className="text-blue-600 dark:text-blue-400 underline"
                         >
-                          Rastrear
+                          Ver guía (PDF)
                         </a>
-                      )}
+                        {envio.trackingUrl && (
+                          <a
+                            href={envio.trackingUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-cyan-600 dark:text-cyan-400 underline"
+                          >
+                            Rastrear
+                          </a>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div>
+                      <p className="font-semibold text-slate-700 dark:text-slate-200">
+                        Generando guía...
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        La guía se está procesando. Actualiza en unos momentos.
+                      </p>
                     </div>
-                  </>
+                  )
                 ) : (
                   <button
                     onClick={() => crearGuia(pedido.id)}
@@ -440,32 +451,43 @@ const crearGuia = async (pedidoId) => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {envio?.etiquetaUrl ? (
-                      <div className="flex flex-col gap-1 text-xs">
-                        <span className="font-semibold text-slate-700 dark:text-slate-200">
-                          Guía generada
-                        </span>
-                        <div className="flex flex-wrap gap-2">
-                          <a
-                            href={envio.etiquetaUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-blue-600 dark:text-blue-400 underline"
-                          >
-                            Ver PDF
-                          </a>
-                          {envio.trackingUrl && (
+                    {envio ? (
+                      envio.etiquetaUrl ? (
+                        <div className="flex flex-col gap-1 text-xs">
+                          <span className="font-semibold text-slate-700 dark:text-slate-200">
+                            Guía generada
+                          </span>
+                          <div className="flex flex-wrap gap-2">
                             <a
-                              href={envio.trackingUrl}
+                              href={envio.etiquetaUrl}
                               target="_blank"
                               rel="noreferrer"
                               className="text-blue-600 dark:text-blue-400 underline"
                             >
-                              Rastrear
+                              Ver PDF
                             </a>
-                          )}
+                            {envio.trackingUrl && (
+                              <a
+                                href={envio.trackingUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-cyan-600 dark:text-cyan-400 underline"
+                              >
+                                Rastrear
+                              </a>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="text-xs">
+                          <p className="font-semibold text-slate-700 dark:text-slate-200">
+                            Generando guía...
+                          </p>
+                          <p className="text-slate-500 dark:text-slate-400">
+                            Procesando...
+                          </p>
+                        </div>
+                      )
                     ) : (
                       <button
                         onClick={() => crearGuia(pedido.id)}
