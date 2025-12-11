@@ -57,6 +57,13 @@ export default function NavBar() {
     };
   }, [navOpen]);
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  };
+
     const navLinks = [
       { href: "/", text: "INICIA TU NEGOCIO", scrollTarget: "inicioRef" },
       { href: "/nosotros", text: "NOSOTROS" },
@@ -79,7 +86,7 @@ export default function NavBar() {
           <div className="max-w-7xl mx-auto grid grid-cols-3 items-center h-20 px-4 sm:px-6 nav:px-8 md:flex md:justify-between">
   
             {/* Logo */}
-            <Link to="/" className="shrink-0 flex items-center justify-start">
+            <Link to="/" onClick={scrollToTop} className="shrink-0 flex items-center justify-start">
               <img
                 src="/img/logo4.png"
                 alt="Logo Darmax"
@@ -97,6 +104,7 @@ export default function NavBar() {
                       key={link.text}
                       onClick={() => {
                         navigate(link.href, { state: { scrollTo: link.scrollTarget } });
+                        scrollToTop();
                       }}
                       className={`${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass} hover:bg-[#24d4da]/20 hover:rounded-md px-2 py-1 text-sm`}
                     >
@@ -108,6 +116,7 @@ export default function NavBar() {
                   <Link
                     key={link.href}
                     to={link.href}
+                    onClick={scrollToTop}
                     className={`${baseLinkClass} ${location.pathname.startsWith(link.href) ? activeLinkClass : inactiveLinkClass} hover:bg-[#24d4da]/20 hover:rounded-md px-2 py-1 text-sm`}
                   >
                     {link.text}
@@ -149,7 +158,10 @@ export default function NavBar() {
                       <Link
                         to="/perfil"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setUserMenuOpen(false)}
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          scrollToTop();
+                        }}
                       >
                         Mi Perfil
                       </Link>
@@ -158,6 +170,7 @@ export default function NavBar() {
                           logout();
                           navigate('/');
                           setUserMenuOpen(false);
+                          scrollToTop();
                         }}
                         className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
@@ -169,14 +182,20 @@ export default function NavBar() {
                       <Link
                         to="/login"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setUserMenuOpen(false)}
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          scrollToTop();
+                        }}
                       >
                         Iniciar Sesión
                       </Link>
                       <Link
                         to="/register"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setUserMenuOpen(false)}
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          scrollToTop();
+                        }}
                       >
                         Registrarse
                       </Link>
@@ -230,7 +249,10 @@ export default function NavBar() {
               key={link.href} 
               to={link.href} 
               className={`text-white text-base font-semibold p-3 rounded-lg transition-colors duration-200 ${location.pathname.startsWith(link.href) ? 'bg-gray-700' : 'hover:bg-gray-800'}`}
-              onClick={() => setNavOpen(false)}
+              onClick={() => {
+                setNavOpen(false);
+                scrollToTop();
+              }}
             >
               {link.text}
             </Link>
@@ -241,19 +263,28 @@ export default function NavBar() {
               <div className="px-3 py-2 text-white">
                 Hola, <span className="font-semibold">{firstName}</span>
               </div>
-              <Link to="/perfil" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
+              <Link to="/perfil" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => {
+                setNavOpen(false);
+                scrollToTop();
+              }}>
                 Mi Perfil
               </Link>
-              <button onClick={() => { logout(); navigate('/'); setNavOpen(false); }} className="text-left text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800">
+              <button onClick={() => { logout(); navigate('/'); setNavOpen(false); scrollToTop();}} className="text-left text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800">
                 Cerrar Sesión
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
+              <Link to="/login" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => {
+                setNavOpen(false);
+                scrollToTop();
+              }}>
                 Iniciar Sesión
               </Link>
-              <Link to="/register" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => setNavOpen(false)}>
+              <Link to="/register" className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800" onClick={() => {
+                setNavOpen(false);
+                scrollToTop();
+              }}>
                 Registrarse
               </Link>
             </>

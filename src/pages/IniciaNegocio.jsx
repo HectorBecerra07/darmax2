@@ -7,6 +7,7 @@ import React, { useState, useEffect } from "react";
 ========================= */
 const BRAND_COLOR = "#24d4da"; // Tu color cyan
 const WHATSAPP_PHONE = "525519655369";
+const BUNDLE_IDS = new Set(["Duo-Emprendedor", "Tridente", "Megalodon"]);
 
 const buildWaUrl = ({ modeloId, modeloNombre }) => {
   const text = `Hola, me interesa el modelo premium ${modeloNombre || "Darmax"} (ID: ${modeloId || "-"}) visto en su web.`;
@@ -51,6 +52,36 @@ const modelos = [
     rutaInfo: "/vending-limpieza-info",
     badge: "economía inteligente",
   },
+  {
+    id: "Duo-Emprendedor",
+    nombre: "Dúo Emprendedor 2 en 1",
+    etiqueta: "Vending y Limpieza",
+    imagen: "/img/vending/duo-emprendedor.png", // Placeholder, replace with actual image
+    precio: 84950,
+    descripcion: "Combina la venta de agua purificada con productos de limpieza a granel, maximizando tu oferta y rentabilidad en un solo espacio.",
+    rutaInfo: "/duo-emprendedor-info",
+    badge: "Doble Ganancia",
+  },
+  {
+    id: "Tridente",
+    nombre: "Tridente",
+    etiqueta: "Triple Modelo de Negocio",
+    imagen: "/img/vending/tridente.png", // Placeholder, replace with actual image
+    precio: 109950,
+    descripcion: "Una solución completa que integra agua purificada, productos de limpieza y otros artículos esenciales, ofreciendo una experiencia integral a tus clientes.",
+    rutaInfo: "/tridente-info",
+    badge: "Versatilidad Extrema",
+  },
+  {
+    id: "Megalodon",
+    nombre: "Megalodon",
+    etiqueta: "Mega Vending",
+    imagen: "/img/vending/megalodon.png", // Placeholder, replace with actual image
+    precio: 150000,
+    descripcion: "La estación de vending más avanzada y de mayor capacidad. Ideal para ubicaciones de alto tráfico, ofreciendo múltiples productos y servicios.",
+    rutaInfo: "/megalodon-info",
+    badge: "Líder del Mercado",
+  },
 ];
 
 /* =========================
@@ -74,6 +105,11 @@ const SectionTitle = ({ subtitle, title, align = "center" }) => (
 const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
   const [errorImagen, setErrorImagen] = useState(false);
   const isSelected = selected.includes(modelo.id);
+
+  const isBundle = BUNDLE_IDS.has(modelo.id);
+  const configurePath = isBundle
+    ? `/configurar-paquete/${modelo.id}`
+    : `/configurar-maquina/${modelo.id}`;
 
   return (
     <article 
@@ -125,7 +161,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
         <div className="grid grid-cols-4 gap-3">
            {/* Botón Principal */}
             <button
-                onClick={() => navigate(`/configurar-maquina/${modelo.id}`)}
+                onClick={() => navigate(configurePath)}
                 className="col-span-3 py-3.5 px-6 rounded-2xl font-bold text-white transition-all duration-300 transform active:scale-95 hover:shadow-lg hover:shadow-[#24d4da]/40"
                 style={{ backgroundColor: BRAND_COLOR }}
             >
