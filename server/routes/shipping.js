@@ -2,6 +2,7 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import { skydropxProRequest } from "../utils/skydropx.js";
+import { sendOrderConfirmationEmail } from "./orderEmail.js";
 
 const prisma = new PrismaClient();
 const router = express.Router();
@@ -13,8 +14,11 @@ const truncate30 = (value) => {
   return str.length > 30 ? str.slice(0, 30) : str;
 };
 
+// Helper para esperar un tiempo determinado
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 /**
- * 헬퍼 Parsea la compleja respuesta JSON:API de Skydropx a un objeto simple y útil.
+ * Parsea la compleja respuesta JSON:API de Skydropx a un objeto simple y útil.
  * @param {object} response - El cuerpo de la respuesta completa de la API de Skydropx.
  * @returns {object} Un objeto aplanado con los datos clave del envío.
  */
@@ -40,7 +44,7 @@ function parseSkydropxShipment(response) {
 
   return {
     skydropxId: shipment.id,
-    status: attrs.workflow_status || attrs.status, // workflow_status es el más nuevo
+    status: attrs.workflow_status || attrs.status,
     provider: attrs.carrier_name || attrs.provider,
     createdAt: attrs.created_at,
     externalOrderId: attrs.external_order_id,
@@ -50,109 +54,145 @@ function parseSkydropxShipment(response) {
     addressTo: {
       name: addressToInfo?.attributes?.name,
       street1: addressToInfo?.attributes?.street1,
-      street2: addressToInfo?.attributes?.area_level3, // Colonia
-      city: addressToInfo?.attributes?.area_level2,   // Ciudad
-      state: addressToInfo?.attributes?.area_level1,  // Estado
+      street2: addressToInfo?.attributes?.area_level3,
+      city: addressToInfo?.attributes?.area_level2,
+      state: addressToInfo?.attributes?.area_level1,
       postalCode: addressToInfo?.attributes?.postal_code,
     },
   };
+}
+
+/**
+ * 🔹 Exportable: createSkydropxLabel
+ * Crea el shipment, espera la guía, actualiza la BD y envía el correo.
+ * @param {number} pedidoId - El ID del pedido en la base de datos local.
+ * @returns {Promise<object>} El objeto 'envio' actualizado de Prisma.
+ * @throws {Error} Si el pedido no se encuentra, ya tiene guía o falla la creación.
+ */
+export async function createSkydropxLabel(pedidoId) {
+  if (!pedidoId) throw new Error("Falta pedidoId");
+
+  const pedido = await prisma.pedido.findUnique({
+    where: { id: Number(pedidoId) },
+    include: { envio: true },
+  });
+
+  if (!pedido) throw new Error("Pedido no encontrado");
+  if (!pedido.envio) throw new Error("No hay registro de envío asociado");
+  if (pedido.envio.skydropxShipmentId && pedido.envio.etiquetaUrl) {
+    console.log(`El pedido ${pedidoId} ya tiene una guía generada. No se creará una nueva.`);
+    return pedido.envio;
+  }
+  if (!pedido.envio.rateId) throw new Error("El envío no tiene un rateId válido.");
+
+  // 1. Crear el envío en Skydropx
+  const address_from = {
+    country_code: process.env.SKYDROPX_SHIPPER_COUNTRY || "MX",
+    postal_code: process.env.SKYDROPX_SHIPPER_POSTAL_CODE,
+    area_level1: process.env.SKYDROPX_SHIPPER_STATE,
+    area_level2: process.env.SKYDROPX_SHIPPER_CITY,
+    street1: process.env.SKYDROPX_SHIPPER_STREET1,
+    street2: process.env.SKYDROPX_SHIPPER_SECTOR,
+    name: truncate30(process.env.SKYDROPX_SHIPPER_NAME),
+    phone: process.env.SKYDROPX_SHIPPER_PHONE,
+    email: process.env.SKYDROPX_SHIPPER_EMAIL,
+    reference: truncate30(process.env.SKYDROPX_SHIPPER_REFERENCE),
+  };
+  const address_to = {
+    country_code: "MX",
+    postal_code: pedido.codigoPostal,
+    area_level1: pedido.estadoEnvio,
+    area_level2: pedido.ciudad,
+    street1: pedido.direccion,
+    street2: pedido.colonia,
+    name: truncate30(pedido.clienteNombre),
+    phone: pedido.clienteTelefono || "00000000",
+    email: pedido.clienteEmail,
+    reference: truncate30(`Orden ${pedido.orden || pedido.id}`),
+  };
+  const packages = [{
+    package_number: 1, package_protected: false,
+    declared_value: Number(pedido.total || 0),
+    consignment_note: process.env.SKYDROPX_CONSIGNMENT_NOTE,
+    package_type: process.env.SKYDROPX_PACKAGE_TYPE,
+  }];
+  const shipmentBody = {
+    shipment: {
+      rate_id: pedido.envio.rateId, printing_format: "standard",
+      external_order_id: pedido.orden?.toString?.() || String(pedido.id),
+      address_from, address_to, packages,
+    },
+  };
+
+  console.log(`📦 Creando envío para pedido ${pedidoId}...`);
+  const initialResponse = await skydropxProRequest("POST", "/api/v1/shipments/", shipmentBody);
+  const initialParsed = parseSkydropxShipment(initialResponse);
+  
+  await prisma.envio.update({
+    where: { id: pedido.envio.id },
+    data: { skydropxShipmentId: initialParsed.skydropxId, status: initialParsed.status },
+  });
+
+  // 2. Sondear hasta obtener la URL de la etiqueta
+  const MAX_ATTEMPTS = 15;
+  const DELAY_MS = 4000; // 4 segundos
+
+  for (let i = 0; i < MAX_ATTEMPTS; i++) {
+    console.log(`[Intento ${i + 1}/${MAX_ATTEMPTS}] Verificando guía para shipment ${initialParsed.skydropxId}...`);
+    try {
+      const pollResponse = await skydropxProRequest("GET", `/api/v1/shipments/${initialParsed.skydropxId}`);
+      const polledParsed = parseSkydropxShipment(pollResponse);
+
+      if (polledParsed.labelUrl) {
+        console.log(`✅ ¡Guía encontrada para ${initialParsed.skydropxId}!`);
+        const updatedEnvio = await prisma.envio.update({
+          where: { id: pedido.envio.id },
+          data: {
+            etiquetaUrl: polledParsed.labelUrl,
+            trackingNumber: polledParsed.trackingNumber,
+            trackingUrl: polledParsed.trackingUrl,
+            status: polledParsed.status,
+            provider: polledParsed.provider, // Guardar la paquetería
+          },
+        });
+
+        // Enviar correo de confirmación con los datos de envío actualizados
+        if (pedido.orden) {
+          console.log(`📧 Intentando enviar correo para la orden ${pedido.orden}...`);
+          await sendOrderConfirmationEmail(pedido.orden);
+        } else {
+          console.warn(`⚠️ No se pudo enviar correo para el pedido ${pedido.id} porque no tiene un número de orden (orden).`);
+        }
+        
+        return updatedEnvio;
+      }
+    } catch (pollError) {
+      console.warn(`⚠️ Error en sondeo para ${initialParsed.skydropxId}:`, pollError.message);
+    }
+    await sleep(DELAY_MS);
+  }
+
+  throw new Error(`No se pudo obtener la guía para el shipment ${initialParsed.skydropxId} después de ${MAX_ATTEMPTS} intentos.`);
 }
 
 
 // --- RUTAS ---
 
 /**
- * 🔹 POST /api/shipping/create-label
- * Crea el shipment en Skydropx PRO y guarda el skydropxId en la BD local.
+ * 🔹 POST /api/shipping/create-label (Refactorizado)
+ * Llama a la nueva función exportable para mantener compatibilidad.
  */
 router.post("/create-label", async (req, res) => {
   try {
     const { pedidoId } = req.body;
-    if (!pedidoId) return res.status(400).json({ error: "Falta pedidoId" });
-
-    const pedido = await prisma.pedido.findUnique({
-      where: { id: Number(pedidoId) },
-      include: { envio: true },
-    });
-
-    if (!pedido) return res.status(404).json({ error: "Pedido no encontrado" });
-    if (!pedido.envio) return res.status(404).json({ error: "No hay registro de envío asociado" });
-    if (pedido.envio.skydropxShipmentId) {
-      return res.status(400).json({ error: "Este pedido ya tiene un envío creado en Skydropx", envio: pedido.envio });
-    }
-    if (!pedido.envio.rateId) return res.status(400).json({ error: "El envío no tiene un rateId válido." });
-
-    const address_from = {
-      country_code: process.env.SKYDROPX_SHIPPER_COUNTRY || "MX",
-      postal_code: process.env.SKYDROPX_SHIPPER_POSTAL_CODE,
-      area_level1: process.env.SKYDROPX_SHIPPER_STATE,
-      area_level2: process.env.SKYDROPX_SHIPPER_CITY,
-      street1: process.env.SKYDROPX_SHIPPER_STREET1,
-      street2: process.env.SKYDROPX_SHIPPER_SECTOR,
-      name: truncate30(process.env.SKYDROPX_SHIPPER_NAME),
-      phone: process.env.SKYDROPX_SHIPPER_PHONE,
-      email: process.env.SKYDROPX_SHIPPER_EMAIL,
-      reference: truncate30(process.env.SKYDROPX_SHIPPER_REFERENCE),
-    };
-
-    const address_to = {
-      country_code: "MX",
-      postal_code: pedido.codigoPostal,
-      area_level1: pedido.estadoEnvio,
-      area_level2: pedido.ciudad,
-      street1: pedido.direccion,
-      street2: pedido.colonia,
-      name: truncate30(pedido.clienteNombre),
-      phone: pedido.clienteTelefono || "00000000",
-      email: pedido.clienteEmail,
-      reference: truncate30(`Orden ${pedido.orden || pedido.id}`),
-    };
-
-    const packages = [{
-      package_number: 1,
-      package_protected: false,
-      declared_value: Number(pedido.total || 0),
-      consignment_note: process.env.SKYDROPX_CONSIGNMENT_NOTE,
-      package_type: process.env.SKYDROPX_PACKAGE_TYPE,
-    }];
-
-    const shipmentBody = {
-      shipment: {
-        rate_id: pedido.envio.rateId,
-        printing_format: "standard",
-        external_order_id: pedido.orden?.toString?.() || String(pedido.id),
-        address_from,
-        address_to,
-        packages,
-      },
-    };
-
-    console.log("📦 Body enviado a PRO /shipments:", JSON.stringify(shipmentBody, null, 2));
-    const shipmentResponse = await skydropxProRequest("POST", "/api/v1/shipments/", shipmentBody);
-    console.log("📨 Respuesta cruda PRO /shipments:", JSON.stringify(shipmentResponse, null, 2));
-
-    // Usamos el parser para extraer los datos correctamente
-    const parsedData = parseSkydropxShipment(shipmentResponse);
-
-    const updatedEnvio = await prisma.envio.update({
-      where: { id: pedido.envio.id },
-      data: {
-        skydropxShipmentId: parsedData.skydropxId,
-        status: parsedData.status,
-        trackingNumber: parsedData.trackingNumber, // será null al inicio
-        trackingUrl: parsedData.trackingUrl,       // será null al inicio
-        etiquetaUrl: parsedData.labelUrl,         // será null al inicio
-      },
-    });
-
-    return res.json({ ok: true, envio: updatedEnvio });
+    const envioActualizado = await createSkydropxLabel(pedidoId);
+    return res.json({ ok: true, envio: envioActualizado });
   } catch (error) {
-    const status = error.response?.status || 500;
-    const detail = error.response?.data || String(error);
-    console.error("❌ Error creando shipment/label en Skydropx PRO:", status, detail);
-    return res.status(status).json({ error: "Error al crear la guía en Skydropx", detail });
+    console.error("❌ Error en POST /create-label:", error.message);
+    return res.status(500).json({ error: "Error al crear la guía en Skydropx", detail: error.message });
   }
 });
+
 
 /**
  * 🔹 GET /api/shipping/shipments

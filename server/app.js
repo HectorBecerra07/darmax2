@@ -30,11 +30,27 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/shipping", shippingRoutes);
 app.use("/api/postalcode", postalCodeRoutes);
 app.use("/api/configurador", configuradorRoutes);
+app.use("/api/orderEmail", orderEmailRoutes); 
 
 app.use("/api/orders", ordersRouter);
 
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");
+});
+
+// Custom error handling middleware (debe ser el último middleware)
+app.use((err, req, res, next) => {
+  console.error("🚨 Global Error Handler:", err.stack); // Log the error stack for debugging
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "An unexpected error occurred";
+
+  // En producción, podrías querer ocultar el stack trace
+  const errorResponse = {
+    error: message,
+    ...(process.env.NODE_ENV !== 'production' && { detail: err.stack }),
+  };
+  
+  res.status(statusCode).json(errorResponse);
 });
 
 export default app;

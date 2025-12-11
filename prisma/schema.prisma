@@ -86,11 +86,12 @@ enum EstadoPedido {
 }
 
 model Pedido {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  orden     String   @unique @default(cuid())
-  total     Float
-  estado    EstadoPedido @default(PENDIENTE)
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  orden           String   @unique @default(cuid())
+  total           Float
+  estado          EstadoPedido @default(PENDIENTE)
+  paymentIntentId String?  @unique // ID de la transacción de Stripe
 
   // Datos del cliente (se guardan en el pedido para el histórico)
   clienteNombre   String
@@ -113,6 +114,8 @@ model Pedido {
 
   // Relación 1-1 con Envio (opcional)
   envio     Envio?
+
+  @@index([paymentIntentId])
 }
 
 // Tabla intermedia para la relación muchos-a-muchos Pedido <-> Producto
@@ -174,6 +177,7 @@ model Envio {
   trackingNumber     String? // Número de rastreo
   trackingUrl        String? // URL de rastreo
   etiquetaUrl        String? // URL de la etiqueta (PDF/ZPL/etc.)
+  status             String? // Estado del envío según Skydropx
 }
 
 

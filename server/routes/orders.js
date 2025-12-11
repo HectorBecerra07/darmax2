@@ -1,6 +1,8 @@
 // server/routes/orders.js
 import express from "express";
 import { PrismaClient } from "@prisma/client";
+import { createSkydropxLabel } from "./shipping.js"; // Importar
+import { sendOrderConfirmationEmail } from "./orderEmail.js"; // Importar
 
 const prisma = new PrismaClient();
 const router = express.Router();
@@ -13,75 +15,53 @@ router.post("/confirm", async (req, res) => {
   try {
     const {
       paymentIntentId,
-      shippingAddress,    // addressTo del front
-      cartItems,          // items del carrito (id, nombre, precio, cantidad, etc.)
+      shippingAddress,
+      cartItems,
       quotationId,
       rateId,
       shippingTotal,
       totalConEnvio,
-      userId,             // opcional (null para invitados)
-      rateInfo,           // opcional: { provider, service, days }
+      userId,
+      rateInfo,
     } = req.body;
 
     if (!paymentIntentId) {
       return res.status(400).json({ error: "Falta paymentIntentId." });
     }
     if (!shippingAddress || !cartItems?.length) {
-      return res
-        .status(400)
-        .json({ error: "Faltan datos de envío o carrito vacío." });
+      return res.status(400).json({ error: "Faltan datos de envío o carrito vacío." });
     }
 
-    // Asegurar que userId sea número si viene como string
     const userIdInt = userId ? Number(userId) : null;
-
-    // Recalcular subtotal productos por seguridad
     const subtotalProductos = cartItems.reduce(
-      (acc, item) =>
-        acc +
-        Number(item.precio || item.price || 0) *
-          (item.cantidad || item.quantity || 1),
+      (acc, item) => acc + Number(item.precio || 0) * (item.cantidad || 1),
       0
     );
 
-    const totalEsperado = subtotalProductos + Number(shippingTotal || 0);
-
-    // (Opcional) validar que coincida con totalConEnvio que usaste para Stripe
-    // if (Math.round(totalEsperado * 100) !== Math.round(totalConEnvio * 100)) {
-    //   return res.status(400).json({ error: "Los totales no coinciden." });
-    // }
-
-    // Construir dirección en una sola línea para el pedido
     const direccionCompleta = shippingAddress.calle || "";
 
-    // Crear el pedido + productos + envío
+    // 1. Crear el Pedido, Productos y Envío en la BD
     const pedido = await prisma.pedido.create({
       data: {
-        total: totalConEnvio, // productos + envío
+        total: totalConEnvio,
         estado: "PAGADO",
         clienteNombre: shippingAddress.nombre,
         clienteEmail: shippingAddress.email,
         clienteTelefono: shippingAddress.telefono || null,
-
         direccion: direccionCompleta,
         colonia: shippingAddress.colonia || null,
         ciudad: shippingAddress.ciudad,
         estadoEnvio: shippingAddress.estado,
         codigoPostal: shippingAddress.codigoPostal,
-
-        // Relación con usuario (si existe)
+        paymentIntentId: paymentIntentId, // Guardar el ID de pago
         user: userIdInt ? { connect: { id: userIdInt } } : undefined,
-
-        // Crear líneas de productos
         productos: {
           create: cartItems.map((item) => ({
-            productoId: item.id, // ID real del producto
+            productoId: item.id,
             cantidad: item.cantidad,
             precioAlComprar: Number(item.precio),
           })),
         },
-
-        // Crear registro de envío
         envio: {
           create: {
             quotationId: quotationId || "",
@@ -91,29 +71,50 @@ router.post("/confirm", async (req, res) => {
             days: rateInfo?.days ?? null,
             costoEnvio: Number(shippingTotal || 0),
             moneda: "MXN",
-            // shipment, tracking, etiqueta se llenan después cuando creas la guía en Skydropx
           },
         },
       },
-      include: {
-        productos: {
-          include: { producto: true },
-        },
-        envio: true,
+      include: { envio: true },
+    });
+
+    // 2. Responder inmediatamente al frontend para que no espere.
+    res.status(201).json({
+      ok: true,
+      message: "Pedido recibido. El procesamiento de la guía y el correo se hará en segundo plano.",
+      pedido: {
+        id: pedido.id,
+        orden: pedido.orden,
       },
     });
 
-    // Vaciar carrito del usuario si hay userId
+    // 3. Ejecutar tareas largas (guía y correo) en segundo plano.
+    // Usamos un setTimeout de 0 para liberar el ciclo de eventos de Node.js
+    setTimeout(async () => {
+      try {
+        console.log(`[BG-TASK] Iniciando proceso para pedido #${pedido.orden}...`);
+        
+        // 3.1. Crear la guía en Skydropx y esperar a que esté lista
+        await createSkydropxLabel(pedido.id);
+        
+        // 3.2. Enviar el correo de confirmación con la info de la guía ya actualizada
+        await sendOrderConfirmationEmail(pedido.orden);
+        
+        console.log(`[BG-TASK] Proceso para pedido #${pedido.orden} completado.`);
+      } catch (backgroundError) {
+        console.error(
+          `[BG-TASK] ❌ Error en el proceso de fondo para el pedido #${pedido.orden}:`,
+          backgroundError
+        );
+      }
+    }, 0);
+
+    // Vaciar carrito del usuario si está logueado
     if (userIdInt) {
       await prisma.carritoItem.deleteMany({
         where: { userId: userIdInt },
       });
     }
 
-    return res.json({
-      ok: true,
-      pedido,
-    });
   } catch (error) {
     console.error("❌ Error al confirmar pedido:", error);
     return res.status(500).json({
@@ -122,6 +123,7 @@ router.post("/confirm", async (req, res) => {
     });
   }
 });
+
 
 /**
  * GET /api/orders
@@ -191,10 +193,6 @@ router.patch("/:id/status", async (req, res) => {
     if (!estado) {
       return res.status(400).json({ error: "Falta estado" });
     }
-
-    // (Opcional) podrías validar que estado esté dentro del enum
-    // const validStates = ["PENDIENTE", "PAGADO", "ENVIADO", "ENTREGADO", "CANCELADO"];
-    // if (!validStates.includes(estado)) { ... }
 
     const pedido = await prisma.pedido.update({
       where: { id },

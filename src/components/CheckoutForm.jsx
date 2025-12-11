@@ -167,21 +167,8 @@ const CheckoutForm = ({
       // 4) Guardar pedido localmente (para tu panel actual y gracias-compra)
       const nuevoPedido = guardarPedidoLocal(paymentIntent.id);
 
-      // 5) Enviar correo de pedido (usando tu endpoint actual)
-      try {
-        if (emailToUse) {
-          await fetch(`${API_URL}/api/orders/send-email`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              order: nuevoPedido,      // mantenemos el formato que ya usas
-              emailCliente: emailToUse,
-            }),
-          });
-        }
-      } catch (err) {
-        console.error("Error enviando correo de pedido:", err);
-      }
+      // 5) El envío de correo de confirmación ahora se gestiona en el backend
+      // Se realiza después de la confirmación del pedido en /api/orders/confirm.
 
       // 6) Limpiar carrito (context/local) y redirigir
       vaciarCarrito();

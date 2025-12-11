@@ -1,69 +1,109 @@
 // server/routes/orderEmail.js
 import express from "express";
+import { PrismaClient } from "@prisma/client";
 import { sendOrderEmail } from "../utils/mailer.js";
-import { getOrderEmailTemplate } from "../utils/templates/orderEmailTemplate.js"; // Importar el template
+import { getOrderEmailTemplate } from "../utils/templates/orderEmailTemplate.js";
 
+const prisma = new PrismaClient();
 const router = express.Router();
 
-router.post("/send-email", async (req, res) => {
+/**
+ * 🔹 Exportable: sendOrderConfirmationEmail
+ * Envía el correo de confirmación de pedido al cliente y al admin.
+ * @param {string} orderId - El ID/número de la orden.
+ */
+export async function sendOrderConfirmationEmail(orderId) {
   try {
-    const { order, emailCliente } = req.body;
-
-    console.log("Petición /send-email:", { emailCliente, orderId: order?.orden });
-
-    if (!order || !emailCliente) {
-      return res.status(400).json({ error: "Faltan datos del pedido o email" });
+    if (!orderId) {
+      throw new Error("Se requiere el ID de la orden para enviar el correo.");
     }
 
-    const {
-      orden,
-      cliente,
-      total,
-      productos,
-      paymentId, // 👈 Extraer paymentId
-    } = order;
+    // 1. Obtener todos los datos de la base de datos
+    const pedido = await prisma.pedido.findUnique({
+      where: { orden: orderId },
+      include: {
+        productos: { include: { producto: true } },
+        envio: true,
+      },
+    });
 
+    if (!pedido) {
+      throw new Error(`Pedido con orden #${orderId} no encontrado.`);
+    }
+
+    const { clienteNombre, total, clienteEmail, envio } = pedido;
     const adminEmail = process.env.GMAIL_USER;
+    const productosList = pedido.productos.map(p => `${p.producto.nombre} (x${p.cantidad})`);
 
-    // Datos para la plantilla
+    // 2. Preparar los datos para la plantilla
     const templateData = {
-      name: cliente,
-      orderId: orden,
-      paymentId: paymentId, // 👈 Añadir a templateData
-      date: new Date().toLocaleDateString('es-MX'),
-      total: `$${total} MXN`,
-      product: (productos || []).join(", "),
-      url: `https://darmax.mx/pedidos/${orden}`, // URL de ejemplo
+      name: clienteNombre,
+      orderId: orderId,
+      paymentId: pedido.paymentIntentId,
+      date: pedido.createdAt.toLocaleDateString('es-MX'),
+      total: `$${total.toFixed(2)} MXN`,
+      product: productosList.join(", "),
+      url: `https://darmax.mx/perfil`, // URL al perfil del cliente
+      // Nuevos datos de envío
+      trackingNumber: envio?.trackingNumber,
+      trackingUrl: envio?.trackingUrl,
+      provider: envio?.provider
     };
 
-    // Generar HTML usando la plantilla
+    // 3. Generar y enviar correos
     const htmlCliente = getOrderEmailTemplate(templateData);
-
-    // Para el admin, podemos reutilizar la plantilla o crear una versión diferente
-    // Aquí reutilizamos la misma, pero podríamos añadir más detalles si quisiéramos
-    const adminTemplateData = { ...templateData, name: `Admin (Pedido de ${cliente})` };
+    const adminTemplateData = { ...templateData, name: `Admin (Pedido de ${clienteNombre})` };
     const htmlAdmin = getOrderEmailTemplate(adminTemplateData);
 
-
-    // Cliente
+    // Enviar a cliente
     await sendOrderEmail({
-      to: emailCliente,
-      subject: `Confirmación de pedido #${orden}`,
+      to: clienteEmail,
+      subject: `Confirmación de tu pedido #${orderId}`,
       html: htmlCliente,
     });
+    console.log(`📧 Correo de confirmación enviado a ${clienteEmail} para el pedido #${orderId}.`);
 
-    // Admin
+    // Enviar a admin
     await sendOrderEmail({
       to: adminEmail,
-      subject: `Nuevo pedido #${orden} de ${cliente}`,
+      subject: `Nuevo pedido #${orderId} de ${clienteNombre}`,
       html: htmlAdmin,
     });
+    console.log(`📧 Correo de notificación enviado al admin para el pedido #${orderId}.`);
 
-    res.json({ success: true });
+    return { success: true };
+
   } catch (error) {
-    console.error("Error enviando correo:", error); // Loguear el error completo
-    res.status(500).json({ error: "Error enviando correo" });
+    console.error(`❌ Error fatal enviando correo para pedido #${orderId}:`, error);
+    // No lanzamos error para no detener el flujo principal del pedido, solo logueamos.
+    return { success: false, error: error.message };
   }
+}
+
+/**
+ * 🔹 POST /api/orderEmail/resend-confirmation
+ * Permite reenviar manualmente un correo de confirmación desde el admin.
+ */
+router.post("/resend-confirmation", async (req, res) => {
+    try {
+      const { orderId } = req.body;
+      if (!orderId) {
+        return res.status(400).json({ error: "Falta el ID de la orden (orderId)." });
+      }
+  
+      const result = await sendOrderConfirmationEmail(orderId);
+  
+      if (result.success) {
+        return res.json({ success: true, message: `Correo para la orden #${orderId} reenviado.` });
+      } else {
+        return res.status(500).json({ error: result.error });
+      }
+  
+    } catch (error) {
+      console.error("Error en el endpoint de reenvío:", error);
+      res.status(500).json({ error: "Error interno al intentar reenviar el correo." });
+    }
 });
+
 
 export default router;

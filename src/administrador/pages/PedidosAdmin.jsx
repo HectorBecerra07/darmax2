@@ -342,11 +342,20 @@ const crearGuia = async (pedidoId) => {
                   ) : (
                     <div>
                       <p className="font-semibold text-slate-700 dark:text-slate-200">
-                        Generando guía...
+                        Guía no generada
                       </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        La guía se está procesando. Actualiza en unos momentos.
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                        Hubo un problema o aún se está procesando.
                       </p>
+                      <button
+                          onClick={() => crearGuia(pedido.id)}
+                          disabled={creandoGuiaId === pedido.id}
+                          className="mt-1 inline-flex items-center px-3 py-1.5 rounded-md text-xs font-semibold bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-60"
+                        >
+                          {creandoGuiaId === pedido.id
+                            ? "Reintentando..."
+                            : "Reintentar creación de guía"}
+                        </button>
                     </div>
                   )
                 ) : (
@@ -481,11 +490,20 @@ const crearGuia = async (pedidoId) => {
                       ) : (
                         <div className="text-xs">
                           <p className="font-semibold text-slate-700 dark:text-slate-200">
-                            Generando guía...
+                            Guía no generada
                           </p>
-                          <p className="text-slate-500 dark:text-slate-400">
-                            Procesando...
+                          <p className="text-slate-500 dark:text-slate-400 mb-2">
+                            Hubo un problema o aún se está procesando.
                           </p>
+                           <button
+                            onClick={() => crearGuia(pedido.id)}
+                            disabled={creandoGuiaId === pedido.id}
+                            className="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-60"
+                          >
+                            {creandoGuiaId === pedido.id
+                              ? "Reintentando..."
+                              : "Reintentar creación"}
+                          </button>
                         </div>
                       )
                     ) : (

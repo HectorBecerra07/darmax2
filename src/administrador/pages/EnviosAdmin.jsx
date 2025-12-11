@@ -19,6 +19,7 @@ const EnviosAdmin = () => {
   const [shipments, setShipments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [resendingEmail, setResendingEmail] = useState(null); // Para deshabilitar botón mientras se envía
 
   const fetchShipments = async () => {
     setLoading(true);
@@ -29,7 +30,12 @@ const EnviosAdmin = () => {
       if (!res.ok || !data.ok) {
         throw new Error(data.error || data.detail || "Error al cargar los envíos desde Skydropx.");
       }
-      setShipments(data.shipments);
+      // Asegurarse de que externalOrderId siempre sea un string para evitar problemas de tipo
+      const processedShipments = data.shipments.map(s => ({
+        ...s,
+        externalOrderId: String(s.externalOrderId || s.id) // Fallback al id de Skydropx si no hay orden externa
+      }));
+      setShipments(processedShipments);
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -53,6 +59,32 @@ const EnviosAdmin = () => {
       minute: "2-digit",
     });
   };
+
+  const handleResendEmail = async (orderId) => {
+    if (!orderId) {
+      toast.error("No se pudo obtener el número de orden.");
+      return;
+    }
+    setResendingEmail(orderId);
+    try {
+      const res = await fetch(`${API_URL}/api/orderEmail/resend-confirmation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Error al reenviar el correo.");
+      }
+      toast.success(`Correo de confirmación para #${orderId} reenviado.`);
+    } catch (err) {
+      console.error(err);
+      toast.error(`Error al reenviar el correo para #${orderId}: ${err.message}`);
+    } finally {
+      setResendingEmail(null);
+    }
+  };
+
 
   return (
     <div className="bg-white dark:bg-slate-800 p-6 md:p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
@@ -140,6 +172,15 @@ const EnviosAdmin = () => {
                           Rastrear
                         </a>
                       )}
+                      {/* Botón para reenviar email */}
+                      <button
+                        onClick={() => handleResendEmail(shipment.externalOrderId)}
+                        disabled={resendingEmail === shipment.externalOrderId}
+                        className="font-semibold text-green-600 dark:text-green-400 hover:underline disabled:opacity-50 disabled:cursor-not-allowed ml-4"
+                        title="Reenviar correo de confirmación con datos de envío"
+                      >
+                        {resendingEmail === shipment.externalOrderId ? "Enviando..." : "Reenviar Email"}
+                      </button>
                     </td>
                   </tr>
                 );
