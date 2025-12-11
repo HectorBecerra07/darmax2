@@ -23,10 +23,14 @@ import ForgotPassword from "./pages/logins/ForgotPassword";
 import ResetPassword from "./pages/logins/ResetPassword";
 import Configurar from "./pages/configurar/Configurar";
 import WizardGeneral from "./pages/WizardGeneral";
+import BundleWizard from "./pages/BundleWizard"; // Importar BundleWizard
 import PerfilCliente from "./pages/PerfilCliente";
 import VendingInfo from "./pages/VendingInfo";
 import PurificadoraInfo from "./pages/PurificadoraInfo";
 import VendingLimpiezaInfo from "./pages/VendingLimpiezaInfo";
+import DuoEmprendedorInfo from "./pages/DuoEmprendedorInfo";
+import TridenteInfo from "./pages/TridenteInfo";
+import MegalodonInfo from "./pages/MegalodonInfo";
 import Videos from "./pages/Videos";
 import VideoDetalle from "./pages/VideoDetalle";
 import NotFound from "./pages/NotFound";
@@ -165,6 +169,30 @@ function AppContent() {
                     }
                   />
                   <Route
+                    path="/duo-emprendedor-info"
+                    element={
+                      <PageWrapper>
+                        <DuoEmprendedorInfo />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/tridente-info"
+                    element={
+                      <PageWrapper>
+                        <TridenteInfo />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/megalodon-info"
+                    element={
+                      <PageWrapper>
+                        <MegalodonInfo />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
                     path="/promociones"
                     element={
                       <PageWrapper>
@@ -249,6 +277,14 @@ function AppContent() {
                     element={
                       <PageWrapper>
                         <WizardGeneral />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/configurar-paquete/:id"
+                    element={
+                      <PageWrapper>
+                        <BundleWizard />
                       </PageWrapper>
                     }
                   />

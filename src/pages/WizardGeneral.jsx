@@ -98,6 +98,12 @@ export default function WizardGeneral() {
     } else if (id === "Vending-Limpieza") {
       // Mostrar solo vending de limpieza
       filteredByCategory = allModels.filter(m => m.slug === "Vending5" || m.slug === "Vending8");
+    } else if (id === "Duo-Emprendedor") {
+      filteredByCategory = allModels.filter(m => m.slug.includes("duo-emprendedor"));
+    } else if (id === "Tridente") {
+      filteredByCategory = allModels.filter(m => m.slug.includes("tridente"));
+    } else if (id === "Megalodon") {
+      filteredByCategory = allModels.filter(m => m.slug.includes("megalodon"));
     } else {
         filteredByCategory = allModels;
     }
@@ -120,6 +126,15 @@ export default function WizardGeneral() {
     } else if (id === "Vending-Limpieza") {
       images = allModels.filter(m => m.slug.includes("Vending") && m.slug.includes("Limpieza"))
                        .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
+    } else if (id === "Duo-Emprendedor") {
+      images = allModels.filter(m => m.slug.includes("duo-emprendedor"))
+                        .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
+    } else if (id === "Tridente") {
+      images = allModels.filter(m => m.slug.includes("tridente"))
+                        .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
+    } else if (id === "Megalodon") {
+      images = allModels.filter(m => m.slug.includes("megalodon"))
+                        .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
     } else if (id === "Vending") {
         if (vendingType === VendingTypeEnum.TRADICIONAL) {
             images = allModels.filter(m => m.vendingType === VendingTypeEnum.TRADICIONAL)
