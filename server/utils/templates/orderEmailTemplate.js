@@ -91,7 +91,7 @@ export const getOrderEmailTemplate = ({
             <td align="center"
               background="${bannerUrl}"
               style="
-                padding:20px 16px 36px 16px;
+                padding:0px 16px 0px 16px;
                 background-image:url('${bannerUrl}');
                 background-size:cover;
                 background-position:center;
@@ -100,7 +100,7 @@ export const getOrderEmailTemplate = ({
               <img src="${logoUrl}" alt="Darmax Agua"
                 style="
                   display:block;
-                  max-width:170px;
+                  max-width:100px;
                   height:auto;
                   border-radius:999px;
                   padding:8px;
