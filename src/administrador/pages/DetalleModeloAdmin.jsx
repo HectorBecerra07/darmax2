@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import ModalAssociateExtra from "../components/ModalAssociateExtra";
 import ModalImageForm from "../components/ModalImageForm";
@@ -7,7 +7,8 @@ import ModalImageForm from "../components/ModalImageForm";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const DetalleModeloAdmin = () => {
-  const { modelId } = useParams();
+  const { slug } = useParams();
+  const navigate = useNavigate();
   const [model, setModel] = useState(null);
   const [allExtras, setAllExtras] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ const DetalleModeloAdmin = () => {
     setLoading(true);
     try {
       // Usamos el endpoint para obtener un modelo por ID (que en este caso es el slug)
-      const modelRes = await fetch(`${API_URL}/api/configurador/models/${modelId}`);
+      const modelRes = await fetch(`${API_URL}/api/configurador/models/${slug}`);
       if (!modelRes.ok) throw new Error("No se pudo cargar el modelo.");
       const modelData = await modelRes.json();
       setModel(modelData);
@@ -42,7 +43,7 @@ const DetalleModeloAdmin = () => {
 
   useEffect(() => {
     fetchData();
-  }, [modelId]);
+  }, [slug]);
 
   // --- Handlers para modales ---
   const handleOpenAssociateModal = (modelExtra = null) => { setEditingModelExtra(modelExtra); setIsAssociateModalOpen(true); };
@@ -80,9 +81,9 @@ const DetalleModeloAdmin = () => {
             <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
               Gestionar: <span className="text-cyan-600">{model.name}</span>
             </h2>
-            <Link to="/admin/dashboard/modelos-config" className="text-sm text-cyan-600 hover:underline">
-              &larr; Volver a la lista de modelos
-            </Link>
+            <button onClick={() => navigate(-1)} className="text-sm text-cyan-600 hover:underline">
+              &larr; Volver
+            </button>
           </div>
         </div>
 

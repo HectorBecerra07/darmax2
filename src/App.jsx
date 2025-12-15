@@ -92,7 +92,7 @@ function AppContent() {
             <Route path="pedidos" element={<PedidosAdmin />} />
             <Route path="envios" element={<EnviosAdmin />} />
             <Route path="configurador" element={<ModelsConfigAdmin />} />
-            <Route path="configurador/model/:modelId" element={<DetalleModeloAdmin />} />
+            <Route path="configurador/model/:slug" element={<DetalleModeloAdmin />} />
             <Route path="extras" element={<ExtrasAdmin />} />
             <Route path="reportes" element={<ReportesAdmin />} />
             <Route path="clientes" element={<ClientesAdmin />} />
