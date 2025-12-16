@@ -16,6 +16,7 @@ import shippingRoutes from "./routes/shipping.js";
 import postalCodeRoutes from "./routes/postalcode.js";
 
 const app = express();
+app.disable('x-powered-by');
 
 const allowedOrigins = [
   'https://darmaxagua.com.mx', 
