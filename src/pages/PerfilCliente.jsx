@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
@@ -124,6 +125,10 @@ export default function PerfilCliente() {
 
   return (
     <div className="max-w-6xl mx-auto py-20 px-6 space-y-10">
+      <Helmet>
+        <title>Mi Perfil - Darmax</title>
+        <meta name="description" content="Administra tu perfil, dirección y revisa tu historial de pedidos en Darmax." />
+      </Helmet>
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="space-y-2">

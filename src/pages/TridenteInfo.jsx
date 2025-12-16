@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -63,6 +64,13 @@ export default function TridenteInfo() {
 
   return (
     <div ref={contRef} className="min-h-screen bg-white">
+      <Helmet>
+        <title>Modelo Tridente - Darmax</title>
+        <meta
+          name="description"
+          content="La estación de multiservicio definitiva. Combina agua, limpieza y un tercer negocio a tu elección para dominar el mercado."
+        />
+      </Helmet>
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 via-slate-800 to-black" />

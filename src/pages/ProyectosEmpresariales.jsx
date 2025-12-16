@@ -119,155 +119,156 @@ export default function ProyectosEmpresariales() {
             <span className="inline-block text-sm font-semibold tracking-wider uppercase bg-slate-900 text-white px-4 py-1.5 rounded-full">
               Soluciones a la medida
             </span>
-          <h2 className="mt-6 text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">
-            Proyectos Empresariales
-          </h2>
-          <p className="mt-4 text-slate-600 text-lg md:text-xl max-w-2xl mx-auto">
-            Llave en mano, desde la ingeniería hasta la puesta en marcha y soporte continuo.
-          </p>
-        </div>
-
-        {/* Controles: Filtros + Vista + Ordenar */}
-        <div className="mt-12 md:mt-16 grid gap-6 md:grid-cols-[1fr_auto_auto] items-center">
-          {/* Filtros */}
-          <div className="rounded-2xl border border-gray-200/80 bg-white/60 backdrop-blur-xl p-3 flex flex-wrap gap-2.5 shadow-sm">
-            {["Todos", ...industrias].map((cat) => {
-              const activo = filtro === cat;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setFiltro(cat)}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200
-                    ${
-                      activo
-                        ? "bg-lime-300 text-lime-950 shadow-sm"
-                        : "bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-800"
-                    }`}
-                  aria-pressed={activo}
-                >
-                  {cat} <span className="opacity-60 font-normal">({conteo[cat] ?? 0})</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Vista */}
-          <div className="justify-self-start md:justify-self-end flex items-center gap-2 bg-white/60 border border-gray-200/80 rounded-2xl p-2 shadow-sm">
-            <button
-              onClick={() => setView("grid")}
-              className={`p-2 rounded-lg transition-colors ${
-                view === "grid"
-                  ? "bg-slate-800 text-white"
-                  : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"
-              }`}
-              aria-pressed={view === "grid"}
-              title="Vista de cuadrícula"
-            >
-              <GridIcon />
-            </button>
-            <button
-              onClick={() => setView("list")}
-              className={`p-2 rounded-lg transition-colors ${
-                view === "list"
-                  ? "bg-slate-800 text-white"
-                  : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"
-              }`}
-              aria-pressed={view === "list"}
-              title="Vista de lista"
-            >
-              <ListIcon />
-            </button>
-          </div>
-
-          {/* Ordenar */}
-          <div className="justify-self-start md:justify-self-end">
-            <label className="flex items-center gap-2 text-sm">
-              <span className="text-slate-600 font-medium">Ordenar por:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-lg border-gray-300 bg-white/80 px-3 py-2 text-slate-700 font-semibold shadow-sm outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
-              >
-                <option value="relevancia">Relevancia</option>
-                <option value="az">A-Z</option>
-                <option value="industria">Industria</option>
-              </select>
-            </label>
-          </div>
-        </div>
-
-        {/* Grid / Lista */}
-        <div className="mt-12">
-          {view === "grid" ? (
-            <div className="grid gap-x-6 gap-y-10 [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))]">
-              {proyectosFiltrados.map((p, idx) => (
-                <MotionCard key={p.id} delay={idx * 0.03}>
-                  <ProjectCard proyecto={p} setForm={setForm} />
-                </MotionCard>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-5">
-              {proyectosFiltrados.map((p, idx) => (
-                <MotionCard key={p.id} delay={idx * 0.03}>
-                  <ProjectRow proyecto={p} setForm={setForm} />
-                </MotionCard>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Separador */}
-        <div className="mt-24 mb-12 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-
-        {/* Formulario */}
-        <div id="formulario-proyectos" className="max-w-5xl mx-auto scroll-mt-20">
-          <div className="rounded-2xl bg-white p-8 md:p-12 shadow-xl shadow-slate-200/50">
-            <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 text-center tracking-tight">
-              ¿Listo para cotizar tu proyecto?
-            </h3>
-            <p className="text-slate-600 text-center mt-3 max-w-2xl mx-auto">
-              Completa el formulario y se abrirá tu cliente de correo con un borrador listo para enviar a{' '}
-              <span className="font-semibold text-slate-800">darmaxagua@gmail.com</span>.
+            <h2 className="mt-6 text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">
+              Proyectos Empresariales
+            </h2>
+            <p className="mt-4 text-slate-600 text-lg md:text-xl max-w-2xl mx-auto">
+              Llave en mano, desde la ingeniería hasta la puesta en marcha y soporte continuo.
             </p>
+          </div>
 
-            <form onSubmit={handleGmailSubmit} className="mt-10 grid gap-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <FormInput required label="Nombre" name="nombre" value={form.nombre} onChange={onChange} />
-                <FormInput required type="email" label="Email" name="email" value={form.email} onChange={onChange} placeholder="tucorreo@dominio.com" />
-              </div>
+          {/* Controles: Filtros + Vista + Ordenar */}
+          <div className="mt-12 md:mt-16 grid gap-6 md:grid-cols-[1fr_auto_auto] items-center">
+            {/* Filtros */}
+            <div className="rounded-2xl border border-gray-200/80 bg-white/60 backdrop-blur-xl p-3 flex flex-wrap gap-2.5 shadow-sm">
+              {["Todos", ...industrias].map((cat) => {
+                const activo = filtro === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setFiltro(cat)}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200
+                      ${
+                        activo
+                          ? "bg-lime-300 text-lime-950 shadow-sm"
+                          : "bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+                      }`}
+                    aria-pressed={activo}
+                  >
+                    {cat} <span className="opacity-60 font-normal">({conteo[cat] ?? 0})</span>
+                  </button>
+                );
+              })}
+            </div>
 
-              <div className="grid md:grid-cols-3 gap-6">
-                <FormInput label="Teléfono" name="telefono" value={form.telefono} onChange={onChange} placeholder="55 1234 5678" />
-                <FormSelect label="Industria de Interés" name="industria" value={form.industria} onChange={onChange} options={industrias} />
-                <FormInput label="Proyecto de Interés" name="proyecto" value={form.proyecto} onChange={onChange} placeholder="Ej. Vending Touch + Purificadora" />
-              </div>
+            {/* Vista */}
+            <div className="justify-self-start md:justify-self-end flex items-center gap-2 bg-white/60 border border-gray-200/80 rounded-2xl p-2 shadow-sm">
+              <button
+                onClick={() => setView("grid")}
+                className={`p-2 rounded-lg transition-colors ${
+                  view === "grid"
+                    ? "bg-slate-800 text-white"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+                }`}
+                aria-pressed={view === "grid"}
+                title="Vista de cuadrícula"
+              >
+                <GridIcon />
+              </button>
+              <button
+                onClick={() => setView("list")}
+                className={`p-2 rounded-lg transition-colors ${
+                  view === "list"
+                    ? "bg-slate-800 text-white"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+                }`}
+                aria-pressed={view === "list"}
+                title="Vista de lista"
+              >
+                <ListIcon />
+              </button>
+            </div>
 
-              <FormTextarea required label="Mensaje / Detalles" name="detalles" rows={5} value={form.detalles} onChange={onChange} placeholder="Describe tu proyecto: ubicación, capacidad requerida, presupuesto estimado, etc." />
-
-              <div className="flex flex-wrap items-center gap-4 pt-4">
-                <button
-                  type="submit"
-                  className="px-8 py-3 rounded-xl font-semibold text-black bg-lime-300 hover:bg-lime-400 transition-colors shadow-lg shadow-lime-500/10 hover:shadow-xl hover:shadow-lime-500/20"
+            {/* Ordenar */}
+            <div className="justify-self-start md:justify-self-end">
+              <label className="flex items-center gap-2 text-sm">
+                <span className="text-slate-600 font-medium">Ordenar por:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="rounded-lg border-gray-300 bg-white/80 px-3 py-2 text-slate-700 font-semibold shadow-sm outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
                 >
-                  Abrir Gmail y Enviar
-                </button>
-                <a
-                  href={buildMailto({ to: GMAIL_TO, subject: "Consulta desde Proyectos Empresariales", body: "" })}
-                  className="px-8 py-3 rounded-xl font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors"
-                >
-                  Usar otro cliente de correo
-                </a>
-              </div>
+                  <option value="relevancia">Relevancia</option>
+                  <option value="az">A-Z</option>
+                  <option value="industria">Industria</option>
+                </select>
+              </label>
+            </div>
+          </div>
 
-              <p className="text-sm text-slate-500 mt-2">
-                *No se envía automáticamente. Se abrirá una ventana con tu correo listo para que lo revises y envíes.
+          {/* Grid / Lista */}
+          <div className="mt-12">
+            {view === "grid" ? (
+              <div className="grid gap-x-6 gap-y-10 [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))]">
+                {proyectosFiltrados.map((p, idx) => (
+                  <MotionCard key={p.id} delay={idx * 0.03}>
+                    <ProjectCard proyecto={p} setForm={setForm} />
+                  </MotionCard>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-5">
+                {proyectosFiltrados.map((p, idx) => (
+                  <MotionCard key={p.id} delay={idx * 0.03}>
+                    <ProjectRow proyecto={p} setForm={setForm} />
+                  </MotionCard>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Separador */}
+          <div className="mt-24 mb-12 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+
+          {/* Formulario */}
+          <div id="formulario-proyectos" className="max-w-5xl mx-auto scroll-mt-20">
+            <div className="rounded-2xl bg-white p-8 md:p-12 shadow-xl shadow-slate-200/50">
+              <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 text-center tracking-tight">
+                ¿Listo para cotizar tu proyecto?
+              </h3>
+              <p className="text-slate-600 text-center mt-3 max-w-2xl mx-auto">
+                Completa el formulario y se abrirá tu cliente de correo con un borrador listo para enviar a{' '}
+                <span className="font-semibold text-slate-800">darmaxagua@gmail.com</span>.
               </p>
-            </form>
+
+              <form onSubmit={handleGmailSubmit} className="mt-10 grid gap-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <FormInput required label="Nombre" name="nombre" value={form.nombre} onChange={onChange} />
+                  <FormInput required type="email" label="Email" name="email" value={form.email} onChange={onChange} placeholder="tucorreo@dominio.com" />
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6">
+                  <FormInput label="Teléfono" name="telefono" value={form.telefono} onChange={onChange} placeholder="55 1234 5678" />
+                  <FormSelect label="Industria de Interés" name="industria" value={form.industria} onChange={onChange} options={industrias} />
+                  <FormInput label="Proyecto de Interés" name="proyecto" value={form.proyecto} onChange={onChange} placeholder="Ej. Vending Touch + Purificadora" />
+                </div>
+
+                <FormTextarea required label="Mensaje / Detalles" name="detalles" rows={5} value={form.detalles} onChange={onChange} placeholder="Describe tu proyecto: ubicación, capacidad requerida, presupuesto estimado, etc." />
+
+                <div className="flex flex-wrap items-center gap-4 pt-4">
+                  <button
+                    type="submit"
+                    className="px-8 py-3 rounded-xl font-semibold text-black bg-lime-300 hover:bg-lime-400 transition-colors shadow-lg shadow-lime-500/10 hover:shadow-xl hover:shadow-lime-500/20"
+                  >
+                    Abrir Gmail y Enviar
+                  </button>
+                  <a
+                    href={buildMailto({ to: GMAIL_TO, subject: "Consulta desde Proyectos Empresariales", body: "" })}
+                    className="px-8 py-3 rounded-xl font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors"
+                  >
+                    Usar otro cliente de correo
+                  </a>
+                </div>
+
+                <p className="text-sm text-slate-500 mt-2">
+                  *No se envía automáticamente. Se abrirá una ventana con tu correo listo para que lo revises y envíes.
+                </p>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 

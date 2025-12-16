@@ -37,7 +37,8 @@ export default function LandingPage() {
               <span style={{ color: '#ffff00' }}>
                 Negocio
               </span>
-            </h2>
+              
+            </h1>
             <p className="text-base md:text-lg lg:text-lg text-white leading-relaxed mb-6 md:mb-8">
               Da el primer paso a tu libertad financiera y <br />
               lleva tu emprendimiento al siguiente nivel con 

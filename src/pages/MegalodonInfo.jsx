@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -63,6 +64,13 @@ export default function MegalodonInfo() {
 
   return (
     <div ref={contRef} className="min-h-screen bg-white">
+      <Helmet>
+        <title>Estación Megalodon - Darmax</title>
+        <meta
+          name="description"
+          content="La bestia del vending. Una estación de ultra capacidad y tecnología de vanguardia diseñada para dominar los puntos de mayor tráfico."
+        />
+      </Helmet>
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 via-slate-800 to-black" />
