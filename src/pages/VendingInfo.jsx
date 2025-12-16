@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -79,6 +80,13 @@ export default function VendingInfo() {
 
   return (
     <div ref={contRef} className="min-h-screen bg-white">
+      <Helmet>
+        <title>Máquinas Vending de Agua - Darmax</title>
+        <meta
+          name="description"
+          content="Automatiza la venta de agua purificada con equipos robustos, métodos de pago modernos y operación 24/7. Ideal para plazas, tiendas y espacios públicos."
+        />
+      </Helmet>
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 via-slate-800 to-black" />

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -62,6 +63,13 @@ export default function VendingLimpiezaInfo() {
 
   return (
     <div ref={containerRef} className="bg-white min-h-screen">
+      <Helmet>
+        <title>Vending de Productos de Limpieza - Darmax</title>
+        <meta
+          name="description"
+          content="Automatiza la venta de detergentes, cloro y suavizantes con pago mixto y pantalla táctil. Reduce residuos con recarga y mejora tu margen con insumos a granel."
+        />
+      </Helmet>
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-tr from-fuchsia-800 via-pink-700 to-rose-700" />

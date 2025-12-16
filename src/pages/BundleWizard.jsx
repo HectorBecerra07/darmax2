@@ -1,6 +1,7 @@
 // src/pages/BundleWizard.jsx
 import { useParams, useNavigate } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
@@ -481,6 +482,10 @@ export default function BundleWizard() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
+      <Helmet>
+        <title>Configurador de Paquete - Darmax</title>
+        <meta name="description" content="Configura tu paquete de purificadora y vending a la medida de tus necesidades." />
+      </Helmet>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="text-center mb-8 sm:mb-12">
             <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">

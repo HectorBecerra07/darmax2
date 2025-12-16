@@ -1,5 +1,6 @@
 // src/pages/GraciasCompra.jsx
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const GraciasCompra = () => {
@@ -37,6 +38,10 @@ const GraciasCompra = () => {
 
   return (
     <section className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 px-4">
+      <Helmet>
+        <title>Gracias por tu compra - Darmax</title>
+        <meta name="description" content="Tu pedido ha sido registrado correctamente." />
+      </Helmet>
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8 space-y-6">
         <div className="text-center space-y-2">
           <h2 className="text-3xl font-bold text-gray-800">

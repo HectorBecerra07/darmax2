@@ -1,5 +1,6 @@
 // src/pages/Carrito.jsx
 import React, { useEffect, useMemo, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useCarrito } from "../context/CarritoContext";
 import CheckoutForm from "../components/CheckoutForm";
 import { Elements } from "@stripe/react-stripe-js";
@@ -321,6 +322,10 @@ const Carrito = () => {
 
   return (
     <section className="min-h-screen bg-gray-50 pt-28 pb-10 px-4 sm:px-6">
+      <Helmet>
+        <title>Carrito de Compra - Darmax</title>
+        <meta name="description" content="Revisa tu carrito de compra y completa tu pedido de forma segura." />
+      </Helmet>
       <div className="max-w-4xl mx-auto">
         {/* HEADER */}
         <header className="text-center mb-8">
