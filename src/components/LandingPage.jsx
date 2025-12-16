@@ -32,7 +32,7 @@ export default function LandingPage() {
       >
         <div className="flex flex-col lg:flex-row items-center justify-center gap-4 md:gap-2 w-full max-w-7xl mx-auto lg:h-full">
           <div className="max-w-xl text-center md:text-left flex flex-col items-center md:items-start">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7x2 font-black tracking-tight leading-tight mt-0 md:mt-1 mb-1 md:mb-3">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7x2 font-black tracking-tight leading-tight mt-0 md:mt-1 mb-1 md:mb-3">
               Emprende tu{" "}
               <span style={{ color: '#ffff00' }}>
                 Negocio

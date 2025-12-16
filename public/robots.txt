@@ -1,3 +1,4 @@
  User-agent: *
 Allow: /
-Sitemap: https://tudominio.com/sitemap.xml
+Disallow: /admin/
+Sitemap: https://www.darmax.com.mx/sitemap.xml

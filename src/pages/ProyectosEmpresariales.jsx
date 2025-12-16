@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion"; // animaciones
 
 /* ========= Configuración de destino ========= */
@@ -103,13 +104,21 @@ export default function ProyectosEmpresariales() {
   };
 
   return (
-    <section className="bg-slate-50 py-16 sm:py-20">
-      <div className="mx-auto px-6 md:px-10 max-w-screen-2xl">
-        {/* Header */}
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="inline-block text-sm font-semibold tracking-wider uppercase bg-slate-900 text-white px-4 py-1.5 rounded-full">
-            Soluciones a la medida
-          </span>
+    <>
+      <Helmet>
+        <title>Proyectos Empresariales - Darmax</title>
+        <meta
+          name="description"
+          content="Soluciones empresariales a la medida. Proyectos llave en mano, desde la ingeniería hasta la puesta en marcha y soporte continuo."
+        />
+      </Helmet>
+      <section className="bg-slate-50 py-16 sm:py-20">
+        <div className="mx-auto px-6 md:px-10 max-w-screen-2xl">
+          {/* Header */}
+          <div className="max-w-4xl mx-auto text-center">
+            <span className="inline-block text-sm font-semibold tracking-wider uppercase bg-slate-900 text-white px-4 py-1.5 rounded-full">
+              Soluciones a la medida
+            </span>
           <h2 className="mt-6 text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">
             Proyectos Empresariales
           </h2>

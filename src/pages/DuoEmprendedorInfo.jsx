@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -68,6 +69,13 @@ export default function DuoEmprendedorInfo() {
 
   return (
     <div ref={contRef} className="min-h-screen bg-white">
+      <Helmet>
+        <title>Dúo Emprendedor 2 en 1 - Darmax</title>
+        <meta
+          name="description"
+          content="La solución definitiva que combina una purificadora de agua y un vending de productos de limpieza. Doble impacto, doble ganancia."
+        />
+      </Helmet>
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 via-slate-800 to-black" />

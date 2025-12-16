@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import toast from "react-hot-toast";
@@ -61,6 +62,10 @@ const Login = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Iniciar Sesión - Darmax</title>
+        <meta name="description" content="Inicia sesión en tu cuenta de Darmax para acceder a tu perfil, historial de pedidos y más." />
+      </Helmet>
       {showWelcome && <WelcomeScreen name={firstName} />}
       <div
         className="min-h-screen bg-cover bg-[center_top] md:bg-center flex items-center justify-center"

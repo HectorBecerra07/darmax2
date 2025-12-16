@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -78,6 +79,13 @@ export default function PurificadoraInfo() {
 
   return (
     <div ref={contRef} className="min-h-screen bg-white">
+      <Helmet>
+        <title>Plantas Purificadoras de Agua - Darmax</title>
+        <meta
+          name="description"
+          content="Purificación confiable con múltiples etapas, desinfección UV+Ozono y tanques sanitarios. Diseñadas para operar con alta disponibilidad y mantenimiento sencillo."
+        />
+      </Helmet>
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-tr from-sky-900 via-sky-800 to-cyan-800" />
