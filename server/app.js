@@ -20,7 +20,8 @@ app.disable('x-powered-by');
 
 const allowedOrigins = [
   'https://darmaxagua.com.mx', 
-  'https://darmax2.vercel.app'
+  'https://darmax2.vercel.app',
+  'http://localhost:5173'
 ];
 
 app.use(cors({
