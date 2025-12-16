@@ -88,7 +88,7 @@ export default function NavBar() {
             {/* Logo */}
             <Link to="/" onClick={scrollToTop} className="shrink-0 flex items-center justify-start">
               <img
-                src="/img/logo4.png"
+                src="/img/logo_darmaxnav.png"
                 alt="Logo Darmax"
                 className="h-20 md:h-20 nav:h-24 w-auto object-contain"
               />

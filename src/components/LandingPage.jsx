@@ -26,6 +26,7 @@ export default function LandingPage() {
         className="text-white px-4 md:px-8 pt-24 pb-16 md:pt-32 md:pb-24 lg:aspect-[3.5/1] lg:pt-0 lg:pb-0"
         style={{
           backgroundImage: 'url("/img/banner.png")',
+
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -53,8 +54,9 @@ export default function LandingPage() {
 
           <div className="w-full md:w-1/2 flex justify-center">
             <img
-              src="/img/darmax-logo.png"
+              src="/img/logo_darmaxnav.png"  
               alt="Logo Darmax"
+              
               className="w-[200px] sm:w-[250px] md:w-[300px] lg:w-[300px] h-auto object-contain"
             />
           </div>
