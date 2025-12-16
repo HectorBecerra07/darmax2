@@ -22,7 +22,7 @@ export default function Productos() {
   const [modalOpen, setModalOpen] = useState(false);
   const [productoActivo, setProductoActivo] = useState(null);
   const [paginaActual, setPaginaActual] = useState(1);
-  const [loading, setLoading] = useState(true); // ⬅️ NUEVO
+  const [loading, setLoading] = useState(true);
 
   const productosPorPagina = 10;
   const { agregarProducto, carrito } = useCarrito();
@@ -30,7 +30,7 @@ export default function Productos() {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        setLoading(true); // empezamos a cargar
+        setLoading(true);
         const res = await fetch(`${API_URL}/api/productos`);
         if (!res.ok) throw new Error("No se pudieron cargar los productos.");
         const data = await res.json();
@@ -38,7 +38,7 @@ export default function Productos() {
       } catch (error) {
         toast.error(error.message);
       } finally {
-        setLoading(false); //termine con éxito o error, se apaga el loading
+        setLoading(false);
       }
     };
     fetchProductos();
@@ -85,7 +85,7 @@ export default function Productos() {
   const productosPaginados = productosFiltrados.slice(inicio, fin);
 
   const handleAgregarCarrito = (producto) => {
-    const itemEnCarrito = carrito.find(item => item.id === producto.id);
+    const itemEnCarrito = carrito.find((item) => item.id === producto.id);
     const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
     const stockEfectivo = (producto.stock ?? 0) - cantidadEnCarrito;
 
@@ -134,6 +134,7 @@ export default function Productos() {
           content="Explora nuestra amplia gama de productos de alta calidad en Darmax. Encuentra todo lo que necesitas, desde purificadores hasta soluciones para tu negocio."
         />
       </Helmet>
+
       <section className="p-6 max-w-7xl mx-auto pt-10 pb-16">
         <h2 className="text-3xl font-bold mb-12 text-center uppercase tracking-wide">
           Nuestros productos
@@ -175,59 +176,88 @@ export default function Productos() {
               )}
             </div>
 
-            {/* GRID DE PRODUCTOS */}
+            {/* GRID DE PRODUCTOS (CARD UNIFICADA + IMAGEN MISMO TAMAÑO) */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {productosPaginados.map((p) => {
-                const itemEnCarrito = carrito.find(item => item.id === p.id);
-                const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+                const itemEnCarrito = carrito.find((item) => item.id === p.id);
+                const cantidadEnCarrito = itemEnCarrito
+                  ? itemEnCarrito.cantidad
+                  : 0;
                 const stockEfectivo = (p.stock ?? 0) - cantidadEnCarrito;
 
                 return (
-                <div
-                  key={p.id}
-                  className="flex flex-col items-center gap-3 cursor-pointer group"
-                  onClick={() => handleVerMas(p)}
-                >
-                  <div className="bg-white shadow-md rounded-2xl p-6 w-full aspect-[4/3] flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-                    <img
-                      src={p.imagen || "https://via.placeholder.com/400x300"}
-                      alt={p.nombre}
-                      className="object-contain max-h-[200px] transition-transform duration-300 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  <p className="text-center text-base font-medium capitalize">
-                    {p.nombre}
-                  </p>
-
-                  <p className="text-center text-black font-semibold text-base">
-                    {money(p.precio)}
-                  </p>
-
-                  {/* Stock Display */}
-                  <p className="text-center text-gray-600 text-sm">
-                    Disponibles: <span className={`${stockEfectivo <= 0 ? 'text-red-500 font-bold' : ''}`}>{stockEfectivo}</span>
-                  </p>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAgregarCarrito(p);
-                    }}
-                    disabled={stockEfectivo <= 0}
-                    className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
-                      stockEfectivo <= 0
-                        ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                        : "text-white hover:brightness-90"
-                    }`}
-                    style={{ backgroundColor: stockEfectivo <= 0 ? undefined : "#24d4da" }}
+                  <div
+                    key={p.id}
+                    onClick={() => handleVerMas(p)}
+                    className="
+                      group cursor-pointer
+                      bg-white rounded-3xl
+                      border border-gray-100
+                      shadow-sm hover:shadow-xl
+                      transition-all duration-300
+                      overflow-hidden
+                      flex flex-col
+                    "
                   >
-                    {stockEfectivo <= 0 ? "Agotado" : "Añadir al carrito"}
-                  </button>
-                </div>
-                )
+                    {/* Imagen uniforme */}
+                    <div className="relative w-full aspect-[4/3] bg-gray-50 flex items-center justify-center">
+                      <img
+                        src={p.imagen || "https://via.placeholder.com/400x300"}
+                        alt={p.nombre}
+                        loading="lazy"
+                        className="
+                          max-h-[160px]
+                          object-contain
+                          transition-transform duration-300
+                          group-hover:scale-105
+                        "
+                        onError={(e) => (e.currentTarget.style.display = "none")}
+                      />
+                    </div>
+
+                    {/* Contenido */}
+                    <div className="flex flex-col items-center text-center px-5 py-4">
+                      <p className="text-base font-semibold capitalize leading-snug">
+                        {p.nombre}
+                      </p>
+
+                      <p className="mt-1 text-black font-bold text-base">
+                        {money(p.precio)}
+                      </p>
+
+                      <p className="mt-1 text-gray-500 text-sm">
+                        Disponibles:{" "}
+                        <span
+                          className={
+                            stockEfectivo <= 0 ? "text-red-500 font-bold" : ""
+                          }
+                        >
+                          {stockEfectivo}
+                        </span>
+                      </p>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAgregarCarrito(p);
+                        }}
+                        disabled={stockEfectivo <= 0}
+                        className={`
+                          mt-3 px-5 py-2 rounded-full text-sm font-semibold transition
+                          ${
+                            stockEfectivo <= 0
+                              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                              : "bg-[#24d4da] text-white hover:brightness-90"
+                          }
+                        `}
+                      >
+                        {stockEfectivo <= 0 ? "Agotado" : "Añadir al carrito"}
+                      </button>
+                    </div>
+                  </div>
+                );
               })}
+
               {productosPaginados.length === 0 && (
                 <div className="col-span-full text-center text-gray-500">
                   No hay productos para esta categoría.
