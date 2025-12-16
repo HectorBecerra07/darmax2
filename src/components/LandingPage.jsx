@@ -39,12 +39,23 @@ export default function LandingPage() {
             <p className="text-base md:text-lg lg:text-lg text-white leading-relaxed mb-6 md:mb-8">
               Con Darmax, inicia tu emprendimiento con purificadoras de agua, máquinas vending 24/7 y productos de limpieza de alta calidad.
             </p>
-            <button
-              onClick={() => scrollToRef(calculadoraRef)}
-              className="inline-block text-black font-semibold py-2 px-4 md:px-6 rounded shadow transition hover:brightness-90 bg-[#d4ff00] text-sm md:text-base"
-            >
-              CALCULA TUS GANANCIAS
-            </button>
+<button
+  onClick={() => scrollToRef(calculadoraRef)}
+  className="
+    inline-flex items-center justify-center
+    text-black font-semibold
+    py-2.5 px-6 md:px-8
+    rounded-full
+    shadow
+    transition
+    hover:brightness-95
+    bg-[#d4ff00]
+    text-sm md:text-base
+  "
+>
+  CALCULA TUS GANANCIAS
+</button>
+
           </div>
 
           <div className="w-full md:w-1/2 flex justify-center">
