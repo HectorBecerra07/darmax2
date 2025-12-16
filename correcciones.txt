@@ -1,0 +1,67 @@
+Request URL
+https://darmax2.vercel.app/api/orders/confirm
+Request Method
+POST
+Status Code
+500 Internal Server Error
+Remote Address
+64.29.17.3:443
+Referrer Policy
+strict-origin-when-cross-origin
+
+
+
+
+controller-with-preconnect-38f9917169d24daeb8f29d9e494711ae.js:1 [Stripe.js] The following payment method types are not activated:
+
+- link
+
+They will be displayed in test mode, but hidden in live mode. Please activate the payment method types in your dashboard (https://dashboard.stripe.com/settings/payment_methods) and ensure your account is enabled for any preview features that you are trying to use.
+warn @ controller-with-preconnect-38f9917169d24daeb8f29d9e494711ae.js:1
+controller-with-preconnect-38f9917169d24daeb8f29d9e494711ae.js:1 [Stripe.js] The following payment method types are not activated:
+
+- link
+
+They will be displayed in test mode, but hidden in live mode. Please activate the payment method types in your dashboard (https://dashboard.stripe.com/settings/payment_methods) and ensure your account is enabled for any preview features that you are trying to use.
+warn @ controller-with-preconnect-38f9917169d24daeb8f29d9e494711ae.js:1
+controller-with-preconnect-38f9917169d24daeb8f29d9e494711ae.js:1 [Stripe.js] The following payment method types are not activated:
+
+- link
+
+They will be displayed in test mode, but hidden in live mode. Please activate the payment method types in your dashboard (https://dashboard.stripe.com/settings/payment_methods) and ensure your account is enabled for any preview features that you are trying to use.
+warn @ controller-with-preconnect-38f9917169d24daeb8f29d9e494711ae.js:1
+controller-with-preconnect-38f9917169d24daeb8f29d9e494711ae.js:1 [Stripe.js] You have not registered or verified the domain, so the following payment methods are not enabled in the Payment Element: 
+
+- apple_pay
+
+Please follow https://stripe.com/docs/payments/payment-methods/pmd-registration to register and verify the domain.
+warn @ controller-with-preconnect-38f9917169d24daeb8f29d9e494711ae.js:1
+index-B09KpbLF.js:215  POST https://darmax2.vercel.app/api/orders/confirm 500 (Internal Server Error)
+P @ index-B09KpbLF.js:215
+await in P
+Ma @ index-B09KpbLF.js:5
+cs @ index-B09KpbLF.js:5
+$s @ index-B09KpbLF.js:5
+Ad @ index-B09KpbLF.js:5
+Ed @ index-B09KpbLF.js:5
+(anonymous) @ index-B09KpbLF.js:5
+jb @ index-B09KpbLF.js:8
+kt @ index-B09KpbLF.js:5
+Od @ index-B09KpbLF.js:5
+Su @ index-B09KpbLF.js:5
+bd @ index-B09KpbLF.js:5
+installHook.js:1 Error al crear pedido en backend: {error: 'Error al confirmar el pedido', detail: 'PrismaClientValidationError: \nInvalid `prisma.pedi…ntIntentId`. Available options are marked with ?.'}
+overrideMethod @ installHook.js:1
+P @ index-B09KpbLF.js:215
+await in P
+Ma @ index-B09KpbLF.js:5
+cs @ index-B09KpbLF.js:5
+$s @ index-B09KpbLF.js:5
+Ad @ index-B09KpbLF.js:5
+Ed @ index-B09KpbLF.js:5
+(anonymous) @ index-B09KpbLF.js:5
+jb @ index-B09KpbLF.js:8
+kt @ index-B09KpbLF.js:5
+Od @ index-B09KpbLF.js:5
+Su @ index-B09KpbLF.js:5
+bd @ index-B09KpbLF.js:5

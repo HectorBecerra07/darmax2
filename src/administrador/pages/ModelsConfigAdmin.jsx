@@ -46,8 +46,8 @@ const ModelsConfigAdmin = () => { // Renombrado el componente
   };
   
   // Función para navegar a la página de detalles del modelo
-  const handleManageDetails = (modelId) => {
-    navigate(`/admin/dashboard/configurador/model/${modelId}`);
+  const handleManageDetails = (slug) => {
+    navigate(`/admin/dashboard/configurador/model/${slug}`);
   };
 
   if (loading) return <div className="p-6 text-slate-800 dark:text-slate-100">Cargando modelos...</div>;
@@ -85,7 +85,7 @@ const ModelsConfigAdmin = () => { // Renombrado el componente
                             <td className="px-4 py-2 dark:text-slate-300">${model.basePrice.toLocaleString()}</td>
                             <td className="px-4 py-2 text-right space-x-3">
                                 <button onClick={() => handleOpenModelModal(model)} className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">Editar</button>
-                                <button onClick={() => handleManageDetails(model.id)} className="font-semibold text-cyan-600 dark:text-cyan-400 hover:underline">Gestionar Detalles</button>
+                                <button onClick={() => handleManageDetails(model.slug)} className="font-semibold text-cyan-600 dark:text-cyan-400 hover:underline">Gestionar Detalles</button>
                                 <button onClick={() => handleDeleteModel(model.id)} className="font-semibold text-red-600 dark:text-red-400 hover:underline">Eliminar</button>
                             </td>
                         </tr>
