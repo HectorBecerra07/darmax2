@@ -6,6 +6,7 @@ import CheckoutForm from "../components/CheckoutForm";
 import { useCarrito } from "../context/CarritoContext";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const StripeCheckoutPage = () => {
   const { carrito, totalEnCentavos } = useCarrito(); 
@@ -14,7 +15,7 @@ const StripeCheckoutPage = () => {
   const [clientSecret, setClientSecret] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/payments/create-payment-intent", {
+    fetch(`${API_URL}/api/payments/create-payment-intent`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount: totalEnCentavos }),

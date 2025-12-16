@@ -7,10 +7,14 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 const HERO_IMG = "/img/vending/TOUCHAGUA.png";
 
 const highlights = [
-  { titulo: "1200 garrafones/mes", desc: "Capacidad máxima estimada", icono: "⚡" },
-  { titulo: "Pago ", desc: "Efectivo", icono: "💳" },
-  { titulo: "Acero inoxidable", desc: "Construcción robusta", icono: "🛡️" },
-  { titulo: "Operación 24/7", desc: "Automática y segura", icono: "🕛" },
+  {
+    icono: "/icon/ry.png",
+    titulo: "1200 garrafones/mes",
+    desc: "Capacidad máxima estimada",
+  },
+  { icono: "/icon/tj.png", titulo: "Pago", desc: "Efectivo" },
+  { icono: "/icon/es.png", titulo: "Acero inoxidable", desc: "Construcción robusta" },
+  { icono: "/icon/hr.png", titulo: "Operación", desc: "24 / 7" },
 ];
 
 const especificaciones = [
@@ -67,7 +71,6 @@ const faqs = [
   },
 ];
 
-/* ====== Componente principal ====== */
 export default function VendingInfo() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -87,145 +90,178 @@ export default function VendingInfo() {
           content="Automatiza la venta de agua purificada con equipos robustos, métodos de pago modernos y operación 24/7. Ideal para plazas, tiendas y espacios públicos."
         />
       </Helmet>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 via-slate-800 to-black" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 pt-24 pb-16 grid md:grid-cols-2 gap-10 items-center">
-          <div>
-            <span className="inline-block text-[11px] uppercase tracking-widest bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full">
-              Conoce más
-            </span>
-            <h1 className="mt-4 text-3xl md:text-5xl font-extrabold text-white leading-tight">
-              Máquinas Vending de Agua <span className="text-[#ccff00]">Darmax</span>
-            </h1>
-            <p className="mt-3 text-white/80">
-              Automatiza la venta de agua purificada con equipos robustos, métodos de pago modernos
-              y operación 24/7. Ideal para plazas, tiendas y espacios públicos.
-            </p>
 
-            {/* Highlights */}
-            <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {highlights.map((h, i) => (
-                <motion.div
-                  key={h.titulo}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="rounded-2xl bg-white/10 border border-white/20 text-white p-3 backdrop-blur"
-                >
-                  <div className="text-2xl">{h.icono}</div>
-                  <div className="text-sm mt-1 font-semibold">{h.titulo}</div>
-                  <div className="text-[12px] opacity-80">{h.desc}</div>
-                </motion.div>
-              ))}
-            </div>
+      {/* ===== Header blanco + banner full-bleed ===== */}
+      <section className="bg-white overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 pt-10 pb-6">
+          <h2 className="text-2xl md:text-4xl font-extrabold italic text-slate-900">
+            Conoce más
+          </h2>
+          <p className="text-xs md:text-sm text-slate-500 mt-1">
+            Inversión inteligente, retorno garantizado
+          </p>
+        </div>
 
-            {/* CTAs */}
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link
-                to="/configurar-maquina/Vending"
-                className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
-                style={{ backgroundColor: "#ccff00" }}
-              >
-                Configurar mi equipo
-              </Link>
-              <Link
-                to="/productos"
-                className="px-6 py-3 rounded-xl font-semibold border border-white/20 text-white hover:bg-white/10 transition"
-              >
-                Ver más productos
-              </Link>
-            </div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center justify-center"
-          >
+        <div className="relative w-screen left-1/2 -translate-x-1/2">
+          <div className="relative h-[260px] sm:h-[320px] md:h-[420px] overflow-hidden">
             <img
               src={HERO_IMG}
               alt="Máquina Vending Darmax"
-              className="w-full max-w-md object-contain drop-shadow-[0_25px_40px_rgba(0,0,0,0.5)]"
+              className="w-full h-full object-cover"
               onError={(e) => (e.currentTarget.style.display = "none")}
             />
-          </motion.div>
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
+          </div>
         </div>
-
-        {/* Onda */}
-        <svg className="relative z-0 w-full" viewBox="0 0 1440 120" preserveAspectRatio="none">
-          <path fill="#fff" d="M0,64 C240,160 960,0 1440,96 L1440,120 L0,120 Z" />
-        </svg>
       </section>
 
-      {/* Especificaciones (tarjetas) */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-12">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 text-center">
-          Características clave
-        </h2>
-        <p className="text-slate-600 text-center mt-2">
-          Diseñadas para operar con alta disponibilidad y mínimo mantenimiento.
-        </p>
+      {/* ===== Bloque oscuro pegado ===== */}
+      <section className="relative -mt-4">
+        <div className="bg-[#1e2533]">
+          {/* Título grande */}
+          <div className="pt-10">
+            <div className="max-w-7xl mx-auto px-6 md:px-10 pt-14 pb-14">
+              <div className="text-center">
+                <h1 className="text-4xl md:text-6xl font-extrabold italic text-white leading-tight">
+                  Máquinas Vending de Agua{" "}
+                  <span className="not-italic text-[#ccff00]">Darmax</span>
+                </h1>
+                <p className="mt-7 max-w-4xl mx-auto text-white/80 text-base md:text-lg leading-relaxed">
+                  Automatiza la venta de agua purificada con equipos robustos, métodos de pago modernos
+                  y operación 24/7. Ideal para plazas, tiendas y espacios públicos.
+                </p>
+              </div>
 
-        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Highlights (iconos diseñadora) */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
+                {highlights.map((h, i) => (
+                  <motion.div
+                    key={h.titulo}
+                    initial={{ opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.35, delay: i * 0.07 }}
+                    className="
+                      flex flex-col items-center justify-center
+                      min-h-[120px]
+                      rounded-lg
+                      bg-[#2f3947]
+                      border border-white/40
+                      px-4 py-5
+                      text-center
+                      text-white
+                    "
+                  >
+                    <img
+                      src={h.icono}
+                      alt={h.titulo}
+                      className="mb-3 h-10 w-10 object-contain"
+                      onError={(e) => (e.currentTarget.style.display = "none")}
+                    />
+                    <div className="text-base font-semibold leading-tight">{h.titulo}</div>
+                    <div className="text-sm italic text-white/80">{h.desc}</div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* CTAs */}
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+                <Link
+                  to="/configurar-maquina/Vending"
+                  className="px-6 py-3 rounded-xl font-semibold text-black shadow-lg hover:brightness-95 transition"
+                  style={{ backgroundColor: "#ccff00" }}
+                >
+                  Configurar mi equipo
+                </Link>
+                <Link
+                  to="/productos"
+                  className="px-6 py-3 rounded-xl font-semibold border border-white/20 text-white hover:bg-white/10 transition"
+                >
+                  Ver más productos
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* curva inferior invertida (sin línea) */}
+          <svg className="w-full block -mb-px" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path fill="#ffffff" d="M0,56 C240,0 960,160 1440,56 L1440,140 L0,140 Z" />
+          </svg>
+        </div>
+      </section>
+
+      {/* ===== Características clave (grid 5) ===== */}
+      <section className="max-w-7xl mx-auto px-6 md:px-10 py-14">
+        <div className="text-center">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900">
+            Características clave
+          </h2>
+          <p className="text-slate-600 mt-2">
+            Diseñadas para operar con alta disponibilidad y mínimo mantenimiento.
+          </p>
+        </div>
+
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {especificaciones.map((e, i) => (
             <motion.article
               key={e.titulo + i}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: i * 0.06 }}
-              className="rounded-3xl border border-gray-100 bg-white shadow-sm hover:shadow-xl transition overflow-hidden"
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: 0.35, delay: i * 0.04 }}
+              className="rounded-3xl border border-slate-100 bg-white shadow-sm hover:shadow-lg transition"
             >
-              <div className="h-44 bg-white flex items-center justify-center p-4">
-                <img
-                  src={e.imagen}
-                  alt={e.titulo}
-                  className="h-full w-full object-contain"
-                  onError={(ev) => (ev.currentTarget.style.display = "none")}
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-lg font-bold text-slate-900">{e.titulo}</h3>
-                <p className="text-sm text-slate-600 mt-1">{e.descripcion}</p>
+              <div className="px-4 pt-4 pb-4 text-center flex flex-col items-center">
+                <div className="h-9 w-9 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-center overflow-hidden">
+                  <img
+                    src={e.imagen}
+                    alt={e.titulo}
+                    className="h-6 w-6 object-contain"
+                    onError={(ev) => (ev.currentTarget.style.display = "none")}
+                  />
+                </div>
+
+                <h3 className="mt-3 text-sm font-bold text-slate-900 leading-snug">
+                  {e.titulo}
+                </h3>
+                <p className="mt-0.5 text-xs text-slate-600 leading-snug">
+                  {e.descripcion}
+                </p>
               </div>
             </motion.article>
           ))}
         </div>
       </section>
 
-      {/* Cómo funciona */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-12">
-        <div className="rounded-3xl bg-gradient-to-tr from-slate-900 via-slate-800 to-black text-white p-8 md:p-10">
+      {/* ===== ¿Cómo funciona? ===== */}
+      <section className="max-w-7xl mx-auto px-6 md:px-10 pb-14">
+        <div className="rounded-3xl bg-[#1e2533] text-white p-7 md:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.18)]">
           <h2 className="text-2xl md:text-3xl font-extrabold">¿Cómo funciona?</h2>
-          <p className="text-white/80 mt-2 max-w-2xl">
+          <p className="text-white/75 mt-2 max-w-2xl">
             Te acompañamos desde la elección del lugar hasta la operación diaria del equipo.
           </p>
 
-          <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="mt-7 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {pasos.map((p, i) => (
               <motion.div
                 key={p.titulo}
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-                className="bg-white/10 border border-white/20 rounded-2xl p-4"
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.35, delay: i * 0.05 }}
+                className="rounded-2xl bg-white/5 border border-white/10 p-4"
               >
-                <div className="text-3xl">{p.icono}</div>
+                <div className="text-2xl">{p.icono}</div>
                 <div className="mt-2 font-bold">{p.titulo}</div>
-                <div className="text-sm text-white/80">{p.desc}</div>
+                <div className="text-sm text-white/70 mt-1">{p.desc}</div>
               </motion.div>
             ))}
           </div>
 
-          <div className="mt-7">
+          <div className="mt-8">
             <Link
               to="/contacto"
-              className="inline-flex px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
+              className="inline-flex px-6 py-3 rounded-xl font-semibold text-black shadow-lg hover:brightness-95 transition"
               style={{ backgroundColor: "#ccff00" }}
             >
               Quiero asesoría
@@ -234,42 +270,51 @@ export default function VendingInfo() {
         </div>
       </section>
 
-      {/* Galería simple */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-12">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 text-center">
-          Instalaciones reales
-        </h2>
-        <p className="text-slate-600 text-center mt-2">
-          Una muestra de ubicaciones donde nuestras vending operan con éxito.
-        </p>
-        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {["/img/trabajos/trabajos1.jpg", "/img/trabajos/trabajos2.jpg", "/img/trabajos/trabajos3.jpg", "/img/trabajos/trabajos5.jpg"].map(
-            (src, i) => (
-              <motion.div
-                key={src + i}
-                initial={{ opacity: 0, scale: 0.96 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: i * 0.06 }}
-                className="h-40 md:h-48 rounded-2xl overflow-hidden border border-gray-100 shadow-sm"
-              >
+      {/* ===== Instalaciones reales ===== */}
+      <section className="max-w-7xl mx-auto px-6 md:px-10 py-14">
+        <div className="text-center">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900">
+            Instalaciones reales
+          </h2>
+          <p className="text-slate-600 mt-2">
+            Una muestra de ubicaciones donde nuestras vending operan con éxito.
+          </p>
+        </div>
+
+        <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            "/img/trabajos/trabajos1.jpg",
+            "/img/trabajos/trabajos2.jpg",
+            "/img/trabajos/trabajos3.jpg",
+            "/img/trabajos/trabajos5.jpg",
+          ].map((src, i) => (
+            <motion.div
+              key={src + i}
+              initial={{ opacity: 0, scale: 0.97 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: 0.35, delay: i * 0.05 }}
+              className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden"
+            >
+              <div className="h-36 sm:h-40 md:h-44">
                 <img
                   src={src}
-                  alt={`Galería ${i}`}
+                  alt={`Instalación ${i + 1}`}
                   className="w-full h-full object-cover"
                   onError={(e) => (e.currentTarget.style.display = "none")}
                 />
-              </motion.div>
-            )
-          )}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* ===== FAQ ===== */}
       <section className="max-w-5xl mx-auto px-6 md:px-10 pb-16">
         <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 text-center">
           Preguntas frecuentes
         </h2>
+
         <div className="mt-6 divide-y rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
           {faqs.map((f, i) => (
             <details key={i} className="group">

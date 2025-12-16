@@ -17,10 +17,10 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         {/* Ubicación */}
         <div>
-          <h3 className="text-lg font-semibold mb-3 text-white tracking-wide">
+          <h3 className="text-lg font-semibold mb-3 tracking-wide text-[#d4ff00]">
             Ubicación
           </h3>
-          <p className="text-sm mb-3 text-gray-400">
+          <p className="text-sm mb-3 text-gray-300">
             Visítanos en nuestra sucursal y conoce nuestro proceso de purificación.
           </p>
           <div className="overflow-hidden rounded-xl border border-white/5 shadow-lg shadow-sky-900/30">
@@ -40,7 +40,8 @@ const Footer = () => {
 
         {/* Contacto */}
         <div>
-          <h3 className="text-lg font-semibold mb-3 text-white tracking-wide">
+          {/* Contáctanos */}
+          <h3 className="text-lg font-semibold mb-3 tracking-wide text-[#d4ff00]">
             Contáctanos
           </h3>
           <p className="text-sm text-sky-400 font-medium mb-2">
@@ -79,8 +80,8 @@ const Footer = () => {
             </a>
           </p>
 
-          <div className="mt-4 space-y-1 text-xs text-gray-500">
-            <p className="font-semibold text-gray-400">
+          <div className="mt-4 space-y-1 text-xs text-gray-300">
+            <p className="font-semibold text-gray-300">
               Horario de atención:
             </p>
             <p>Lunes a Viernes: 9:00 am - 6:00 pm</p>
@@ -90,10 +91,11 @@ const Footer = () => {
         {/* Redes + Métodos de pago */}
         <div className="flex flex-col justify-between">
           <div>
-            <h3 className="text-lg font-semibold mb-3 text-white tracking-wide">
+            {/* Síguenos */}
+            <h3 className="text-lg font-semibold mb-3 tracking-wide text-[#d4ff00]">
               Síguenos
             </h3>
-            <p className="text-sm text-gray-400 mb-3">
+            <p className="text-sm text-gray-300 mb-3">
               Conoce promociones, novedades y contenido sobre calidad del agua.
             </p>
             <div className="flex space-x-4 mb-6">
@@ -126,7 +128,7 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   aria-label={label}
                   className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-xl
-                             hover:text-sky-400 hover:border-sky-500 hover:-translate-y-1 hover:shadow-lg hover:shadow-sky-900/40
+                             hover:text-sky-400 hover:border-sky-400 hover:-translate-y-1 hover:shadow-lg hover:shadow-sky-900/40
                              transition-all duration-300"
                 >
                   <Icon />
@@ -136,9 +138,10 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-3 text-white tracking-wide">
+            {/* Aceptamos */}
+            <h3 className="text-lg font-semibold mb-3 tracking-wide text-[#d4ff00]">
               Aceptamos
-            </h3>
+            </h3>     
             <div className="flex items-center space-x-5 text-3xl">
               <div className="group">
                 <FaMoneyCheckAlt
@@ -159,7 +162,7 @@ const Footer = () => {
                 />
               </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-gray-300">
               Pagos seguros y fáciles para tus pedidos de agua.
             </p>
           </div>
@@ -167,7 +170,7 @@ const Footer = () => {
       </div>
 
       {/* Línea inferior */}
-      <div className="border-t border-white/10 mt-10 pt-4 text-center text-gray-500 text-xs">
+      <div className="border-t border-white/10 mt-10 pt-4 text-center text-gray-300 text-xs">
         &copy; {new Date().getFullYear()}{" "}
         <span className="text-sky-400 font-semibold">Darmax</span>. Todos los
         derechos reservados.
