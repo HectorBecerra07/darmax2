@@ -23,7 +23,8 @@ router.get("/me", authMiddleware, async (req, res) => {
     const { passwordHash: _, ...userWithoutPassword } = user;
     res.json(userWithoutPassword);
   } catch (error) {
-    res.status(500).json({ message: "Error del servidor al obtener el perfil." });
+    console.error("Error al obtener el perfil del usuario:", error);
+    res.status(500).json({ message: "Error del servidor al obtener el perfil.", error: error.message });
   }
 });
 
@@ -38,7 +39,8 @@ router.put("/me", authMiddleware, async (req, res) => {
     const { passwordHash: _, ...userWithoutPassword } = updatedUser;
     res.json(userWithoutPassword);
   } catch (error) {
-    res.status(500).json({ message: "Error del servidor al actualizar el perfil." });
+    console.error("Error al actualizar el perfil:", error);
+    res.status(500).json({ message: "Error del servidor al actualizar el perfil.", error: error.message });
   }
 });
 
@@ -82,17 +84,22 @@ router.post("/register", async (req, res) => {
       <p>Si no te registraste, por favor ignora este correo.</p>
     `;
 
+    /*
     await sendEmail({
       to: user.email,
       subject: "Verifica tu correo electrónico en Darmax",
       html: emailHtml,
     });
+    */
 
     res.status(201).json({ message: "Registro casi completo. Por favor, revisa tu correo para verificar tu cuenta." });
 
   } catch (error) {
     console.error("Error en el registro:", error);
-    res.status(500).json({ message: "Error del servidor al registrar el usuario." });
+    if (error.code === 'P2002') {
+        return res.status(409).json({ message: `El campo ${error.meta.target.join(', ')} ya está en uso.` });
+    }
+    res.status(500).json({ message: "Error del servidor al registrar el usuario.", error: error.message });
   }
 });
 
@@ -124,7 +131,7 @@ router.get("/verify-email", async (req, res) => {
     res.status(200).json({ message: "¡Correo verificado exitosamente!" });
   } catch (error) {
     console.error("Error al verificar correo:", error);
-    res.status(500).json({ message: "Error del servidor al verificar el correo." });
+    res.status(500).json({ message: "Error del servidor al verificar el correo.", error: error.message });
   }
 });
 
@@ -162,7 +169,7 @@ router.post("/login", async (req, res) => {
 
   } catch (error) {
     console.error("Error en el login:", error);
-    res.status(500).json({ message: "Error del servidor al iniciar sesión." });
+    res.status(500).json({ message: "Error del servidor al iniciar sesión.", error: error.message });
   }
 });
 
@@ -205,7 +212,7 @@ router.post("/forgot-password", async (req, res) => {
 
   } catch (error) {
     console.error("Error en forgot-password:", error);
-    res.status(500).json({ message: "Error del servidor." });
+    res.status(500).json({ message: "Error del servidor.", error: error.message });
   }
 });
 
@@ -244,7 +251,7 @@ router.post("/reset-password", async (req, res) => {
 
   } catch (error) {
     console.error("Error en reset-password:", error);
-    res.status(500).json({ message: "Error del servidor." });
+    res.status(500).json({ message: "Error del servidor.", error: error.message });
   }
 });
 
