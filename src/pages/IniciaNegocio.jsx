@@ -257,8 +257,7 @@ function VentajasSection() {
                   border border-slate-200/70
                   shadow-[0_18px_35px_rgba(15,23,42,0.08)]
                   transition-all duration-300
-                  hover:-translate-y-2 hover:bg-[#d3ff00]
-                  hover:shadow-[0_28px_55px_rgba(15,23,42,0.22)]
+                  hover:-translate-y-2 hover:bg-[#1e25331a]
                   overflow-hidden
                 "
               >
