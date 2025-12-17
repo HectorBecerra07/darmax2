@@ -63,15 +63,20 @@ const Carrito = () => {
         ...prev,
         nombre: user.name || "",
         email: user.email || "",
-        calle: user.direccion?.calle || "",
-        codigoPostal: user.direccion?.codigo_postal || "",
-        colonia: user.direccion?.colonia || "",
-        ciudad: user.direccion?.ciudad || "",
-        estado: user.direccion?.estado || "",
-        telefono: user.direccion?.telefono || "",
+        calle: user.calle || "",
+        codigoPostal: user.codigoPostal || "",
+        colonia: user.colonia || "",
+        ciudad: user.ciudad || "",
+        estado: user.estadoEnvio || "", // Mapea estadoEnvio a estado
+        telefono: user.telefono || "",
       }));
+
+      // Si el usuario tiene un código postal, lo buscamos para autocompletar colonias y otros campos
+      if (user.codigoPostal && user.codigoPostal.length === 5) {
+        buscarPorCP(user.codigoPostal);
+      }
     }
-  }, [user]);
+  }, [user]); // Nota: buscarPorCP no está en las dependencias porque es una función interna y no cambia entre renders
 
   const [shippingRates, setShippingRates] = useState([]);
   const [quotationId, setQuotationId] = useState(null);
