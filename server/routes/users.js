@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendEmail } from "../utils/mailer.js";
+import { getVerificationEmailTemplate, getResetPasswordEmailTemplate } from "../utils/templates/authEmailTemplates.js";
 import authMiddleware from "../middleware/auth.js";
 
 const router = express.Router();
@@ -77,12 +78,7 @@ router.post("/register", async (req, res) => {
     }
 
     const verificationLink = `${FRONTEND_URL}/verify-email?token=${verificationToken}`;
-    const emailHtml = `
-      <h1>¡Bienvenido a Darmax!</h1>
-      <p>Gracias por registrarte. Por favor, haz clic en el siguiente enlace para verificar tu correo electrónico:</p>
-      <a href="${verificationLink}">${verificationLink}</a>
-      <p>Si no te registraste, por favor ignora este correo.</p>
-    `;
+    const emailHtml = getVerificationEmailTemplate({ name: user.name, verificationLink });
 
     await sendEmail({
       to: user.email,
@@ -192,12 +188,7 @@ router.post("/forgot-password", async (req, res) => {
       });
 
       const resetLink = `${FRONTEND_URL}/reset-password?token=${resetToken}`;
-      const emailHtml = `
-        <h1>Solicitud de recuperación de contraseña</h1>
-        <p>Recibimos una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>
-        <a href="${resetLink}">${resetLink}</a>
-        <p>El enlace expirará en 1 hora. Si no solicitaste esto, puedes ignorar este correo.</p>
-      `;
+      const emailHtml = getResetPasswordEmailTemplate({ name: user.name, resetLink });
 
       await sendEmail({
         to: user.email,
