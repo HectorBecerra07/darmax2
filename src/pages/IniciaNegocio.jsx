@@ -203,37 +203,37 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
 function VentajasSection() {
   const ventajas = [
     {
-      img: "/img/Iniciatunegocio/ACOMP.png",
+      img: "/img/Iniciatunegocio/1.png",
       title: "Acompañamiento 360°",
-      desc: "Te guiamos en cada paso, desde la instalación hasta la optimización de tu equipo."
+      desc: "Te guiamos en cada paso, desde la instalación hasta la optimización de tu equipo.",
     },
     {
-      img: "/img/Iniciatunegocio/CALID.png",
+      img: "/img/Iniciatunegocio/2.png",
       title: "Calidad Premium",
-      desc: "Componentes de grado industrial y los más altos estándares de purificación para un producto final insuperable."
+      desc: "Componentes de grado industrial y los más altos estándares de purificación para un producto final insuperable.",
     },
     {
-      img: "/img/Iniciatunegocio/DEMCON.png",
+      img: "/img/Iniciatunegocio/3.png",
       title: "Dominio Total del Negocio",
-      desc: "Recibe capacitación completa y acceso a nuestra base de conocimiento. Conviértete en un experto del agua."
+      desc: "Recibe capacitación completa y acceso a nuestra base de conocimiento. Conviértete en un experto del agua.",
     },
     {
-      img: "/img/Iniciatunegocio/NEGESC.png",
+      img: "/img/Iniciatunegocio/4.png",
       title: "Modelo de Negocio Escalable",
-      desc: "Inicia con una inversión inteligente y expande tu operación a medida que tus ganancias aumentan. El límite lo pones tú."
+      desc: "Inicia con una inversión inteligente y expande tu operación a medida que tus ganancias aumentan. El límite lo pones tú.",
     },
     {
-      img: "/img/Iniciatunegocio/OPSIMP.png",
+      img: "/img/Iniciatunegocio/5.png",
       title: "Operación Simplificada",
-      desc: "Nuestros sistemas son tan intuitivos que podrás gestionarlos sin necesidad de personal técnico especializado."
+      desc: "Nuestros sistemas son tan intuitivos que podrás gestionarlos sin necesidad de personal técnico especializado.",
     },
     {
-      img: "/img/Iniciatunegocio/RAP.png",
+      img: "/img/Iniciatunegocio/6.png",
       title: "Rápida Puesta en Marcha",
-      desc: "Implementamos tu planta en tiempo récord para que empieces a generar ingresos lo antes posible."
+      desc: "Implementamos tu planta en tiempo récord para que empieces a generar ingresos lo antes posible.",
     },
-    
   ];
+
 
   return (
     <section className="bg-white py-24 sm:py-32">
@@ -247,17 +247,42 @@ function VentajasSection() {
             Hemos perfeccionado cada aspecto del negocio para que tu única preocupación sea ver crecer tus ganancias.
           </p>
         </div>
-        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-            {ventajas.map((ventaja) => (
-              <div key={ventaja.title} className="flex flex-col p-8 rounded-3xl border border-slate-100 hover:shadow-2xl hover:shadow-slate-200/80 transition-shadow duration-500">
-                <dt className="flex items-center gap-x-3 text-lg font-semibold leading-7 text-slate-900">
-                  <img src={ventaja.img} alt={ventaja.title} className="h-12 w-12 object-contain" />
-                  {ventaja.title}
-                </dt>
-                <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
-                  <p className="flex-auto">{ventaja.desc}</p>
-                </dd>
+        <div className="mx-auto mt-16 max-w-6xl sm:mt-20 lg:mt-24">
+          <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {ventajas.map((v) => (
+              <div
+                key={v.title}
+                className="
+                  group rounded-[28px] bg-white
+                  border border-slate-200/70
+                  shadow-[0_18px_35px_rgba(15,23,42,0.08)]
+                  transition-all duration-300
+                  hover:-translate-y-2 hover:bg-[#d3ff00]
+                  hover:shadow-[0_28px_55px_rgba(15,23,42,0.22)]
+                  overflow-hidden
+                "
+              >
+                <div className="px-4 py-7 text-center">
+                  {/* Icono */}
+                  <div className="mx-auto mb-5 grid h-16 w-16 place-items-center">
+                    <img
+                      src={v.img}
+                      alt={v.title}
+                      className="h-14 w-12 object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  {/* Título */}
+                  <dt className="text-[17px] font-extrabold italic text-slate-900">
+                    {v.title}
+                  </dt>
+
+                  {/* Descripción */}
+                  <dd className="mt-3 text-[13px] leading-relaxed text-slate-700 italic">
+                    {v.desc}
+                  </dd>
+                </div>
               </div>
             ))}
           </dl>
