@@ -3,6 +3,8 @@ import { Helmet } from "react-helmet-async";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const currency = (n) =>
   Number(n || 0).toLocaleString("es-MX", {
     style: "currency",
@@ -25,6 +27,11 @@ export default function PerfilCliente() {
     estadoEnvio: "",
     pais: "México",
   });
+
+  // Estado para la API de CP
+  const [cpLoading, setCpLoading] = useState(false);
+  const [cpError, setCpError] = useState("");
+  const [coloniasOptions, setColoniasOptions] = useState([]);
 
   // Sincronizar el formulario con los datos del usuario cuando se cargan
   useEffect(() => {
@@ -81,6 +88,54 @@ export default function PerfilCliente() {
     navigate("/");
   };
 
+  // Lógica para buscar por Código Postal
+  const buscarPorCP = async (cp) => {
+    setCpError("");
+    setColoniasOptions([]);
+    if (cp.length !== 5) return;
+
+    setCpLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/postalcode/${cp}`);
+      const data = await res.json();
+
+      if (!res.ok || data.error || !data.codigo_postal) {
+        throw new Error(data.error || data.message || "No se encontraron datos para este código postal.");
+      }
+
+      const { codigo_postal } = data;
+      const coloniasList = [...new Set(codigo_postal.colonias.map(c => c.colonia).filter(Boolean))];
+
+      setColoniasOptions(coloniasList);
+      setDireccion((prev) => ({
+        ...prev,
+        estadoEnvio: codigo_postal.estado,
+        ciudad: codigo_postal.municipio,
+        colonia: coloniasList.length > 0 ? coloniasList[0] : "",
+      }));
+
+    } catch (err) {
+      setCpError(err.message);
+    } finally {
+      setCpLoading(false);
+    }
+  };
+
+  // Manejador de cambios para el formulario de dirección
+  const handleDireccionChange = (e) => {
+    const { name, value } = e.target;
+    setDireccion((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "codigoPostal") {
+      if (value.length === 5) {
+        buscarPorCP(value);
+      } else {
+        setColoniasOptions([]);
+        setCpError("");
+      }
+    }
+  };
+
   // Guardar dirección
   const handleGuardarDireccion = async () => {
     try {
@@ -98,8 +153,7 @@ export default function PerfilCliente() {
       }
 
       const updatedUser = await response.json();
-      // Actualizar el contexto de usuario con los nuevos datos
-      login({ user: updatedUser });
+      login({ user: updatedUser, token }); // Actualizar el contexto con el usuario y el token existente
       alert("Dirección guardada correctamente ✅");
 
     } catch (error) {
@@ -222,103 +276,76 @@ export default function PerfilCliente() {
       {/* Datos */}
       <div className="bg-white p-6 rounded-xl shadow-md">
         <h3 className="text-2xl font-semibold mb-4">Tus datos</h3>
-        <div className="space-y-2">
-          <p className="text-gray-600">
-            <span className="font-bold">Nombre:</span> {user?.name}
-          </p>
-          <p className="text-gray-600">
-            <span className="font-bold">Email:</span> {user?.email}
-          </p>
-          <p className="text-gray-600">
-            <span className="font-bold">Teléfono:</span>{" "}
-            {user?.telefono || "No registrado"}
-          </p>
-
-          {/* Mostrar dirección si existe */}
-          {user?.calle ? (
-            <div className="text-gray-600 space-y-1 mt-4">
-              <p>
-                <span className="font-bold">Calle:</span> {user.calle}
-              </p>
-              <p>
-                <span className="font-bold">Colonia:</span>{" "}
-                {user.colonia}
-              </p>
-              <p>
-                <span className="font-bold">CP:</span> {user.codigoPostal}
-              </p>
-              <p>
-                <span className="font-bold">Ciudad:</span>{" "}
-                {user.ciudad}
-              </p>
-              <p>
-                <span className="font-bold">Estado:</span>{" "}
-                {user.estadoEnvio}
-              </p>
-              <p>
-                <span className="font-bold">País:</span> {user.pais}
-              </p>
-            </div>
-          ) : (
-            <p className="text-gray-500 mt-2">No has registrado tu dirección.</p>
-          )}
-        </div>
-
+        
         {/* Formulario de dirección */}
         <div className="mt-6">
-          <h4 className="text-xl font-semibold mb-4">Editar dirección</h4>
+          <h4 className="text-xl font-semibold mb-4">Dirección de Envío</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
+              name="calle"
               type="text"
-              placeholder="Calle"
+              placeholder="Calle y Número"
               value={direccion.calle}
-              onChange={(e) =>
-                setDireccion({ ...direccion, calle: e.target.value })
-              }
-              className="px-4 py-2 border rounded-lg"
+              onChange={handleDireccionChange}
+              className="px-4 py-2 border rounded-lg md:col-span-2"
             />
+            <div>
+              <input
+                name="codigoPostal"
+                type="text"
+                placeholder="Código Postal"
+                value={direccion.codigoPostal}
+                onChange={handleDireccionChange}
+                className="px-4 py-2 border rounded-lg w-full"
+              />
+              {cpLoading && <p className="text-xs text-gray-500 mt-1">Buscando...</p>}
+              {cpError && <p className="text-xs text-red-500 mt-1">{cpError}</p>}
+            </div>
+            {coloniasOptions.length > 1 ? (
+              <select
+                name="colonia"
+                value={direccion.colonia}
+                onChange={handleDireccionChange}
+                className="px-4 py-2 border rounded-lg w-full bg-white"
+              >
+                {coloniasOptions.map((col) => (
+                  <option key={col} value={col}>{col}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                name="colonia"
+                type="text"
+                placeholder="Colonia"
+                value={direccion.colonia}
+                onChange={handleDireccionChange}
+                className="px-4 py-2 border rounded-lg"
+              />
+            )}
             <input
+              name="ciudad"
               type="text"
-              placeholder="Colonia"
-              value={direccion.colonia}
-              onChange={(e) =>
-                setDireccion({ ...direccion, colonia: e.target.value })
-              }
-              className="px-4 py-2 border rounded-lg"
-            />
-            <input
-              type="text"
-              placeholder="Código Postal"
-              value={direccion.codigoPostal}
-              onChange={(e) => setDireccion({ ...direccion, codigoPostal: e.target.value })}
-              className="px-4 py-2 border rounded-lg"
-            />
-            <input
-              type="text"
-              placeholder="Ciudad"
+              placeholder="Ciudad / Municipio"
               value={direccion.ciudad}
-              onChange={(e) =>
-                setDireccion({ ...direccion, ciudad: e.target.value })
-              }
+              onChange={handleDireccionChange}
               className="px-4 py-2 border rounded-lg"
             />
             <input
+              name="estadoEnvio"
               type="text"
               placeholder="Estado"
               value={direccion.estadoEnvio}
-              onChange={(e) =>
-                setDireccion({ ...direccion, estadoEnvio: e.target.value })
-              }
+              onChange={handleDireccionChange}
               className="px-4 py-2 border rounded-lg"
             />
             <input
+              name="pais"
               type="text"
               placeholder="País"
               value={direccion.pais}
-              onChange={(e) =>
-                setDireccion({ ...direccion, pais: e.target.value })
-              }
-              className="px-4 py-2 border rounded-lg"
+              onChange={handleDireccionChange}
+              className="px-4 py-2 border rounded-lg bg-gray-100"
+              readOnly 
             />
           </div>
           <button
