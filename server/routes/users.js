@@ -84,13 +84,11 @@ router.post("/register", async (req, res) => {
       <p>Si no te registraste, por favor ignora este correo.</p>
     `;
 
-    /*
     await sendEmail({
       to: user.email,
       subject: "Verifica tu correo electrónico en Darmax",
       html: emailHtml,
     });
-    */
 
     res.status(201).json({ message: "Registro casi completo. Por favor, revisa tu correo para verificar tu cuenta." });
 
