@@ -26,7 +26,7 @@
     font-size: 2rem;
     font-weight: 700;
     text-align: center;
-    color: #fff;
+    color: #000;
     margin-bottom: 1.5rem;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
@@ -36,10 +36,15 @@
     margin-bottom: 2rem;
   }
   
-  .logo {
-    height: 6rem;
-    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
-  }
+    .logo {
+  
+      height: 6rem;
+  
+      display: block;
+  
+      margin: 0 auto;
+  
+    }
   
   .input-group {
     position: relative;
@@ -52,13 +57,13 @@
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 0.75rem;
-    color: #fff;
+    color: #000;
     font-size: 0.9rem;
     transition: all 0.3s ease;
   }
   
   .input-field::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+    color: #333;
   }
   
   .input-field:focus {
@@ -73,7 +78,7 @@
     top: 50%;
     left: 1rem;
     transform: translateY(-50%);
-    color: rgba(255, 255, 255, 0.7);
+    color: #333;
     width: 1.25rem;
     height: 1.25rem;
   }
@@ -86,7 +91,7 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.7);
+    color: #333;
   }
   
   .options-container {
@@ -100,8 +105,7 @@
   .remember-me {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: #fff;
+    color: #000;
   }
   
   .remember-me input {
@@ -109,7 +113,7 @@
   }
   
   .forgot-password-link {
-    color: #fff;
+    color: #000;
     text-decoration: none;
     transition: color 0.3s ease;
   }
@@ -145,14 +149,13 @@
   
   .signup-link-container {
     text-align: center;
-    margin-top: 2rem;
-    color: #fff;
+    color: #000;
     font-size: 0.9rem;
   }
   
   .signup-link {
     font-weight: 600;
-    color: #24d4da;
+    color: #1db2b8;
     text-decoration: none;
     transition: color 0.3s ease;
   }
