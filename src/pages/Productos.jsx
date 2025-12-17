@@ -200,7 +200,7 @@ export default function Productos() {
                     "
                   >
                     {/* Imagen uniforme */}
-                    <div className="relative w-full aspect-[4/3] bg-gray-50 flex items-center justify-center">
+                    <div className="relative w-full aspect-[4/3] bg-gray-0 flex items-center justify-center">
                       <img
                         src={p.imagen || "https://via.placeholder.com/400x300"}
                         alt={p.nombre}
@@ -213,6 +213,9 @@ export default function Productos() {
                         "
                         onError={(e) => (e.currentTarget.style.display = "none")}
                       />
+
+                      {/* Línea divisoria */}
+                      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
                     </div>
 
                     {/* Contenido */}

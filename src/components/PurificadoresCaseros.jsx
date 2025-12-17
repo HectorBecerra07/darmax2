@@ -17,7 +17,7 @@ const normaliza = (v) => (v || "").trim().toLowerCase();
 
 export default function PurificadoresCaseros() {
   const navigate = useNavigate();
-  const { agregarProducto } = useCarrito();
+  const { agregarProducto, carrito } = useCarrito();
   const [purificadores, setPurificadores] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -56,10 +56,20 @@ export default function PurificadoresCaseros() {
     fetchPurificadores();
   }, []);
 
-  const handleAgregar = (producto) => {
-    agregarProducto(producto, 1);
-    toast.success(`${producto.nombre} añadido al carrito.`);
-  };
+const handleAgregar = (producto) => {
+  const itemEnCarrito = carrito.find((i) => i.id === producto.id);
+  const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+  const stockEfectivo = (producto.stock ?? 0) - cantidadEnCarrito;
+
+  if (stockEfectivo <= 0) {
+    toast.error("No hay más stock disponible para este producto.");
+    return;
+  }
+
+  agregarProducto(producto, 1);
+  toast.success(`${producto.nombre} añadido al carrito.`);
+};
+
 
   const {
     gastoMensualGarrafon,
@@ -110,11 +120,12 @@ export default function PurificadoresCaseros() {
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16 max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-5 mt-16 max-w-7xl mx-auto">
             {purificadores.map((item) => (
-              <ProductCard key={item.id} item={item} onAddToCart={handleAgregar} onNavigate={navigate} />
+             <ProductCard key={item.id} item={item} onAddToCart={handleAgregar} carrito={carrito} />
             ))}
           </div>
+
         )}
 
         <div className="mt-20 text-center">
@@ -217,39 +228,102 @@ export default function PurificadoresCaseros() {
     </div>
   );
 }
+function ProductCard({ item, onAddToCart, carrito = [] }) {
+  const precioN = Number(item.precio || 0);
 
-function ProductCard({ item, onAddToCart, onNavigate }) {
-    const precioN = Number(item.precio || 0);
-    return (
-        <article className="group bg-white rounded-2xl shadow-lg flex flex-col text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5">
-            <div className="relative">
-                <img src={item.imagen || "https://placehold.co/400x300/e2e8f0/475569?text=Darmax"} alt={item.nombre} className="w-full h-56 object-cover rounded-t-2xl" loading="lazy" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-t-2xl"></div>
-            </div>
-            <div className="p-6 flex-grow flex flex-col">
-                <h3 className="text-xl font-bold text-slate-800">{item.nombre}</h3>
-                {item.descripcion && <p className="text-sm text-slate-600 mt-2 flex-grow">{item.descripcion}</p>}
-                
-                <p className="text-4xl font-extrabold text-slate-900 my-4">{mxn(precioN)}</p>
-                
-                <div className="mt-auto space-y-3">
-                    <button onClick={() => onAddToCart(item)} className="w-full px-6 py-3 rounded-lg font-bold bg-lime-300 text-black hover:bg-lime-400 transition-colors shadow-lg shadow-lime-500/10 hover:shadow-lime-500/20">
-                        Agregar al carrito
-                    </button>
-                </div>
+  const itemEnCarrito = carrito.find((i) => i.id === item.id);
+  const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+  const stockEfectivo = (item.stock ?? 0) - cantidadEnCarrito;
 
-                {(item.pesoKg || item.largoCm) && (
-                    <div className="mt-5 text-xs text-slate-500 text-left w-full border-t border-slate-200 pt-4">
-                        {item.pesoKg && <div><strong>Peso:</strong> {item.pesoKg} kg</div>}
-                        {(item.largoCm || item.anchoCm || item.altoCm) && (
-                        <div><strong>Dimensiones:</strong> {[item.largoCm, item.anchoCm, item.altoCm].filter(Boolean).join(" × ")} cm</div>
-                        )}
-                    </div>
-                )}
-            </div>
-        </article>
-    );
+  return (
+    <article
+      className="
+        group bg-white rounded-2xl
+        border border-slate-200/70
+        shadow-sm hover:shadow-lg
+        transition-all duration-300
+        overflow-hidden
+        flex flex-col text-center
+      "
+    >
+      {/* IMAGEN COMPACTA */}
+      <div className="relative w-full aspect-[4/3] bg-slate-0 flex items-center justify-center">
+        <img
+          src={item.imagen || "https://placehold.co/400x300/e2e8f0/475569?text=Darmax"}
+          alt={item.nombre}
+          loading="lazy"
+          className="
+            max-h-[165px]
+            object-contain
+            transition-transform duration-300
+            group-hover:scale-105
+          "
+          onError={(e) => (e.currentTarget.style.display = "none")}
+        />
+        {/* Divider */}
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+      </div>
+
+      {/* CUERPO COMPACTO */}
+      <div className="p-4 flex-grow flex flex-col items-center">
+        <h3 className="text-sm md:text-base font-extrabold text-slate-900 leading-snug">
+          {item.nombre}
+        </h3>
+
+        {item.descripcion && (
+          <p className="text-xs text-slate-600 mt-1 leading-relaxed line-clamp-2">
+            {item.descripcion}
+          </p>
+        )}
+
+        <p className="text-2xl md:text-3xl font-extrabold text-slate-900 my-3">
+          {mxn(precioN)}
+        </p>
+
+        {/* STOCK */}
+        <p className="text-xs text-slate-500">
+          Disponibles:{" "}
+          <span className={stockEfectivo <= 0 ? "text-red-500 font-bold" : "font-semibold text-slate-700"}>
+            {stockEfectivo}
+          </span>
+        </p>
+
+        <div className="mt-3 w-full">
+          <button
+            onClick={() => onAddToCart(item)}
+            disabled={stockEfectivo <= 0}
+            className={`
+              w-full px-4 py-2 rounded-lg text-sm font-bold transition-colors
+              ${stockEfectivo <= 0
+                ? "bg-slate-200 text-slate-500 cursor-not-allowed"
+                : "bg-lime-300 text-black hover:bg-lime-400 shadow-md shadow-lime-500/10"}
+            `}
+          >
+            {stockEfectivo <= 0 ? "Agotado" : "Agregar"}
+          </button>
+        </div>
+
+        {/* PESO + DIMENSIONES (compacto y opcional) */}
+        {(item.pesoKg || item.largoCm || item.anchoCm || item.altoCm) && (
+          <div className="mt-4 text-[11px] text-slate-500 text-left w-full border-t border-slate-200 pt-3">
+            {item.pesoKg && (
+              <div className="leading-snug">
+                <strong>Peso:</strong> {item.pesoKg} kg
+              </div>
+            )}
+            {(item.largoCm || item.anchoCm || item.altoCm) && (
+              <div className="leading-snug">
+                <strong>Dimensiones:</strong>{" "}
+                {[item.largoCm, item.anchoCm, item.altoCm].filter(Boolean).join(" × ")} cm
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </article>
+  );
 }
+
 
 function InfoSection({ title, children }) {
     return (
