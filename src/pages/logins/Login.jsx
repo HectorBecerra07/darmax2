@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import toast from "react-hot-toast";
 import WelcomeScreen from "../../components/WelcomeScreen";
-import Swal from "sweetalert2"; // Importar SweetAlert2
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"; // Importar iconos de ojo
+import Swal from "sweetalert2";
+import { EyeIcon, EyeSlashIcon, AtSymbolIcon, LockClosedIcon } from "@heroicons/react/24/solid";
+import "./Login.css"; 
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,7 +16,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +46,7 @@ const Login = () => {
       setShowWelcome(true);
 
     } catch (error) {
-      toast.dismiss(toastId); // Ocultar el toast de "cargando" primero
+      toast.dismiss(toastId);
       Swal.fire({
         icon: 'error',
         title: 'Error al iniciar sesión',
@@ -67,51 +68,47 @@ const Login = () => {
         <meta name="description" content="Inicia sesión en tu cuenta de Darmax para acceder a tu perfil, historial de pedidos y más." />
       </Helmet>
       {showWelcome && <WelcomeScreen name={firstName} />}
-      <div
-        className="min-h-screen bg-cover bg-[center_top] md:bg-center flex items-center justify-center"
-        style={{
-          backgroundImage: "url('/img/fondo-login.jpg')",
-        }}
-      >
-        <div className="backdrop-blur-md bg-white/30 border border-white/20 rounded-2xl shadow-2xl p-6 w-full max-w-lg mx-4 sm:mx-auto transition-all duration-300">
-          <h2 className="text-xl font-semibold text-center text-black mb-4 drop-shadow">
+      <div className="login-container">
+        <div className="login-form-container">
+          <div className="logo-container">
+            <img
+              src="/img/logo_darmaxnav.png"
+              alt="Logo Darmax"
+              className="logo"
+            />
+          </div>
+          <h2 className="login-title">
             Iniciar sesión
           </h2>
 
-          <div className="relative text-center mb-6">
-            <img
-              src="/img/darmax-logo.png"
-              alt="Logo Darmax"
-              className="h-20 mx-auto animate-fade-in drop-shadow"
-              style={{ animationDuration: "1s" }}
-            />
-            <div className="absolute inset-x-0 top-1/2 border-t border-white/30 -z-10" />
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 bg-white/60 border border-white/40 rounded-lg text-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#24d4da]"
-              required
-              disabled={isSubmitting}
-            />
-            <div className="relative"> {/* Contenedor para input y botón */}
+          <form onSubmit={handleSubmit}>
+            <div className="input-group">
+              <AtSymbolIcon className="input-icon" />
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-field"
+                required
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="input-group">
+              <LockClosedIcon className="input-icon" />
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 bg-white/60 border border-white/40 rounded-lg text-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#24d4da] pr-10" // Añadir pr-10 para el espacio del botón
+                className="input-field"
                 required
                 disabled={isSubmitting}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                className="password-toggle"
                 aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
                 {showPassword ? (
@@ -121,31 +118,31 @@ const Login = () => {
                 )}
               </button>
             </div>
-
-            <label className="flex items-center gap-2 text-sm text-black">
-              <input type="checkbox" className="accent-white" disabled={isSubmitting} />
-              Recordarme
-            </label>
+            
+            <div className="options-container">
+              <label className="remember-me">
+                <input type="checkbox" disabled={isSubmitting} />
+                Recordarme
+              </label>
+              <Link to="/forgot-password" className="forgot-password-link">
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </div>
 
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-gray-900 to-slate-800 text-white text-sm font-bold rounded-lg hover:opacity-90 transition disabled:opacity-50"
+              className="submit-button"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Ingresando..." : "Login"}
             </button>
           </form>
 
-          <div className="text-sm text-center mt-6 text-black">
+          <div className="signup-link-container">
             <p>
               ¿No tienes una cuenta?{" "}
-              <Link to="/register" className="font-bold underline">
+              <Link to="/register" className="signup-link">
                 Regístrate ahora
-              </Link>
-            </p>
-            <p className="mt-2">
-              <Link to="/forgot-password" className="underline">
-                ¿Olvidaste tu contraseña?
               </Link>
             </p>
           </div>
@@ -156,3 +153,4 @@ const Login = () => {
 };
 
 export default Login;
+

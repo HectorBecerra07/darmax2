@@ -69,7 +69,7 @@ const Register = () => {
 
           <div className="relative text-center mb-6">
             <img
-              src="/img/darmax-logo.png"
+              src="/img/logo_darmaxnav.png"
               alt="Logo Darmax"
               className="h-20 mx-auto"
             />
