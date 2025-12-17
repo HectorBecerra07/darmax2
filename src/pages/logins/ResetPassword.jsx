@@ -1,99 +1,118 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import toast from "react-hot-toast";
+import { LockClosedIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import "./Login.css";
 
-export default function ResetPassword() {
+const API_URL = import.meta.env.VITE_API_URL;
+
+const ResetPassword = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const location = useLocation();
-
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Obtener el token desde la URL (?token=XYZ)
-  const query = new URLSearchParams(location.search);
-  const token = query.get("token");
+  const token = searchParams.get("token");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
 
-    if (!password || !confirm) {
-      setError("Todos los campos son obligatorios.");
-      return;
+    if (!password || !confirmPassword) {
+      return toast.error("Ambos campos de contraseña son obligatorios.");
     }
-
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
-      return;
+    if (password !== confirmPassword) {
+      return toast.error("Las contraseñas no coinciden.");
     }
-
-    if (password !== confirm) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
-
     if (!token) {
-      setError("Token inválido o expirado.");
-      return;
+      return toast.error("Token de recuperación no encontrado. Por favor, solicita un nuevo enlace.");
     }
 
-    // Aquí iría la lógica real con tu backend
-    console.log("✅ Reset token:", token);
-    console.log("🔐 Nueva contraseña:", password);
+    setIsSubmitting(true);
+    const toastId = toast.loading("Restableciendo contraseña...");
 
-    setSuccess("Contraseña actualizada correctamente.");
+    try {
+      const res = await fetch(`${API_URL}/api/users/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password }),
+      });
 
-    // Redirigir al login después de 2 segundos
-    setTimeout(() => navigate("/login"), 2000);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "No se pudo restablecer la contraseña.");
+      }
+
+      toast.success(data.message, { id: toastId });
+      navigate("/login");
+
+    } catch (error) {
+      toast.error(error.message, { id: toastId });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 px-4">
-      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-          Restablecer contraseña
-        </h2>
-
-        {error && (
-          <p className="text-red-600 mb-4 text-sm text-center">{error}</p>
-        )}
-        {success && (
-          <p className="text-green-600 mb-4 text-sm text-center">{success}</p>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700">Nueva contraseña</label>
-            <input
-              type="password"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#ccff00]"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-            />
+    <>
+      <Helmet>
+        <title>Restablecer Contraseña - Darmax</title>
+      </Helmet>
+      <div className="login-container">
+        <div className="login-form-container">
+          <div className="logo-container">
+            <img src="/img/logo_darmaxnav.png" alt="Logo Darmax" className="logo" />
           </div>
+          <h2 className="login-title">Establecer Nueva Contraseña</h2>
 
-          <div>
-            <label className="block text-gray-700">Confirmar contraseña</label>
-            <input
-              type="password"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#ccff00]"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              placeholder="••••••••"
-            />
-          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="input-group">
+              <LockClosedIcon className="input-icon" />
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Nueva contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input-field"
+                required
+                disabled={isSubmitting}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="password-toggle"
+              >
+                {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+              </button>
+            </div>
+            <div className="input-group">
+              <LockClosedIcon className="input-icon" />
+              <input
+                type="password"
+                placeholder="Confirmar nueva contraseña"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="input-field"
+                required
+                disabled={isSubmitting}
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="w-full bg-[#ccff00] text-black font-semibold py-2 rounded-md hover:bg-[#b6e600] transition-colors"
-          >
-            Actualizar contraseña
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="submit-button"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Guardando..." : "Restablecer Contraseña"}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
-}
+};
+
+export default ResetPassword;

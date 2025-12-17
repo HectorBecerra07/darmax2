@@ -20,6 +20,7 @@ import Carrito from "./pages/Carrito";
 import Login from "./pages/logins/Login";
 import Register from "./pages/logins/Register";
 import ForgotPassword from "./pages/logins/ForgotPassword";
+import VerifyEmail from "./pages/logins/VerifyEmail"; // Add this import
 import ResetPassword from "./pages/logins/ResetPassword";
 import Configurar from "./pages/configurar/Configurar";
 import WizardGeneral from "./pages/WizardGeneral";
@@ -237,6 +238,14 @@ function AppContent() {
                     element={
                       <PageWrapper>
                         <ForgotPassword />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/verify-email"
+                    element={
+                      <PageWrapper>
+                        <VerifyEmail />
                       </PageWrapper>
                     }
                   />

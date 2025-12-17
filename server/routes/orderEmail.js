@@ -1,7 +1,7 @@
 // server/routes/orderEmail.js
 import express from "express";
 import { PrismaClient } from "@prisma/client";
-import { sendOrderEmail } from "../utils/mailer.js";
+import { sendEmail } from "../utils/mailer.js";
 import { getOrderEmailTemplate } from "../utils/templates/orderEmailTemplate.js";
 
 const prisma = new PrismaClient();
@@ -56,7 +56,7 @@ export async function sendOrderConfirmationEmail(orderId) {
     const htmlAdmin = getOrderEmailTemplate(adminTemplateData);
 
     // Enviar a cliente
-    await sendOrderEmail({
+    await sendEmail({
       to: clienteEmail,
       subject: `Confirmación de tu pedido #${orderId}`,
       html: htmlCliente,
@@ -64,7 +64,7 @@ export async function sendOrderConfirmationEmail(orderId) {
     console.log(`📧 Correo de confirmación enviado a ${clienteEmail} para el pedido #${orderId}.`);
 
     // Enviar a admin
-    await sendOrderEmail({
+    await sendEmail({
       to: adminEmail,
       subject: `Nuevo pedido #${orderId} de ${clienteNombre}`,
       html: htmlAdmin,

@@ -40,9 +40,16 @@ const Register = () => {
         throw new Error(data.message || "No se pudo completar el registro.");
       }
 
-      toast.success("¡Registro exitoso! Ahora puedes iniciar sesión.", { id: toastId });
-      navigate("/login");
-
+      toast.success("¡Registro casi completo! Revisa tu correo para verificar tu cuenta.", {
+        id: toastId,
+        duration: 6000, // Make it persistent
+      });
+      // Reset form fields
+      setName("");
+      setEmail("");
+      setTelefono("");
+      setPassword("");
+      // Don't navigate away, let the user see the message.
     } catch (error) {
       toast.error(error.message, { id: toastId });
     } finally {

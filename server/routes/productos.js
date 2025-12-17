@@ -10,6 +10,7 @@ router.get("/", async (req, res) => {
     const productos = await prisma.producto.findMany({
       include: {
         categoria: true, // Incluye la categoría relacionada
+        imagenes: true, // Incluye la galería de imágenes
       },
       orderBy: { createdAt: "desc" },
     });
@@ -20,9 +21,31 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /api/productos/:id
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const producto = await prisma.producto.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        categoria: true,
+        imagenes: true,
+      },
+    });
+
+    if (!producto) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+    res.json(producto);
+  } catch (error) {
+    console.error(`Error fetching producto ${id}:`, error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+});
+
 // POST /api/productos
 router.post("/", async (req, res) => {
-  const { nombre, precio, descripcion, stock, imagen, categoriaId, pesoKg, largoCm, anchoCm, altoCm } = req.body;
+  const { nombre, precio, descripcion, stock, imagen, categoriaId, pesoKg, largoCm, anchoCm, altoCm, imagenes } = req.body;
 
   if (!nombre || !precio || !categoriaId) {
     return res.status(400).json({ message: "Nombre, precio y ID de categoría son obligatorios" });
@@ -34,16 +57,22 @@ router.post("/", async (req, res) => {
         nombre,
         precio,
         descripcion,
-        stock,
-        imagen,
-        pesoKg,
-        largoCm,
-        anchoCm,
-        altoCm,
+        stock: Number(stock),
+        imagen: imagen || null, // Allow null for main image
+        pesoKg: pesoKg ? Number(pesoKg) : null,
+        largoCm: largoCm ? Number(largoCm) : null,
+        anchoCm: anchoCm ? Number(anchoCm) : null,
+        altoCm: altoCm ? Number(altoCm) : null,
         categoria: {
           connect: { id: parseInt(categoriaId) },
         },
+        imagenes: {
+          create: imagenes?.map(img => ({ url: img.url })) || [],
+        },
       },
+      include: {
+        imagenes: true, // Include the new images in the response
+      }
     });
     res.status(201).json(nuevoProducto);
   } catch (error) {
@@ -55,7 +84,7 @@ router.post("/", async (req, res) => {
 // PUT /api/productos/:id
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { nombre, precio, descripcion, stock, imagen, categoriaId, pesoKg, largoCm, anchoCm, altoCm } = req.body;
+  const { nombre, precio, descripcion, stock, imagen, categoriaId, pesoKg, largoCm, anchoCm, altoCm, imagenes } = req.body;
 
   if (!nombre || !precio || !categoriaId) {
     return res.status(400).json({ message: "Nombre, precio y ID de categoría son obligatorios" });
@@ -66,20 +95,29 @@ router.put("/:id", async (req, res) => {
       where: { id: parseInt(id) },
       data: {
         nombre,
-        precio,
+        precio: Number(precio),
         descripcion,
-        stock,
-        imagen,
-        pesoKg,
-        largoCm,
-        anchoCm,
-        altoCm,
+        stock: Number(stock),
+        imagen: imagen || null,
+        pesoKg: pesoKg ? Number(pesoKg) : null,
+        largoCm: largoCm ? Number(largoCm) : null,
+        anchoCm: anchoCm ? Number(anchoCm) : null,
+        altoCm: altoCm ? Number(altoCm) : null,
         categoria: {
           connect: { id: parseInt(categoriaId) },
         },
+        imagenes: {
+          deleteMany: {}, // Delete all existing related images
+          create: imagenes?.map(img => ({ url: img.url })) || [], // Create new ones
+        },
+      },
+      include: {
+        imagenes: true,
+        categoria: true,
       },
     });
-    res.json(productoActualizado);
+
+    res.status(200).json(productoActualizado);
   } catch (error) {
     console.error("Error updating producto:", error);
     res.status(500).json({ message: "Error del servidor" });

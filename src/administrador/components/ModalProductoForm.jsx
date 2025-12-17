@@ -16,7 +16,12 @@ const ModalProductoForm = ({
   const [categoriaId, setCategoriaId] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [stock, setStock] = useState(0);
-  const [imagen, setImagen] = useState("");
+  const [imagen, setImagen] = useState(""); // Main image URL
+  const [additionalImages, setAdditionalImages] = useState([]); // Array of { id?: Int, url: String }
+  const [newAdditionalImageUrl, setNewAdditionalImageUrl] = useState(""); // For new image URL input
+  const [newAddImgMode, setNewAddImgMode] = useState("url"); // New state for additional image input mode
+  const [newAddFileObj, setNewAddFileObj] = useState(null); // New state for additional image file object
+
   const [pesoKg, setPesoKg] = useState("");
   const [largoCm, setLargoCm] = useState("");
   const [anchoCm, setAnchoCm] = useState("");
@@ -28,12 +33,13 @@ const ModalProductoForm = ({
 
   useEffect(() => {
     if (producto) {
-      setNombre(producto.nombre ?? "");
+      setNombre(producto.nombre || "");
       setPrecio(producto.precio ?? "");
       setCategoriaId(producto.categoriaId ?? "");
-      setDescripcion(producto.descripcion ?? "");
+      setDescripcion(producto.descripcion || "");
       setStock(producto.stock ?? 0);
-      setImagen(producto.imagen ?? "");
+      setImagen(producto.imagen || "");
+      setAdditionalImages(producto.imagenes?.map(img => ({ id: img.id, url: img.url })) || []);
       setPesoKg(producto.pesoKg ?? "");
       setLargoCm(producto.largoCm ?? "");
       setAnchoCm(producto.anchoCm ?? "");
@@ -46,6 +52,7 @@ const ModalProductoForm = ({
       setDescripcion("");
       setStock(0);
       setImagen("");
+      setAdditionalImages([]);
       setPesoKg("");
       setLargoCm("");
       setAnchoCm("");
@@ -54,6 +61,7 @@ const ModalProductoForm = ({
     // Reset modal-specific state
     setImgMode("file");
     setFileObj(null);
+    setNewAdditionalImageUrl("");
     setErrors({});
     setIsSubmitting(false);
   }, [producto, show]);
@@ -78,6 +86,36 @@ const ModalProductoForm = ({
     const file = e.target.files?.[0];
     setFileObj(file || null);
   };
+
+  const handleAddAdditionalImage = async () => { // Make it async
+    let imageUrlToAdd = "";
+
+    if (newAddImgMode === "url") {
+      imageUrlToAdd = newAdditionalImageUrl.trim();
+    } else if (newAddImgMode === "file" && newAddFileObj) {
+      try {
+        imageUrlToAdd = await readFileAsDataURL(newAddFileObj);
+      } catch (error) {
+        toast.error("Error al leer el archivo de imagen.");
+        return;
+      }
+    }
+
+    if (imageUrlToAdd && !additionalImages.some(img => img.url === imageUrlToAdd)) {
+      setAdditionalImages(prev => [...prev, { url: imageUrlToAdd }]);
+      setNewAdditionalImageUrl(""); // Clear URL input
+      setNewAddFileObj(null);      // Clear file object
+      // Reset radio to URL after adding to simplify next addition
+      setNewAddImgMode("url");
+    } else if (imageUrlToAdd) {
+      toast.error("Esta imagen ya está en la galería o el campo está vacío.");
+    }
+  };
+
+  const handleRemoveAdditionalImage = (indexToRemove) => {
+    setAdditionalImages(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
 
   const validate = () => {
     const errs = {};
@@ -109,11 +147,12 @@ const ModalProductoForm = ({
         categoriaId: parseInt(categoriaId),
         descripcion: descripcion.trim(),
         stock: Number.isFinite(Number(stock)) ? parseInt(stock, 10) : 0,
-        imagen: imagenFinal || "",
+        imagen: imagenFinal || null, // Ensure null if empty
         pesoKg: toNumberOrNull(pesoKg),
         largoCm: toNumberOrNull(largoCm),
         anchoCm: toNumberOrNull(anchoCm),
         altoCm: toNumberOrNull(altoCm),
+        imagenes: additionalImages.map(img => ({ url: img.url })), // Send only URLs
       };
 
       const url = producto ? `${API_URL}/api/productos/${producto.id}` : `${API_URL}/api/productos`;
@@ -156,19 +195,22 @@ const ModalProductoForm = ({
         <form onSubmit={handleSubmit} className="space-y-3">
           {/* Nombre */}
           <div>
-            <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full border rounded p-2" required />
+            <label className="text-sm font-medium text-gray-700">Nombre del Producto</label>
+            <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full border rounded p-2 mt-1" required />
             {errors.nombre && <p className="text-xs text-red-600 mt-1">{errors.nombre}</p>}
           </div>
 
           {/* Precio */}
           <div>
-            <input type="number" placeholder="Precio" value={precio} onChange={(e) => setPrecio(e.target.value)} className="w-full border rounded p-2" required />
+            <label className="text-sm font-medium text-gray-700">Precio</label>
+            <input type="number" placeholder="Precio" value={precio} onChange={(e) => setPrecio(e.target.value)} className="w-full border rounded p-2 mt-1" required />
             {errors.precio && <p className="text-xs text-red-600 mt-1">{errors.precio}</p>}
           </div>
 
           {/* Categoría */}
           <div>
-            <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)} className="w-full border rounded p-2" required>
+            <label className="text-sm font-medium text-gray-700">Categoría</label>
+            <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)} className="w-full border rounded p-2 mt-1" required>
               <option value="">Selecciona una categoría</option>
               {(categoriasExistentes || []).map((c) => (
                 <option key={c.id} value={c.id}>{c.nombre}</option>
@@ -178,16 +220,21 @@ const ModalProductoForm = ({
           </div>
 
           {/* Descripción */}
-          <textarea placeholder="Descripción" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="w-full border rounded p-2" rows="3" />
+          <div>
+            <label className="text-sm font-medium text-gray-700">Descripción</label>
+            <textarea placeholder="Descripción" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="w-full border rounded p-2 mt-1" rows="3" />
+          </div>
 
           {/* Stock */}
           <div>
-            <input type="number" placeholder="Stock" value={stock} min="0" onChange={(e) => setStock(parseInt(e.target.value) || 0)} className="w-full border rounded p-2" required />
+            <label className="text-sm font-medium text-gray-700">Stock</label>
+            <input type="number" placeholder="Stock" value={stock} min="0" onChange={(e) => setStock(parseInt(e.target.value) || 0)} className="w-full border rounded p-2 mt-1" required />
             {errors.stock && <p className="text-xs text-red-600 mt-1">{errors.stock}</p>}
           </div>
 
-          {/* Imagen */}
-          <div>
+          {/* Imagen Principal */}
+          <div className="pt-2 border-t mt-4">
+            <label className="text-sm font-medium text-gray-700 block mb-2">Imagen Principal del Producto</label>
             <div className="flex items-center gap-4 text-sm mb-2">
               <label className="flex items-center gap-2"><input type="radio" name="imgMode" value="file" checked={imgMode === "file"} onChange={() => setImgMode("file")} /> Archivo</label>
               <label className="flex items-center gap-2"><input type="radio" name="imgMode" value="url" checked={imgMode === "url"} onChange={() => setImgMode("url")} /> URL</label>
@@ -195,7 +242,7 @@ const ModalProductoForm = ({
             {imgMode === "file" ? (
               <input type="file" accept="image/*" onChange={handleImagenFile} className="w-full border rounded p-2" />
             ) : (
-              <input type="url" placeholder="https://tu-imagen..." value={imagen} onChange={(e) => setImagen(e.target.value)} className="w-full border rounded p-2" />
+              <input type="url" placeholder="https://tu-imagen-principal..." value={imagen} onChange={(e) => setImagen(e.target.value)} className="w-full border rounded p-2" />
             )}
             {previewSrc() && (
               <div className="mt-3">
@@ -205,24 +252,83 @@ const ModalProductoForm = ({
             )}
           </div>
 
+          {/* Galería de Imágenes Adicionales */}
+          <div className="pt-2 border-t mt-4">
+            <label className="text-sm font-medium text-gray-700 block mb-2">Galería de Imágenes Adicionales</label>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {additionalImages.map((img, index) => (
+                <div key={img.id || img.url} className="relative group">
+                  <img src={img.url} alt={`Adicional ${index + 1}`} className="h-24 w-24 object-cover rounded" />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAdditionalImage(index)}
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs -mt-2 -mr-2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center w-5 h-5"
+                    title="Eliminar imagen"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+            {/* New input section for additional images */}
+            <div>
+              <div className="flex items-center gap-4 text-sm mb-2">
+                <label className="flex items-center gap-2"><input type="radio" name="newAddImgMode" value="url" checked={newAddImgMode === "url"} onChange={() => setNewAddImgMode("url")} /> URL</label>
+                <label className="flex items-center gap-2"><input type="radio" name="newAddImgMode" value="file" checked={newAddImgMode === "file"} onChange={() => setNewAddImgMode("file")} /> Archivo</label>
+              </div>
+              <div className="flex gap-2">
+                {newAddImgMode === "url" ? (
+                  <input
+                    type="url"
+                    placeholder="URL de imagen adicional (ej: https://img.com/prod2.jpg)"
+                    className="w-full border rounded p-2"
+                    value={newAdditionalImageUrl}
+                    onChange={(e) => setNewAdditionalImageUrl(e.target.value)}
+                  />
+                ) : (
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="w-full border rounded p-2"
+                    onChange={(e) => setNewAddFileObj(e.target.files?.[0] || null)}
+                  />
+                )}
+                <button
+                  type="button"
+                  onClick={handleAddAdditionalImage}
+                  className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-3 py-1 text-sm flex-shrink-0"
+                >
+                  + Añadir
+                </button>
+              </div>
+              {newAddImgMode === "file" && newAddFileObj && (
+                <div className="mt-2">
+                  <p className="text-xs text-gray-600 mb-1">Vista previa:</p>
+                  <img src={URL.createObjectURL(newAddFileObj)} alt="preview" className="h-16 w-16 object-cover rounded" />
+                </div>
+              )}
+            </div>
+          </div>
+
+
           {/* Envíos */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-2 border-t mt-4">
-            <div className="col-span-2 md:col-span-3"><label className="text-sm font-medium text-gray-600">Datos de Envío (Opcional)</label></div>
+            <div className="col-span-2 md:col-span-3"><label className="text-sm font-medium text-gray-700">Datos de Envío (Opcional)</label></div>
             <div>
-              <label className="text-xs font-medium">Peso (kg)</label>
-              <input type="number" step="0.01" min="0" value={pesoKg} onChange={(e) => setPesoKg(e.target.value)} className="w-full border rounded p-2" />
+              <label className="text-xs font-medium text-gray-600">Peso (kg)</label>
+              <input type="number" step="0.01" min="0" value={pesoKg} onChange={(e) => setPesoKg(e.target.value)} className="w-full border rounded p-2 mt-1" />
             </div>
             <div>
-              <label className="text-xs font-medium">Largo (cm)</label>
-              <input type="number" step="0.1" min="0" value={largoCm} onChange={(e) => setLargoCm(e.target.value)} className="w-full border rounded p-2" />
+              <label className="text-xs font-medium text-gray-600">Largo (cm)</label>
+              <input type="number" step="0.1" min="0" value={largoCm} onChange={(e) => setLargoCm(e.target.value)} className="w-full border rounded p-2 mt-1" />
             </div>
             <div>
-              <label className="text-xs font-medium">Ancho (cm)</label>
-              <input type="number" step="0.1" min="0" value={anchoCm} onChange={(e) => setAnchoCm(e.target.value)} className="w-full border rounded p-2" />
+              <label className="text-xs font-medium text-gray-600">Ancho (cm)</label>
+              <input type="number" step="0.1" min="0" value={anchoCm} onChange={(e) => setAnchoCm(e.target.value)} className="w-full border rounded p-2 mt-1" />
             </div>
             <div className="col-span-2 md:col-span-1">
-              <label className="text-xs font-medium">Alto (cm)</label>
-              <input type="number" step="0.1" min="0" value={altoCm} onChange={(e) => setAltoCm(e.target.value)} className="w-full border rounded p-2" />
+              <label className="text-xs font-medium text-gray-600">Alto (cm)</label>
+              <input type="number" step="0.1" min="0" value={altoCm} onChange={(e) => setAltoCm(e.target.value)} className="w-full border rounded p-2 mt-1" />
             </div>
           </div>
 
