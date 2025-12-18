@@ -31,42 +31,46 @@ export default function LandingPage() {
           backgroundPosition: "center",
         }}
       >
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-4 md:gap-2 w-full max-w-7xl mx-auto lg:h-full">
-          <div className="max-w-xl text-center md:text-left flex flex-col items-center md:items-start">
-            <h1 className="text-5xl sm:text-5xl md:text-7xl lg:text-7x2 font-black tracking-tight leading-tight mt-0 md:mt-1 mb-1 md:mb-3">
-              Emprende tu                
-              <span style={{ color: '#d4ff00' }}> Negocio</span>
-            </h1>
-            <p className="text-base md:text-lg lg:text-lg text-white leading-relaxed mb-6 md:mb-8">
-              Con Darmax, inicia tu emprendimiento con purificadoras de agua, máquinas vending 24/7 y productos de limpieza de alta calidad.
-            </p>
-<button
-  onClick={() => scrollToRef(calculadoraRef)}
-  className="
-    inline-flex items-center justify-center
-    text-black font-semibold
-    py-2.5 px-6 md:px-8
-    rounded-full
-    shadow
-    transition
-    hover:brightness-95
-    bg-[#d4ff00]
-    text-sm md:text-base
-  "
->
-  CALCULA TUS GANANCIAS
-</button>
-
-          </div>
-
-          <div className="w-full md:w-1/2 flex justify-center">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 md:gap-2 w-full max-w-7xl mx-auto lg:h-full">
+          {/* Left Column (Image) */}
+          <div className="w-full lg:w-1/3 flex justify-center lg:justify-start">
             <img
-              src="/img/logo_darmaxnav.png"  
+              src="/img/logo_darmaxnav.png"
               alt="Logo Darmax"
-              
               className="w-[200px] sm:w-[250px] md:w-[300px] lg:w-[300px] h-auto object-contain"
             />
           </div>
+
+          {/* Center Column (Text) */}
+          <div className="w-full lg:w-1/3 text-center flex flex-col items-center">
+            <h1 className="text-5xl sm:text-5xl md:text-7xl lg:text-7x2 font-black tracking-tight leading-tight mt-0 md:mt-1 mb-1 md:mb-3">
+              Emprende Tu
+              <span style={{ color: "#d4ff00" }}> Negocio</span>
+            </h1>
+            <p className="text-base md:text-lg lg:text-lg text-white leading-relaxed mb-6 md:mb-8">
+              Con Darmax, inicia tu emprendimiento con purificadoras de agua,
+              máquinas vending 24/7 y productos de limpieza de alta calidad.
+            </p>
+            <button
+              onClick={() => scrollToRef(calculadoraRef)}
+              className="
+                inline-flex items-center justify-center
+                text-black font-semibold
+                py-2.5 px-6 md:px-8
+                rounded-full
+                shadow
+                transition
+                hover:brightness-95
+                bg-[#d4ff00]
+                text-sm md:text-base
+              "
+            >
+              CALCULA TUS GANANCIAS
+            </button>
+          </div>
+
+          {/* Right Column (Empty Spacer) */}
+          <div className="hidden lg:block lg:w-1/3"></div>
         </div>
       </section>
 
