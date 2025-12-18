@@ -234,7 +234,7 @@ export default function Step4Summary({
   };
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto">
+    <div className="space-y-8 max-w-5xl mx-auto">
       <h2 className="text-3xl font-bold text-gray-800">Resumen de tu Configuración</h2>
 
       <div className="p-6 border rounded-xl space-y-4">
@@ -247,31 +247,31 @@ export default function Step4Summary({
           <p className="text-slate-600">{model.description}</p>
         )}
 
-        {displayImage && (
-          <div className="mt-4">
-            <p className="text-sm font-medium text-gray-700 mb-2">Vista Previa:</p>
-            <img src={displayImage} alt={model.name} className="max-w-full h-48 object-contain mx-auto border rounded-lg p-2" />
+        <p className="text-sm font-medium text-gray-700 mb-2">Vistas Previas:</p>
+        <div className="flex flex-col md:flex-row gap-4">
+          {displayImage && (
+            <div className="w-full md:w-1/2">
+              <img src={displayImage} alt={model.name} className="w-full h-48 object-contain border rounded-lg p-2" />
+            </div>
+          )}
+          {secondaryImage && (
+              <div className="w-full md:w-1/2">
+                  <img src={secondaryImage} alt={`${model.name} componente adicional`} className="w-full h-48 object-contain border rounded-lg p-2" />
+              </div>
+          )}
+        </div>
+
+        {model.features && model.features.length > 0 && (
+          <div className="mt-6">
+            <p className="font-semibold text-gray-800 mb-2">Características:</p>
+            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+              {model.features.map((c, i) => (
+                <li key={i}>{c}</li>
+              ))}
+            </ul>
           </div>
         )}
-        {secondaryImage && (
-            <div className="mt-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Componente Adicional:</p>
-                <img src={secondaryImage} alt={`${model.name} componente adicional`} className="max-w-full h-48 object-contain mx-auto border rounded-lg p-2" />
-            </div>
-        )}
-
       </div>
-
-      {model.features && model.features.length > 0 && (
-        <div className="p-6 border rounded-xl space-y-3">
-          <h3 className="font-semibold text-xl text-gray-800">Características</h3>
-          <ul className="list-disc pl-5 space-y-1 text-gray-700">
-            {model.features.map((c, i) => (
-              <li key={i}>{c}</li>
-            ))}
-          </ul>
-        </div>
-      )}
 
 
       <div className="p-6 border rounded-xl space-y-3">
