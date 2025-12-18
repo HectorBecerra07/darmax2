@@ -44,167 +44,182 @@ export default function Step4Summary({
 
   /* ====== PDF con líneas que no tocan el logo + líneas inferiores ====== */
   const generarPDF = async () => {
-    const doc = new jsPDF({ unit: "mm", format: "a4" });
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const M = 15;
+    try {
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const M = 15;
 
-    // Carga logo
-    const logo = await loadImage("/img/darmax-logo.png");
-    const LOGO_W = 30;
-    const LOGO_H = (logo.height / logo.width) * LOGO_W;
+      // Carga logo
+      const logo = await loadImage("/img/darmax-logo.png");
+      const LOGO_W = 30;
+      const LOGO_H = (logo.height / logo.width) * LOGO_W;
 
-    // Dibuja cabecera/lineas para cada página
-    const addHeader = (pageNumber = 1) => {
-      // Logo
-      doc.addImage(logo, "PNG", M, 10, LOGO_W, LOGO_H);
+      // Dibuja cabecera/lineas para cada página
+      const addHeader = (pageNumber = 1) => {
+        // Logo
+        doc.addImage(logo, "PNG", M, 10, LOGO_W, LOGO_H);
 
-      // Info derecha
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
-      doc.setTextColor("#111");
-      doc.text("DARMAX Agua y Tecnología", pageW - M, 14, { align: "right" });
+        // Info derecha
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor("#111");
+        doc.text("DARMAX Agua y Tecnología", pageW - M, 14, { align: "right" });
 
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setTextColor("#444");
-      doc.text("darmaxagua@gmail.com | 55 1965 5369", pageW - M, 20, { align: "right" });
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor("#444");
+        doc.text("darmaxagua@gmail.com | 55 1965 5369", pageW - M, 20, { align: "right" });
 
-      // === Líneas superiores SIN tocar el logo ===
-      const GAP = 8; // separa las líneas del borde derecho del logo
-      const xStartTop = M + LOGO_W + GAP;
-      const rgbB = hexToRgb(BRAND_BLUE);
-      const rgbT = hexToRgb(BRAND_TEAL);
+        // === Líneas superiores SIN tocar el logo ===
+        const GAP = 8; // separa las líneas del borde derecho del logo
+        const xStartTop = M + LOGO_W + GAP;
+        const rgbB = hexToRgb(BRAND_BLUE);
+        const rgbT = hexToRgb(BRAND_TEAL);
 
-      doc.setDrawColor(rgbB.r, rgbB.g, rgbB.b);
-      doc.setLineWidth(1.2);
-      doc.line(xStartTop, 32, pageW - M, 32);
+        doc.setDrawColor(rgbB.r, rgbB.g, rgbB.b);
+        doc.setLineWidth(1.2);
+        doc.line(xStartTop, 32, pageW - M, 32);
 
-      doc.setDrawColor(rgbT.r, rgbT.g, rgbT.b);
-      doc.setLineWidth(0.8);
-      doc.line(xStartTop, 35, pageW - M, 35);
+        doc.setDrawColor(rgbT.r, rgbT.g, rgbT.b);
+        doc.setLineWidth(0.8);
+        doc.line(xStartTop, 35, pageW - M, 35);
 
-      // === Líneas inferiores (al pie) ===
-      const yBot1 = pageH - 20;
-      const yBot2 = pageH - 17;
+        // === Líneas inferiores (al pie) ===
+        const yBot1 = pageH - 20;
+        const yBot2 = pageH - 17;
 
-      doc.setDrawColor(rgbB.r, rgbB.g, rgbB.b);
-      doc.setLineWidth(1.2);
-      doc.line(M, yBot1, pageW - M, yBot1);
+        doc.setDrawColor(rgbB.r, rgbB.g, rgbB.b);
+        doc.setLineWidth(1.2);
+        doc.line(M, yBot1, pageW - M, yBot1);
 
-      doc.setDrawColor(rgbT.r, rgbT.g, rgbT.b);
-      doc.setLineWidth(0.8);
-      doc.line(M, yBot2, pageW - M, yBot2);
+        doc.setDrawColor(rgbT.r, rgbT.g, rgbT.b);
+        doc.setLineWidth(0.8);
+        doc.line(M, yBot2, pageW - M, yBot2);
 
-      // Número de página
-      doc.setFontSize(9);
-      doc.setTextColor("#888");
-      doc.text(`Página ${pageNumber}`, pageW / 2, pageH - 8, { align: "center" }); // Centered for less conflict
-    };
+        // Número de página
+        doc.setFontSize(9);
+        doc.setTextColor("#888");
+        doc.text(`Página ${pageNumber}`, pageW / 2, pageH - 8, { align: "center" }); // Centered for less conflict
+      };
 
-    let y = 45; // contenido
-    const maxWidth = pageW - M * 2;
+      let y = 45; // contenido
+      const maxWidth = pageW - M * 2;
 
-    const ensureSpace = (need = 8) => {
-      if (y + need > pageH - 25) {
-        doc.addPage();
-        addHeader(doc.getNumberOfPages());
-        y = 45;
-      }
-    };
+      const ensureSpace = (need = 8) => {
+        if (y + need > pageH - 25) {
+          doc.addPage();
+          addHeader(doc.getNumberOfPages());
+          y = 45;
+        }
+      };
 
-    const writeTitle = (text) => {
-      ensureSpace(12);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.setTextColor("#111");
-      doc.text(text, pageW / 2, y, { align: "center" });
-      y += 10;
-    };
+      const writeTitle = (text) => {
+        ensureSpace(12);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.setTextColor("#111");
+        doc.text(text, pageW / 2, y, { align: "center" });
+        y += 10;
+      };
 
-    const writeH2 = (text) => {
-      ensureSpace(9);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(13.5);
-      doc.setTextColor("#111");
-      doc.text(text, M, y);
-      y += 7;
-    };
+      const writeH2 = (text) => {
+        ensureSpace(9);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13.5);
+        doc.setTextColor("#111");
+        doc.text(text, M, y);
+        y += 7;
+      };
 
-    const write = (text, { bold = false, size = 12 } = {}) => {
-      doc.setFont("helvetica", bold ? "bold" : "normal");
-      doc.setFontSize(size);
-      doc.setTextColor("#111");
-      const lines = doc.splitTextToSize(text, maxWidth);
-      lines.forEach((line) => {
-        ensureSpace(6);
-        doc.text(line, M, y);
-        y += 6;
-      });
-      y += 2;
-    };
-
-    const writeBullets = (items) => {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
-      items.forEach((it) => {
-        const lines = doc.splitTextToSize(`• ${it}`, maxWidth);
+      const write = (text, { bold = false, size = 12 } = {}) => {
+        doc.setFont("helvetica", bold ? "bold" : "normal");
+        doc.setFontSize(size);
+        doc.setTextColor("#111");
+        const lines = doc.splitTextToSize(text, maxWidth);
         lines.forEach((line) => {
           ensureSpace(6);
           doc.text(line, M, y);
           y += 6;
         });
         y += 2;
-      });
-      y += 2;
-    };
+      };
 
-    // Página 1
-    addHeader(1);
+      const writeBullets = (items) => {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+        items.forEach((it) => {
+          const lines = doc.splitTextToSize(`• ${it}`, maxWidth);
+          lines.forEach((line) => {
+            ensureSpace(6);
+            doc.text(line, M, y);
+            y += 6;
+          });
+          y += 2;
+        });
+        y += 2;
+      };
 
-    writeTitle("DARMAX | Cotización");
+      // Página 1
+      addHeader(1);
 
-    writeH2("Modelo seleccionado:");
-    write(`${model.name} — $${toMoney(precioBaseModelo)} MXN`, { bold: true });
-    if (model?.description) write(model.description);
+      writeTitle("DARMAX | Cotización");
 
-    if (model.features && model.features.length > 0) {
-      writeH2("Características del modelo:");
-      writeBullets(model.features);
-    } 
+      writeH2("Modelo seleccionado:");
+      write(`${model.name} — $${toMoney(precioBaseModelo)} MXN`, { bold: true });
+      if (model?.description) write(model.description);
 
-    if (selectedExtras.length > 0) {
-        writeH2("Extras seleccionados:");
-        writeBullets(selectedExtras.map((me) => `${me.extra.name} — $${toMoney(me.priceOverride ?? me.extra.basePrice)} MXN`));
-    } else {
-        write("No seleccionaste extras.");
+      if (model.features && model.features.length > 0) {
+        writeH2("Características del modelo:");
+        writeBullets(model.features);
+      } 
+
+      if (selectedExtras.length > 0) {
+          writeH2("Extras seleccionados:");
+          writeBullets(selectedExtras.map((me) => `${me.extra.name} — $${toMoney(me.priceOverride ?? me.extra.basePrice)} MXN`));
+      } else {
+          write("No seleccionaste extras.");
+      }
+      
+      if (displayImage) {
+          ensureSpace(80);
+          try {
+            const img = await loadImage(displayImage);
+            const imgWidth = 100;
+            const imgHeight = (img.height / img.width) * imgWidth;
+            try {
+                doc.addImage(img, "JPEG", M, y, imgWidth, imgHeight);
+            } catch (addImgError) {
+                console.error("Error adding image to PDF:", addImgError);
+                write("  [Error al renderizar imagen]", { size: 9, bold: false });
+            }
+            y += imgHeight + 5;
+          } catch (imgError) {
+            console.error("Could not load image:", imgError);
+            write("  [Imagen no disponible]", { size: 9, bold: false });
+          }
+      }
+
+      writeH2("Resumen de precio:");
+      write(`Precio Base: $${toMoney(precioBaseModelo)} MXN`);
+      write(`Extras: $${toMoney(precioExtras)} MXN`);
+      write(`Total: $${toMoney(precioTotal)} MXN`, { bold: true });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor("#888");
+      doc.text(
+        "Gracias por tu preferencia — DARMAX Agua y Tecnología",
+        pageW / 2,
+        pageH - 8,
+        { align: "center" }
+      );
+
+      doc.save("Darmax_Cotizacion.pdf");
+    } catch (error) {
+      console.error("Error al generar PDF:", error);
+      toast.error("No se pudo generar el PDF. Revise la consola para más detalles.");
     }
-    
-    if (displayImage) {
-        ensureSpace(80);
-        const img = await loadImage(displayImage);
-        const imgWidth = 100;
-        const imgHeight = (img.height / img.width) * imgWidth;
-        doc.addImage(img, "PNG", M, y, imgWidth, imgHeight);
-        y += imgHeight + 5;
-    }
-
-    writeH2("Resumen de precio:");
-    write(`Precio Base: $${toMoney(precioBaseModelo)} MXN`);
-    write(`Extras: $${toMoney(precioExtras)} MXN`);
-    write(`Total: $${toMoney(precioTotal)} MXN`, { bold: true });
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor("#888");
-    doc.text(
-      "Gracias por tu preferencia — DARMAX Agua y Tecnología",
-      pageW / 2,
-      pageH - 8,
-      { align: "center" }
-    );
-
-    doc.save("Darmax_Cotizacion.pdf");
   };
 
   const enviarWhatsApp = () => {

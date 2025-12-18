@@ -3,13 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import toast from "react-hot-toast";
+import Step3ExtrasConfigurator from "../components/Step3ExtrasConfigurator";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 // --- Helper Functions and Constants ---
-
 const formatCurrency = (value) =>
   new Intl.NumberFormat("es-MX", {
     style: "currency",
@@ -29,7 +29,6 @@ const loadImage = (src) =>
     img.onerror = reject;
     img.src = src;
   });
-
 function hexToRgb(hex) {
   const s = hex.replace("#", "");
   const n = parseInt(s, 16);
@@ -48,10 +47,22 @@ const bundleStepsConfig = {
     },
     {
       step: 1,
-      title: "Paso 2: Selecciona tu Vending de Limpieza",
+      title: "Paso 2: Configura Extras de Purificadora",
+      modelType: "mostrador",
+      type: "extras",
+    },
+    {
+      step: 2,
+      title: "Paso 3: Selecciona tu Vending de Limpieza",
       modelType: "vendingLimpieza",
     },
-    { step: 2, title: "Paso 3: Resumen del Paquete", type: "summary" },
+    {
+      step: 3,
+      title: "Paso 4: Configura Extras de Vending de Limpieza",
+      modelType: "vendingLimpieza",
+      type: "extras",
+    },
+    { step: 4, title: "Paso 5: Resumen del Paquete", type: "summary" },
   ],
   Tridente: [
     {
@@ -61,15 +72,33 @@ const bundleStepsConfig = {
     },
     {
       step: 1,
-      title: "Paso 2: Selecciona tu Vending de Agua",
-      modelType: "vendingAgua",
+      title: "Paso 2: Configura Extras de Purificadora",
+      modelType: "mostrador",
+      type: "extras",
     },
     {
       step: 2,
-      title: "Paso 3: Selecciona tu Vending de Limpieza",
+      title: "Paso 3: Selecciona tu Vending de Agua",
+      modelType: "vendingAgua",
+    },
+    {
+      step: 3,
+      title: "Paso 4: Configura Extras de Vending de Agua",
+      modelType: "vendingAgua",
+      type: "extras",
+    },
+    {
+      step: 4,
+      title: "Paso 5: Selecciona tu Vending de Limpieza",
       modelType: "vendingLimpieza",
     },
-    { step: 3, title: "Paso 4: Resumen del Paquete", type: "summary" },
+    {
+      step: 5,
+      title: "Paso 6: Configura Extras de Vending de Limpieza",
+      modelType: "vendingLimpieza",
+      type: "extras",
+    },
+    { step: 6, title: "Paso 7: Resumen del Paquete", type: "summary" },
   ],
   Megalodon: [
     {
@@ -80,17 +109,35 @@ const bundleStepsConfig = {
     },
     {
       step: 1,
-      title: "Paso 2: Selecciona tu Vending de Agua (Atlantis MAX)",
+      title: "Paso 2: Configura Extras de Purificadora",
+      modelType: "mostrador",
+      type: "extras",
+    },
+    {
+      step: 2,
+      title: "Paso 3: Selecciona tu Vending de Agua (Atlantis MAX)",
       modelType: "vendingAgua",
       filter: (m) => m.name.toLowerCase().includes('max'),
     },
     {
-      step: 2,
-      title: "Paso 3: Selecciona tu Vending de Limpieza (8 Productos)",
+      step: 3,
+      title: "Paso 4: Configura Extras de Vending de Agua",
+      modelType: "vendingAgua",
+      type: "extras",
+    },
+    {
+      step: 4,
+      title: "Paso 5: Selecciona tu Vending de Limpieza (8 Productos)",
       modelType: "vendingLimpieza",
       filter: (m) => m.slug.toLowerCase() === "vending8",
     },
-    { step: 3, title: "Paso 4: Resumen del Paquete", type: "summary" },
+    {
+      step: 5,
+      title: "Paso 6: Configura Extras de Vending de Limpieza",
+      modelType: "vendingLimpieza",
+      type: "extras",
+    },
+    { step: 6, title: "Paso 7: Resumen del Paquete", type: "summary" },
   ],
 };
 
@@ -99,29 +146,38 @@ const bundleStepsConfig = {
 const ModelCard = ({ model, onSelect, isSelected }) => (
     <div
       onClick={() => onSelect(model)}
-      className={`relative border rounded-2xl p-5 cursor-pointer transition-all duration-300 ${
+      className={`relative rounded-2xl p-5 cursor-pointer transition-all duration-300 text-center ${
         isSelected
           ? "border-cyan-500 ring-2 ring-cyan-500/30 bg-cyan-50"
-          : "border-gray-200 bg-white hover:border-cyan-400 hover:shadow-md"
+          : "border-gray-200 bg-white hover:border-cyan-400 hover:shadow-lg"
       }`}
     >
       {isSelected && (
-          <div className="absolute top-3 right-3 bg-cyan-500 text-white rounded-full h-6 w-6 flex items-center justify-center">
+          <div className="absolute top-3 right-3 bg-cyan-500 text-white rounded-full h-6 w-6 flex items-center justify-center z-10">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
           </div>
       )}
-      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-        <div className="flex-grow">
-          <h3 className="text-lg font-bold text-gray-900 pr-8">{model.name}</h3>
-          <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-            {model.description}
-          </p>
-        </div>
-        <div className="flex-shrink-0 text-left sm:text-right mt-2 sm:mt-0">
-          <p className="text-lg font-extrabold text-gray-800">
-            {formatCurrency(model.basePrice)}
-          </p>
-        </div>
+      {model.images && model.images.length > 0 ? (
+          <img
+              src={model.images[0].url}
+              alt={model.images[0].alt || model.name}
+              className="w-full h-48 object-contain rounded-lg mb-4 shadow-md"
+          />
+      ) : (
+          <div className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-sm mb-4 shadow-inner">
+              Sin Imagen
+          </div>
+      )}
+      <div className="flex-grow">
+        <h3 className="text-xl font-bold text-gray-900">{model.name}</h3>
+        <p className="text-sm text-gray-600 mt-2">
+          {model.description}
+        </p>
+      </div>
+      <div className="mt-4">
+        <p className="text-xl font-extrabold text-gray-800">
+          {formatCurrency(model.basePrice)}
+        </p>
       </div>
     </div>
   );
@@ -136,7 +192,7 @@ const ModelSelectionStep = ({
   <div className="space-y-6">
     <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center">{title}</h2>
     {models.length > 0 ? (
-      <div className="space-y-4 max-w-3xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         {models.map((model) => (
           <ModelCard
             key={model.id}
@@ -155,24 +211,31 @@ const ModelSelectionStep = ({
   </div>
 );
 
-const BundleSummary = ({ config, steps, onEdit }) => {
+const BundleSummary = ({ config, extras, steps, onEdit }) => {
     const total = useMemo(() => {
-      return (
-        (config.mostrador?.basePrice || 0) +
-        (config.vendingAgua?.basePrice || 0) +
-        (config.vendingLimpieza?.basePrice || 0)
-      );
-    }, [config]);
+        let modelsTotal = Object.values(config).reduce((acc, model) => acc + (model?.basePrice || 0), 0);
+        
+        let extrasTotal = Object.values(extras).reduce((acc, extraGroup) => {
+            if (!extraGroup || !extraGroup.selectedExtras) return acc;
+            const groupTotal = extraGroup.selectedExtras.reduce((sum, extra) => {
+                return sum + (extra.priceOverride ?? extra.extra.basePrice);
+            }, 0);
+            return acc + groupTotal;
+        }, 0);
+
+        return modelsTotal + extrasTotal;
+    }, [config, extras]);
   
     const summaryItems = useMemo(
       () =>
         steps
-          .filter((s) => s.type !== "summary")
+          .filter((s) => s.type !== "summary" && s.type !== "extras")
           .map((step) => ({
             ...step,
             model: config[step.modelType],
+            extras: extras[step.modelType]?.selectedExtras || [],
           })),
-      [steps, config]
+      [steps, config, extras]
     );
   
     return (
@@ -185,17 +248,28 @@ const BundleSummary = ({ config, steps, onEdit }) => {
             <div key={item.modelType} className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex-grow">
-                  <p className="text-xs font-medium text-gray-500">{item.title}</p>
+                  <p className="text-xs font-medium text-gray-500">{item.title.replace(/:/g, '')}</p>
                   <p className="font-semibold text-gray-800 mt-1">
                     {item.model?.name || "No seleccionado"}
                   </p>
+                  {/* Display extras */}
+                  {item.extras.length > 0 && (
+                      <div className="pl-4 mt-2 text-sm text-gray-600">
+                          <p className="font-semibold">Extras:</p>
+                          <ul className="list-disc list-inside">
+                              {item.extras.map(extra => (
+                                  <li key={extra.id}>{extra.extra.name} - {formatCurrency(extra.priceOverride ?? extra.extra.basePrice)}</li>
+                              ))}
+                          </ul>
+                      </div>
+                  )}
                 </div>
                 <div className="flex items-center justify-between mt-3 sm:mt-0 sm:gap-6">
                    <p className="font-bold text-gray-800 sm:text-right">
                     {item.model ? formatCurrency(item.model.basePrice) : "—"}
                   </p>
                   <button
-                    onClick={() => onEdit(index)}
+                    onClick={() => onEdit(steps.findIndex(s => s.modelType === item.modelType && s.type !== 'extras'))}
                     className="text-sm font-semibold text-cyan-600 hover:text-cyan-800 transition-colors"
                   >
                     Cambiar
@@ -234,7 +308,13 @@ export default function BundleWizard() {
     vendingAgua: null,
     vendingLimpieza: null,
   });
-  
+
+  const [extrasConfig, setExtrasConfig] = useState({
+    mostrador: null,
+    vendingAgua: null,
+    vendingLimpieza: null,
+  });
+
   const steps = useMemo(() => bundleStepsConfig[id] || [], [id]);
   const currentStepInfo = useMemo(() => steps[step], [step, steps]);
   const totalSteps = steps.length;
@@ -370,20 +450,51 @@ export default function BundleWizard() {
         writeTitle(`Cotización de Paquete: ${id}`);
         y += 5;
 
-        const summaryItems = steps.filter(s => s.type !== 'summary');
+        const summaryItems = steps.filter(s => s.type !== 'summary' && s.type !== 'extras');
         let total = 0;
 
-        summaryItems.forEach(item => {
+        for (const item of summaryItems) {
             const model = bundleConfig[item.modelType];
+            const extras = extrasConfig[item.modelType]?.selectedExtras || [];
+            
             if (model) {
                 total += model.basePrice;
                 writeH2(item.title.replace(/Paso \d: /g, ''));
                 write(`${model.name} — ${formatCurrency(model.basePrice)}`, { bold: true, size: 12 });
                 if (model.description) write(model.description, { size: 10 });
                 writeBullets(model.features);
+
+                if (extras.length > 0) {
+                    write("Extras seleccionados:", { bold: true, size: 11 });
+                    const extraItems = extras.map(e => `${e.extra.name} - ${formatCurrency(e.priceOverride ?? e.extra.basePrice)}`);
+                    writeBullets(extraItems);
+                    extras.forEach(e => {
+                        total += (e.priceOverride ?? e.extra.basePrice);
+                    });
+                }
+
+                if (model.images && model.images.length > 0) {
+                    try {
+                        const modelImage = await loadImage(model.images[0].url);
+                        const imgW = 60;
+                        const imgH = (modelImage.height / modelImage.width) * imgW;
+
+                        ensureSpace(imgH + 5);
+                        try {
+                            doc.addImage(modelImage, "JPEG", M, y, imgW, imgH);
+                        } catch (addImgError) {
+                            console.error("Error adding image to PDF:", addImgError);
+                            write("  [Error al renderizar imagen]", { size: 9, bold: false });
+                        }
+                        y += imgH + 5;
+                    } catch (imgError) {
+                        console.error(`Could not load image for model ${model.name}:`, imgError);
+                        write("  [Imagen no disponible]", { size: 9, bold: false });
+                    }
+                }
                 y += 5;
             }
-        });
+        }
 
         ensureSpace(20);
         doc.setLineWidth(0.5);
@@ -416,12 +527,21 @@ export default function BundleWizard() {
 
   const handleSelect = (model) => {
     if (!currentStepInfo) return;
-    setBundleConfig((prev) => ({ ...prev, [currentStepInfo.modelType]: model }));
+    const modelType = currentStepInfo.modelType;
+    setBundleConfig((prev) => ({ ...prev, [modelType]: model }));
+    setExtrasConfig((prev) => ({ ...prev, [modelType]: null })); // Reset extras for this model type
+    nextStep();
+  };
+
+  const handleExtrasSelect = (extras) => {
+    if (!currentStepInfo) return;
+    const modelType = currentStepInfo.modelType;
+    setExtrasConfig(prev => ({ ...prev, [modelType]: extras }));
     nextStep();
   };
 
   const getModelsForCurrentStep = () => {
-    if (!currentStepInfo || currentStepInfo.type === "summary") return [];
+    if (!currentStepInfo || currentStepInfo.type === "summary" || currentStepInfo.type === "extras") return [];
     
     const { modelType, filter: specificFilter } = currentStepInfo;
     
@@ -466,7 +586,24 @@ export default function BundleWizard() {
 
   const renderCurrentStep = () => {
     if (currentStepInfo.type === "summary") {
-      return <BundleSummary config={bundleConfig} steps={steps} onEdit={goToStep} />;
+      return <BundleSummary config={bundleConfig} extras={extrasConfig} steps={steps} onEdit={goToStep} />;
+    }
+
+    if (currentStepInfo.type === "extras") {
+        const modelType = currentStepInfo.modelType;
+        const selectedModel = bundleConfig[modelType];
+        if (!selectedModel) {
+            // This case should ideally not be reached if the flow is correct.
+            return <div className="text-center text-red-500">Por favor, primero selecciona un modelo en el paso anterior.</div>
+        }
+        return (
+            <Step3ExtrasConfigurator
+                selectedModelId={selectedModel.slug}
+                onSelect={handleExtrasSelect}
+                onNext={nextStep}
+                onBack={prevStep}
+            />
+        );
     }
     
     const models = getModelsForCurrentStep();
@@ -535,7 +672,7 @@ export default function BundleWizard() {
             {step < totalSteps - 1 ? (
             <button
                 onClick={nextStep}
-                disabled={!bundleConfig[currentStepInfo?.modelType] && currentStepInfo?.type !== 'summary'}
+                disabled={currentStepInfo?.type !== 'extras' && !bundleConfig[currentStepInfo?.modelType]}
                 className="w-full sm:w-auto px-6 py-3 bg-cyan-600 text-white rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-cyan-700 shadow-sm"
             >
                 Siguiente
