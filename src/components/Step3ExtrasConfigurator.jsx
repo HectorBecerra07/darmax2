@@ -164,6 +164,12 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
     });
   };
 
+  const [openAccordion, setOpenAccordion] = useState('otros');
+
+  const tinacoExtras = extras.filter(me => me.extra.isTinaco);
+  const alcalinaExtra = extras.find(me => me.extra.code === 'agua-alcalina');
+  const otherExtras = extras.filter(me => !me.extra.isTinaco && me.extra.code !== 'agua-alcalina');       
+
   const estaDeshabilitado = (modelExtra) => {
     if (!modelExtra.extra.isTinaco) return false; // Solo deshabilitamos tinacos
 
@@ -175,125 +181,166 @@ export default function Step3ExtrasConfigurator({ selectedModelId, onSelect, onN
     // Deshabilitar otros tinacos si ya hay uno seleccionado y no es el actual
     return hayTinacoSeleccionado && !seleccionados.includes(modelExtra.id);
   };
+  
+  const renderExtraItem = (modelExtra) => (
+    <li
+      key={modelExtra.id}
+      className={`list-none border rounded-lg p-4 cursor-pointer transition shadow-md ${
+        seleccionados.includes(modelExtra.id)
+          ? "border-gray-900 bg-gray-50"
+          : "border-gray-300 hover:border-gray-500"
+      } ${estaDeshabilitado(modelExtra) ? "opacity-50 cursor-not-allowed" : ""}`}
+      onClick={() => {
+        if (!estaDeshabilitado(modelExtra)) toggleExtra(modelExtra.id);
+      }}
+    >
+      <div className="flex justify-between items-center gap-4">
+        <div className="min-w-0">
+          <p className="font-medium text-gray-800 break-words">{modelExtra.extra.name}</p>
+          <p className="text-gray-500 text-sm">{modelExtra.extra.description}</p>
+          <p className="text-sm font-bold text-gray-700">
+            ${(modelExtra.priceOverride ?? modelExtra.extra.basePrice).toLocaleString()} MXN
+          </p>
+        </div>
+        <input
+          type="checkbox"
+          checked={seleccionados.includes(modelExtra.id)}
+          readOnly
+          disabled={estaDeshabilitado(modelExtra)}
+          className="w-5 h-5 accent-black shrink-0"
+        />
+      </div>
+    </li>
+  );
 
   if (loading || !modelData) {
     return <div className="text-center p-8 text-lg text-gray-700">Cargando opciones de configuración...</div>;
   }
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-3xl font-bold text-gray-800">Extras Opcionales</h2>
+    <div className="md:flex md:gap-8 lg:gap-12">
+      {/* Columna Izquierda (Sticky con Vistas Previas) */}
+      <div className="md:w-1/2 md:sticky md:top-8 md:self-start">
+        {(displayImageSrc || secondaryImageSrc) && (
+          <div className="flex flex-col gap-4">
 
-      {/* Vista previa ARRIBA */}
-      {(displayImageSrc || secondaryImageSrc) && (
-        <div className={`max-w-4xl mx-auto md:flex md:gap-4 ${!secondaryImageSrc ? 'md:justify-center' : ''}`}>
-          {/* Vista previa del modelo */}
-          {displayImageSrc && (
-            <div className={`${!secondaryImageSrc ? 'md:w-full' : 'md:w-1/2'}`}>
-              <h3 className="text-lg font-semibold text-gray-800">Vista previa del modelo</h3>
-              <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3">
-                <div className="aspect-[16/9] w-full overflow-hidden rounded-lg bg-gray-50">
-                  <img
-                    src={displayImageSrc}
-                    alt={`Imagen de ${modelData.name} - ${currentDisplayString}`}
-                    className="h-full w-full object-contain"
-                    loading="lazy"
-                    decoding="async"
-                    draggable="false"
-                  />
+          {/* Vista previa del modelo - Aparece segundo en móvil */}
+            {displayImageSrc && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">Vista previa del modelo</h3>
+                <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3">
+                  <div className="aspect-[16/9] w-full overflow-hidden rounded-lg bg-gray-50">
+                    <img
+                      src={displayImageSrc}
+                      alt={`Imagen de ${modelData.name} - ${currentDisplayString}`}
+                      className="h-full w-full object-contain"
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Sugerencia visual: {currentDisplayString}.
+                  </p>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Sugerencia visual: {currentDisplayString}.
-                </p>
               </div>
+            )}
+            {/* Vista previa secundaria (vending Atlantis) - Aparece primero en móvil */}
+            {secondaryImageSrc && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">Vista previa de la Vending</h3>
+                <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3">
+                  <div className="aspect-[16/9] w-full overflow-hidden rounded-lg bg-gray-50">
+                    <img
+                      src={secondaryImageSrc}
+                      alt={`Imagen secundaria para ${modelData.name}`}
+                      className="h-full w-full object-contain"
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Componente adicional para {modelData.name}.
+                  </p>
+                </div>
+              </div>
+            )}
+            
+          </div>
+        )}
+      </div>
+
+      {/* Columna Derecha (Scrollable con Extras en Acordeón) */}
+      <div className="md:w-1/2 space-y-8 mt-8 md:mt-0">
+        <h2 className="text-3xl font-bold text-gray-800">Extras Opcionales</h2>
+        
+        <div className="space-y-4">
+          {/* Item de Agua Alcalina (fuera del acordeón) */}
+          {alcalinaExtra && renderExtraItem(alcalinaExtra)}
+
+          {/* Acordeón para Tinacos */}
+          {tinacoExtras.length > 0 && (
+            <div className="border border-gray-200 rounded-lg">
+              <button
+                onClick={() => setOpenAccordion(openAccordion === 'tinacos' ? null : 'tinacos')}
+                className="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100"
+              >
+                <span className="font-semibold text-lg text-gray-800">Tinacos (Almacenamiento)</span>
+                <span className="text-2xl text-gray-500">{openAccordion === 'tinacos' ? '-' : '+'}</span>
+              </button>
+              {openAccordion === 'tinacos' && (
+                <ul className="p-4 space-y-4 bg-white">
+                  {tinacoExtras.map(renderExtraItem)}
+                </ul>
+              )}
             </div>
           )}
 
-          {/* Vista previa secundaria (vending Atlantis) */}
-          {secondaryImageSrc && (
-            <div className={`${!displayImageSrc ? 'md:w-full' : 'md:w-1/2'} ${displayImageSrc ? 'mt-8 md:mt-0' : ''}`}>
-              <h3 className="text-lg font-semibold text-gray-800">Vista previa de la Vending</h3>
-              <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3">
-                <div className="aspect-[16/9] w-full overflow-hidden rounded-lg bg-gray-50">
-                  <img
-                    src={secondaryImageSrc}
-                    alt={`Imagen secundaria para ${modelData.name}`}
-                    className="h-full w-full object-contain"
-                    loading="lazy"
-                    decoding="async"
-                    draggable="false"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Componente adicional para {modelData.name}.
-                </p>
-              </div>
+          {/* Acordeón para Otros Componentes */}
+          {otherExtras.length > 0 && (
+            <div className="border border-gray-200 rounded-lg">
+              <button
+                onClick={() => setOpenAccordion(openAccordion === 'otros' ? null : 'otros')}
+                className="w-full flex justify-between items-center p-4 bg-gray-50 hover:bg-gray-100"
+              >
+                <span className="font-semibold text-lg text-gray-800">Otros</span>
+                <span className="text-2xl text-gray-500">{openAccordion === 'otros' ? '-' : '+'}</span>
+              </button>
+              {openAccordion === 'otros' && (
+                <ul className="p-4 space-y-4 bg-white">
+                  {otherExtras.map(renderExtraItem)}
+                </ul>
+              )}
             </div>
           )}
         </div>
-      )}
 
-      {/* Lista de extras */}
-      <ul className="space-y-4 max-w-3xl mx-auto">
-        {extras.map((modelExtra) => (
-          <li
-            key={modelExtra.id}
-            className={`border rounded-lg p-4 cursor-pointer transition ${
-              seleccionados.includes(modelExtra.id)
-                ? "border-gray-900 bg-gray-50"
-                : "border-gray-300 hover:border-gray-500"
-            } ${estaDeshabilitado(modelExtra) ? "opacity-50 cursor-not-allowed" : ""}`}
-            onClick={() => {
-              if (!estaDeshabilitado(modelExtra)) toggleExtra(modelExtra.id);
-            }}
+        {/* Botones */}
+        <div className="flex flex-col md:flex-row justify-between gap-4 pt-4">
+          <button
+            onClick={onBack}
+            className="bg-gray-300 text-gray-800 rounded-lg px-6 py-3 hover:bg-gray-400"
           >
-            <div className="flex justify-between items-center gap-4">
-              <div className="min-w-0">
-                <p className="font-medium text-gray-800 break-words">{modelExtra.extra.name}</p>
-                <p className="text-gray-500 text-sm">{modelExtra.extra.description}</p>
-                <p className="text-sm font-bold text-gray-700">
-                  ${(modelExtra.priceOverride ?? modelExtra.extra.basePrice).toLocaleString()} MXN
-                </p>
-              </div>
-              <input
-                type="checkbox"
-                checked={seleccionados.includes(modelExtra.id)}
-                readOnly
-                disabled={estaDeshabilitado(modelExtra)}
-                className="w-5 h-5 accent-black shrink-0"
-              />
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      {/* Botones */}
-      <div className="flex flex-col md:flex-row justify-between gap-4 max-w-3xl mx-auto mt-8">
-        <button
-          onClick={onBack}
-          className="bg-gray-300 text-gray-800 rounded-lg px-6 py-3 hover:bg-gray-400"
-        >
-          ← Regresar
-        </button>
-
-        <button
-          onClick={() => {
-            const extrasSeleccionados = extras.filter((e) => seleccionados.includes(e.id));
-            
-            // Pasar todos los datos relevantes al componente padre
-            onSelect({
-              model: modelData, // El objeto MachineModel completo
-              selectedExtras: extrasSeleccionados, // Los ModelExtra seleccionados
-              displayImage: displayImageSrc, // URL de la imagen principal
-              secondaryImage: secondaryImageSrc, // URL de la imagen secundaria
-              summaryString: currentDisplayString, // Cadena de resumen
-            });
-            onNext();
-          }}
-          className="bg-black text-white rounded-lg px-6 py-3 hover:opacity-90"
-        >
-          Continuar →
-        </button>
+            ← Regresar
+          </button>
+          <button
+            onClick={() => {
+              const extrasSeleccionados = extras.filter((e) => seleccionados.includes(e.id));
+              onSelect({
+                model: modelData,
+                selectedExtras: extrasSeleccionados,
+                displayImage: displayImageSrc,
+                secondaryImage: secondaryImageSrc,
+                summaryString: currentDisplayString,
+              });
+              onNext();
+            }}
+            className="bg-black text-white rounded-lg px-6 py-3 hover:opacity-90"
+          >
+            Continuar →
+          </button>
+        </div>
       </div>
     </div>
   );

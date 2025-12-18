@@ -192,7 +192,7 @@ export default function WizardGeneral() {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.6 }}
-        className="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-20 items-center"
+        className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-20 items-center"
       >
         {id === "Vending" && step === 0 && (
           <div className="col-span-2">
