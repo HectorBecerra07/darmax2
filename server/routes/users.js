@@ -197,7 +197,7 @@ router.post("/forgot-password", async (req, res) => {
       });
     }
 
-    res.status(200).json({ message: "Si existe una cuenta con ese correo, se ha enviado un enlace de recuperación." });
+    res.status(200).json({ message: "Si existe una cuenta con ese correo, se ha enviado un enlace de recuperación (revisa también tu bandeja de spam)." });
 
   } catch (error) {
     console.error("Error en forgot-password:", error);

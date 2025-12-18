@@ -40,7 +40,7 @@ const Register = () => {
         throw new Error(data.message || "No se pudo completar el registro.");
       }
 
-      toast.success("¡Registro casi completo! Revisa tu correo para verificar tu cuenta.", {
+      toast.success("¡Registro casi completo! Revisa tu correo (incluyendo la bandeja de spam) para verificar tu cuenta.", {
         id: toastId,
         duration: 6000, // Make it persistent
       });

@@ -75,8 +75,8 @@ export async function sendOrderConfirmationEmail(orderId) {
 
   } catch (error) {
     console.error(`❌ Error fatal enviando correo para pedido #${orderId}:`, error);
-    // No lanzamos error para no detener el flujo principal del pedido, solo logueamos.
-    return { success: false, error: error.message };
+    // Relanzamos el error para que la tarea de fondo sepa que falló.
+    throw error;
   }
 }
 

@@ -80,7 +80,8 @@ const getBaseEmailHtml = ({
                               font-weight:600;
                               color:#ffffff;
                               text-decoration:none;
-                              border-radius:999px;
+                              border-radius:8px;
+                              background-color:#004aad;
                               background-image:linear-gradient(90deg,#5de0e6 0%,#004aad 100%);
                               font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
                             ">
