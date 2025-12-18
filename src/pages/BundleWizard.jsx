@@ -597,13 +597,16 @@ export default function BundleWizard() {
             return <div className="text-center text-red-500">Por favor, primero selecciona un modelo en el paso anterior.</div>
         }
         return (
-            <Step3ExtrasConfigurator
-                selectedModelId={selectedModel.slug}
-                onSelect={handleExtrasSelect}
-                onNext={nextStep}
-                onBack={prevStep}
-            />
+          <Step3ExtrasConfigurator
+            selectedModelId={selectedModel.slug} // (si tu endpoint realmente recibe slug)
+            hideFooterActions
+            onChange={(payload) => {
+              // aquí guardas la selección sin avanzar de paso
+              setExtrasConfig((prev) => ({ ...prev, [modelType]: payload }));
+            }}
+          />
         );
+
     }
     
     const models = getModelsForCurrentStep();
