@@ -202,14 +202,6 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       {/* Footer acciones (simple) */}
 <div className="mt-auto p-7 pt-0">
   <div className="flex gap-3">
-    {/* Conoce más - izquierda */}
-    <button
-      onClick={() => navigate(modelo.rutaInfo)}
-      className="flex-1 py-3.5 rounded-2xl font-extrabold text-slate-600 border border-slate-200 hover:text-[#24d4da] hover:border-[#24d4da] transition-colors text-sm"
-    >
-      Conoce más
-    </button>
-
     {/* Configurar - derecha */}
     <button
       onClick={() => navigate(configurePath)}
@@ -218,6 +210,15 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
     >
       Configurar
     </button>
+    {/* Conoce más - izquierda */}
+    <button
+      onClick={() => navigate(modelo.rutaInfo)}
+      className="flex-1 py-3.5 rounded-2xl font-extrabold text-slate-600 border border-slate-200 hover:text-[#24d4da] hover:border-[#24d4da] transition-colors text-sm"
+    >
+      Conoce más
+    </button>
+
+    
   </div>
 </div>
 
