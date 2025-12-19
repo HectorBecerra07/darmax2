@@ -470,7 +470,7 @@ export default function Promociones() {
                           Solicitar por WhatsApp
                         </a>
 
-                        {promo.pdf ? (
+                        {false && promo.pdf ? (
                           <a
                             href={encodeURI(promo.pdf)}
                             target="_blank"
@@ -481,7 +481,7 @@ export default function Promociones() {
                             <IconPDF />
                             <span>Ficha técnica</span>
                           </a>
-                        ) : (
+                        ) : false && (
                           <span className="text-[11px] text-slate-400 flex items-center px-2">
                             (PDF próximamente)
                           </span>
