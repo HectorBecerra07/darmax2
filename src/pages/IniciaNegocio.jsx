@@ -200,22 +200,27 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       </div>
 
       {/* Footer acciones (simple) */}
-      <div className="mt-auto p-7 pt-0">
-        <button
-          onClick={() => navigate(configurePath)}
-          className="w-full py-3.5 rounded-2xl font-extrabold text-white transition-transform active:scale-[0.99]"
-          style={{ backgroundColor: BRAND_COLOR }}
-        >
-          Configurar
-        </button>
+<div className="mt-auto p-7 pt-0">
+  <div className="flex gap-3">
+    {/* Conoce más - izquierda */}
+    <button
+      onClick={() => navigate(modelo.rutaInfo)}
+      className="flex-1 py-3.5 rounded-2xl font-extrabold text-slate-600 border border-slate-200 hover:text-[#24d4da] hover:border-[#24d4da] transition-colors text-sm"
+    >
+      Conoce más
+    </button>
 
-        <button
-          onClick={() => navigate(modelo.rutaInfo)}
-          className="w-full mt-3 text-xs font-bold text-slate-400 hover:text-[#24d4da] transition-colors"
-        >
-          Conoce más ›
-        </button>
-      </div>
+    {/* Configurar - derecha */}
+    <button
+      onClick={() => navigate(configurePath)}
+      className="flex-1 py-3.5 rounded-2xl font-extrabold text-white transition-transform active:scale-[0.99]"
+      style={{ backgroundColor: BRAND_COLOR }}
+    >
+      Configurar
+    </button>
+  </div>
+</div>
+
     </article>
   );
 };
