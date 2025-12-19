@@ -100,7 +100,7 @@ const SectionTitle = ({ subtitle, title, align = "center" }) => (
 );
 
 /* =========================
-   TARJETA DE MODELO (Diseño Apple Card)
+   TARJETA DE MODELO (Ultra Premium)
 ========================= */
 const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
   const [errorImagen, setErrorImagen] = useState(false);
@@ -112,90 +112,114 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
     : `/configurar-maquina/${modelo.id}`;
 
   return (
-    <article 
-      className={`relative group flex flex-col h-full bg-white rounded-[2rem] transition-all duration-500 overflow-hidden
-      ${isSelected ? "shadow-[0_0_0_2px_#24d4da] shadow-cyan-500/20" : "hover:shadow-2xl hover:shadow-slate-200/50 border border-slate-100"}`}
+    <article
+      className={[
+        "group relative flex flex-col h-full overflow-hidden",
+        "rounded-3xl bg-white",
+        "border border-slate-200/70",
+        "transition-all duration-300",
+        "hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(15,23,42,0.10)]",
+        isSelected ? "ring-2 ring-[#24d4da]" : "",
+      ].join(" ")}
     >
-      {/* Header Tarjeta */}
-      <div className="p-8 pb-0 relative z-10">
-        {modelo.badge && (
-          <span className="inline-block px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wider mb-4">
-            {modelo.badge}
-          </span>
-        )}
-        <h3 className="text-2xl font-bold text-slate-900 mb-1">{modelo.nombre}</h3>
-        <p className="text-sm text-slate-500 font-medium">{modelo.etiqueta}</p>
-      </div>
-
-      {/* Imagen Flotante */}
-      <div className="relative h-64 w-full flex items-center justify-center my-4 perspective-1000">
-        {/* Círculo decorativo fondo */}
-        <div className="absolute w-48 h-48 bg-gradient-to-tr from-[#24d4da]/20 to-blue-100 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        
-        {!errorImagen ? (
-          <img
-            src={modelo.imagen}
-            alt={modelo.nombre}
-            loading="lazy"
-            className="relative z-10 max-h-full w-auto object-contain transition-transform duration-700 ease-out group-hover:scale-110 group-hover:-translate-y-2"
-            onError={() => setErrorImagen(true)}
-          />
-        ) : (
-          <div className="bg-slate-50 w-full h-full flex flex-col items-center justify-center text-slate-400">
-            <span className="text-4xl mb-2">🖼️</span>
+      {/* Header */}
+      <div className="p-7">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            {modelo.badge && (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-slate-100 text-slate-700">
+                {modelo.badge}
+              </span>
+            )}
+            <h3 className="mt-3 text-xl font-extrabold text-slate-900 tracking-tight">
+              {modelo.nombre}
+            </h3>
+            <p className="mt-1 text-sm font-medium text-slate-500">
+              {modelo.etiqueta}
+            </p>
           </div>
-        )}
+
+          {/* Comparar pill (limpio) */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSelect(modelo.id);
+            }}
+            className={[
+              "shrink-0 inline-flex items-center gap-2",
+              "px-3 py-2 rounded-full border text-xs font-bold",
+              "transition-colors",
+              isSelected
+                ? "border-[#24d4da] bg-[#24d4da]/10 text-[#24d4da]"
+                : "border-slate-200 text-slate-600 hover:border-[#24d4da] hover:text-[#24d4da]",
+            ].join(" ")}
+            title="Comparar"
+          >
+            {isSelected ? (
+              <>
+                <span className="inline-block h-2 w-2 rounded-full bg-[#24d4da]" />
+                Comparando
+              </>
+            ) : (
+              <>
+                <span className="inline-block h-2 w-2 rounded-full bg-slate-300 group-hover:bg-[#24d4da]" />
+                Comparar
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Imagen (muy limpia) */}
+        <div className="mt-6 rounded-2xl bg-slate-50 border border-slate-100 h-56 flex items-center justify-center">
+          {!errorImagen ? (
+            <img
+              src={modelo.imagen}
+              alt={modelo.nombre}
+              loading="lazy"
+              className="max-h-[80%] w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+              onError={() => setErrorImagen(true)}
+            />
+          ) : (
+            <div className="text-slate-400 text-sm font-medium">Imagen no disponible</div>
+          )}
+        </div>
+
+        {/* Precio + texto */}
+        <div className="mt-6">
+          <div className="flex items-baseline justify-between">
+            <span className="text-2xl font-black text-slate-900">
+              {formatMXN(modelo.precio)}
+            </span>
+            <span className="text-xs text-slate-400 font-semibold">+ IVA</span>
+          </div>
+
+          <p className="mt-3 text-sm text-slate-600 leading-relaxed line-clamp-3">
+            {modelo.descripcion}
+          </p>
+        </div>
       </div>
 
-      {/* Contenido Inferior */}
-      <div className="mt-auto p-8 pt-0">
-        <div className="flex items-baseline gap-1 mb-4">
-            <span className="text-3xl font-bold text-slate-900 tracking-tight">{formatMXN(modelo.precio)}</span>
-            <span className="text-xs text-slate-400 font-medium">+ IVA</span>
-        </div>
-        
-        <p className="text-sm text-slate-500 leading-relaxed mb-6 line-clamp-3">
-            {modelo.descripcion}
-        </p>
-
-        <div className="grid grid-cols-4 gap-3">
-           {/* Botón Principal */}
-            <button
-                onClick={() => navigate(configurePath)}
-                className="col-span-3 py-3.5 px-6 rounded-2xl font-bold text-white transition-all duration-300 transform active:scale-95 hover:shadow-lg hover:shadow-[#24d4da]/40"
-                style={{ backgroundColor: BRAND_COLOR }}
-            >
-                Configurar
-            </button>
-
-            {/* Botón Comparar */}
-            <button
-                onClick={(e) => { e.stopPropagation(); onToggleSelect(modelo.id); }}
-                className={`col-span-1 flex items-center justify-center rounded-2xl border-2 transition-all duration-300 ${
-                    isSelected 
-                    ? "border-[#24d4da] bg-[#24d4da]/10 text-[#24d4da]" 
-                    : "border-slate-100 text-slate-400 hover:border-[#24d4da] hover:text-[#24d4da]"
-                }`}
-                title="Comparar"
-            >
-                {isSelected ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                )}
-            </button>
-        </div>
-        
-        <button 
-            onClick={() => navigate(modelo.rutaInfo)}
-            className="w-full mt-4 text-xs font-semibold text-slate-400 hover:text-[#24d4da] transition-colors flex items-center justify-center gap-1"
+      {/* Footer acciones (simple) */}
+      <div className="mt-auto p-7 pt-0">
+        <button
+          onClick={() => navigate(configurePath)}
+          className="w-full py-3.5 rounded-2xl font-extrabold text-white transition-transform active:scale-[0.99]"
+          style={{ backgroundColor: BRAND_COLOR }}
         >
-            CONOCE MAS DE NUESTRO EQUIPO<span className="text-lg leading-none">›</span>
+          Configurar
+        </button>
+
+        <button
+          onClick={() => navigate(modelo.rutaInfo)}
+          className="w-full mt-3 text-xs font-bold text-slate-400 hover:text-[#24d4da] transition-colors"
+        >
+          Conoce más ›
         </button>
       </div>
     </article>
   );
 };
+
 
 /* =========================
    SECCIÓN VENTAJAS (Nuevo Diseño)
