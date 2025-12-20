@@ -347,8 +347,17 @@ const IniciaNegocio = ({ inicioRef }) => {
   return (
     <>
       <Helmet>
-        <title>Modelos & Precios | Darmax Agua</title>
-        <meta name="description" content="Catálogo de purificadoras y vending machines con diseño premium." />
+        <title>
+          Darmax Agua | Purificadoras, Vending y Limpieza para Negocios
+        </title>
+        <meta
+          name="description"
+          content="Emprende con Darmax Agua: tu aliado en purificadoras, vending y limpieza. Inicia tu negocio rentable de agua purificada, máquinas vending y productos de limpieza a granel en México. Te ofrecemos modelos de negocio escalables y acompañamiento 360° para tu éxito."
+        />
+        <meta
+          name="keywords"
+          content="Darmax Agua, purificadoras, vending, limpieza, negocios de agua, emprender en México, máquinas de agua, purificadoras de agua, negocio rentable, equipos de vending, productos de limpieza a granel, iniciar negocio"
+        />
       </Helmet>
 
       <main ref={inicioRef} className="min-h-screen bg-[#Fbfbfd] selection:bg-[#24d4da] selection:text-white">
