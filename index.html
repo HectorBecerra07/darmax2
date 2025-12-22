@@ -42,50 +42,115 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet" />
 
-    <!-- Datos estructurados (SUPER SEO / CEO) -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "Organization",
-            "@id": "https://darmaxagua.com.mx/#organization",
-            "name": "Darmax Agua",
-            "url": "https://darmaxagua.com.mx/",
-            "logo": "https://darmaxagua.com.mx/img/darmax-logo.png",
-            "description": "Empresa líder en purificación de agua, máquinas vending y soluciones de limpieza para negocios.",
-            "sameAs": [
-              "https://www.facebook.com/Darmaxagua/",
-              "https://www.instagram.com/darmax_agua/"
-            ],
-            "knowsAbout": [
-              "Purificadoras de agua",
-              "Plantas purificadoras",
-              "Ósmosis inversa",
-              "Tratamiento de agua",
-              "Negocio de agua purificada",
-              "Máquinas vending 24/7",
-              "Máquinas expendedoras",
-              "Productos de limpieza industrial"
-            ]
-          },
-          {
-            "@type": "Person",
-            "@id": "https://darmaxagua.com.mx/#ceo",
-            "name": "Maximiliano Rodriguez De La Torre",
-            "jobTitle": "Directora General",
-            "worksFor": { "@id": "https://darmaxagua.com.mx/#organization" }
-          },
-          {
-            "@type": "WebSite",
-            "@id": "https://darmaxagua.com.mx/#website",
-            "url": "https://darmaxagua.com.mx/",
-            "name": "Darmax Agua",
-            "publisher": { "@id": "https://darmaxagua.com.mx/#organization" }
-          }
-        ]
+   <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://darmaxagua.com.mx/#organization",
+      "name": "Darmax Agua",
+      "url": "https://darmaxagua.com.mx/",
+      "logo": "https://darmaxagua.com.mx/img/darmax-logo.png",
+      "image": "https://darmaxagua.com.mx/img/og-image.png",
+      "description": "Empresa líder en purificación de agua, máquinas vending y soluciones de limpieza para negocios.",
+      "sameAs": [
+        "https://www.facebook.com/Darmaxagua/",
+        "https://www.instagram.com/darmax_agua/"
+      ]
+    },
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://darmaxagua.com.mx/#localbusiness",
+      "name": "Darmax Agua",
+      "url": "https://darmaxagua.com.mx/",
+      "image": "https://darmaxagua.com.mx/img/og-image.png",
+      "logo": "https://darmaxagua.com.mx/img/darmax-logo.png",
+      "description": "Purificadoras de agua, vending 24/7 y productos de limpieza para negocios. Inicia tu negocio rentable con equipo profesional.",
+      "parentOrganization": { "@id": "https://darmaxagua.com.mx/#organization" },
+      "areaServed": "MX",
+      "currenciesAccepted": "MXN",
+      "priceRange": "$$",
+      "knowsAbout": [
+        "Purificadoras de agua",
+        "Plantas purificadoras",
+        "Ósmosis inversa",
+        "Tratamiento de agua",
+        "Negocio de agua purificada",
+        "Máquinas vending 24/7",
+        "Máquinas expendedoras",
+        "Productos de limpieza industrial",
+        "Mantenimiento de purificadoras",
+        "Capacitación para purificadoras"
+      ],
+      "makesOffer": [
+        {
+          "@type": "Offer",
+          "name": "Equipos de purificación de agua",
+          "category": "Purificación de agua"
+        },
+        {
+          "@type": "Offer",
+          "name": "Máquinas vending 24/7",
+          "category": "Vending"
+        },
+        {
+          "@type": "Offer",
+          "name": "Productos de limpieza para negocios",
+          "category": "Limpieza industrial"
+        }
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://darmaxagua.com.mx/#ceo",
+      "name": "Maximiliano Rodriguez De La Torre",
+      "jobTitle": "Director General",
+      "worksFor": { "@id": "https://darmaxagua.com.mx/#organization" }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://darmaxagua.com.mx/#website",
+      "url": "https://darmaxagua.com.mx/",
+      "name": "Darmax Agua",
+      "publisher": { "@id": "https://darmaxagua.com.mx/#organization" },
+      "inLanguage": "es-MX",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://darmaxagua.com.mx/productos?search={search_term_string}",
+        "query-input": "required name=search_term_string"
       }
-    </script>
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://darmaxagua.com.mx/#webpage",
+      "url": "https://darmaxagua.com.mx/",
+      "name": "Darmax Agua | Purificadoras, Vending y Limpieza para Negocios",
+      "description": "Darmax Agua es líder en purificadoras de agua, máquinas vending y soluciones de limpieza. Inicia tu negocio rentable 24/7 con tecnología profesional.",
+      "isPartOf": { "@id": "https://darmaxagua.com.mx/#website" },
+      "about": { "@id": "https://darmaxagua.com.mx/#localbusiness" },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://darmaxagua.com.mx/img/og-image.png"
+      },
+      "inLanguage": "es-MX"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://darmaxagua.com.mx/#breadcrumbs",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Inicio",
+          "item": "https://darmaxagua.com.mx/"
+        }
+      ]
+    }
+  ]
+}
+</script>
+
   </head>
 
   <body class="min-w-full min-h-screen bg-white text-gray-800 font-sans">
