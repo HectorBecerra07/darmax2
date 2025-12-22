@@ -7,145 +7,200 @@ const imagenes = [
   "/img/trabajos/trabajos4.jpg",
 ];
 
-export default function GaleriaGridPro() {
-  // Puedes personalizar títulos/descripciones por imagen (opcional)
+export default function GaleriaMosaicoPremium() {
   const items = useMemo(
     () =>
       imagenes.map((src, idx) => ({
         src,
-        title: `Proyecto #${idx + 1}`,
-        desc: "Instalación profesional • Calidad Darmax • Resultado premium",
-        tag: idx % 2 === 0 ? "Residencial" : "Comercial",
+        title: `Proyecto ${idx + 1}`,
+        desc:
+          idx === 0
+            ? "Instalación completa lista para operar."
+            : idx === 1
+            ? "Acabado limpio y montaje profesional."
+            : idx === 2
+            ? "Optimización de espacio y flujo."
+            : "Detalles que elevan la experiencia.",
       })),
     []
   );
 
   return (
-    <section className="w-full bg-[#Fbfbfd] py-20 px-4 overflow-hidden selection:bg-[#24d4da] selection:text-white">
-      <div className="max-w-7xl mx-auto relative">
-        {/* Decoración de fondo sutil */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none overflow-visible">
-          <div className="absolute top-[-100px] right-[-100px] w-96 h-96 bg-[#24d4da]/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-[-50px] left-[-50px] w-64 h-64 bg-blue-400/5 rounded-full blur-3xl" />
-        </div>
+    <section className="relative w-full bg-slate-900 py-24 px-4 overflow-hidden selection:bg-[#24d4da] selection:text-white">
+      {/* ===== Glow Effects Background (igual al HERO) ===== */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full overflow-hidden z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-[#24d4da] rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-blue-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20" />
+      </div>
 
+      {/* Layer extra para profundidad (opcional, se ve más pro) */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent z-0 pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <div className="text-center mb-14 relative z-10">
-          <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
-            Galería de Proyectos
-          </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            Nuestros Trabajos Recientes
-          </h2>
-          <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
-            Una muestra de instalaciones y proyectos reales. Pasa el cursor para ver detalles.
-          </p>
+        <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12">
+          <div className="max-w-2xl">
+            <span className="text-[#24d4da] font-extrabold tracking-[0.28em] text-xs uppercase block">
+              Galería de proyectos
+            </span>
+            <h2 className="mt-4 text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.05]">
+              Trabajos recientes con acabado premium
+            </h2>
+            <p className="mt-5 text-white/75 text-lg leading-relaxed">
+              Un mosaico limpio y moderno. Pasa el cursor para ver el detalle del proyecto.
+            </p>
+          </div>
+
+          {/* Mini CTA / contador (glass) */}
+          <div className="shrink-0">
+            <div className="inline-flex items-center gap-3 rounded-full bg-white/10 backdrop-blur-xl border border-white/10 px-5 py-3 shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#24d4da]" />
+              <span className="text-sm font-semibold text-white/85">
+                {items.length} proyectos destacados
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* GRID */}
-        <div className="relative z-10">
-          <div
-            className="
-              grid gap-6
-              grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
-              auto-rows-[220px] sm:auto-rows-[240px] lg:auto-rows-[260px]
-            "
-          >
-            {items.map((it, idx) => {
-              const big =
-                idx === 0 || idx === 5; // tiles grandes (ajusta si quieres)
-              return (
-                <figure
-                  key={it.src}
-                  className={`
-                    group relative overflow-hidden rounded-[2rem]
-                    border border-slate-100 bg-white
-                    shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)]
-                    transition-all duration-500
-                    hover:-translate-y-2 hover:shadow-[0_25px_60px_-20px_rgba(36,212,218,0.25)]
-                    ${big ? "sm:col-span-2 lg:col-span-2" : ""}
-                  `}
-                >
-                  {/* Imagen */}
-                  <img
-                    src={it.src}
-                    alt={it.title}
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src =
-                        "https://placehold.co/1200x800/f1f5f9/94a3b8?text=Imagen+No+Disponible";
-                    }}
-                    className="
-                      absolute inset-0 h-full w-full object-cover
-                      transition-all duration-700
-                      group-hover:scale-110
-                      group-hover:blur-[2px]
-                      group-hover:brightness-[0.70]
-                    "
-                  />
-
-                  {/* Degradado base para legibilidad */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/10 to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
-
-                  {/* Contenido hover */}
-                  <figcaption
-                    className="
-                      absolute inset-0 p-6 sm:p-7
-                      flex flex-col justify-end
-                      text-white
-                      opacity-0 translate-y-4
-                      transition-all duration-500
-                      group-hover:opacity-100 group-hover:translate-y-0
-                    "
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase">
-                        <span className="h-2 w-2 rounded-full bg-[#24d4da]" />
-                        {it.tag}
-                      </span>
-                      <span className="text-xs font-bold text-white/80">
-                        Darmax
-                      </span>
-                    </div>
-
-                    <h3 className="mt-3 text-xl sm:text-2xl font-extrabold tracking-tight">
-                      {it.title}
-                    </h3>
-
-                    <p className="mt-2 text-sm sm:text-[15px] text-white/85 leading-relaxed max-w-[40ch]">
-                      {it.desc}
-                    </p>
-
-                    {/* CTA mini */}
-                    <div className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-white">
-                      Ver detalles
-                      <span className="transition-transform duration-300 group-hover:translate-x-1">
-                        →
-                      </span>
-                    </div>
-                  </figcaption>
-
-                  {/* Badge fijo (sin hover) */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className="bg-white/90 backdrop-blur text-slate-900 text-xs font-extrabold px-3 py-1.5 rounded-full shadow-sm border border-white/60">
-                      #{idx + 1}
-                    </span>
-                  </div>
-
-                  {/* Ring hover suave */}
-                  <div className="pointer-events-none absolute inset-0 rounded-[2rem] ring-0 ring-[#24d4da]/30 transition group-hover:ring-2" />
-                </figure>
-              );
-            })}
+        <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7">
+          {/* Columna izquierda */}
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            <MediaCard
+              src={items[0].src}
+              title={items[0].title}
+              desc={items[0].desc}
+              badge="Destacado"
+              className="h-[280px] sm:h-[360px] lg:h-[360px]"
+            />
+            <MediaCard
+              src={items[1].src}
+              title={items[1].title}
+              desc={items[1].desc}
+              className="h-[260px] sm:h-[320px] lg:h-[320px]"
+            />
           </div>
 
-          {/* Nota UX móvil */}
-          <p className="mt-8 text-center text-xs text-slate-500">
-            Tip: en móvil, mantén presionada la imagen para apreciar el texto (hover no siempre aplica).
-          </p>
+          {/* Centro */}
+          <div className="lg:col-span-5">
+            <MediaCard
+              src={items[2].src}
+              title={items[2].title}
+              desc={items[2].desc}
+              hero
+              className="h-[360px] sm:h-[460px] lg:h-[700px]"
+            />
+          </div>
+
+          {/* Derecha */}
+          <div className="lg:col-span-3 flex flex-col gap-6">
+            {/* Bloque texto (glass dark) */}
+            <div className="rounded-[2rem] bg-white/10 backdrop-blur-xl border border-white/10 shadow-[0_18px_50px_rgba(0,0,0,0.35)] p-7 lg:p-8">
+              <p className="text-white/75 text-sm leading-relaxed">
+                Cada instalación está pensada para que el negocio se vea{" "}
+                <span className="font-extrabold text-white">premium</span>, sea{" "}
+                <span className="font-extrabold text-white">fácil de operar</span> y{" "}
+                <span className="font-extrabold text-white">rentable</span>.
+              </p>
+              <div className="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-white">
+                Ver más trabajos <span className="text-[#24d4da]">→</span>
+              </div>
+            </div>
+
+            <MediaCard
+              src={items[3].src}
+              title={items[3].title}
+              desc={items[3].desc}
+              className="h-[260px] sm:h-[320px] lg:h-[320px]"
+            />
+          </div>
         </div>
+
+        <p className="mt-10 text-center text-xs text-white/55">
+          Tip: en móvil, toca la imagen para ver el texto (hover no siempre aplica).
+        </p>
       </div>
     </section>
+  );
+}
+
+function MediaCard({ src, title, desc, className = "", badge, hero = false }) {
+  return (
+    <figure
+      className={[
+        "group relative overflow-hidden rounded-[2.5rem]",
+        "bg-white/5 backdrop-blur-xl border border-white/10",
+        "shadow-[0_18px_50px_rgba(0,0,0,0.35)]",
+        "transition-all duration-500",
+        "hover:-translate-y-1 hover:shadow-[0_30px_90px_-45px_rgba(36,212,218,0.35)]",
+        className,
+      ].join(" ")}
+    >
+      {/* Glow interno hover */}
+      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-[#24d4da]/18 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 h-56 w-56 rounded-full bg-blue-600/12 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+      {/* Imagen */}
+      <img
+        src={src}
+        alt={title}
+        loading="lazy"
+        onError={(e) => {
+          e.currentTarget.onerror = null;
+          e.currentTarget.src =
+            "https://placehold.co/1200x800/0f172a/94a3b8?text=Imagen+No+Disponible";
+        }}
+        className="
+          absolute inset-0 h-full w-full object-cover
+          transition-all duration-700
+          group-hover:scale-110
+          group-hover:blur-[2px]
+          group-hover:brightness-[0.70]
+        "
+      />
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-900/15 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-100" />
+
+      {/* Shimmer suave */}
+      <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute -inset-x-24 top-0 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-12 translate-x-[-40%] group-hover:translate-x-[45%] transition-transform duration-[1200ms]" />
+      </div>
+
+      {/* Badge */}
+      {badge && (
+        <div className="absolute top-5 left-5 z-10">
+          <span className="bg-white/90 backdrop-blur text-slate-900 text-xs font-extrabold px-3 py-1.5 rounded-full">
+            {badge}
+          </span>
+        </div>
+      )}
+
+      {/* Contenido */}
+      <figcaption
+        className={[
+          "absolute inset-0 p-7 sm:p-8",
+          "flex flex-col justify-end text-white",
+          "opacity-0 translate-y-5 transition-all duration-500",
+          "group-hover:opacity-100 group-hover:translate-y-0",
+        ].join(" ")}
+      >
+        <h3 className={hero ? "text-3xl font-extrabold tracking-tight" : "text-2xl font-extrabold tracking-tight"}>
+          {title}
+        </h3>
+        <p className="mt-2 text-sm text-white/85 leading-relaxed max-w-[46ch]">
+          {desc}
+        </p>
+        <div className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold">
+          Ver detalles
+          <span className="transition-transform duration-300 group-hover:translate-x-1 text-[#24d4da]">
+            →
+          </span>
+        </div>
+      </figcaption>
+
+      {/* Ring glow */}
+      <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] ring-0 ring-[#24d4da]/25 transition group-hover:ring-2" />
+    </figure>
   );
 }

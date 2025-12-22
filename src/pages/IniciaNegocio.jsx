@@ -99,9 +99,6 @@ const SectionTitle = ({ subtitle, title, align = "center" }) => (
   </div>
 );
 
-/* =========================
-   TARJETA DE MODELO (Ultra Premium)
-========================= */
 const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
   const [errorImagen, setErrorImagen] = useState(false);
   const isSelected = selected.includes(modelo.id);
@@ -114,32 +111,42 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
   return (
     <article
       className={[
-        "group relative flex flex-col h-full overflow-hidden",
-        "rounded-3xl bg-white",
-        "border border-slate-200/70",
+        "group relative flex flex-col h-full overflow-hidden rounded-3xl bg-white",
         "transition-all duration-300",
-        "hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(15,23,42,0.10)]",
+        "hover:-translate-y-2 hover:shadow-[0_28px_70px_-30px_rgba(15,23,42,0.35)]",
+        "focus-within:-translate-y-2 focus-within:shadow-[0_28px_70px_-30px_rgba(15,23,42,0.35)]",
         isSelected ? "ring-2 ring-[#24d4da]" : "",
       ].join(" ")}
     >
+      {/* Borde degradado premium (no rompe el layout) */}
+      <div className="pointer-events-none absolute inset-0 rounded-3xl p-[1px] bg-gradient-to-br from-[#24d4da]/35 via-transparent to-slate-200/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl bg-white" />
+
+      {/* Glow suave */}
+      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-[#24d4da]/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 h-56 w-56 rounded-full bg-blue-400/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
       {/* Header */}
-      <div className="p-7">
+      <div className="relative p-7">
         <div className="flex items-start justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             {modelo.badge && (
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-slate-100 text-slate-700">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-extrabold tracking-widest uppercase bg-slate-100 text-slate-700">
+                <span className="h-2 w-2 rounded-full bg-[#24d4da]" />
                 {modelo.badge}
               </span>
             )}
+
             <h3 className="mt-3 text-xl font-extrabold text-slate-900 tracking-tight">
               {modelo.nombre}
             </h3>
-            <p className="mt-1 text-sm font-medium text-slate-500">
+
+            <p className="mt-1 text-sm font-semibold text-slate-500">
               {modelo.etiqueta}
             </p>
           </div>
 
-          {/* Comparar pill (limpio) */}
+          {/* Comparar pill (con micro-interacción) */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -147,46 +154,57 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
             }}
             className={[
               "shrink-0 inline-flex items-center gap-2",
-              "px-3 py-2 rounded-full border text-xs font-bold",
-              "transition-colors",
+              "px-3 py-2 rounded-full border text-xs font-extrabold",
+              "transition-all duration-300",
+              "active:scale-[0.98]",
               isSelected
-                ? "border-[#24d4da] bg-[#24d4da]/10 text-[#24d4da]"
-                : "border-slate-200 text-slate-600 hover:border-[#24d4da] hover:text-[#24d4da]",
+                ? "border-[#24d4da] bg-[#24d4da]/10 text-[#24d4da] shadow-[0_10px_25px_-15px_rgba(36,212,218,0.65)]"
+                : "border-slate-200 text-slate-600 hover:border-[#24d4da] hover:text-[#24d4da] hover:bg-[#24d4da]/5",
             ].join(" ")}
             title="Comparar"
           >
-            {isSelected ? (
-              <>
-                <span className="inline-block h-2 w-2 rounded-full bg-[#24d4da]" />
-                Comparando
-              </>
-            ) : (
-              <>
-                <span className="inline-block h-2 w-2 rounded-full bg-slate-300 group-hover:bg-[#24d4da]" />
-                Comparar
-              </>
-            )}
+            <span
+              className={[
+                "inline-block h-2 w-2 rounded-full transition-colors duration-300",
+                isSelected ? "bg-[#24d4da]" : "bg-slate-300 group-hover:bg-[#24d4da]",
+              ].join(" ")}
+            />
+            {isSelected ? "Comparando" : "Comparar"}
           </button>
         </div>
 
-        {/* Imagen (muy limpia) */}
-        <div className="mt-6 rounded-2xl bg-slate-50 border border-slate-100 h-56 flex items-center justify-center">
+        {/* Imagen premium */}
+        <div className="relative mt-6 rounded-2xl bg-gradient-to-b from-slate-50 to-white h-56 flex items-center justify-center overflow-hidden">
+          {/* shimmer suave */}
+          <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            <div className="absolute -inset-x-10 top-0 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent rotate-12 translate-x-[-30%] group-hover:translate-x-[40%] transition-transform duration-[1200ms]" />
+          </div>
+
           {!errorImagen ? (
             <img
               src={modelo.imagen}
               alt={modelo.nombre}
               loading="lazy"
-              className="max-h-[80%] w-auto object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+              className="
+                relative z-10 max-h-[82%] w-auto object-contain
+                transition-transform duration-500 ease-out
+                group-hover:scale-[1.06]
+              "
               onError={() => setErrorImagen(true)}
             />
           ) : (
-            <div className="text-slate-400 text-sm font-medium">Imagen no disponible</div>
+            <div className="text-slate-400 text-sm font-semibold">
+              Imagen no disponible
+            </div>
           )}
+
+          {/* sombra inferior sutil */}
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-900/5 to-transparent" />
         </div>
 
         {/* Precio + texto */}
         <div className="mt-6">
-          <div className="flex items-baseline justify-between">
+          <div className="flex items-end justify-between gap-3">
             <span className="text-2xl font-black text-slate-900">
               {formatMXN(modelo.precio)}
             </span>
@@ -196,32 +214,62 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
           <p className="mt-3 text-sm text-slate-600 leading-relaxed line-clamp-3">
             {modelo.descripcion}
           </p>
+
+          {/* mini divider */}
+          <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
         </div>
       </div>
 
-      {/* Footer acciones (simple) */}
-<div className="mt-auto p-7 pt-0">
-  <div className="flex gap-3">
-    {/* Configurar - derecha */}
-    <button
-      onClick={() => navigate(configurePath)}
-      className="flex-1 py-3.5 rounded-2xl font-extrabold text-white transition-transform active:scale-[0.99]"
-      style={{ backgroundColor: BRAND_COLOR }}
-    >
-      Configurar
-    </button>
-    {/* Conoce más - izquierda */}
-    <button
-      onClick={() => navigate(modelo.rutaInfo)}
-      className="flex-1 py-3.5 rounded-2xl font-extrabold text-slate-600 border border-slate-200 hover:text-[#24d4da] hover:border-[#24d4da] transition-colors text-sm"
-    >
-      Conoce más
-    </button>
+      {/* Footer acciones */}
+      <div className="relative mt-auto p-7 pt-0">
+        <div className="flex gap-3">
+          {/* Configurar */}
+          <button
+            onClick={() => navigate(configurePath)}
+            className="
+              flex-1 py-3.5 rounded-2xl font-extrabold text-white
+              transition-all duration-300
+              hover:shadow-[0_18px_35px_-18px_rgba(36,212,218,0.75)]
+              active:scale-[0.99]
+              relative overflow-hidden
+            "
+            style={{ backgroundColor: BRAND_COLOR }}
+          >
+            {/* glow sweep */}
+            <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <span className="absolute -inset-x-10 top-0 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent rotate-12 translate-x-[-40%] group-hover:translate-x-[45%] transition-transform duration-[1200ms]" />
+            </span>
+            <span className="relative">Configurar</span>
+          </button>
 
-    
-  </div>
-</div>
+          {/* Conoce más */}
+          <button
+            onClick={() => navigate(modelo.rutaInfo)}
+            className="
+              flex-1 py-3.5 rounded-2xl font-extrabold text-slate-700
+              border border-slate-200
+              hover:text-[#24d4da] hover:border-[#24d4da]
+              hover:bg-[#24d4da]/5
+              transition-all duration-300
+              active:scale-[0.99]
+            "
+          >
+            Conoce más
+          </button>
+        </div>
 
+        {/* hint en hover (muy discreto) */}
+        <div className="mt-4 flex items-center justify-between text-[11px] text-slate-400">
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+            Tip: compara 2+ modelos
+          </span>
+          {isSelected && (
+            <span className="text-[#24d4da] font-bold">
+              Seleccionado ✓
+            </span>
+          )}
+        </div>
+      </div>
     </article>
   );
 };
@@ -264,54 +312,84 @@ function VentajasSection() {
     },
   ];
 
-
   return (
-    <section className="bg-white py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section className="relative overflow-hidden bg-slate-900 py-24 sm:py-32 selection:bg-[#24d4da] selection:text-white">
+      {/* Glow Effects Background (igual al HERO) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full overflow-hidden z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-[#24d4da] rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-blue-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20" />
+      </div>
+
+      {/* Gradiente suave para profundidad */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent z-0 pointer-events-none" />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        {/* Header */}
         <div className="mx-auto max-w-2xl lg:text-center">
-          <h2 className="text-base font-semibold leading-7 text-[#24d4da]">Tu Éxito, Nuestra Misión</h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+          <h2 className="text-xs font-extrabold tracking-[0.35em] uppercase text-[#24d4da]">
+            Tu Éxito, Nuestra Misión
+          </h2>
+          <p className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             Todo lo que necesitas para emprender.
           </p>
-          <p className="mt-6 text-lg leading-8 text-slate-600">
+          <p className="mt-6 text-lg leading-8 text-white/75">
             Hemos perfeccionado cada aspecto del negocio para que tu única preocupación sea ver crecer tus ganancias.
           </p>
         </div>
+
+        {/* Grid */}
         <div className="mx-auto mt-16 max-w-6xl sm:mt-20 lg:mt-24">
           <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {ventajas.map((v) => (
               <div
                 key={v.title}
                 className="
-                  group rounded-[28px] bg-white
-                  border border-slate-200/70
-                  shadow-[0_18px_35px_rgba(15,23,42,0.08)]
+                  group relative overflow-hidden rounded-[28px]
+                  bg-white/5 backdrop-blur-xl
+                  border border-white/10
+                  shadow-[0_18px_50px_rgba(0,0,0,0.35)]
                   transition-all duration-300
-                  hover:-translate-y-2 hover:bg-[#1e25331a]
-                  overflow-hidden
+                  hover:-translate-y-2 hover:bg-white/10
                 "
               >
-                <div className="px-4 py-7 text-center">
+                {/* Glow interno al hover */}
+                <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-[#24d4da]/20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="pointer-events-none absolute -bottom-24 -left-24 h-56 w-56 rounded-full bg-blue-600/15 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                {/* Shimmer suave */}
+                <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <div className="absolute -inset-x-24 top-0 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-12 translate-x-[-40%] group-hover:translate-x-[45%] transition-transform duration-[1200ms]" />
+                </div>
+
+                <div className="relative px-5 py-8 text-center">
                   {/* Icono */}
-                  <div className="mx-auto mb-5 grid h-16 w-16 place-items-center">
+                  <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-white/5 border border-white/10">
                     <img
                       src={v.img}
                       alt={v.title}
-                      className="h-14 w-12 object-contain"
+                      className="h-12 w-12 object-contain drop-shadow"
                       loading="lazy"
                     />
                   </div>
 
                   {/* Título */}
-                  <dt className="text-[17px] font-extrabold italic text-slate-900">
+                  <dt className="text-[16px] font-extrabold text-white">
                     {v.title}
                   </dt>
 
                   {/* Descripción */}
-                  <dd className="mt-3 text-[13px] leading-relaxed text-slate-700 italic">
+                  <dd className="mt-3 text-[13px] leading-relaxed text-white/75">
                     {v.desc}
                   </dd>
+
+                  {/* Mini acento */}
+                  <div className="mt-6 flex justify-center">
+                    <span className="h-1 w-12 rounded-full bg-gradient-to-r from-[#24d4da] to-blue-500 opacity-70 group-hover:opacity-100 transition-opacity" />
+                  </div>
                 </div>
+
+                {/* Ring glow */}
+                <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-0 ring-[#24d4da]/25 transition group-hover:ring-2" />
               </div>
             ))}
           </dl>
@@ -320,7 +398,6 @@ function VentajasSection() {
     </section>
   );
 }
-
 /* =========================
    PÁGINA PRINCIPAL
 ========================= */
