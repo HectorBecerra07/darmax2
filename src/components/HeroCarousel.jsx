@@ -8,13 +8,27 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 const imagenes = [
-  "/img/IMAGENES PARA WEB DARMAX 29 JUL/CARRUSEL PROMOCIONES 1.png",
-  "/img/IMAGENES PARA WEB DARMAX 29 JUL/carrusel PROMOSIONES 2.png",
-  "/img/PROMOCIONES/PROMOCION1.png",
-  "/img/PROMOCIONES/PROMOCION3.jpg",
+  // "/img/IMAGENES PARA WEB DARMAX 29 JUL/CARRUSEL PROMOCIONES 1.png",
+  // "/img/IMAGENES PARA WEB DARMAX 29 JUL/carrusel PROMOSIONES 2.png",
+  // "/img/PROMOCIONES/PROMOCION1.png",
+  // "/img/PROMOCIONES/PROMOCION3.jpg",
 ];
 
 export default function HeroCarousel({ className }) {
+  const hasCarouselImages = imagenes.length > 0;
+
+  // If no images, just render the HeroBannerSlide directly, taking full width
+  if (!hasCarouselImages) {
+    return (
+      <div className={`relative w-full overflow-hidden ${className}`}>
+        <div className="w-full aspect-video max-h-[600px]">
+          <HeroBannerSlide />
+        </div>
+      </div>
+    );
+  }
+
+  // If there are images, render the full Swiper carousel
   return (
     <div className={`relative w-full hero-carousel-container overflow-hidden ${className}`}>
       <style>{`

@@ -31,7 +31,7 @@ export default function HeroBannerSlide() {
 
         {/* Center Column (Text) */}
         <div className="w-full lg:w-1/3 text-center flex flex-col items-center">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-6">
             Emprende Tu
             <span style={{ color: "#d4ff00" }}> Negocio</span>
           </h1>
