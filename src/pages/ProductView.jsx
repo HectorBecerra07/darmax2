@@ -162,42 +162,40 @@ const ProductView = () => {
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
             
             {/* Image Gallery */}
-            <div className="md:sticky md:top-24 h-max">
-              <div className="flex flex-col-reverse gap-4">
-                {allProductImages.length > 1 && (
-                  <div className="flex overflow-x-auto md:overflow-x-hidden md:flex-col gap-3 justify-start -mb-2 pb-2">
-                    {allProductImages.map((img, index) => (
-                      <div
-                        key={img.id || index}
-                        className={`cursor-pointer rounded-lg border-2 transition-all duration-200 shrink-0 ${selectedImage === img.url ? 'border-[#24d4da] shadow-md' : 'border-transparent hover:border-gray-300'}`}
-                        onClick={() => setSelectedImage(img.url)}
-                      >
-                        <img
-                          src={img.url}
-                          alt={`Thumbnail ${index + 1}`}
-                          className="h-16 w-16 md:h-20 md:w-20 object-cover rounded-md"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div ref={imageContainerRef} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} className="relative aspect-w-4 aspect-h-3 md:aspect-square w-full max-w-md mx-auto md:max-w-none bg-gray-50 rounded-2xl overflow-hidden group shadow-lg">
-                  <img src={selectedImage || "https://via.placeholder.com/600x600"} alt={product.nombre} className="w-full h-full object-contain transition-transform duration-300 ease-in-out group-hover:scale-125" />
+            <div className="flex flex-col-reverse md:flex-row gap-4">
+              {allProductImages.length > 1 && (
+                <div className="flex md:flex-col gap-3 justify-center md:justify-start">
+                  {allProductImages.map((img, index) => (
+                    <div
+                      key={img.id || index}
+                      className={`cursor-pointer rounded-lg border-2 transition-all duration-200 ${selectedImage === img.url ? 'border-[#24d4da] shadow-md' : 'border-transparent hover:border-gray-300'}`}
+                      onClick={() => setSelectedImage(img.url)}
+                    >
+                      <img
+                        src={img.url}
+                        alt={`Thumbnail ${index + 1}`}
+                        className="h-20 w-20 object-cover rounded-md"
+                      />
+                    </div>
+                  ))}
                 </div>
+              )}
+              <div ref={imageContainerRef} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} className="relative aspect-square w-full bg-gray-50 rounded-2xl overflow-hidden group shadow-lg">
+                <img src={selectedImage || "https://via.placeholder.com/600x600"} alt={product.nombre} className="w-full h-full object-contain transition-transform duration-300 ease-in-out group-hover:scale-125" />
               </div>
             </div>
 
             {/* Product Info */}
             <div className="flex flex-col">
               <span className="text-sm font-bold uppercase tracking-wider text-[#007377]">{product.categoria?.nombre || 'Categoría'}</span>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-1">{product.nombre}</h1>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mt-1">{product.nombre}</h1>
               <span className="text-xs text-gray-500 mt-2">ID de producto: #{product.id}</span>
               
-              <p className="text-3xl md:text-4xl font-black text-[#24d4da] mt-4">
-                ${Number(product.precio).toFixed(2)} <span className="text-xl md:text-2xl text-gray-500 font-medium">MXN</span>
+              <p className="text-4xl font-black text-[#24d4da] mt-4">
+                ${Number(product.precio).toFixed(2)} <span className="text-2xl text-gray-500 font-medium">MXN</span>
               </p>
 
               <div className="mt-6">

@@ -12,7 +12,6 @@ import ScrollToTop from "./components/ScrollToTop";
 import LandingPage from "./components/LandingPage";
 import Nosotros from "./pages/Nosotros";
 import IniciaNegocio from "./pages/IniciaNegocio";
-import Promociones from "./pages/Promociones";
 import ProyectosEmpresariales from "./pages/ProyectosEmpresariales";
 import Productos from "./pages/Productos";
 import ProductView from "./pages/ProductView";
@@ -190,14 +189,6 @@ function AppContent() {
                     element={
                       <PageWrapper>
                         <MegalodonInfo />
-                      </PageWrapper>
-                    }
-                  />
-                  <Route
-                    path="/promociones"
-                    element={
-                      <PageWrapper>
-                        <Promociones />
                       </PageWrapper>
                     }
                   />
