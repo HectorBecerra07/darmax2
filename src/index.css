@@ -3,7 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* ----------- Reset General ----------- */
 html,
 body,
@@ -14,7 +13,6 @@ body,
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  overflow-x: hidden;
   background-color: #fff;
   scroll-behavior: smooth;
 }
@@ -26,6 +24,7 @@ body,
 }
 
 body {
+  overflow-x: hidden;
   font-family: 'Bangers', cursive;
   font-style: italic;
   color: #333;

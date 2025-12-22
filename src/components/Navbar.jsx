@@ -83,7 +83,9 @@ export default function NavBar() {
       <>
         {/* NAVBAR */}
         <nav
-          className={`fixed top-0 left-0 w-full z-30 transition-all duration-300 bg-gray-900/95 backdrop-blur-lg`}
+          className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${
+            isScrolled ? 'bg-slate-800/70 backdrop-blur-lg' : 'bg-gray-900'
+          }`}
         >
           <div className="max-w-7xl mx-auto grid grid-cols-3 items-center h-20 px-4 sm:px-6 nav:px-8 md:flex md:justify-between">
             {/* Logo */}

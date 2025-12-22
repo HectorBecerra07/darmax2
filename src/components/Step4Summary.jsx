@@ -1,6 +1,7 @@
 // Archivo: Step4Summary.jsx
 import React from "react";
 import jsPDF from "jspdf";
+import toast from "react-hot-toast";
 
 const BRAND_BLUE = "#5188C9";
 const BRAND_TEAL = "#03A4A4";
@@ -51,7 +52,7 @@ export default function Step4Summary({
       const M = 15;
 
       // Carga logo
-      const logo = await loadImage("/img/darmax-logo.png");
+      const logo = await loadImage("/img/logo_darmaxnav.png");
       const LOGO_W = 30;
       const LOGO_H = (logo.height / logo.width) * LOGO_W;
 
