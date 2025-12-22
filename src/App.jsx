@@ -15,7 +15,7 @@ import IniciaNegocio from "./pages/IniciaNegocio";
 import Promociones from "./pages/Promociones";
 import ProyectosEmpresariales from "./pages/ProyectosEmpresariales";
 import Productos from "./pages/Productos";
-import ProductPage from "./pages/ProductPage";
+import ProductView from "./pages/ProductView";
 import Carrito from "./pages/Carrito";
 import Login from "./pages/logins/Login";
 import Register from "./pages/logins/Register";
@@ -130,10 +130,10 @@ function AppContent() {
                     }
                   />
                   <Route
-                    path="/productos/:id"
+                    path="/producto/:id"
                     element={
                       <PageWrapper>
-                        <ProductPage />
+                        <ProductView />
                       </PageWrapper>
                     }
                   />

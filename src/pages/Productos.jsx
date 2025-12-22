@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import ProductModal from "../components/ProductModal";
+import { useNavigate } from "react-router-dom";
 import { useCarrito } from "../context/CarritoContext";
 import toast from "react-hot-toast";
 import {
@@ -41,14 +41,17 @@ function SkeletonCard() {
 
 export default function Productos() {
   const [productos, setProductos] = useState([]);
-  const [categoriaActiva, setCategoriaActiva] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [productoActivo, setProductoActivo] = useState(null);
+  const [categoriaActiva, setCategoriaActiva] = useState("Todas");
+  const navigate = useNavigate();
   const [paginaActual, setPaginaActual] = useState(1);
   const [loading, setLoading] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("relevancia"); // relevancia | precio_asc | precio_desc | nombre | stock
+  const [sortBy, setSortBy] = useState("relevancia");
+
+  // UX categorías
+  const [mostrarTodasCategorias, setMostrarTodasCategorias] = useState(false);
+  const CATS_PREVIEW = 8; // <- cuántas mostrar antes del "Ver más"
 
   const productosPorPagina = 12;
   const { agregarProducto, carrito } = useCarrito();
@@ -84,15 +87,14 @@ export default function Productos() {
     const set = new Set(
       (productosVisibles || []).map((p) => p.categoria?.nombre).filter(Boolean)
     );
-    return Array.from(set);
+    const arr = Array.from(set);
+    arr.sort((a, b) => a.localeCompare(b));
+    return ["Todas", ...arr];
   }, [productosVisibles]);
 
+  // si desaparece la categoría activa, vuelve a "Todas"
   useEffect(() => {
-    if (!categoriaActiva && categorias.length > 0) {
-      setCategoriaActiva(categorias[0]);
-    } else if (!categorias.includes(categoriaActiva) && categorias.length > 0) {
-      setCategoriaActiva(categorias[0]);
-    }
+    if (!categorias.includes(categoriaActiva)) setCategoriaActiva("Todas");
   }, [categorias, categoriaActiva]);
 
   const productosPorCategoria = useMemo(
@@ -101,9 +103,10 @@ export default function Productos() {
   );
 
   const productosFiltrados = useMemo(() => {
-    let lista = categoriaActiva
-      ? productosPorCategoria[categoriaActiva] || []
-      : productosVisibles;
+    let lista =
+      categoriaActiva && categoriaActiva !== "Todas"
+        ? productosPorCategoria[categoriaActiva] || []
+        : productosVisibles;
 
     if (searchTerm.trim()) {
       const t = searchTerm.toLowerCase();
@@ -156,16 +159,16 @@ export default function Productos() {
         <img
           src={producto.imagen || "https://via.placeholder.com/40"}
           alt={producto.nombre}
-          className="h-8 w-8 rounded-full object-cover"
+          className="h-8 w-8 rounded-full object-cover ring-2 ring-white"
         />
-        <span>{producto.nombre} añadido al carrito</span>
+        <span className="font-semibold">{producto.nombre}</span>
+        <span className="text-gray-500">añadido</span>
       </div>
     );
   };
 
   const handleVerMas = (producto) => {
-    setProductoActivo(producto);
-    setModalOpen(true);
+    navigate(`/producto/${producto.id}`);
   };
 
   const cambiarPagina = (nuevaPagina) => {
@@ -174,6 +177,11 @@ export default function Productos() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
+
+  const categoriasMostradas = useMemo(() => {
+    if (mostrarTodasCategorias) return categorias;
+    return categorias.slice(0, Math.min(CATS_PREVIEW + 1, categorias.length)); // +1 incluye "Todas"
+  }, [categorias, mostrarTodasCategorias]);
 
   return (
     <>
@@ -185,29 +193,27 @@ export default function Productos() {
         />
       </Helmet>
 
-      {/* HERO */}
-      <section className="max-w-7xl mx-auto pt-10 pb-6 px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-gray-200 bg-gradient-to-b from-white to-gray-50 p-6 sm:p-8 shadow-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900">
-                Nuestros Productos
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Encuentra todo lo que necesitas para tu hogar o negocio.
-              </p>
-            </div>
+      {/* HERO (SIN RECUADRO) */}
+      <section className="max-w-7xl mx-auto pt-10 pb-4 px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
+              Nuestros Productos
+            </h1>
+            <p className="text-gray-600 mt-2 max-w-2xl text-sm sm:text-base">
+              Encuentra todo lo que necesitas para tu hogar o negocio.
+            </p>
+          </div>
 
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span className="px-3 py-1 rounded-full bg-white border border-gray-200">
-                {productosFiltrados.length} resultados
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <span className="px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200">
+              {productosFiltrados.length} resultados
+            </span>
+            {categoriaActiva && (
+              <span className="px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200">
+                {categoriaActiva}
               </span>
-              {categoriaActiva && (
-                <span className="px-3 py-1 rounded-full bg-white border border-gray-200">
-                  {categoriaActiva}
-                </span>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -215,40 +221,76 @@ export default function Productos() {
       {/* CONTROLES (sticky) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
         <div className="sticky top-16 z-20">
-          <div className="backdrop-blur bg-white/85 border border-gray-200 rounded-2xl shadow-sm p-3 sm:p-4">
+          <div className="backdrop-blur bg-white/90 border border-gray-200 rounded-2xl shadow-sm p-3 sm:p-4">
             <div className="flex flex-col gap-3">
-              {/* Categorías scroll */}
+              {/* Categorías UX (no satura) */}
               {categorias.length > 0 && (
-                <div
-                  className="
-                    flex items-center gap-2
-                    overflow-x-auto whitespace-nowrap
-                    scroll-smooth snap-x snap-mandatory
-                    [-ms-overflow-style:none] [scrollbar-width:none]
-                    [&::-webkit-scrollbar]:hidden
-                  "
-                >
-                  {categorias.map((cat) => {
-                    const active = cat === categoriaActiva;
-                    return (
+                <div className="flex flex-col gap-2">
+                  <div
+                    className="
+                      flex items-center gap-2
+                      overflow-x-auto whitespace-nowrap
+                      scroll-smooth
+                      [-ms-overflow-style:none] [scrollbar-width:none]
+                      [&::-webkit-scrollbar]:hidden
+                      py-1
+                    "
+                  >
+                    {categoriasMostradas.map((cat) => {
+                      const active = cat === categoriaActiva;
+
+                      return (
+                        <button
+                          key={cat}
+                          onClick={() => setCategoriaActiva(cat)}
+                          className="
+                            relative shrink-0
+                            px-3.5 py-2 rounded-full
+                            text-sm font-extrabold
+                            border border-gray-200
+                            bg-white
+                            hover:bg-gray-50 hover:border-gray-300
+                            transition
+                            focus:outline-none focus:ring-2 focus:ring-[#24d4da]/40
+                          "
+                        >
+                          <span className="relative">
+                            {cat}
+                            {/* Indicador discreto: punto + underline, sin cambiar color de fondo */}
+                            {active && (
+                              <>
+                                <span className="absolute -bottom-1 left-0 h-[2px] w-full rounded-full bg-[#24d4da]" />
+                                <span className="absolute -top-2 -right-2 h-2 w-2 rounded-full bg-[#24d4da]" />
+                              </>
+                            )}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Ver más / menos (solo si hay muchas) */}
+                  {categorias.length > CATS_PREVIEW + 1 && (
+                    <div className="flex items-center justify-between">
                       <button
-                        key={cat}
-                        onClick={() => setCategoriaActiva(cat)}
-                        className={`
-                          snap-start shrink-0
-                          px-4 py-2.5 rounded-xl text-sm font-semibold
-                          border transition-all
-                          ${
-                            active
-                              ? "bg-[#24d4da] text-white border-transparent shadow"
-                              : "bg-white text-gray-800 border-gray-200 hover:bg-gray-50"
-                          }
-                        `}
+                        onClick={() =>
+                          setMostrarTodasCategorias((prev) => !prev)
+                        }
+                        className="text-sm font-extrabold text-[#007377] hover:text-[#005b5e] transition"
                       >
-                        {cat}
+                        {mostrarTodasCategorias ? "Ver menos" : "Ver más"}
                       </button>
-                    );
-                  })}
+
+                      {categoriaActiva !== "Todas" && (
+                        <button
+                          onClick={() => setCategoriaActiva("Todas")}
+                          className="text-sm font-extrabold text-gray-600 hover:text-gray-900 transition"
+                        >
+                          Limpiar categoría
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -277,7 +319,7 @@ export default function Productos() {
                 </div>
 
                 {/* Sort */}
-                <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-700">
+                <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-700 shadow-sm">
                   <FaSortAmountDownAlt className="text-gray-400" />
                   <select
                     value={sortBy}
@@ -300,7 +342,7 @@ export default function Productos() {
       {/* GRID */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
             {Array.from({ length: 12 }).map((_, i) => (
               <SkeletonCard key={i} />
             ))}
@@ -318,7 +360,7 @@ export default function Productos() {
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm("")}
-                    className="mt-5 px-5 py-3 rounded-xl bg-[#24d4da] text-white font-semibold hover:bg-[#007377] transition"
+                    className="mt-5 px-5 py-3 rounded-xl bg-[#24d4da] text-white font-extrabold hover:bg-[#007377] transition active:scale-95"
                   >
                     Limpiar búsqueda
                   </button>
@@ -326,7 +368,7 @@ export default function Productos() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
                   {productosPaginados.map((p) => {
                     const itemEnCarrito = carrito.find((item) => item.id === p.id);
                     const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
@@ -345,13 +387,15 @@ export default function Productos() {
                         onClick={() => handleVerMas(p)}
                         className="
                           group cursor-pointer
-                          bg-white border border-gray-200 rounded-3xl overflow-hidden
-                          shadow-sm hover:shadow-xl hover:border-gray-300 transition-all duration-300
+                          rounded-3xl overflow-hidden
+                          border border-gray-200 bg-white
+                          shadow-sm hover:shadow-xl hover:border-gray-300
+                          transition-all duration-300
                           flex flex-col
                         "
                       >
-                        {/* Imagen (SIN ZOOM) */}
-                        <div className="relative bg-gradient-to-b from-gray-50 to-white p-4">
+                        {/* Imagen */}
+                        <div className="relative p-4 bg-gradient-to-b from-gray-50 to-white">
                           <span
                             className={`absolute top-3 left-3 text-[11px] font-extrabold px-3 py-1 rounded-full ${badge.cls}`}
                           >
@@ -359,27 +403,43 @@ export default function Productos() {
                           </span>
 
                           <div className="aspect-[4/3] flex items-center justify-center">
-                            <img
-                              src={p.imagen || "https://via.placeholder.com/400x300"}
-                              alt={p.nombre}
-                              loading="lazy"
-                              className="max-h-full w-full object-contain"
-                              onError={(e) => {
-                                e.currentTarget.src = "https://via.placeholder.com/400x300";
-                              }}
-                            />
+                            <div
+                              className="
+                                w-full h-full
+                                rounded-2xl
+                                bg-white
+                                border border-gray-100
+                                shadow-[0_10px_30px_rgba(0,0,0,0.05)]
+                                flex items-center justify-center
+                                p-3
+                                transition-transform duration-300
+                                group-hover:scale-[1.02]
+                              "
+                            >
+                              <img
+                                src={p.imagen || "https://via.placeholder.com/400x300"}
+                                alt={p.nombre}
+                                loading="lazy"
+                                className="max-h-full w-full object-contain"
+                                onError={(e) => {
+                                  e.currentTarget.src =
+                                    "https://via.placeholder.com/400x300";
+                                }}
+                              />
+                            </div>
                           </div>
                         </div>
 
                         {/* Contenido */}
-                        <div className="p-4 pt-3 flex flex-col gap-2 flex-grow">
+                        <div className="p-4 pt-2 flex flex-col gap-2 flex-grow">
                           <h3 className="text-sm sm:text-base font-extrabold text-gray-900 leading-snug line-clamp-2">
                             {p.nombre}
                           </h3>
 
-                          <div className="flex items-end justify-between gap-3 mt-auto">
-                            <div>
-                              <p className="text-lg font-extrabold text-[#007377] leading-none">
+                          {/* FIX MOBILE: en xs apila y el botón no se sale */}
+                          <div className="mt-auto flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="text-lg sm:text-xl font-extrabold text-[#007377] leading-none">
                                 {money(p.precio)}
                               </p>
                               <p className="text-xs text-gray-500 mt-1">
@@ -403,7 +463,8 @@ export default function Productos() {
                               }}
                               disabled={stockEfectivo <= 0}
                               className={`
-                                inline-flex items-center gap-2
+                                w-full sm:w-auto
+                                relative inline-flex items-center justify-center gap-2
                                 px-4 py-2.5 rounded-2xl text-sm font-extrabold
                                 transition active:scale-95
                                 ${
@@ -415,7 +476,14 @@ export default function Productos() {
                             >
                               <FaCartPlus />
                               {stockEfectivo <= 0 ? "Agotado" : "Añadir"}
+                              {stockEfectivo > 0 && (
+                                <span className="absolute inset-0 rounded-2xl ring-0 group-hover:ring-2 ring-[#24d4da]/20 transition" />
+                              )}
                             </button>
+                          </div>
+
+                          <div className="mt-2 text-[11px] text-gray-500 opacity-0 group-hover:opacity-100 transition">
+                            Toca para ver detalles
                           </div>
                         </div>
                       </article>
@@ -425,7 +493,7 @@ export default function Productos() {
 
                 {/* PAGINACIÓN */}
                 {totalPaginas > 1 && (
-                  <div className="flex justify-center items-center gap-2 mt-12">
+                  <div className="flex flex-wrap justify-center items-center gap-2 mt-12">
                     <button
                       onClick={() => cambiarPagina(paginaActual - 1)}
                       disabled={paginaActual === 1}
@@ -441,7 +509,7 @@ export default function Productos() {
                         onClick={() => cambiarPagina(i + 1)}
                         className={`w-10 h-10 border rounded-full text-sm font-bold transition ${
                           paginaActual === i + 1
-                            ? "bg-[#24d4da] border-[#24d4da] text-white shadow"
+                            ? "bg-gray-900 border-gray-900 text-white shadow"
                             : "bg-white hover:bg-gray-100"
                         }`}
                         aria-current={paginaActual === i + 1 ? "page" : undefined}
@@ -465,12 +533,6 @@ export default function Productos() {
           </>
         )}
 
-        <ProductModal
-          show={modalOpen}
-          onClose={() => setModalOpen(false)}
-          producto={productoActivo}
-          onAddToCart={handleAgregarCarrito}
-        />
       </section>
     </>
   );
