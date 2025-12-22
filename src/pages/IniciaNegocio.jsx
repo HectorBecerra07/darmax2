@@ -278,7 +278,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
 /* =========================
    SECCIÓN VENTAJAS (Nuevo Diseño)
 ========================= */
-function VentajasSection() {
+ function VentajasSection() {
   const ventajas = [
     {
       img: "/img/Iniciatunegocio/1.png",
@@ -363,7 +363,7 @@ function VentajasSection() {
 
                 <div className="relative px-5 py-8 text-center">
                   {/* Icono */}
-                  <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-white/5 border border-white/10">
+                  <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-white border border-white/10">
                     <img
                       src={v.img}
                       alt={v.title}
