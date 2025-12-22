@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation, matchPath } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/Navbar"; // Uncommented original Navbar
+// import NewNavbar from "../components/NewNavbar"; // Commented out new Navbar
 import Footer from "../components/Footer";
 
 const Layout = ({ children }) => {
@@ -17,8 +18,9 @@ const Layout = ({ children }) => {
     );
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-gray-800">
-      <Navbar />
+    <div className="flex flex-col min-h-screen bg-white text-gray-800 overflow-hidden">
+      <Navbar /> {/* Render original Navbar */}
+      {/* <NewNavbar /> */} {/* Commented out new Navbar */}
       {/* Agrega padding superior para compensar la altura de la Navbar fija */}
       <main className="flex-1 pt-20">{children}</main>
       {!hideFooter && <Footer />}

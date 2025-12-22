@@ -324,7 +324,7 @@ function VentajasSection() {
 /* =========================
    PÁGINA PRINCIPAL
 ========================= */
-const IniciaNegocio = ({ inicioRef }) => {
+const IniciaNegocio = () => {
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
   const [compareOpen, setCompareOpen] = useState(false);
@@ -346,85 +346,36 @@ const IniciaNegocio = ({ inicioRef }) => {
 
   return (
     <>
-      <Helmet>
-        <title>Modelos & Precios | Darmax Agua</title>
-        <meta name="description" content="Catálogo de purificadoras y vending machines con diseño premium." />
-      </Helmet>
 
-      <main ref={inicioRef} className="min-h-screen bg-[#Fbfbfd] selection:bg-[#24d4da] selection:text-white">
-        
-        {/* HERO SECTION (Estilo Dark Tech) */}
-        <header className="relative bg-slate-900 pt-32 pb-32 overflow-hidden">
-            {/* Glow Effects Background */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full overflow-hidden z-0 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-[#24d4da] rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-pulse" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-blue-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20" />
-            </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#24d4da] opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#24d4da]"></span>
-                    </span>
-                    <span className="text-xs font-bold text-white tracking-widest uppercase">Nueva Generación 2025</span>
-                </div>
-
-                <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight leading-none mb-6">
-                    Tu Futuro <br/>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#24d4da] to-cyan-200">
-                        Comienza Aquí.
-                    </span>
-                </h1>
-                
-                <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed mb-10">
-                    Tecnología de purificación avanzada con diseño industrial de vanguardia. 
-                    Elige la herramienta que transformará tu inversión.
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button 
-                        onClick={() => document.getElementById("catalogo").scrollIntoView({ behavior: "smooth" })}
-                        className="px-8 py-4 rounded-full font-bold text-slate-900 hover:scale-105 transition-transform shadow-[0_0_20px_rgba(36,212,218,0.4)]"
-                        style={{ backgroundColor: BRAND_COLOR }}
-                    >
-                        Ver Modelos
-                    </button>
-                    <a 
-                        href={buildWaUrl({})}
-                        target="_blank" rel="noreferrer"
-                        className="px-8 py-4 rounded-full font-bold text-white border border-white/20 hover:bg-white/10 backdrop-blur-sm transition-colors"
-                    >
-                        Hablar con Asesor
-                    </a>
-                </div>
-            </div>
-        </header>
+      <>
 
         {/* SECCIÓN DE MODELOS */}
-        <section id="catalogo" className="py-24 px-4 max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-slate-200 pb-8">
-             <div>
-                <h2 className="text-3xl font-bold text-slate-900">Elige tu modelo de negocio</h2>
-                <p className="text-slate-500 mt-2">Emprende a tus posibilidades con darmax.</p>
-             </div>
-             {selected.length > 0 && (
-                 <div className="mt-4 md:mt-0 px-4 py-2 bg-[#24d4da]/10 text-[#24d4da] rounded-lg font-medium text-sm animate-fade-in">
-                     {selected.length} equipos seleccionados para comparar
-                 </div>
-             )}
-          </div>
+        <section id="catalogo" className="py-24 bg-[#Fbfbfd]">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-slate-200 pb-8">
+              <div>
+                  <h2 className="text-3xl font-bold text-slate-900">Elige tu modelo de negocio</h2>
+                  <p className="text-slate-500 mt-2">Emprende a tus posibilidades con darmax.</p>
+              </div>
+              {selected.length > 0 && (
+                  <div className="mt-4 md:mt-0 px-4 py-2 bg-[#24d4da]/10 text-[#24d4da] rounded-lg font-medium text-sm animate-fade-in">
+                      {selected.length} equipos seleccionados para comparar
+                  </div>
+              )}
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {modelos.map((modelo) => (
-              <TarjetaModelo
-                key={modelo.id}
-                modelo={modelo}
-                navigate={navigate}
-                selected={selected}
-                onToggleSelect={toggleSelect}
-              />
-            ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {modelos.map((modelo) => (
+                <TarjetaModelo
+                  key={modelo.id}
+                  modelo={modelo}
+                  navigate={navigate}
+                  selected={selected}
+                  onToggleSelect={toggleSelect}
+                />
+              ))}
+            </div>
           </div>
         </section>
 
@@ -489,7 +440,7 @@ const IniciaNegocio = ({ inicioRef }) => {
           navigate={navigate}
         />
 
-      </main>
+      </>
     </>
   );
 };
