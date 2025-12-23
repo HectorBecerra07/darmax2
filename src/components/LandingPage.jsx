@@ -47,7 +47,7 @@ export default function LandingPage() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#24d4da]"></span>
               </span>
               <span className="text-xs font-bold text-white tracking-widest uppercase">
-                Nueva Generación 2025
+                Inicia tu proximo necocio en 2026 
               </span>
             </div>
 

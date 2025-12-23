@@ -321,7 +321,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       </div>
 
       {/* Gradiente suave para profundidad */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent z-0 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-transparent z-0 pointer-events-none" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
         {/* Header */}
