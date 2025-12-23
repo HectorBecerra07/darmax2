@@ -44,10 +44,10 @@ export default function GaleriaMosaicoPremium() {
               Galería de proyectos
             </span>
             <h2 className="mt-4 text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.05]">
-              Trabajos recientes con acabado premium
+              Trabajos recientes con materiales de primera calidad
             </h2>
             <p className="mt-5 text-white/75 text-lg leading-relaxed">
-              Un mosaico limpio y moderno. Pasa el cursor para ver el detalle del proyecto.
+              Descubre cómo transformamos espacios con instalaciones que combinan 
             </p>
           </div>
 
