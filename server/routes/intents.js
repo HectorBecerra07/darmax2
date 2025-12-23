@@ -6,7 +6,6 @@ const router = express.Router();
 // GET all intents
 router.get('/', async (req, res) => {
   try {
-    console.log('Inspecting prisma object in intents route:', prisma);
     const intents = await prisma.chatIntent.findMany({
       orderBy: { createdAt: 'desc' },
     });

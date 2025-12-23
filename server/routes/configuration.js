@@ -7,7 +7,6 @@ const router = express.Router();
 router.get('/:key', async (req, res) => {
   const { key } = req.params;
   try {
-    console.log('Inspecting prisma object in configuration route:', prisma);
     const config = await prisma.configuration.findUnique({
       where: { key },
     });
