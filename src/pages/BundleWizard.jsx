@@ -345,7 +345,7 @@ export default function BundleWizard() {
     let y = 45;
 
     try {
-        const logo = await loadImage("/img/darmax-logo.png");
+        const logo = await loadImage("/img/logo_darmaxnav.png");
         const LOGO_W = 30;
         const LOGO_H = (logo.height / logo.width) * LOGO_W;
 
@@ -481,7 +481,7 @@ export default function BundleWizard() {
 
                         ensureSpace(imgH + 5);
                         try {
-                            doc.addImage(modelImage, "JPEG", M, y, imgW, imgH);
+                            doc.addImage(modelImage, M, y, imgW, imgH);
                         } catch (addImgError) {
                             console.error("Error adding image to PDF:", addImgError);
                             write("  [Error al renderizar imagen]", { size: 9, bold: false });
