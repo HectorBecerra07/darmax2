@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "prisma generate && vite build",
     "preview": "vite preview",
     "server": "node server/index.js > server.log 2>&1",
     "migrate": "npx prisma migrate dev --name init",
