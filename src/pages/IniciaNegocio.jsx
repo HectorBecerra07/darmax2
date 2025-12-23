@@ -137,7 +137,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
               </span>
             )}
 
-            <h3 className="mt-3 text-xl font-extrabold text-slate-900 tracking-tight">
+            <h3 className="mt-3 text-xl font-extrabold text-slate-900 tracking-tight whitespace-nowrap">
               {modelo.nombre}
             </h3>
 
