@@ -50,6 +50,7 @@
     "recharts": "^3.4.1",
     "slick-carousel": "^1.8.1",
     "stripe": "^20.0.0",
+    "styled-components": "^6.1.19",
     "sweetalert2": "^11.26.3",
     "swiper": "^12.0.3",
     "uuid": "^13.0.0"

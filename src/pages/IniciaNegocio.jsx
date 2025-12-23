@@ -111,7 +111,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
   return (
     <article
       className={[
-        "group relative flex flex-col h-full overflow-hidden rounded-3xl bg-white",
+        "border border-slate-200 group relative flex flex-col h-full overflow-hidden rounded-3xl bg-white",
         "transition-all duration-300",
         "hover:-translate-y-2 hover:shadow-[0_28px_70px_-30px_rgba(15,23,42,0.35)]",
         "focus-within:-translate-y-2 focus-within:shadow-[0_28px_70px_-30px_rgba(15,23,42,0.35)]",
@@ -321,7 +321,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       </div>
 
       {/* Gradiente suave para profundidad */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent z-0 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-transparent z-0 pointer-events-none" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
         {/* Header */}
@@ -440,7 +440,7 @@ const IniciaNegocio = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" >
               {modelos.map((modelo) => (
                 <TarjetaModelo
                   key={modelo.id}

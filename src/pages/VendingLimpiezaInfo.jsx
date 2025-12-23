@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import CardFeatureKey from "../components/CardFeatureKey";
 
 /* ========= Datos ========= */
 const HERO_IMG = "/img/vending/5productos.jpg";
@@ -153,29 +154,14 @@ export default function VendingLimpiezaInfo() {
           Todo lo que necesitas para operar con eficiencia y buena experiencia de usuario.
         </p>
 
-        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {especificacionesLimpieza.map((e, i) => (
-            <motion.article
-              key={e.titulo + i}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: i * 0.06 }}
-              className="rounded-3xl border border-gray-100 bg-white shadow-sm hover:shadow-xl transition overflow-hidden"
-            >
-              <div className="h-44 bg-white flex items-center justify-center p-4">
-                <img
-                  src={e.imagen}
-                  alt={e.titulo}
-                  className="h-full w-full object-contain"
-                  onError={(ev) => (ev.currentTarget.style.display = "none")}
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-lg font-bold text-slate-900">{e.titulo}</h3>
-                <p className="text-sm text-slate-600 mt-1">{e.descripcion}</p>
-              </div>
-            </motion.article>
+            <CardFeatureKey
+              key={i}
+              imagen={e.imagen}
+              titulo={e.titulo}
+              descripcion={e.descripcion}
+            />
           ))}
         </div>
       </section>

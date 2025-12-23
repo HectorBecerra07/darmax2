@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import CardFeatureKey from "../components/CardFeatureKey";
 
 /* ====== Datos ====== */
 const HERO_IMG = "/img/vending/mostrador.jpg";
@@ -295,55 +296,15 @@ export default function PurificadoraInfo() {
           </p>
         </div>
 <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-  {especificacionesPurificadora.map((e, i) => (
-    <motion.article
-      key={e.titulo + i}
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.35 }}
-      transition={{ duration: 0.35, delay: i * 0.04 }}
-      className="
-        rounded-3xl
-        border border-slate-100
-        bg-white
-        shadow-sm
-        hover:shadow-lg
-        transition
-      "
-    >
-      <div className="px-4 pt-4 pb-4 text-center flex flex-col items-center">
-        {/* ICONO */}
-        <div
-          className="
-            h-9 w-9
-            rounded-2xl
-            border border-slate-100
-            bg-slate-50
-            flex items-center justify-center
-            overflow-hidden
-          "
-        >
-          <img
-            src={e.imagen}
-            alt={e.titulo}
-            className="h-6 w-6 object-contain"
-            onError={(ev) => (ev.currentTarget.style.display = 'none')}
-          />
+          {especificacionesPurificadora.map((e, i) => (
+            <CardFeatureKey
+              key={i}
+              imagen={e.imagen}
+              titulo={e.titulo}
+              descripcion={e.descripcion}
+            />
+          ))}
         </div>
-
-        {/* TÍTULO */}
-        <h3 className="mt-3 text-sm font-bold text-slate-900 leading-snug">
-          {e.titulo}
-        </h3>
-
-        {/* DESCRIPCIÓN */}
-        <p className="mt-0.5 text-xs text-slate-600 leading-snug">
-          {e.descripcion}
-        </p>
-      </div>
-    </motion.article>
-  ))}
-</div>
 
       </section>
 
