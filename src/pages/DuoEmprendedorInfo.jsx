@@ -77,39 +77,62 @@ export default function DuoEmprendedorInfo() {
           content="La solución definitiva que combina una purificadora de agua y un vending de productos de limpieza. Doble impacto, doble ganancia."
         />
       </Helmet>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 via-slate-800 to-black" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 pt-24 pb-16 grid md:grid-cols-2 gap-10 items-center">
-          <div>
-            <span className="inline-block text-[11px] uppercase tracking-widest bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full">
-              Conoce más
-            </span>
-            <h1 className="mt-4 text-3xl md:text-5xl font-extrabold text-white leading-tight">
-              Dúo Emprendedor 2 en 1 <span className="text-[#ccff00]">Darmax</span>
-            </h1>
-            <p className="mt-3 text-white/80">
-              La solución definitiva que combina una purificadora de agua y un vending de productos de limpieza. Doble impacto, doble ganancia.
-            </p>
 
-            <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {/* ===== Header blanco + banner full-bleed ===== */}
+      <section className="bg-white overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 pt-10 pb-6">
+          <h2 className="text-2xl md:text-4xl font-extrabold italic text-slate-900">
+            Conoce más
+          </h2>
+          <p className="text-xs md:text-sm text-slate-500 mt-1">
+            Doble impacto, doble ganancia
+          </p>
+        </div>
+
+        <div className="relative w-screen left-1/2 -translate-x-1/2">
+          <div className="relative h-[260px] sm:h-[320px] md:h-[420px] overflow-hidden">
+            <img
+              src={HERO_IMG}
+              alt="Modelo Duo Emprendedor 2 en 1"
+              className="w-full h-full object-cover"
+              onError={(e) => (e.currentTarget.style.display = "none")}
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Bloque oscuro pegado ===== */}
+      <section className="relative -mt-4">
+        <div className="bg-[#1e2533]">
+          <div className="max-w-7xl mx-auto px-6 md:px-10 pt-14 pb-14">
+            <div className="text-center">
+              <h1 className="text-4xl md:text-6xl font-extrabold italic text-white leading-tight">
+                Dúo Emprendedor 2 en 1 <span className="not-italic text-[#ccff00]">Darmax</span>
+              </h1>
+              <p className="mt-7 max-w-4xl mx-auto text-white/80 text-base md:text-lg leading-relaxed">
+                La solución definitiva que combina una purificadora de agua y un vending de productos de limpieza. Doble impacto, doble ganancia.
+              </p>
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
               {highlights.map((h, i) => (
                 <motion.div
                   key={h.titulo}
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 14 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="rounded-2xl bg-white/10 border border-white/20 text-white p-3 backdrop-blur"
+                  transition={{ duration: 0.35, delay: i * 0.07 }}
+                  className="flex flex-col items-center justify-center min-h-[120px] rounded-lg bg-[#2f3947] border border-white/40 px-4 py-5 text-center text-white"
                 >
-                  <div className="text-2xl">{h.icono}</div>
-                  <div className="text-sm mt-1 font-semibold">{h.titulo}</div>
-                  <div className="text-[12px] opacity-80">{h.desc}</div>
+                  <div className="text-3xl">{h.icono}</div>
+                  <div className="text-base font-semibold leading-tight mt-2">{h.titulo}</div>
+                  <div className="text-sm italic text-white/80">{h.desc}</div>
                 </motion.div>
               ))}
             </div>
 
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
               <Link
                 to="/configurar-maquina/Duo-Emprendedor"
                 className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
@@ -125,25 +148,11 @@ export default function DuoEmprendedorInfo() {
               </button>
             </div>
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center justify-center"
-          >
-            <img
-              src={HERO_IMG}
-              alt="Modelo Duo Emprendedor 2 en 1"
-              className="w-full max-w-md object-contain drop-shadow-[0_25px_40px_rgba(0,0,0,0.5)]"
-              onError={(e) => (e.currentTarget.style.display = "none")}
-            />
-          </motion.div>
+          
+          <svg className="w-full block -mb-px" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path fill="#ffffff" d="M0,56 C240,0 960,160 1440,56 L1440,140 L0,140 Z" />
+          </svg>
         </div>
-        <svg className="relative z-0 w-full" viewBox="0 0 1440 120" preserveAspectRatio="none">
-          <path fill="#fff" d="M0,64 C240,160 960,0 1440,96 L1440,120 L0,120 Z" />
-        </svg>
       </section>
 
       <section className="max-w-7xl mx-auto px-6 md:px-10 py-12">
