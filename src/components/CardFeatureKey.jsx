@@ -4,6 +4,7 @@ import styled from 'styled-components';
 const CardFeatureKey = ({ imagen, titulo, descripcion }) => {
   return (
     <StyledWrapper>
+    
       <div className="e-card playing">
         <div className="image" />
         <div className="wave" />
