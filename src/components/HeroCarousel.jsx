@@ -1,6 +1,7 @@
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
+import HeroBannerSlide from './HeroBannerSlide'; // Importar el slide principal
 
 // Import Swiper styles
 import 'swiper/css';
@@ -14,11 +15,25 @@ const videos = [
 ];
 
 const imagenes = [
-  
+  // Puedes agregar URLs de imágenes aquí en el futuro
+  // por ejemplo: "/img/banners/imagen1.jpg",
 ];
 
 export default function HeroCarousel({ className }) {
-  // If there are videos, render the full Swiper carousel
+  const hasVideos = videos.length > 0;
+  const hasImages = imagenes.length > 0;
+  const hasMedia = hasVideos || hasImages;
+
+  // Caso 1: No hay videos ni imágenes, muestra el banner principal como fallback.
+  if (!hasMedia) {
+    return (
+      <div className={`w-full aspect-video max-h-[600px] ${className}`}>
+        <HeroBannerSlide />
+      </div>
+    );
+  }
+
+  // Caso 2: Hay videos o imágenes, renderiza el carrusel completo.
   return (
     <div className={`relative w-full hero-carousel-container overflow-hidden ${className}`}>
       <style>{`
@@ -70,9 +85,15 @@ export default function HeroCarousel({ className }) {
           }
         }}
       >
+        {/* El primer slide siempre es el banner principal */}
+        <SwiperSlide className="w-full sm:w-[75%]">
+            <HeroBannerSlide />
+        </SwiperSlide>
+        
+        {/* Slides de Videos */}
         {videos.map((src, idx) => (
           <SwiperSlide 
-            key={idx} 
+            key={`video-${idx}`} 
             className="w-full sm:w-[75%]"
           >
             <video
@@ -86,7 +107,22 @@ export default function HeroCarousel({ className }) {
             />
           </SwiperSlide>
         ))}
+
+        {/* Slides de Imágenes */}
+        {imagenes.map((src, idx) => (
+          <SwiperSlide 
+            key={`image-${idx}`} 
+            className="w-full sm:w-[75%]"
+          >
+            <img
+              src={src}
+              alt={`Imagen de fondo Darmax ${idx + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );
 }
+
