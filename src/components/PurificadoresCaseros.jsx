@@ -17,7 +17,7 @@ const normaliza = (v) => (v || "").trim().toLowerCase();
 
 /** Ajusta estas imágenes si quieres un “banner” con modelos reales */
 const HERO_BG =
-  "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=2400&q=80";
+  "/img/bannerpurificadores.png";
 
 const MODELOS_DEMO = [
   {
