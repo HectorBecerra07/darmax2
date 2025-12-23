@@ -372,15 +372,16 @@ export default function PurificadoraInfo() {
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true, amount: 0.35 }}
       transition={{ duration: 0.35, delay: i * 0.05 }}
-      className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden"
+      className="border border-slate-100 bg-white shadow-sm overflow-hidden"
     >
-      <div className="h-36 sm:h-40 md:h-44">
+      <div className="relative h-36 sm:h-40 md:h-44 rounded-2xl overflow-hidden">
         <img
           src={src}
           alt={`Instalación ${i + 1}`}
           className="w-full h-full object-cover"
           onError={(e) => (e.currentTarget.style.display = "none")}
         />
+        <div className="absolute inset-0 bg-black/15" />
       </div>
     </motion.div>
   ))}
