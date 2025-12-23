@@ -54,6 +54,7 @@ const SidebarAdmin = ({ collapsed, theme, setTheme }) => {
             { to: "/admin/dashboard/extras", icon: "✨", label: "Biblioteca de Extras" },
             { to: "/admin/dashboard/reportes", icon: "📊", label: "Reportes" },
             { to: "/admin/dashboard/clientes", icon: "👤", label: "Clientes" },
+            { to: "/admin/dashboard/chatbot", icon: "🤖", label: "Chatbot" },
           ].map((link) => (
             <NavLink
               key={link.to}
