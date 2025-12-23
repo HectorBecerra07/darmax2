@@ -11,20 +11,20 @@ generator client {
 
 // Para clientes de la tienda
 model User {
-  id              Int      @id @default(autoincrement())
-  createdAt       DateTime @default(now())
-  email           String   @unique
-  name            String?
-  telefono        String?
-  passwordHash    String?  // Nullable para usuarios creados desde el admin o sin cuenta
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  email        String   @unique
+  name         String?
+  telefono     String?
+  passwordHash String? // Nullable para usuarios creados desde el admin o sin cuenta
 
   // Campos de dirección del usuario
-  calle           String?
-  colonia         String?
-  codigoPostal    String?
-  ciudad          String?
-  estadoEnvio     String?
-  pais            String?
+  calle        String?
+  colonia      String?
+  codigoPostal String?
+  ciudad       String?
+  estadoEnvio  String?
+  pais         String?
 
   // Campos para verificación y reseteo de contraseña
   emailVerified     DateTime?
@@ -33,8 +33,9 @@ model User {
   resetTokenExpiry  DateTime?
 
   // Relación con Pedidos y Carrito
-  pedidos         Pedido[]
-  carritoItems    CarritoItem[] // Un usuario tiene muchos items en su carrito
+  pedidos      Pedido[]
+  carritoItems CarritoItem[] // Un usuario tiene muchos items en su carrito
+  chatSessions ChatSession[] // Un usuario puede tener muchas sesiones de chat
 
   @@index([verificationToken])
   @@index([resetToken])
@@ -48,7 +49,6 @@ model AdminUser {
   name         String
   passwordHash String
 }
-
 
 // --- MODELOS DE PRODUCTOS ---
 
@@ -69,10 +69,10 @@ model Producto {
   imagen      String? // Imagen principal
 
   // Campos para envío
-  pesoKg      Float?
-  largoCm     Float?
-  anchoCm     Float?
-  altoCm      Float?
+  pesoKg  Float?
+  largoCm Float?
+  anchoCm Float?
+  altoCm  Float?
 
   // Relación con Categoria
   categoriaId Int
@@ -83,18 +83,17 @@ model Producto {
   carritoItems CarritoItem[] // Un producto puede estar en muchos carritos
 
   // Relación con la galería de imágenes
-  imagenes    ImagenProducto[]
+  imagenes ImagenProducto[]
 }
 
 model ImagenProducto {
-  id          Int      @id @default(autoincrement())
-  url         String
-  producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
-  productoId  Int
+  id         Int      @id @default(autoincrement())
+  url        String
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  productoId Int
 
   @@index([productoId])
 }
-
 
 // --- MODELOS DE PEDIDOS ---
 
@@ -107,12 +106,12 @@ enum EstadoPedido {
 }
 
 model Pedido {
-  id              Int      @id @default(autoincrement())
-  createdAt       DateTime @default(now())
-  orden           String   @unique @default(cuid())
+  id              Int          @id @default(autoincrement())
+  createdAt       DateTime     @default(now())
+  orden           String       @unique @default(cuid())
   total           Float
   estado          EstadoPedido @default(PENDIENTE)
-  paymentIntentId String?  @unique // ID de la transacción de Stripe
+  paymentIntentId String?      @unique // ID de la transacción de Stripe
 
   // Datos del cliente (se guardan en el pedido para el histórico)
   clienteNombre   String
@@ -120,21 +119,21 @@ model Pedido {
   clienteTelefono String?
 
   // Dirección de envío
-  direccion     String
-  colonia       String?
-  ciudad        String?
-  estadoEnvio   String?
-  codigoPostal  String?
+  direccion    String
+  colonia      String?
+  ciudad       String?
+  estadoEnvio  String?
+  codigoPostal String?
 
   // Relación con User (opcional, para pedidos de invitados)
-  userId    Int?
-  user      User? @relation(fields: [userId], references: [id])
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id])
 
   // Relación con Productos
   productos PedidosEnProductos[]
 
   // Relación 1-1 con Envio (opcional)
-  envio     Envio?
+  envio Envio?
 
   @@index([paymentIntentId])
 }
@@ -146,7 +145,7 @@ model PedidosEnProductos {
   producto   Producto @relation(fields: [productoId], references: [id])
   productoId Int
   cantidad   Int
-  
+
   // Guardar el precio al momento de la compra por si cambia en el futuro
   precioAlComprar Float
 
@@ -155,13 +154,13 @@ model PedidosEnProductos {
 
 // Nuevo modelo para los items del carrito
 model CarritoItem {
-  id         Int      @id @default(autoincrement())
-  cantidad   Int
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  cantidad  Int
+  createdAt DateTime @default(now())
 
   // A qué usuario pertenece este item
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id])
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
   // Qué producto es
   productoId Int
@@ -178,19 +177,19 @@ model Envio {
   createdAt DateTime @default(now())
 
   // Relación 1-1 con Pedido
-  pedidoId  Int    @unique
-  pedido    Pedido @relation(fields: [pedidoId], references: [id])
+  pedidoId Int    @unique
+  pedido   Pedido @relation(fields: [pedidoId], references: [id])
 
   // Datos de cotización Skydropx
-  quotationId String        // ID de la cotización usada
-  rateId      String        // ID de la rate seleccionada
-  provider    String?       // Paquetería (DHL, Estafeta, etc.)
-  service     String?       // Nombre del servicio
-  days        Int?          // Días estimados
+  quotationId String // ID de la cotización usada
+  rateId      String // ID de la rate seleccionada
+  provider    String? // Paquetería (DHL, Estafeta, etc.)
+  service     String? // Nombre del servicio
+  days        Int? // Días estimados
 
   // Costos
-  costoEnvio  Float
-  moneda      String  @default("MXN")
+  costoEnvio Float
+  moneda     String @default("MXN")
 
   // Datos del envío real / guía
   labelId            String? // ID de la etiqueta (labels) en Skydropx
@@ -201,15 +200,14 @@ model Envio {
   status             String? // Estado del envío según Skydropx
 }
 
-
 enum ImageContext {
-  MODEL_BASE           // Imagen base del modelo (sin tinaco, sin alcalina)
-  MODEL_BASE_ALCALINA  // Modelo + solo agua alcalina (sin tinaco)
-  TINACO               // Tinaco normal
-  TINACO_ALCALINA      // Tinaco con agua alcalina
-  SECONDARY            // Imagen secundaria (vending, etc.)
-  SECONDARY_ALCALINA   // Secundaria cuando hay agua alcalina
-  CAROUSEL             // Para los carruseles de los primeros pasos
+  MODEL_BASE // Imagen base del modelo (sin tinaco, sin alcalina)
+  MODEL_BASE_ALCALINA // Modelo + solo agua alcalina (sin tinaco)
+  TINACO // Tinaco normal
+  TINACO_ALCALINA // Tinaco con agua alcalina
+  SECONDARY // Imagen secundaria (vending, etc.)
+  SECONDARY_ALCALINA // Secundaria cuando hay agua alcalina
+  CAROUSEL // Para los carruseles de los primeros pasos
 }
 
 enum VendingType {
@@ -219,27 +217,27 @@ enum VendingType {
 }
 
 model MachineModel {
-  id              String          @id @default(cuid())
-  slug            String          @unique  // "Neptuno", "AtlantisMaxTouch", etc.
+  id              String      @id @default(cuid())
+  slug            String      @unique // "Neptuno", "AtlantisMaxTouch", etc.
   name            String
-  basePrice       Int             @default(0)
+  basePrice       Int         @default(0)
   description     String?
-  features        String[]        @default([])
-  supportsTinacos Boolean         @default(true)
-  isAtlantis      Boolean         @default(false)
-  vendingType     VendingType     @default(NONE)
+  features        String[]    @default([])
+  supportsTinacos Boolean     @default(true)
+  isAtlantis      Boolean     @default(false)
+  vendingType     VendingType @default(NONE)
 
-  extras          ModelExtra[]
-  images          ConfigurationImage[]
+  extras ModelExtra[]
+  images ConfigurationImage[]
 }
 
 model Extra {
-  id          String   @id @default(cuid())
-  code        String   @unique          // "tinaco-2500", "agua-alcalina", etc.
+  id          String  @id @default(cuid())
+  code        String  @unique // "tinaco-2500", "agua-alcalina", etc.
   name        String
   description String
   basePrice   Int
-  isTinaco    Boolean  @default(false)
+  isTinaco    Boolean @default(false)
 
   // Datos adicionales útiles para tinacos (opcional)
   tinacoKey            String?
@@ -250,47 +248,87 @@ model Extra {
 }
 
 model ModelExtra {
-  id         String       @id @default(cuid())
+  id String @id @default(cuid())
 
-  model      MachineModel @relation(fields: [modelId], references: [id])
-  modelId    String
+  model   MachineModel @relation(fields: [modelId], references: [id])
+  modelId String
 
-  extra      Extra        @relation(fields: [extraId], references: [id])
-  extraId    String
+  extra   Extra  @relation(fields: [extraId], references: [id])
+  extraId String
 
   // Permite precio por modelo
   priceOverride Int?
-  isDefault     Boolean   @default(false)
-  isRequired    Boolean   @default(false)
-  sortOrder     Int       @default(0)
+  isDefault     Boolean @default(false)
+  isRequired    Boolean @default(false)
+  sortOrder     Int     @default(0)
 
   @@unique([modelId, extraId])
 }
 
 model ConfigurationImage {
-  id      String       @id @default(cuid())
+  id String @id @default(cuid())
 
   model   MachineModel @relation(fields: [modelId], references: [id])
   modelId String
 
   // Opcional: imagen vinculada a un tinaco concreto
-  tinacoExtra   Extra? @relation("TinacoImage", fields: [tinacoExtraId], references: [id])
+  tinacoExtra   Extra?  @relation("TinacoImage", fields: [tinacoExtraId], references: [id])
   tinacoExtraId String?
 
-  context           ImageContext
-  onlyWhenAlcalina Boolean  @default(false)
+  context          ImageContext
+  onlyWhenAlcalina Boolean      @default(false)
 
   // Imagen secundaria (vending)
-  isSecondary        Boolean  @default(false)
+  isSecondary Boolean @default(false)
 
   // Variante de diseño secundaria (4 botones, 8 botones, touch, etc.)
   secondaryVariantKey String?
-
-  url      String
-  alt      String
-  priority Int      @default(0)
+  url                 String
+  alt                 String
+  priority            Int     @default(0)
 
   @@index([modelId])
   @@index([tinacoExtraId])
   @@index([context])
+}
+
+// --- MODELOS DE CHATBOT ---
+model ChatSession {
+  id        String        @id @default(cuid())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  userId    Int? // Opcional, para vincular a usuarios logueados
+  user      User?         @relation(fields: [userId], references: [id])
+  messages  ChatMessage[]
+
+  @@index([userId])
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  createdAt DateTime    @default(now())
+  content   String      @db.Text // Usar tipo Text para mensajes largos
+  from      String // "user" o "bot"
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+model ChatIntent {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String @unique // e.g., "saludo", "precio_vending"
+  description String?
+  trainingPhrases String[] // Frases de ejemplo: ["hola", "buenos dias"]
+  response String @db.Text
+}
+
+// --- MODELO DE CONFIGURACIÓN GENERAL ---
+
+model Configuration {
+  id String @id @default(cuid())
+  key String @unique
+  value String
 }

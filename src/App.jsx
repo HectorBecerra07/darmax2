@@ -51,6 +51,7 @@ import CategoriasAdmin from "./administrador/pages/CategoriasAdmin";
 import ModelsConfigAdmin from "./administrador/pages/ModelsConfigAdmin";
 import ExtrasAdmin from "./administrador/pages/ExtrasAdmin";
 import DetalleModeloAdmin from "./administrador/pages/DetalleModeloAdmin"; // Nueva página de detalle
+import ChatbotAdmin from "./administrador/pages/ChatbotAdmin";
 
 const PageWrapper = ({ children }) => {
   useEffect(() => {
@@ -72,10 +73,23 @@ const PageWrapper = ({ children }) => {
 import { useUser } from "./context/UserContext";
 import GoodbyeScreen from "./components/GoodbyeScreen";
 import { Toaster } from "react-hot-toast"; // Importar Toaster
+import WhatsAppButton from "./components/WhatsAppButton";
+import ChatbotWidget from "./components/ChatbotWidget";
+import { SettingsProvider, useSettings } from "./context/SettingsContext"; // Importar SettingsProvider y useSettings
 
 function AppContent() {
   const location = useLocation();
   const { isLoggingOut, loggedOutUserName } = useUser();
+  const { isChatbotActive, isLoadingSettings } = useSettings(); // Usar el hook de configuración
+
+  // Determinar si los widgets de chat deben ocultarse en la ruta actual
+  const hideChatWidgets = 
+    location.pathname.startsWith('/admin') || 
+    location.pathname.includes('/login') ||
+    location.pathname.includes('/register') ||
+    location.pathname.includes('/forgot-password') ||
+    location.pathname.includes('/reset-password') ||
+    location.pathname.includes('/verify-email');
 
   return (
     <>
@@ -97,6 +111,7 @@ function AppContent() {
             <Route path="extras" element={<ExtrasAdmin />} />
             <Route path="reportes" element={<ReportesAdmin />} />
             <Route path="clientes" element={<ClientesAdmin />} />
+            <Route path="chatbot" element={<ChatbotAdmin />} />
           </Route>
 
           {/* TODAS LAS DEMÁS RUTAS CON LAYOUT */}
@@ -351,6 +366,8 @@ function AppContent() {
         </Routes>
       </AnimatePresence>
       <Toaster position="bottom-right" /> {/* Toaster para notificaciones */}
+      {!hideChatWidgets && <WhatsAppButton />}
+      {!hideChatWidgets && !isLoadingSettings && isChatbotActive && <ChatbotWidget />} {/* Renderizar condicionalmente */}
     </>
   );
 }
@@ -358,7 +375,9 @@ function AppContent() {
 export default function App() {
   return (
     <HelmetProvider>
-      <AppContent />
+      <SettingsProvider> {/* Envolver con SettingsProvider */}
+        <AppContent />
+      </SettingsProvider>
     </HelmetProvider>
   );
 }
