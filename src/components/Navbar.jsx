@@ -69,7 +69,6 @@ export default function NavBar() {
       { href: "/nosotros", text: "NOSOTROS" },
       { href: "/productos", text: "PRODUCTOS" },
       { href: "/purificadores-caseros", text: "PURIFICADORES CASEROS" },
-      { href: "/promociones", text: "PROMOCIONES" },
       { href: "/proyectos-empresariales", text: "PROYECTOS" },
   
     ];

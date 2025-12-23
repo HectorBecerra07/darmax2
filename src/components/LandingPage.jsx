@@ -54,13 +54,13 @@ export default function LandingPage() {
             <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight leading-none mb-6">
               Tu Futuro <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#24d4da] to-cyan-200">
-                Comienza Aquí.
+                Comienza en Darmax.
               </span>
             </h1>
 
             <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed mb-10">
-              Tecnología de purificación avanzada con diseño industrial de
-              vanguardia. Elige la herramienta que transformará tu inversión.
+              No es solo un equipo, es el inicio de tu propio negocio.
+               Tecnología de purificación avanzada que te ayuda a invertir con seguridad y crecer paso a paso.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

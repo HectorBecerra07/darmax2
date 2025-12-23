@@ -1,34 +1,24 @@
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
-import HeroBannerSlide from './HeroBannerSlide';
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
 
+const videos = [
+   "/img/video1.mp4",
+   "/img/video2.mp4",
+   "/img/video3.mp4",
+   "/img/video1.mp4",
+];
+
 const imagenes = [
-  // "/img/IMAGENES PARA WEB DARMAX 29 JUL/CARRUSEL PROMOCIONES 1.png",
-  // "/img/IMAGENES PARA WEB DARMAX 29 JUL/carrusel PROMOSIONES 2.png",
-  // "/img/PROMOCIONES/PROMOCION1.png",
-  // "/img/PROMOCIONES/PROMOCION3.jpg",
+  
 ];
 
 export default function HeroCarousel({ className }) {
-  const hasCarouselImages = imagenes.length > 0;
-
-  // If no images, just render the HeroBannerSlide directly, taking full width
-  if (!hasCarouselImages) {
-    return (
-      <div className={`relative w-full overflow-hidden ${className}`}>
-        <div className="w-full aspect-video max-h-[600px]">
-          <HeroBannerSlide />
-        </div>
-      </div>
-    );
-  }
-
-  // If there are images, render the full Swiper carousel
+  // If there are videos, render the full Swiper carousel
   return (
     <div className={`relative w-full hero-carousel-container overflow-hidden ${className}`}>
       <style>{`
@@ -80,18 +70,19 @@ export default function HeroCarousel({ className }) {
           }
         }}
       >
-        <SwiperSlide className="w-full sm:w-[75%]">
-            <HeroBannerSlide />
-        </SwiperSlide>
-        {imagenes.map((src, idx) => (
+        {videos.map((src, idx) => (
           <SwiperSlide 
             key={idx} 
             className="w-full sm:w-[75%]"
           >
-            <img
+            <video
               src={src}
-              alt={`Promoción Darmax ${idx + 1}`}
+              alt={`Video de fondo Darmax ${idx + 1}`}
               className="w-full h-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
             />
           </SwiperSlide>
         ))}
