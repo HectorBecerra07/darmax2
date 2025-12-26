@@ -15,33 +15,40 @@ const mxn = (n) =>
 
 const normaliza = (v) => (v || "").trim().toLowerCase();
 
+const HERO_BGS_ARRAY = [
+  "/img/purificadorescaserosparapagina/bajotarja.jpg",
+  "/img/purificadorescaserosparapagina/filtros.png",
+  "/img/purificadorescaserosparapagina/instlacion.jpg",
+  "/img/purificadorescaserosparapagina/sirviendoagua.jpg",
+];
+
 /** Ajusta estas imágenes si quieres un “banner” con modelos reales */
 const HERO_BG =
-  "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=2400&q=80";
+  HERO_BGS_ARRAY[Math.floor(Math.random() * HERO_BGS_ARRAY.length)];
 
 const MODELOS_DEMO = [
   {
     name: "Bajo tarja (RO)",
     subtitle: "Ósmosis inversa",
-    img: "https://images.unsplash.com/photo-1581579185169-7b7b7b7b7b7b?auto=format&fit=crop&w=1200&q=80",
+    img: "/img/purificadorescaserosparapagina/bajotarja.jpg",
     tag: "Top ventas",
   },
   {
-    name: "Encimera (UF)",
-    subtitle: "Ultrafiltración",
-    img: "https://images.unsplash.com/photo-1560840067-ddcaeb7831d2?auto=format&fit=crop&w=1200&q=80",
+    name: " Facil instalación",
+    subtitle: "Olvida los garrafones",
+    img: "/img/purificadorescaserosparapagina/instlacion.jpg",
     tag: "Fácil instalación",
   },
   {
     name: "Dispensador",
     subtitle: "Punto de uso",
-    img: "https://images.unsplash.com/photo-1541542684-4bf98d0b2c6a?auto=format&fit=crop&w=1200&q=80",
+    img: "/img/purificadorescaserosparapagina/sirviendoagua.jpg",
     tag: "Ideal oficina",
   },
   {
-    name: "Bajo tarja (UF+Carbón)",
+    name: "Bajo tarja (Carbón)",
     subtitle: "Sabor + microfiltrado",
-    img: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80",
+    img: "/img/purificadorescaserosparapagina/filtros.png",
     tag: "Equilibrado",
   },
 ];
@@ -148,7 +155,7 @@ export default function PurificadoresCaseros() {
         <div className="relative px-4 md:px-10 pt-14 pb-14 max-w-screen-2xl mx-auto">
           <div className="text-center max-w-4xl mx-auto">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-white/90 text-sm backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-lime-300" />
+              <span className="h-2 w-2 rounded-full bg-[#24d4da]" />
               Envío rápido • Instalación disponible • Soporte
             </span>
 
@@ -167,7 +174,7 @@ export default function PurificadoresCaseros() {
                     .getElementById("catalogo")
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
-                className="group inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
+                className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
               >
                 Ver modelos
                 <ArrowRight />
@@ -679,7 +686,7 @@ function ProductCard({ item, onAddToCart, carrito = [] }) {
             "focus:outline-none focus:ring-2 focus:ring-lime-400/70",
             stockEfectivo <= 0
               ? "bg-slate-200 text-slate-500 cursor-not-allowed"
-              : "bg-lime-300 text-slate-950 hover:bg-lime-200 hover:-translate-y-0.5 shadow-md shadow-lime-500/15",
+              : "bg-[#24d4da] text-slate-950 hover:-translate-y-0.5 shadow-md shadow-lime-500/15",
           ].join(" ")}
         >
           {stockEfectivo <= 0 ? "Agotado" : "Agregar al carrito"}
