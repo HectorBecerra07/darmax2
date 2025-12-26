@@ -42,13 +42,15 @@ const bundleStepsConfig = {
   "Duo-Emprendedor": [
     {
       step: 0,
-      title: "Paso 1: Selecciona tu Purificadora",
-      modelType: "mostrador",
+      title: "Paso 1: Selecciona tu Vending de Agua",
+      modelType: "vendingAgua",
+      filter: (m) => m.name.toLowerCase().includes('touch') || m.name.toLowerCase().includes('tradicional') || m.name.toLowerCase().includes('atlantis'),
+      imageType: 'secondary',
     },
     {
       step: 1,
-      title: "Paso 2: Configura Extras de Purificadora",
-      modelType: "mostrador",
+      title: "Paso 2: Configura Extras del Vending de Agua",
+      modelType: "vendingAgua",
       type: "extras",
     },
     {
@@ -67,38 +69,33 @@ const bundleStepsConfig = {
   Tridente: [
     {
       step: 0,
-      title: "Paso 1: Selecciona tu Purificadora",
-      modelType: "mostrador",
+      title: "Paso 1: Selecciona tu vending de Agua",
+      modelType: "vendingAgua",
     },
     {
       step: 1,
-      title: "Paso 2: Configura Extras de Purificadora",
-      modelType: "mostrador",
+      title: "Paso 2: Configura Extras de Vending de Agua",
+      modelType: "vendingAgua",
       type: "extras",
     },
     {
       step: 2,
-      title: "Paso 3: Selecciona tu Vending de Agua",
-      modelType: "vendingAgua",
+      title: "Paso 3: Selecciona tu purificadora Mostrador",
+      modelType: "mostrador",
     },
+    
     {
       step: 3,
-      title: "Paso 4: Configura Extras de Vending de Agua",
-      modelType: "vendingAgua",
-      type: "extras",
-    },
-    {
-      step: 4,
       title: "Paso 5: Selecciona tu Vending de Limpieza",
       modelType: "vendingLimpieza",
     },
     {
-      step: 5,
+      step: 4,
       title: "Paso 6: Configura Extras de Vending de Limpieza",
       modelType: "vendingLimpieza",
       type: "extras",
     },
-    { step: 6, title: "Paso 7: Resumen del Paquete", type: "summary" },
+    { step: 5, title: "Paso 7: Resumen del Paquete", type: "summary" },
   ],
   Megalodon: [
     {
@@ -143,7 +140,23 @@ const bundleStepsConfig = {
 
 // --- Child Components ---
 
-const ModelCard = ({ model, onSelect, isSelected }) => (
+const ModelCard = ({ model, onSelect, isSelected, imageType }) => {
+    const imageToShow = useMemo(() => {
+        if (!model.images || model.images.length === 0) return null;
+
+        const sortedImages = [...model.images].sort((a, b) => a.priority - b.priority);
+
+        if (imageType === 'secondary') {
+            const secondaryImage = sortedImages.find(img => img.isSecondary);
+            if (secondaryImage) return secondaryImage;
+        }
+        
+        // Fallback to the first non-secondary image if available, otherwise first image overall.
+        const primaryImage = sortedImages.find(img => !img.isSecondary);
+        return primaryImage || sortedImages[0];
+    }, [model.images, imageType]);
+
+    return (
     <div
       onClick={() => onSelect(model)}
       className={`relative rounded-2xl p-5 cursor-pointer transition-all duration-300 text-center ${
@@ -157,10 +170,10 @@ const ModelCard = ({ model, onSelect, isSelected }) => (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
           </div>
       )}
-      {model.images && model.images.length > 0 ? (
+      {imageToShow ? (
           <img
-              src={model.images[0].url}
-              alt={model.images[0].alt || model.name}
+              src={imageToShow.url}
+              alt={imageToShow.alt || model.name}
               className="w-full h-48 object-contain rounded-lg mb-4 shadow-md"
           />
       ) : (
@@ -180,7 +193,8 @@ const ModelCard = ({ model, onSelect, isSelected }) => (
         </p>
       </div>
     </div>
-  );
+    )
+};
   
 
 const ModelSelectionStep = ({
@@ -188,6 +202,7 @@ const ModelSelectionStep = ({
   models,
   onSelect,
   selectedModelId,
+  imageType,
 }) => (
   <div className="space-y-6">
     <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center">{title}</h2>
@@ -199,6 +214,7 @@ const ModelSelectionStep = ({
             model={model}
             onSelect={onSelect}
             isSelected={selectedModelId === model.id}
+            imageType={imageType}
           />
         ))}
       </div>
@@ -548,9 +564,12 @@ export default function BundleWizard() {
     let baseFiltered = allModels.filter(m => {
         const slug = m.slug.toLowerCase();
         switch(modelType) {
-            case 'mostrador': return slug.includes('neptuno') || slug.includes('poseidon');
-            case 'vendingAgua': return slug.includes('atlantis');
+            case 'mostrador': return slug.includes('neptuno') || slug.includes('poseidon')|| slug.includes('poseidon');
+
+            case 'vendingAgua': return slug.includes('atlantis') || slug.includes('vending-touch') || slug.includes('vending-tradicional');
+
             case 'vendingLimpieza': return slug === 'vending5' || slug === 'vending8';
+
             default: return false;
         }
     });
@@ -616,6 +635,7 @@ export default function BundleWizard() {
         models={models}
         onSelect={handleSelect}
         selectedModelId={bundleConfig[currentStepInfo.modelType]?.id}
+        imageType={currentStepInfo.imageType}
       />
     );
   };

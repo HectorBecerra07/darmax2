@@ -22,13 +22,10 @@ const HERO_BGS_ARRAY = [
   "/img/purificadorescaserosparapagina/sirviendoagua.jpg",
 ];
 
-/** Ajusta estas imágenes si quieres un “banner” con modelos reales */
-const HERO_BG =
-
-  HERO_BGS_ARRAY[Math.floor(Math.random() * HERO_BGS_ARRAY.length)];
-
-  "/img/bannerpurificadores.png";
-
+/** ✅ Banner fijo recomendado (corrige tu bug del HERO_BG) */
+const HERO_BG = "/img/bannerpurificadores.png";
+// ✅ O random:
+// const HERO_BG = HERO_BGS_ARRAY[Math.floor(Math.random() * HERO_BGS_ARRAY.length)];
 
 const MODELOS_DEMO = [
   {
@@ -38,7 +35,7 @@ const MODELOS_DEMO = [
     tag: "Top ventas",
   },
   {
-    name: " Facil instalación",
+    name: "Facil instalación",
     subtitle: "Olvida los garrafones",
     img: "/img/purificadorescaserosparapagina/instlacion.jpg",
     tag: "Fácil instalación",
@@ -60,6 +57,7 @@ const MODELOS_DEMO = [
 export default function PurificadoresCaseros() {
   const navigate = useNavigate();
   const { agregarProducto, carrito } = useCarrito();
+
   const [purificadores, setPurificadores] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -79,8 +77,7 @@ export default function PurificadoresCaseros() {
         const productosGuardados = await res.json();
 
         let filtrados = productosGuardados.filter(
-          (p) =>
-            normaliza(p.categoria?.nombre) === normaliza(CATEGORIA_PURIFICADORES)
+          (p) => normaliza(p.categoria?.nombre) === normaliza(CATEGORIA_PURIFICADORES)
         );
 
         if (filtrados.length === 0) {
@@ -151,6 +148,7 @@ export default function PurificadoresCaseros() {
             loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/55 to-slate-50" />
+
           {/* Glow decorativo */}
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-[42rem] rounded-full bg-cyan-400/20 blur-3xl" />
           <div className="absolute top-10 right-10 h-56 w-56 rounded-full bg-lime-300/20 blur-3xl" />
@@ -194,7 +192,7 @@ export default function PurificadoresCaseros() {
             </div>
           </div>
 
-          {/* IMAGEN GRANDE / GRID INTERACTIVO DE MODELOS (debajo del título) */}
+          {/* GRID DE MODELOS */}
           <div className="mt-12">
             <div className="mx-auto max-w-7xl rounded-3xl border border-white/10 bg-white/5 p-4 md:p-6 backdrop-blur">
               <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -287,237 +285,396 @@ export default function PurificadoresCaseros() {
         </div>
       </section>
 
-      {/* SECCIONES INFORMATIVAS */}
-      <div className="max-w-7xl mx-auto px-4 md:px-10 pb-24 space-y-20">
-        <InfoSection title="¿Por qué comprar un purificador casero?">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <InfoCard
-              icon="💧"
-              title="Mejor sabor y olor"
-              description="Reduce cloro y compuestos que afectan el sabor; el agua se siente más fresca al instante."
-            />
-            <InfoCard
-              icon="🛡️"
-              title="Reducción de contaminantes"
-              description="Los sistemas con carbón, UF o RO disminuyen sedimentos, metales y micro-impurezas (según el modelo)."
-            />
-            <InfoCard
-              icon="💵"
-              title="Ahorro a largo plazo"
-              description="Evita compras frecuentes de garrafones/botellas; recuperas la inversión en meses."
-            />
-            <InfoCard
-              icon="🌱"
-              title="Menos impacto ambiental"
-              description="Menos botellas desechables y traslados. Beneficia tu bolsillo y al ambiente."
-            />
-            <InfoCard
-              icon="🏠"
-              title="Comodidad en casa"
-              description="Agua al momento, para beber y cocinar. Sin cargas ni esperas de repartidor."
-            />
-            <InfoCard
-              icon="✅"
-              title="Control y transparencia"
-              description="Sabes cuándo cambias filtros y qué tecnología usa tu equipo."
-            />
-          </div>
-        </InfoSection>
+      {/* ====== REDISEÑO LANDING (Desde WHY hasta FAQ) ====== */}
+      <section className="relative bg-slate-900">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-[26rem] w-[46rem] rounded-full bg-[#24d4da]/15 blur-3xl" />
+          <div className="absolute top-[35%] -left-24 h-[26rem] w-[26rem] rounded-full bg-blue-600/10 blur-3xl" />
+          <div className="absolute bottom-[-12%] -right-28 h-[28rem] w-[28rem] rounded-full bg-lime-300/10 blur-3xl" />
+        </div>
 
-        <InfoSection title="¿Dónde colocarlo?">
-          <div className="grid md:grid-cols-3 gap-6">
-            <PlacementCard
-              icon="🧰"
-              title="Bajo tarja (debajo del fregadero)"
-              bullets={[
-                "Queda oculto; grifo dedicado o 3 vías.",
-                "Ideal para cocinas con espacio en gabinete.",
-                "Opciones RO/UF con o sin bomba.",
-              ]}
+        <div className="relative max-w-7xl mx-auto px-4 md:px-10 py-24 space-y-20">
+          {/* WHY BUY */}
+          <section>
+            <SectionHeader
+              kicker="Beneficios reales"
+              title="¿Por qué comprar un purificador casero?"
+              subtitle="Ahorra, mejora el sabor del agua y elimina la dependencia de garrafones con una solución limpia y práctica."
             />
-            <PlacementCard
-              icon="🧼"
-              title="Sobre encimera"
-              bullets={[
-                "Instalación rápida al grifo.",
-                "Movible; perfecto para rentas.",
-                "Carbón activado / UF compactos.",
-              ]}
-            />
-            <PlacementCard
-              icon="🚰"
-              title="Punto de uso (dispensador/llave)"
-              bullets={[
-                "Filtra justo donde bebes.",
-                "Accesible para niños y adultos mayores.",
-                "Compatible con garrafón o red.",
-              ]}
-            />
-          </div>
-        </InfoSection>
 
-        <InfoSection title="¿Cómo elegir el modelo adecuado?">
-          <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-4 text-slate-700">
-            <Checklist>Calidad del agua en tu zona (TDS, dureza, sabor).</Checklist>
-            <Checklist>
-              Tipo de filtración: Carbón (olor/sabor), UF (micro-impurezas), RO
-              (sales/metales), UV (desinfección).
-            </Checklist>
-            <Checklist>Capacidad/flujo (GPD o L/h) acorde a tu familia.</Checklist>
-            <Checklist>Espacio e instalación: bajo tarja vs encimera.</Checklist>
-            <Checklist>
-              Costos de consumibles y disponibilidad de repuestos.
-            </Checklist>
-            <Checklist>
-              Certificaciones (p. ej., NSF/ANSI 42, 53, 58, 55, 401).
-            </Checklist>
-            <Checklist>Garantía y soporte técnico local.</Checklist>
-          </ul>
-        </InfoSection>
-
-        <InfoSection title="Mantenimiento recomendado">
-          <div className="grid md:grid-cols-2 gap-4">
-            <MaintenanceRow
-              etiqueta="Cartuchos de Sedimentos (PP/PE)"
-              rango="Cada 3–6 meses"
-            />
-            <MaintenanceRow
-              etiqueta="Filtros de Carbón Activado (GAC/CTO)"
-              rango="Cada 6–12 meses"
-            />
-            <MaintenanceRow
-              etiqueta="Membrana de Ósmosis Inversa (RO)"
-              rango="Cada 18–36 meses"
-            />
-            <MaintenanceRow
-              etiqueta="Lámpara Ultravioleta (UV)"
-              rango="Cada 12 meses (o según horas de uso)"
-            />
-            <MaintenanceRow
-              etiqueta="Post-filtro / Pulidor de sabor"
-              rango="Cada 6–12 meses"
-            />
-          </div>
-          <p className="text-sm text-slate-500 mt-6 text-center">
-            *Los intervalos varían según consumo y calidad del agua. Revisa el
-            caudal, sabor y los recordatorios del equipo.
-          </p>
-        </InfoSection>
-
-        {/* CALCULADORA */}
-        <section aria-labelledby="calc-title" className="scroll-mt-20">
-          <div className="bg-white rounded-2xl shadow-2xl shadow-slate-200/80 p-8 md:p-12">
-            <h3
-              id="calc-title"
-              className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight text-center"
-            >
-              Calculadora de Ahorro Anual
-            </h3>
-            <p className="mt-3 text-slate-600 text-center max-w-2xl mx-auto">
-              Descubre cuánto podrías ahorrar al dejar de comprar garrafones.
-              Ajusta los valores para que coincidan con tus gastos actuales.
-            </p>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10 items-end">
-              <LabeledInput
-                label="Garrafones por semana"
-                value={garrafonesPorSemana}
-                onChange={setGarrafonesPorSemana}
-                min={0}
-                step={1}
+            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <FeatureCard
+                icon="💧"
+                title="Mejor sabor y olor"
+                description="Reduce cloro y compuestos que alteran el sabor. Agua más fresca desde el primer día."
               />
-              <LabeledInput
-                label="Precio por garrafón (MXN)"
-                value={precioGarrafon}
-                onChange={setPrecioGarrafon}
-                min={0}
-                step={1}
+              <FeatureCard
+                icon="🛡️"
+                title="Reducción de contaminantes"
+                description="Tecnologías como Carbón, UF o RO ayudan a disminuir sedimentos y micro-impurezas (según modelo)."
               />
-              <LabeledInput
-                label="Costo anual de filtros (MXN)"
-                value={costoFiltrosAnual}
-                onChange={setCostoFiltrosAnual}
-                min={0}
-                step={50}
+              <FeatureCard
+                icon="💵"
+                title="Ahorro real"
+                description="Dejas de comprar garrafones y recuperas la inversión con el tiempo."
               />
-              <LabeledInput
-                label="Costo del equipo (MXN)"
-                value={costoEquipo}
-                onChange={setCostoEquipo}
-                min={0}
-                step={100}
+              <FeatureCard
+                icon="🌱"
+                title="Menos impacto ambiental"
+                description="Menos plástico, menos transporte y menos residuos."
+              />
+              <FeatureCard
+                icon="🏠"
+                title="Comodidad inmediata"
+                description="Agua al momento para beber y cocinar. Sin cargar garrafones."
+              />
+              <FeatureCard
+                icon="✅"
+                title="Control total"
+                description="Tú decides cuándo cambias filtros y el tipo de filtración."
               />
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 mt-8">
-              <Stat label="Gasto mensual en garrafón" value={mxn(gastoMensualGarrafon)} />
-              <Stat
-                label="Gasto mensual con purificador"
-                value={mxn(gastoMensualPurificador)}
-                highlight={false}
-              />
-              <Stat label="Ahorro estimado al mes" value={mxn(ahorroMensual)} />
+            <div className="mt-10 flex flex-col md:flex-row gap-4 items-center justify-between rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-6">
+              <div className="text-left">
+                <p className="text-white font-extrabold text-lg">
+                  ¿Quieres ver instalación y mantenimiento?
+                </p>
+                <p className="text-white/70 text-sm">
+                  Revisa el Centro de Videos: instalación, tips y cuidado por
+                  modelo.
+                </p>
+              </div>
+              <button
+                onClick={() => navigate("/videos")}
+                className="bg-white text-slate-900 px-6 py-3 rounded-2xl font-extrabold hover:bg-slate-100 transition"
+              >
+                Ir al Centro de Videos →
+              </button>
+            </div>
+          </section>
+
+          {/* PLACEMENT */}
+          <section>
+            <div className="grid lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-5">
+                <SectionHeader
+                  align="left"
+                  kicker="Instalación"
+                  title="¿Dónde colocarlo?"
+                  subtitle="Elige según tu espacio y tipo de uso. Te damos una guía rápida para decidir."
+                />
+              </div>
+
+              <div className="lg:col-span-7">
+                <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur">
+                  <div className="absolute inset-0">
+                    <img
+                      src="/img/purificadorescaserosparapagina/sirviendoagua.jpg"
+                      alt="Instalación"
+                      className="h-full w-full object-cover opacity-80"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/35 to-slate-950/10" />
+                  </div>
+                  <div className="relative p-7 md:p-10">
+                    <p className="text-white font-extrabold text-2xl md:text-3xl leading-tight">
+                      Agua purificada donde la necesitas.
+                    </p>
+                    <p className="mt-2 text-white/70 max-w-xl">
+                      Bajo tarja para cocina limpia, encimera si rentas o punto
+                      de uso para máxima comodidad.
+                    </p>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      <Tag>RO</Tag>
+                      <Tag>UF</Tag>
+                      <Tag>Carbón</Tag>
+                      <Tag>UV</Tag>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="mt-6 text-center text-slate-600">
-              Ahorro estimado al año:{" "}
-              <span className="font-bold text-lg text-green-600">
-                {mxn(ahorroAnual)}
-              </span>
-              {mesesBreakEven ? (
-                <>
-                  {" "}
-                  — Recuperas tu inversión en{" "}
-                  <span className="font-semibold text-slate-800">
-                    {mesesBreakEven}
-                  </span>{" "}
-                  meses aprox.
-                </>
-              ) : (
-                <> — Con los valores actuales, no hay un ahorro mensual visible.</>
-              )}
-              <p className="text-xs text-slate-500 mt-2">
-                *Cálculo aproximado para fines ilustrativos.
+            <div className="mt-8 grid md:grid-cols-3 gap-6">
+              <PlacementCardPro
+                icon="🧰"
+                title="Bajo tarja"
+                bullets={[
+                  "Oculto; grifo dedicado o 3 vías.",
+                  "Ideal si tienes espacio en gabinete.",
+                  "RO/UF disponibles; con o sin bomba.",
+                ]}
+              />
+              <PlacementCardPro
+                icon="🧼"
+                title="Sobre encimera"
+                bullets={[
+                  "Instalación rápida al grifo.",
+                  "Movible; perfecto para rentas.",
+                  "Carbón activado / UF compactos.",
+                ]}
+              />
+              <PlacementCardPro
+                icon="🚰"
+                title="Punto de uso"
+                bullets={[
+                  "Filtra justo donde bebes.",
+                  "Accesible para niños y adultos mayores.",
+                  "Compatible con garrafón o red.",
+                ]}
+              />
+            </div>
+          </section>
+
+          {/* HOW TO CHOOSE */}
+          <section>
+            <SectionHeader
+              kicker="Guía rápida"
+              title="¿Cómo elegir el modelo adecuado?"
+              subtitle="En 60 segundos: revisa tu agua, tu espacio y el tipo de filtración que necesitas."
+            />
+
+            <div className="mt-10 grid lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-7 rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-6 md:p-8">
+                <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-5 text-white/80">
+                  <ChecklistPro>
+                    Calidad del agua en tu zona (TDS, dureza, sabor).
+                  </ChecklistPro>
+                  <ChecklistPro>
+                    Tipo de filtración: Carbón, UF, RO, UV.
+                  </ChecklistPro>
+                  <ChecklistPro>
+                    Capacidad/flujo (GPD o L/h) acorde a tu familia.
+                  </ChecklistPro>
+                  <ChecklistPro>
+                    Espacio e instalación: bajo tarja vs encimera.
+                  </ChecklistPro>
+                  <ChecklistPro>Costos de consumibles y repuestos.</ChecklistPro>
+                  <ChecklistPro>
+                    Certificaciones (NSF/ANSI cuando aplique).
+                  </ChecklistPro>
+                  <ChecklistPro>Garantía y soporte técnico local.</ChecklistPro>
+                </ul>
+              </div>
+
+              <div className="lg:col-span-5">
+                <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur p-6 md:p-8">
+                  <p className="text-white font-extrabold text-xl">Tip Darmax</p>
+                  <p className="mt-2 text-white/70">
+                    Si en tu zona hay mucha dureza/sarro o sabor fuerte,
+                    normalmente conviene RO + postfiltro. Si quieres algo simple
+                    y rápido, carbón/UF es excelente para mejorar sabor y
+                    sedimentos.
+                  </p>
+
+                  <div className="mt-6 grid grid-cols-2 gap-3">
+                    <MiniStat label="Mejor para sarro" value="RO" />
+                    <MiniStat label="Mejor sabor" value="Carbón" />
+                    <MiniStat label="Microfiltrado" value="UF" />
+                    <MiniStat label="Desinfección" value="UV" />
+                  </div>
+
+                  <button
+                    onClick={() =>
+                      document
+                        .getElementById("catalogo")
+                        ?.scrollIntoView({ behavior: "smooth" })
+                    }
+                    className="mt-6 w-full bg-[#24d4da] text-slate-950 px-6 py-3 rounded-2xl font-extrabold hover:bg-lime-200 transition"
+                  >
+                    Ver catálogo ahora →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* MAINTENANCE */}
+          <section>
+            <SectionHeader
+              kicker="Cuidado del equipo"
+              title="Mantenimiento recomendado"
+              subtitle="Un buen mantenimiento asegura sabor, flujo y vida útil del sistema."
+            />
+
+            <div className="mt-10 rounded-3xl border border-white/10 bg-white/5 backdrop-blur overflow-hidden">
+              <div className="grid md:grid-cols-2">
+                <MaintenanceRowPro
+                  etiqueta="Cartuchos de Sedimentos (PP/PE)"
+                  rango="Cada 3–6 meses"
+                />
+                <MaintenanceRowPro
+                  etiqueta="Filtros de Carbón Activado (GAC/CTO)"
+                  rango="Cada 6–12 meses"
+                />
+                <MaintenanceRowPro
+                  etiqueta="Membrana de Ósmosis Inversa (RO)"
+                  rango="Cada 18–36 meses"
+                />
+                <MaintenanceRowPro
+                  etiqueta="Lámpara Ultravioleta (UV)"
+                  rango="Cada 12 meses"
+                />
+                <MaintenanceRowPro
+                  etiqueta="Post-filtro / Pulidor de sabor"
+                  rango="Cada 6–12 meses"
+                />
+                <MaintenanceRowPro
+                  etiqueta="Sanitización general"
+                  rango="Recomendado anual"
+                />
+              </div>
+
+              <p className="px-6 pb-6 text-xs text-white/55">
+                *Los intervalos varían por consumo y calidad del agua. Si baja
+                el flujo o cambia el sabor, revisa filtros.
               </p>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <InfoSection title="Preguntas frecuentes">
-          <div className="space-y-4 max-w-4xl mx-auto">
-            <Faq q="¿El purificador elimina el flúor o la cal (sarro)?">
-              Para reducir flúor y sales disueltas (dureza/sarro) se recomienda un
-              sistema de <b>ósmosis inversa (RO)</b>.
-            </Faq>
-            <Faq q="¿Puedo instalarlo yo mismo?">
-              Muchos equipos sobre-encimera y algunos bajo-tarja incluyen kit y
-              manual para auto-instalación. Si se requiere perforar la tarja o la
-              presión es baja, considera un técnico.
-            </Faq>
-            <Faq q="¿Qué pasa si tengo poca presión de agua?">
-              Equipos de Ósmosis Inversa (RO) son los más sensibles a la presión.
-              Si tienes menos de 40 PSI, considera un modelo con <b>bomba booster</b>{" "}
-              integrada para asegurar un buen funcionamiento.
-            </Faq>
-            <Faq q="¿Cada cuándo se cambian los filtros?">
-              Depende del uso y la calidad del agua (ver guía arriba). Una señal
-              clara es cuando notas una disminución en el flujo de agua o un
-              cambio en el sabor/olor.
-            </Faq>
-            <Faq q="¿El agua purificada sirve para cocinar?">
-              ¡Claro! Mejora el sabor de café, té, sopas y hielos. Además, al usar
-              agua con menos minerales, ayudas a prevenir la acumulación de sarro
-              en cafeteras y otros electrodomésticos.
-            </Faq>
-          </div>
-        </InfoSection>
-      </div>
+          {/* CALCULADORA */}
+          <section aria-labelledby="calc-title" className="scroll-mt-20">
+            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-8 md:p-12">
+              <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-64 w-[42rem] rounded-full bg-[#24d4da]/15 blur-3xl" />
+
+              <div className="relative">
+                <h3
+                  id="calc-title"
+                  className="text-3xl md:text-4xl font-extrabold tracking-tight text-center text-white"
+                >
+                  Calculadora de Ahorro Anual
+                </h3>
+                <p className="mt-3 text-white/70 text-center max-w-2xl mx-auto">
+                  Ajusta los valores y calcula tu ahorro aproximado dejando los
+                  garrafones.
+                </p>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10 items-end">
+                  <LabeledInputDark
+                    label="Garrafones por semana"
+                    value={garrafonesPorSemana}
+                    onChange={setGarrafonesPorSemana}
+                    min={0}
+                    step={1}
+                  />
+                  <LabeledInputDark
+                    label="Precio por garrafón (MXN)"
+                    value={precioGarrafon}
+                    onChange={setPrecioGarrafon}
+                    min={0}
+                    step={1}
+                  />
+                  <LabeledInputDark
+                    label="Costo anual de filtros (MXN)"
+                    value={costoFiltrosAnual}
+                    onChange={setCostoFiltrosAnual}
+                    min={0}
+                    step={50}
+                  />
+                  <LabeledInputDark
+                    label="Costo del equipo (MXN)"
+                    value={costoEquipo}
+                    onChange={setCostoEquipo}
+                    min={0}
+                    step={100}
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6 mt-8">
+                  <StatDark
+                    label="Gasto mensual en garrafón"
+                    value={mxn(gastoMensualGarrafon)}
+                  />
+                  <StatDark
+                    label="Gasto mensual con purificador"
+                    value={mxn(gastoMensualPurificador)}
+                    muted
+                  />
+                  <StatDark
+                    label="Ahorro estimado al mes"
+                    value={mxn(ahorroMensual)}
+                  />
+                </div>
+
+                <div className="mt-7 text-center text-white/75">
+                  Ahorro estimado al año:{" "}
+                  <span className="font-extrabold text-lg text-lime-200">
+                    {mxn(ahorroAnual)}
+                  </span>
+                  {mesesBreakEven ? (
+                    <>
+                      {" "}
+                      — Recuperas tu inversión en{" "}
+                      <span className="font-semibold text-white">
+                        {mesesBreakEven}
+                      </span>{" "}
+                      meses aprox.
+                    </>
+                  ) : (
+                    <> — Con los valores actuales, no hay un ahorro mensual visible.</>
+                  )}
+                  <p className="text-xs text-white/50 mt-2">
+                    *Cálculo aproximado para fines ilustrativos.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* FAQ */}
+          <section>
+            <SectionHeader
+              kicker="Soporte"
+              title="Preguntas frecuentes"
+              subtitle="Respuestas rápidas a las dudas más comunes antes de comprar."
+            />
+
+            <div className="mt-10 max-w-4xl mx-auto space-y-4">
+              <FaqDark q="¿El purificador elimina el flúor o la cal (sarro)?">
+                Para reducir flúor y sales disueltas (dureza/sarro) se recomienda
+                un sistema de <b>ósmosis inversa (RO)</b>.
+              </FaqDark>
+
+              <FaqDark q="¿Puedo instalarlo yo mismo?">
+                Muchos equipos sobre-encimera y algunos bajo-tarja incluyen kit y
+                manual. Si se requiere perforar la tarja o la presión es baja,
+                considera un técnico.
+              </FaqDark>
+
+              <FaqDark q="¿Qué pasa si tengo poca presión de agua?">
+                Equipos RO son sensibles a la presión. Si tienes menos de 40 PSI,
+                considera un modelo con <b>bomba booster</b>.
+              </FaqDark>
+
+              <FaqDark q="¿Cada cuándo se cambian los filtros?">
+                Depende del uso y calidad del agua. Señal clara: baja el flujo o
+                cambia el sabor/olor.
+              </FaqDark>
+
+              <FaqDark q="¿El agua purificada sirve para cocinar?">
+                ¡Claro! Mejora café, té, sopas y hielos y ayuda a prevenir sarro
+                en aparatos.
+              </FaqDark>
+            </div>
+
+            <div className="mt-10 text-center">
+              <button
+                onClick={() => navigate("/contacto")}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-7 py-3 font-extrabold text-white hover:bg-white/15 transition"
+              >
+                ¿Aún tienes dudas? Contáctanos →
+              </button>
+            </div>
+          </section>
+        </div>
+      </section>
     </div>
   );
 }
 
 /* ===========================
-   COMPONENTES UI (NUEVOS)
+   COMPONENTES UI (HERO + CATÁLOGO)
    =========================== */
 
 function ModeloCard({ modelo }) {
@@ -532,7 +689,6 @@ function ModeloCard({ modelo }) {
         focus:outline-none focus:ring-2 focus:ring-lime-300/70
       "
       onClick={() => {
-        // Aquí podrías hacer scroll al catálogo o aplicar filtros por tipo
         document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });
       }}
     >
@@ -546,7 +702,6 @@ function ModeloCard({ modelo }) {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-slate-950/10" />
       </div>
 
-      {/* Glow */}
       <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 h-40 w-64 rounded-full bg-cyan-400/20 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
       <div className="relative p-4 min-h-[170px] flex flex-col justify-end text-left">
@@ -554,9 +709,7 @@ function ModeloCard({ modelo }) {
           <span className="inline-flex items-center rounded-full bg-lime-300/90 px-2.5 py-1 text-xs font-bold text-slate-950">
             {modelo.tag}
           </span>
-          <span className="text-white/80 text-xs">
-            Ver →
-          </span>
+          <span className="text-white/80 text-xs">Ver →</span>
         </div>
 
         <h4 className="mt-2 text-white font-extrabold leading-tight">
@@ -590,10 +743,6 @@ function SkeletonCard() {
   );
 }
 
-/* ===========================
-   PRODUCT CARD (MEJORADA)
-   =========================== */
-
 function ProductCard({ item, onAddToCart, carrito = [] }) {
   const precioN = Number(item.precio || 0);
 
@@ -601,8 +750,7 @@ function ProductCard({ item, onAddToCart, carrito = [] }) {
   const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
   const stockEfectivo = (item.stock ?? 0) - cantidadEnCarrito;
 
-  const img =
-    item.imagen || "https://placehold.co/900x700/e2e8f0/475569?text=Darmax";
+  const img = item.imagen || "https://placehold.co/900x700/e2e8f0/475569?text=Darmax";
 
   return (
     <article
@@ -615,26 +763,19 @@ function ProductCard({ item, onAddToCart, carrito = [] }) {
         overflow-hidden
       "
     >
-      {/* Glow on hover */}
       <div className="pointer-events-none absolute -inset-24 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-48 w-72 rounded-full bg-lime-300/25 blur-3xl" />
       </div>
 
-      {/* Imagen */}
       <div className="relative w-full aspect-[4/3] bg-slate-50 flex items-center justify-center">
         <img
           src={img}
           alt={item.nombre}
           loading="lazy"
-          className="
-            h-full w-full object-cover
-            transition-transform duration-500
-            group-hover:scale-105
-          "
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => (e.currentTarget.style.display = "none")}
         />
 
-        {/* Badge stock */}
         <div className="absolute top-3 left-3">
           <span
             className={[
@@ -654,17 +795,9 @@ function ProductCard({ item, onAddToCart, carrito = [] }) {
           </span>
         </div>
 
-        {/* Quick actions */}
-        <div className="absolute bottom-3 right-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-          <span className="inline-flex items-center rounded-xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-800 shadow">
-            Hover ✨
-          </span>
-        </div>
-
         <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
       </div>
 
-      {/* Cuerpo */}
       <div className="p-4 flex flex-col text-center">
         <h3 className="text-sm md:text-base font-extrabold text-slate-900 leading-snug line-clamp-2">
           {item.nombre}
@@ -696,7 +829,6 @@ function ProductCard({ item, onAddToCart, carrito = [] }) {
           {stockEfectivo <= 0 ? "Agotado" : "Agregar al carrito"}
         </button>
 
-        {/* Detalles compactos */}
         {(item.pesoKg || item.largoCm || item.anchoCm || item.altoCm) && (
           <div className="mt-4 text-[11px] text-slate-500 text-left w-full border-t border-slate-200 pt-3">
             {item.pesoKg && (
@@ -707,10 +839,7 @@ function ProductCard({ item, onAddToCart, carrito = [] }) {
             {(item.largoCm || item.anchoCm || item.altoCm) && (
               <div className="leading-snug">
                 <strong>Dimensiones:</strong>{" "}
-                {[item.largoCm, item.anchoCm, item.altoCm]
-                  .filter(Boolean)
-                  .join(" × ")}{" "}
-                cm
+                {[item.largoCm, item.anchoCm, item.altoCm].filter(Boolean).join(" × ")} cm
               </div>
             )}
           </div>
@@ -721,88 +850,109 @@ function ProductCard({ item, onAddToCart, carrito = [] }) {
 }
 
 /* ===========================
-   SECCIONES (IGUAL QUE TUYO)
+   COMPONENTES NUEVOS (LANDING DARK)
    =========================== */
 
-function InfoSection({ title, children }) {
+function SectionHeader({ kicker, title, subtitle, align = "center" }) {
+  const alignCls = align === "left" ? "text-left" : "text-center";
   return (
-    <section>
-      <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight text-center mb-10">
+    <div className={alignCls}>
+      {kicker ? (
+        <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-extrabold text-white/80 backdrop-blur">
+          <span className="h-2 w-2 rounded-full bg-[#24d4da]" />
+          {kicker}
+        </p>
+      ) : null}
+
+      <h3 className="mt-5 text-3xl md:text-4xl font-extrabold text-white tracking-tight">
         {title}
       </h3>
-      {children}
-    </section>
-  );
-}
 
-function InfoCard({ icon, title, description }) {
-  return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-      <div className="text-4xl mx-auto w-fit mb-3">{icon}</div>
-      <h4 className="font-bold text-lg text-slate-900">{title}</h4>
-      <p className="text-sm text-slate-600 mt-1">{description}</p>
+      {subtitle ? (
+        <p className="mt-3 text-white/70 max-w-3xl mx-auto">{subtitle}</p>
+      ) : null}
     </div>
   );
 }
 
-function PlacementCard({ icon, title, bullets = [] }) {
+function FeatureCard({ icon, title, description }) {
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-      <div className="flex items-center gap-3 mb-3">
+    <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-6 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1">
+      <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-[#24d4da]/10 blur-2xl" />
+      <div className="text-4xl">{icon}</div>
+      <h4 className="mt-3 text-lg font-extrabold text-white">{title}</h4>
+      <p className="mt-2 text-sm text-white/70 leading-relaxed">{description}</p>
+    </div>
+  );
+}
+
+function Tag({ children }) {
+  return (
+    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold text-white/80">
+      {children}
+    </span>
+  );
+}
+
+function PlacementCardPro({ icon, title, bullets }) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-6 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1">
+      <div className="flex items-center gap-3">
         <div className="text-3xl">{icon}</div>
-        <h4 className="font-bold text-lg text-slate-900">{title}</h4>
+        <h4 className="text-lg font-extrabold text-white">{title}</h4>
       </div>
-      <ul className="list-disc list-inside text-sm text-slate-600 space-y-1.5 pl-1">
+      <ul className="mt-4 space-y-2 text-sm text-white/70">
         {bullets.map((b, i) => (
-          <li key={i}>{b}</li>
+          <li key={i} className="flex items-start gap-2">
+            <span className="mt-1 h-2 w-2 rounded-full bg-[#24d4da]" />
+            <span>{b}</span>
+          </li>
         ))}
       </ul>
     </div>
   );
 }
 
-function Checklist({ children }) {
+function ChecklistPro({ children }) {
   return (
     <li className="flex items-start gap-3">
-      <CheckIcon />
-      <span>{children}</span>
+      <span className="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#24d4da]/15 border border-[#24d4da]/20">
+        <svg className="h-4 w-4 text-[#24d4da]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      </span>
+      <span className="leading-relaxed">{children}</span>
     </li>
   );
 }
 
-const CheckIcon = () => (
-  <svg
-    className="w-6 h-6 text-[#24d4da] shrink-0 mt-0.5"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M9 12.75L11.25 15L15 9.75"></path>
-    <path
-      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      stroke="currentColor"
-    ></path>
-  </svg>
-);
-
-function MaintenanceRow({ etiqueta, rango }) {
+function MiniStat({ label, value }) {
   return (
-    <div className="flex items-baseline justify-between rounded-xl border border-slate-200/90 p-4 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-      <span className="font-semibold text-slate-800">{etiqueta}</span>
-      <span className="text-sm font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <p className="text-xs font-semibold text-white/60">{label}</p>
+      <p className="mt-1 text-xl font-extrabold text-white">{value}</p>
+    </div>
+  );
+}
+
+function MaintenanceRowPro({ etiqueta, rango }) {
+  return (
+    <div className="flex items-center justify-between gap-4 p-6 border-b border-white/10">
+      <div className="min-w-0">
+        <p className="font-semibold text-white">{etiqueta}</p>
+        <p className="text-xs text-white/55 mt-1">Recomendación general</p>
+      </div>
+      <span className="shrink-0 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-xs font-bold text-white/80">
         {rango}
       </span>
     </div>
   );
 }
 
-function LabeledInput({ label, value, onChange, min = 0, step = 1 }) {
+function LabeledInputDark({ label, value, onChange, min = 0, step = 1 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-semibold text-slate-800">
+      <span className="mb-1.5 block text-sm font-semibold text-white">
         {label}
       </span>
       <input
@@ -811,54 +961,47 @@ function LabeledInput({ label, value, onChange, min = 0, step = 1 }) {
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="block w-full rounded-lg border-gray-300 bg-gray-50/80 px-4 py-2.5 text-slate-800 shadow-sm transition-colors placeholder:text-slate-400 focus:border-lime-400 focus:bg-white focus:ring-lime-400 focus:ring-1"
+        className="block w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white shadow-sm placeholder:text-white/40 outline-none focus:ring-2 focus:ring-[#24d4da]/30"
       />
     </label>
   );
 }
 
-function Stat({ label, value, highlight = true }) {
+function StatDark({ label, value, muted = false }) {
   return (
     <div
-      className={`rounded-xl p-5 ${
-        highlight ? "bg-lime-100/50 border-lime-200" : "bg-slate-100/80 border-slate-200"
-      } border`}
+      className={[
+        "rounded-3xl p-6 border",
+        muted ? "border-white/10 bg-white/5" : "border-[#24d4da]/20 bg-[#24d4da]/10",
+      ].join(" ")}
     >
-      <p className="text-sm text-slate-600 font-medium">{label}</p>
-      <p
-        className={`text-2xl font-bold mt-1 ${
-          highlight ? "text-green-700" : "text-slate-800"
-        }`}
-      >
+      <p className="text-sm text-white/70 font-semibold">{label}</p>
+      <p className={muted ? "text-2xl font-extrabold mt-2 text-white" : "text-2xl font-extrabold mt-2 text-lime-200"}>
         {value}
       </p>
     </div>
   );
 }
 
-function Faq({ q, children }) {
+function FaqDark({ q, children }) {
   return (
-    <details className="group rounded-xl border border-slate-200 bg-white shadow-sm [&_summary::-webkit-details-marker]:hidden">
-      <summary className="flex cursor-pointer items-center justify-between p-4">
-        <span className="font-semibold text-slate-800">{q}</span>
-        <ChevronDownIcon />
+    <details className="group rounded-3xl border border-white/10 bg-white/5 backdrop-blur overflow-hidden">
+      <summary className="flex cursor-pointer items-center justify-between p-5">
+        <span className="font-extrabold text-white">{q}</span>
+        <svg
+          className="h-5 w-5 text-white/60 transition duration-300 group-open:-rotate-180"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </svg>
       </summary>
-      <div className="px-4 pb-4 text-slate-600">{children}</div>
+      <div className="px-5 pb-5 text-white/75 leading-relaxed">{children}</div>
     </details>
   );
 }
-
-const ChevronDownIcon = () => (
-  <svg
-    className="h-5 w-5 shrink-0 transition duration-300 group-open:-rotate-180 text-slate-500"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-  </svg>
-);
 
 /* Icons */
 function ArrowRight() {
