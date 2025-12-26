@@ -24,11 +24,11 @@ const HERO_BGS_ARRAY = [
 
 /** Ajusta estas imágenes si quieres un “banner” con modelos reales */
 const HERO_BG =
-<<<<<<< HEAD
+
   HERO_BGS_ARRAY[Math.floor(Math.random() * HERO_BGS_ARRAY.length)];
-=======
+
   "/img/bannerpurificadores.png";
->>>>>>> c4edcd2f8de59375035e8fe195fc95b1c074ea3f
+
 
 const MODELOS_DEMO = [
   {
