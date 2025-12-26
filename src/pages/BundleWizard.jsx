@@ -69,8 +69,10 @@ const bundleStepsConfig = {
   Tridente: [
     {
       step: 0,
-      title: "Paso 1: Selecciona tu vending de Agua",
+      title: "Paso 1: Selecciona tu Vending de Agua",
       modelType: "vendingAgua",
+      imageType: 'secondary',
+      filter: (m) => !(m.slug.toLowerCase().includes('vending5') || m.slug.toLowerCase().includes('vending8') || m.name.toLowerCase().includes('mostrador')),
     },
     {
       step: 1,
@@ -80,61 +82,59 @@ const bundleStepsConfig = {
     },
     {
       step: 2,
-      title: "Paso 3: Selecciona tu purificadora Mostrador",
+      title: "Paso 3: Selecciona tu Purificadora",
       modelType: "mostrador",
+      imageType: 'secondary',
     },
-    
     {
       step: 3,
-      title: "Paso 5: Selecciona tu Vending de Limpieza",
+      title: "Paso 4: Selecciona tu Vending de Limpieza",
       modelType: "vendingLimpieza",
+      imageType: 'secondary',
+      filter: (m) => m.slug.toLowerCase() === 'vending5',
     },
     {
       step: 4,
-      title: "Paso 6: Configura Extras de Vending de Limpieza",
+      title: "Paso 5: Configura Extras de Vending de Limpieza",
       modelType: "vendingLimpieza",
       type: "extras",
     },
-    { step: 5, title: "Paso 7: Resumen del Paquete", type: "summary" },
+    { step: 5, title: "Paso 6: Resumen del Paquete", type: "summary" },
   ],
   Megalodon: [
     {
       step: 0,
-      title: "Paso 1: Selecciona tu Purificadora con Ósmosis Inversa",
-      modelType: "mostrador",
-      filter: (m) => m.name.toLowerCase().includes('osmosis'),
+      title: "Paso 1: Selecciona tu Vending de Agua",
+      modelType: "vendingAgua",
+      imageType: 'secondary',
+      filter: (m) => ['atlantis', 'atlantis max', 'atlantis max touch', 'atlantis touch'].includes(m.name.toLowerCase()),
     },
     {
       step: 1,
-      title: "Paso 2: Configura Extras de Purificadora",
-      modelType: "mostrador",
+      title: "Paso 2: Configura Extras de Vending de Agua",
+      modelType: "vendingAgua",
       type: "extras",
     },
     {
       step: 2,
-      title: "Paso 3: Selecciona tu Vending de Agua (Atlantis MAX)",
-      modelType: "vendingAgua",
-      filter: (m) => m.name.toLowerCase().includes('max'),
+      title: "Paso 3: Selecciona tu Purificadora",
+      modelType: "mostrador",
+      imageType: 'secondary',
     },
     {
       step: 3,
-      title: "Paso 4: Configura Extras de Vending de Agua",
-      modelType: "vendingAgua",
-      type: "extras",
+      title: "Paso 4: Selecciona tu Vending de Limpieza (8 Productos)",
+      modelType: "vendingLimpieza",
+      filter: (m) => m.slug.toLowerCase() === "vending8",
+      imageType: 'secondary',
     },
     {
       step: 4,
-      title: "Paso 5: Selecciona tu Vending de Limpieza (8 Productos)",
-      modelType: "vendingLimpieza",
-      filter: (m) => m.slug.toLowerCase() === "vending8",
-    },
-    {
-      step: 5,
-      title: "Paso 6: Configura Extras de Vending de Limpieza",
+      title: "Paso 5: Configura Extras de Vending de Limpieza",
       modelType: "vendingLimpieza",
       type: "extras",
     },
-    { step: 6, title: "Paso 7: Resumen del Paquete", type: "summary" },
+    { step: 5, title: "Paso 6: Resumen del Paquete", type: "summary" },
   ],
 };
 
@@ -556,7 +556,7 @@ export default function BundleWizard() {
     nextStep();
   };
 
-  const getModelsForCurrentStep = () => {
+  const getModelsForCurrentStep = (bundleConfig, id) => {
     if (!currentStepInfo || currentStepInfo.type === "summary" || currentStepInfo.type === "extras") return [];
     
     const { modelType, filter: specificFilter } = currentStepInfo;
@@ -564,9 +564,18 @@ export default function BundleWizard() {
     let baseFiltered = allModels.filter(m => {
         const slug = m.slug.toLowerCase();
         switch(modelType) {
-            case 'mostrador': return slug.includes('neptuno') || slug.includes('poseidon')|| slug.includes('poseidon');
+            case 'mostrador':
+                if ((id === 'Tridente' || id === 'Megalodon') && bundleConfig.vendingAgua) {
+                    const vendingName = bundleConfig.vendingAgua.name.toLowerCase();
+                    if (vendingName.includes('max')) {
+                        return (slug.includes('neptuno') || slug.includes('poseidon')) && m.name.toLowerCase().includes('osmosis');
+                    } else {
+                        return (slug.includes('neptuno') || slug.includes('poseidon')) && !m.name.toLowerCase().includes('osmosis');
+                    }
+                }
+                return slug.includes('neptuno') || slug.includes('poseidon');
 
-            case 'vendingAgua': return slug.includes('atlantis') || slug.includes('vending-touch') || slug.includes('vending-tradicional');
+            case 'vendingAgua': return true;
 
             case 'vendingLimpieza': return slug === 'vending5' || slug === 'vending8';
 
@@ -628,7 +637,7 @@ export default function BundleWizard() {
 
     }
     
-    const models = getModelsForCurrentStep();
+    const models = getModelsForCurrentStep(bundleConfig, id);
     return (
       <ModelSelectionStep
         title={currentStepInfo.title}
