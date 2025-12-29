@@ -45,11 +45,7 @@ const proyectos = [
     titulo: "Vending personalizado para hoteles",
     descripcion:
       "Vending machines con branding del hotel, operando 24/7 sin personal.",
-<<<<<<< HEAD
     imagen: "/img/proyectosEmpresariales/Hoteles.png",
-=======
-    imagen: "/img/cardsprojects/hotel.png",
->>>>>>> 73bbd0aceb516ded84304db650016e343b3a01ba
     industria: "Hoteles",
   },
   {
@@ -66,11 +62,7 @@ const proyectos = [
     titulo: "Equipos de calentamiento de agua",
     descripcion:
       "Soluciones de calentamiento eficientes para aplicaciones residenciales, comerciales e industriales.",
-<<<<<<< HEAD
     imagen: "/img/proyectosEmpresariales/equipos.png",
-=======
-    imagen: "/img/cardsprojects/house.png",
->>>>>>> 73bbd0aceb516ded84304db650016e343b3a01ba
     industria: "Calentamiento de agua",
   },
   {
