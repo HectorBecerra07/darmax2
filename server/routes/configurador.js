@@ -160,21 +160,30 @@ router.delete('/extras/:id', async (req, res) => {
 
 // POST: Crear un nuevo MachineModel
 router.post('/models', async (req, res) => {
-    const { slug, name, supportsTinacos, isAtlantis } = req.body;
+    const { slug, name, description, basePrice, features, supportsTinacos, isAtlantis, vendingType } = req.body;
+    
     if (!slug || !name) {
         return res.status(400).json({ message: 'Los campos slug y name son requeridos.' });
     }
+
     try {
         const newModel = await prisma.machineModel.create({
             data: {
                 slug,
                 name,
+                description,
+                basePrice: basePrice ? parseInt(basePrice) : 0,
+                features: Array.isArray(features) ? features : [],
                 supportsTinacos: Boolean(supportsTinacos),
                 isAtlantis: Boolean(isAtlantis),
+                vendingType: vendingType || "NONE",
             },
         });
         res.status(201).json(newModel);
     } catch (error) {
+        if (error.code === 'P2002') {
+            return res.status(409).json({ message: 'Ya existe un modelo con ese slug.' });
+        }
         console.error("Error creating machine model:", error);
         res.status(500).json({ message: 'Error al crear el modelo de máquina', error: error.message });
     }
@@ -183,22 +192,31 @@ router.post('/models', async (req, res) => {
 // PUT: Actualizar un MachineModel
 router.put('/models/:id', async (req, res) => {
     const { id } = req.params;
-    const { slug, name, supportsTinacos, isAtlantis } = req.body;
+    const { slug, name, description, basePrice, features, supportsTinacos, isAtlantis, vendingType } = req.body;
+    
     if (!slug || !name) {
         return res.status(400).json({ message: 'Los campos slug y name son requeridos.' });
     }
+
     try {
         const updatedModel = await prisma.machineModel.update({
             where: { id },
             data: {
                 slug,
                 name,
+                description,
+                basePrice: basePrice ? parseInt(basePrice) : 0,
+                features: Array.isArray(features) ? features : [],
                 supportsTinacos: Boolean(supportsTinacos),
                 isAtlantis: Boolean(isAtlantis),
+                vendingType: vendingType || "NONE",
             },
         });
         res.json(updatedModel);
     } catch (error) {
+        if (error.code === 'P2002') {
+            return res.status(409).json({ message: 'Ya existe un modelo con ese slug.' });
+        }
         console.error(`Error updating machine model ${id}:`, error);
         res.status(500).json({ message: 'Error al actualizar el modelo de máquina', error: error.message });
     }
