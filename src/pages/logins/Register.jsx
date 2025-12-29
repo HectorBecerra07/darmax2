@@ -139,7 +139,7 @@ const Register = () => {
               <label className="remember-me">
                 <input type="checkbox" required disabled={isSubmitting} />
                 Acepto&nbsp;
-                <Link to="#" className="forgot-password-link">
+                <Link to="/terminos-y-condiciones" className="forgot-password-link" target="_blank">
                    Términos y condiciones
                 </Link>
               </label>

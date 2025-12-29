@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useCarrito } from "../context/CarritoContext";
 import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
@@ -247,6 +247,25 @@ const CheckoutForm = ({
             ? "Procesando pago..."
             : `Pagar $${totalConEnvio.toFixed(2)}`}
         </button>
+        <p className="mt-3 text-xs text-gray-500 text-center">
+          Al completar tu compra, aceptas nuestros{" "}
+          <Link
+            to="/terminos-y-condiciones"
+            target="_blank"
+            className="text-cyan-600 hover:underline"
+          >
+            Términos y Condiciones
+          </Link>{" "}
+          y{" "}
+          <Link
+            to="/politica-de-privacidad"
+            target="_blank"
+            className="text-cyan-600 hover:underline"
+          >
+            Política de Privacidad
+          </Link>
+          .
+        </p>
         <p className="mt-2 text-[11px] text-gray-500 text-center">
           Tu pago es procesado de forma segura con Stripe.
         </p>

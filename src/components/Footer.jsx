@@ -7,6 +7,7 @@ import {
   FaMoneyCheckAlt,
 } from "react-icons/fa";
 import { SiMercadopago } from "react-icons/si";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -170,10 +171,20 @@ const Footer = () => {
       </div>
 
       {/* Línea inferior */}
-      <div className="border-t border-white/10 mt-10 pt-4 text-center text-gray-300 text-xs">
-        &copy; {new Date().getFullYear()}{" "}
-        <span className="text-sky-400 font-semibold">Darmax</span>. Todos los
-        derechos reservados.
+      <div className="border-t border-white/10 mt-10 pt-4 flex flex-col md:flex-row justify-between items-center text-gray-300 text-xs">
+        <div className="mb-2 md:mb-0">
+          &copy; {new Date().getFullYear()}{" "}
+          <span className="text-sky-400 font-semibold">Darmax</span>. Todos los
+          derechos reservados.
+        </div>
+        <div className="flex space-x-4">
+          <Link to="/terminos-y-condiciones" className="hover:text-sky-400 transition-colors">
+            Términos y Condiciones
+          </Link>
+          <Link to="/politica-de-privacidad" className="hover:text-sky-400 transition-colors">
+            Política de Privacidad
+          </Link>
+        </div>
       </div>
     </footer>
   );

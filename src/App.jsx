@@ -37,6 +37,8 @@ import NotFound from "./pages/NotFound";
 import PurificadoresCaseros from "./components/PurificadoresCaseros";
 import Checkout from "./pages/StripeCheckoutPage";
 import GraciasCompra from "./pages/GraciasCompra"; // 👈 NUEVA PÁGINA
+import TerminosCondiciones from "./pages/TerminosCondiciones";
+import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
 
 // Admin
 import LoginAdmin from "./administrador/LoginAdmin";
@@ -330,6 +332,23 @@ function AppContent() {
                     element={
                       <PageWrapper>
                         <GraciasCompra />
+                      </PageWrapper>
+                    }
+                  />
+
+                  <Route
+                    path="/terminos-y-condiciones"
+                    element={
+                      <PageWrapper>
+                        <TerminosCondiciones />
+                      </PageWrapper>
+                    }
+                  />
+                  <Route
+                    path="/politica-de-privacidad"
+                    element={
+                      <PageWrapper>
+                        <PoliticaPrivacidad />
                       </PageWrapper>
                     }
                   />
