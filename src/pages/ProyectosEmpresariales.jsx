@@ -45,7 +45,11 @@ const proyectos = [
     titulo: "Vending personalizado para hoteles",
     descripcion:
       "Vending machines con branding del hotel, operando 24/7 sin personal.",
+<<<<<<< HEAD
     imagen: "/img/proyectosEmpresariales/Hoteles.png",
+=======
+    imagen: "/img/cardsprojects/hotel.png",
+>>>>>>> 73bbd0aceb516ded84304db650016e343b3a01ba
     industria: "Hoteles",
   },
   {
@@ -62,7 +66,11 @@ const proyectos = [
     titulo: "Equipos de calentamiento de agua",
     descripcion:
       "Soluciones de calentamiento eficientes para aplicaciones residenciales, comerciales e industriales.",
+<<<<<<< HEAD
     imagen: "/img/proyectosEmpresariales/equipos.png",
+=======
+    imagen: "/img/cardsprojects/house.png",
+>>>>>>> 73bbd0aceb516ded84304db650016e343b3a01ba
     industria: "Calentamiento de agua",
   },
   {
@@ -109,7 +117,6 @@ const proyectos = [
 
 export default function ProyectosEmpresariales() {
   const [filtro, setFiltro] = useState("Todos");
-  const [view, setView] = useState("grid"); // "grid" | "list"
   const [sortBy, setSortBy] = useState("relevancia"); // "relevancia" | "az" | "industria"
 
   const industrias = useMemo(
@@ -273,7 +280,7 @@ export default function ProyectosEmpresariales() {
                         key={cat}
                         onClick={() => setFiltro(cat)}
                         className={[
-                          "px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 border",
+                          "px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 border",
                           activo
                             ? "bg-[#24d4da] text-slate-950 border-[#24d4da] shadow-sm"
                             : "bg-white/10 text-white/85 border-white/15 hover:bg-white/15",
@@ -293,122 +300,100 @@ export default function ProyectosEmpresariales() {
           </div>
         </section>
 
-        {/* CATÁLOGO / CONTROLES */}
+            {/* CATÁLOGO */}
         <section
           id="catalogo-proyectos"
           className="px-4 md:px-10 pt-10 pb-16 max-w-screen-2xl mx-auto"
         >
           <div className="mx-auto max-w-7xl">
-            <div className="flex items-end justify-between gap-4 flex-wrap">
+            <div className="flex items-end justify-between gap-4 flex-wrap mb-10">
               <div>
                 <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">
-                  Catálogo de Proyectos
+                  Catálogo de Soluciones
                 </h3>
                 <p className="text-slate-600 mt-1">
-                  Vista grid/lista, ordenamiento y CTA a cotización.
+                  Selecciona una tarjeta para iniciar tu cotización.
                 </p>
               </div>
 
-              <div className="flex items-center gap-3 flex-wrap">
-                {/* Vista */}
-                <div className="flex items-center gap-2 bg-white border border-slate-200/80 rounded-2xl p-2 shadow-sm">
-                  <button
-                    onClick={() => setView("grid")}
-                    className={[
-                      "p-2 rounded-lg transition-colors",
-                      view === "grid"
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-500 hover:bg-slate-100 hover:text-slate-800",
-                    ].join(" ")}
-                    aria-pressed={view === "grid"}
-                    title="Vista de cuadrícula"
-                  >
-                    <GridIcon />
-                  </button>
-                  <button
-                    onClick={() => setView("list")}
-                    className={[
-                      "p-2 rounded-lg transition-colors",
-                      view === "list"
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-500 hover:bg-slate-100 hover:text-slate-800",
-                    ].join(" ")}
-                    aria-pressed={view === "list"}
-                    title="Vista de lista"
-                  >
-                    <ListIcon />
-                  </button>
-                </div>
-
-                {/* Ordenar */}
-                <label className="flex items-center gap-2 text-sm">
-                  <span className="text-slate-600 font-medium">Ordenar:</span>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="rounded-xl border-slate-300 bg-white/80 px-3 py-2 text-slate-700 font-semibold shadow-sm outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
-                  >
-                    <option value="relevancia">Relevancia</option>
-                    <option value="az">A-Z</option>
-                    <option value="industria">Industria</option>
-                  </select>
-                </label>
-              </div>
+              {/* Ordenar */}
+              <label className="flex items-center gap-2 text-sm">
+                <span className="text-slate-600 font-medium">Ordenar:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="rounded-xl border-slate-300 bg-white/80 px-3 py-2 text-slate-700 font-semibold shadow-sm outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
+                >
+                  <option value="relevancia">Relevancia</option>
+                  <option value="az">A-Z</option>
+                  <option value="industria">Industria</option>
+                </select>
+              </label>
             </div>
 
-            <div className="mt-10">
-              {view === "grid" ? (
-                <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                  {proyectosFiltrados.map((p, idx) => (
-                    <MotionCard key={p.id} delay={idx * 0.03}>
-                      <ProjectCard proyecto={p} setForm={setForm} />
-                    </MotionCard>
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  {proyectosFiltrados.map((p, idx) => (
-                    <MotionCard key={p.id} delay={idx * 0.03}>
-                      <ProjectRow proyecto={p} setForm={setForm} />
-                    </MotionCard>
-                  ))}
-                </div>
-              )}
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {proyectosFiltrados.map((p, idx) => (
+                <MotionCard key={p.id} delay={idx * 0.05}>
+                  <ProjectCard proyecto={p} setForm={setForm} />
+                </MotionCard>
+              ))}
             </div>
 
             <div className="mt-20 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
           </div>
         </section>
 
-        {/* FORM */}
-        <section className="px-4 md:px-10 pb-24 max-w-screen-2xl mx-auto">
-          <div id="formulario-proyectos" className="max-w-5xl mx-auto scroll-mt-20">
-            <div className="bg-white rounded-2xl shadow-2xl shadow-slate-200/80 p-8 md:p-12">
-              <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight text-center">
-                ¿Listo para cotizar tu proyecto?
-              </h3>
-              <p className="mt-3 text-slate-600 text-center max-w-2xl mx-auto">
-                Completa el formulario y se abrirá tu correo con un borrador listo
-                para enviar a{" "}
-                <span className="font-semibold text-slate-800">
-                  darmaxagua@gmail.com
-                </span>
-                .
-              </p>
+        {/* FORM SECTION - Rediseñada con fondo profundo */}
+        <section className="relative py-24 mt-10 overflow-hidden">
+          {/* Capas de Fondo */}
+          <div className="absolute inset-0 z-0">
+            {/* Imagen de textura sutil (Industrial/Empresarial) */}
+            <img 
+              src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2000&q=80" 
+              className="w-full h-full object-cover opacity-10"
+              alt=""
+            />
+            {/* Gradiente principal (Oscuro a Azul Profundo) */}
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
+            
+            {/* Luces de neón decorativas */}
+            <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-lime-500/10 blur-[120px]" />
+            <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-cyan-500/10 blur-[120px]" />
+            
+            {/* Líneas divisorias suaves */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          </div>
 
-              <form onSubmit={handleGmailSubmit} className="mt-10 grid gap-6">
+          <div id="formulario-proyectos" className="relative z-10 px-4 md:px-10 max-w-5xl mx-auto scroll-mt-20">
+            <div className="bg-slate-900/40 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-8 md:p-12 text-white">
+              <div className="text-center mb-10">
+                <span className="inline-flex items-center gap-2 rounded-full border border-lime-400/30 bg-lime-400/10 px-4 py-1.5 text-lime-300 text-xs font-bold uppercase tracking-wider mb-4">
+                  Contacto Directo
+                </span>
+                <h3 className="text-3xl md:text-5xl font-extrabold tracking-tight">
+                  ¿Listo para cotizar tu proyecto?
+                </h3>
+                <p className="mt-4 text-slate-300 text-lg max-w-2xl mx-auto">
+                  Completa el formulario y se abrirá tu correo con un borrador listo
+                  para enviar a <span className="text-lime-300 font-semibold">darmaxagua@gmail.com</span>.
+                </p>
+              </div>
+
+              <form onSubmit={handleGmailSubmit} className="grid gap-8">
                 <div className="grid md:grid-cols-2 gap-6">
                   <FormInput
                     required
-                    label="Nombre"
+                    label="Nombre completo"
                     name="nombre"
                     value={form.nombre}
                     onChange={onChange}
+                    placeholder="Escribe tu nombre"
                   />
                   <FormInput
                     required
                     type="email"
-                    label="Email"
+                    label="Correo electrónico"
                     name="email"
                     value={form.email}
                     onChange={onChange}
@@ -418,11 +403,11 @@ export default function ProyectosEmpresariales() {
 
                 <div className="grid md:grid-cols-3 gap-6">
                   <FormInput
-                    label="Teléfono"
+                    label="Teléfono / WhatsApp"
                     name="telefono"
                     value={form.telefono}
                     onChange={onChange}
-                    placeholder="55 1234 5678"
+                    placeholder="Ej. 55 1234 5678"
                   />
                   <FormSelect
                     label="Industria de Interés"
@@ -432,17 +417,17 @@ export default function ProyectosEmpresariales() {
                     options={industrias}
                   />
                   <FormInput
-                    label="Proyecto de Interés"
+                    label="Proyecto específico"
                     name="proyecto"
                     value={form.proyecto}
                     onChange={onChange}
-                    placeholder="Ej. Vending Touch + Purificadora"
+                    placeholder="Ej. Vending personalizado"
                   />
                 </div>
 
                 <FormTextarea
                   required
-                  label="Mensaje / Detalles"
+                  label="Mensaje / Detalles del proyecto"
                   name="detalles"
                   rows={5}
                   value={form.detalles}
@@ -450,10 +435,14 @@ export default function ProyectosEmpresariales() {
                   placeholder="Describe tu proyecto: ubicación, capacidad requerida, presupuesto estimado, etc."
                 />
 
-                <div className="flex flex-wrap items-center gap-4 pt-4">
+                <div className="flex flex-wrap items-center justify-center gap-6 pt-4">
                   <button
                     type="submit"
+<<<<<<< HEAD
+                    className="group flex items-center justify-center gap-3 rounded-2xl bg-lime-300 px-10 py-4 font-black text-slate-950 shadow-xl shadow-lime-500/20 transition-all duration-300 hover:-translate-y-1 hover:bg-lime-200 hover:shadow-lime-500/40"
+=======
                     className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
+>>>>>>> 2bb8e1da7e8974b1ba92efe4e702019354a7e27f
                   >
                     Abrir Gmail y Enviar
                     <ArrowRight />
@@ -465,16 +454,15 @@ export default function ProyectosEmpresariales() {
                       subject: "Consulta desde Proyectos Empresariales",
                       body: "",
                     })}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-7 py-3 font-semibold text-slate-800 transition-all duration-300 hover:bg-slate-200 hover:-translate-y-0.5"
+                    className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-10 py-4 font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/10 hover:-translate-y-1"
                   >
                     Usar otro cliente
                     <ExternalIcon />
                   </a>
                 </div>
 
-                <p className="text-sm text-slate-500 mt-2">
-                  *No se envía automáticamente. Se abrirá una ventana con tu correo
-                  listo para que lo revises y envíes.
+                <p className="text-center text-sm text-slate-400">
+                  *Este proceso no es automático. Se generará un borrador profesional para que lo revises antes de enviar.
                 </p>
               </form>
             </div>
@@ -493,30 +481,45 @@ function MotionCard({ children, delay = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "0px 0px -60px 0px" }}
       transition={{ duration: 0.5, ease: "easeOut", delay }}
+      className="h-full"
     >
       {children}
     </motion.div>
   );
 }
 
-/* ========= Cards (mismo estilo que ProductCard) ========= */
+/* ========= Cards Estilo "ModeloCard" ========= */
 function ProjectCard({ proyecto, setForm }) {
-  const badge = getBadge(proyecto.industria, proyecto.titulo);
   const imgSrc = proyecto.imagen?.trim()
     ? proyecto.imagen
-    : "https://placehold.co/600x450/e2e8f0/475569?text=Proyecto";
+    : "https://placehold.co/600x450/1e293b/ffffff?text=Darmax";
 
   return (
-    <article
+    <button
+      type="button"
+      onClick={() => {
+        setForm((prev) => ({
+          ...prev,
+          proyecto: proyecto.titulo,
+          industria: proyecto.industria,
+        }));
+        document
+          .getElementById("formulario-proyectos")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }}
       className="
-        group relative
-        rounded-2xl bg-white
-        border border-slate-200/70
-        shadow-sm transition-all duration-300
-        hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/70
-        overflow-hidden
+        group relative w-full overflow-hidden rounded-2xl
+        bg-slate-900 text-left h-full min-h-[320px]
+        border border-slate-200/10 shadow-md
+        transition-all duration-500
+        hover:-translate-y-1 hover:shadow-2xl hover:border-lime-300/30
+        focus:outline-none focus:ring-2 focus:ring-lime-300/70
       "
     >
+<<<<<<< HEAD
+      {/* Imagen de Fondo */}
+      <div className="absolute inset-0">
+=======
       {/* Glow on hover */}
       <div className="pointer-events-none absolute -inset-24 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-48 w-72 rounded-full bg-lime-300/25 blur-3xl" />
@@ -605,30 +608,31 @@ function ProjectRow({ proyecto, setForm }) {
       </div>
 
       <div className="relative isolate overflow-hidden">
+>>>>>>> 2bb8e1da7e8974b1ba92efe4e702019354a7e27f
         <img
           src={imgSrc}
           alt={proyecto.titulo}
-          className="h-full w-full object-cover aspect-[16/10] md:aspect-[4/3]"
+          className="h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-60"
           loading="lazy"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/20 to-transparent" />
-        {badge && (
-          <span className="absolute left-3 top-3 z-10 inline-flex items-center rounded-full bg-white/95 text-slate-900 text-xs font-bold px-3 py-1 shadow-sm">
-            {badge}
-          </span>
-        )}
+        {/* Gradiente para legibilidad */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
       </div>
 
-      <div className="p-5 md:py-5 md:pr-6 flex flex-col">
-        <h3 className="text-xl md:text-2xl font-extrabold text-slate-900">
-          {proyecto.titulo}
-        </h3>
-        <p className="mt-2 text-slate-600">{proyecto.descripcion}</p>
+      {/* Glow Effect */}
+      <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 h-56 w-80 rounded-full bg-lime-300/20 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-        <div className="mt-4 flex items-center justify-between gap-3 flex-wrap">
-          <span className="inline-flex items-center rounded-md bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-1">
+      {/* Contenido */}
+      <div className="relative p-6 h-full flex flex-col justify-end z-10">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <span className="inline-flex items-center rounded-full bg-lime-300/90 px-2.5 py-1 text-xs font-bold text-slate-950 shadow-sm">
             {proyecto.industria}
           </span>
+<<<<<<< HEAD
+          <span className="text-white/80 text-xs font-medium bg-black/30 px-2 py-1 rounded-lg backdrop-blur-md group-hover:bg-lime-300 group-hover:text-slate-950 transition-colors">
+            Cotizar →
+          </span>
+=======
 
           <button
             type="button"
@@ -647,25 +651,33 @@ function ProjectRow({ proyecto, setForm }) {
             Cotizar por Email
             <ArrowRight />
           </button>
+>>>>>>> 2bb8e1da7e8974b1ba92efe4e702019354a7e27f
         </div>
+
+        <h3 className="text-xl font-extrabold text-white leading-tight mb-2 drop-shadow-sm">
+          {proyecto.titulo}
+        </h3>
+        <p className="text-slate-300 text-sm line-clamp-3 leading-relaxed drop-shadow-sm">
+          {proyecto.descripcion}
+        </p>
       </div>
-    </article>
+    </button>
   );
 }
 
-/* ========= Form helpers ========= */
+/* ========= Form helpers (Dark / Glass version) ========= */
 function FormInput({ label, ...props }) {
   return (
     <label className="block">
       {label && (
-        <span className="mb-1.5 block text-sm font-semibold text-slate-800">
+        <span className="mb-2 block text-sm font-bold text-white/90 uppercase tracking-wide drop-shadow-sm">
           {label}
-          {props.required && "*"}
+          {props.required && <span className="text-lime-400 ml-1">*</span>}
         </span>
       )}
       <input
         {...props}
-        className="block w-full rounded-lg border-gray-300 bg-gray-50/80 px-4 py-2.5 text-slate-800 shadow-sm transition-colors placeholder:text-slate-400 focus:border-lime-400 focus:bg-white focus:ring-lime-400 focus:ring-1"
+        className="block w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3.5 text-white placeholder:text-white/50 shadow-inner transition-all focus:border-lime-400 focus:bg-white/15 focus:ring-2 focus:ring-lime-400/30 outline-none backdrop-blur-md"
       />
     </label>
   );
@@ -675,22 +687,22 @@ function FormSelect({ label, options = [], ...props }) {
   return (
     <label className="block">
       {label && (
-        <span className="mb-1.5 block text-sm font-semibold text-slate-800">
+        <span className="mb-2 block text-sm font-bold text-white/90 uppercase tracking-wide drop-shadow-sm">
           {label}
-          {props.required && "*"}
+          {props.required && <span className="text-lime-400 ml-1">*</span>}
         </span>
       )}
       <select
         {...props}
-        className="block w-full rounded-lg border-gray-300 bg-gray-50/80 px-4 py-2.5 text-slate-800 shadow-sm transition-colors focus:border-lime-400 focus:bg-white focus:ring-lime-400 focus:ring-1"
+        className="block w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3.5 text-white shadow-inner transition-all focus:border-lime-400 focus:bg-white/15 focus:ring-2 focus:ring-lime-400/30 outline-none appearance-none cursor-pointer backdrop-blur-md"
       >
-        <option value="">Selecciona…</option>
+        <option value="" className="bg-slate-900 text-slate-300">Selecciona industria…</option>
         {options.map((i) => (
-          <option key={i} value={i}>
+          <option key={i} value={i} className="bg-slate-900 text-white">
             {i}
           </option>
         ))}
-        <option value="Otra">Otra</option>
+        <option value="Otra" className="bg-slate-900 text-white">Otra</option>
       </select>
     </label>
   );
@@ -700,33 +712,18 @@ function FormTextarea({ label, rows = 4, ...props }) {
   return (
     <label className="block">
       {label && (
-        <span className="mb-1.5 block text-sm font-semibold text-slate-800">
+        <span className="mb-2 block text-sm font-bold text-white/90 uppercase tracking-wide drop-shadow-sm">
           {label}
-          {props.required && "*"}
+          {props.required && <span className="text-lime-400 ml-1">*</span>}
         </span>
       )}
       <textarea
         rows={rows}
         {...props}
-        className="block w-full rounded-lg border-gray-300 bg-gray-50/80 px-4 py-2.5 text-slate-800 shadow-sm transition-colors placeholder:text-slate-400 focus:border-lime-400 focus:bg-white focus:ring-lime-400 focus:ring-1"
+        className="block w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3.5 text-white placeholder:text-white/50 shadow-inner transition-all focus:border-lime-400 focus:bg-white/15 focus:ring-2 focus:ring-lime-400/30 outline-none resize-none backdrop-blur-md"
       />
     </label>
   );
-}
-
-/* ========= Badge ========= */
-function getBadge(industria = "", titulo = "") {
-  const i = industria.toLowerCase();
-  const t = titulo.toLowerCase();
-  if (i.includes("franquicia") || t.includes("franquicia")) return "Nuevo";
-  if (i.includes("hotel") || t.includes("hotel")) return "24/7";
-  if (i.includes("centro") || i.includes("comercial") || t.includes("comercial"))
-    return "Alta demanda";
-  if (i.includes("presurización") || i.includes("presurizacion"))
-    return "Caudal estable";
-  if (i.includes("aguas residuales")) return "Robusto";
-  if (i.includes("sumergibles")) return "Profundidad";
-  return null;
 }
 
 /* ========= UI Bits ========= */
@@ -739,36 +736,6 @@ function Pill({ children }) {
 }
 
 /* ========= Icons ========= */
-const GridIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      fillRule="evenodd"
-      d="M4.25 2A2.25 2.25 0 002 4.25v2.5A2.25 2.25 0 004.25 9h2.5A2.25 2.25 0 009 6.75v-2.5A2.25 2.25 0 006.75 2h-2.5zm0 9A2.25 2.25 0 002 13.25v2.5A2.25 2.25 0 004.25 18h2.5A2.25 2.25 0 009 15.75v-2.5A2.25 2.25 0 006.75 11h-2.5zm9-9A2.25 2.25 0 0011 4.25v2.5A2.25 2.25 0 0013.25 9h2.5A2.25 2.25 0 0018 6.75v-2.5A2.25 2.25 0 0015.75 2h-2.5zm0 9A2.25 2.25 0 0011 13.25v2.5A2.25 2.25 0 0013.25 18h2.5A2.25 2.25 0 0018 15.75v-2.5A2.25 2.25 0 0015.75 11h-2.5z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
-const ListIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-    className="w-5 h-5"
-  >
-    <path
-      fillRule="evenodd"
-      d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10zm0 5.25a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z"
-      clipRule="evenodd"
-    />
-  </svg>
-);
-
 function ArrowRight() {
   return (
     <svg
