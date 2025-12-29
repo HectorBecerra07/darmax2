@@ -205,7 +205,7 @@ export default function ProyectosEmpresariales() {
           <div className="relative px-4 md:px-10 pt-14 pb-14 max-w-screen-2xl mx-auto">
             <div className="text-center max-w-4xl mx-auto">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-white/90 text-sm backdrop-blur">
-                <span className="h-2 w-2 rounded-full bg-lime-300" />
+                <span className="h-2 w-2 rounded-full bg-[#24d4da]" />
                 Llave en mano • Ingeniería • Instalación • Soporte
               </span>
 
@@ -224,7 +224,7 @@ export default function ProyectosEmpresariales() {
                       .getElementById("catalogo-proyectos")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
+                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
                 >
                   Ver industrias
                   <ArrowRight />
@@ -275,7 +275,7 @@ export default function ProyectosEmpresariales() {
                         className={[
                           "px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 border",
                           activo
-                            ? "bg-lime-300 text-slate-950 border-lime-200 shadow-sm"
+                            ? "bg-[#24d4da] text-slate-950 border-[#24d4da] shadow-sm"
                             : "bg-white/10 text-white/85 border-white/15 hover:bg-white/15",
                         ].join(" ")}
                         aria-pressed={activo}
@@ -453,7 +453,7 @@ export default function ProyectosEmpresariales() {
                 <div className="flex flex-wrap items-center gap-4 pt-4">
                   <button
                     type="submit"
-                    className="group inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
+                    className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
                   >
                     Abrir Gmail y Enviar
                     <ArrowRight />
@@ -568,7 +568,7 @@ function ProjectCard({ proyecto, setForm }) {
                 .getElementById("formulario-proyectos")
                 ?.scrollIntoView({ behavior: "smooth" });
             }}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-4 py-2 text-sm font-extrabold text-slate-950 transition-all duration-300 hover:bg-lime-200"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-4 py-2 text-sm font-extrabold text-slate-950 transition-all duration-300 hover:bg-lime-200"
           >
             Cotizar
             <ArrowRight />
@@ -642,7 +642,7 @@ function ProjectRow({ proyecto, setForm }) {
                 .getElementById("formulario-proyectos")
                 ?.scrollIntoView({ behavior: "smooth" });
             }}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-5 py-2.5 text-sm font-extrabold text-slate-950 transition-all duration-300 hover:bg-lime-200"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-5 py-2.5 text-sm font-extrabold text-slate-950 transition-all duration-300 hover:bg-lime-200"
           >
             Cotizar por Email
             <ArrowRight />
