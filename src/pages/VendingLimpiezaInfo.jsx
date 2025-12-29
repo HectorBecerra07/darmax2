@@ -1,273 +1,349 @@
 import { useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
-import CardFeatureKey from "../components/CardFeatureKey";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import {
+  ChevronDownIcon,
+  CurrencyDollarIcon,
+  BuildingStorefrontIcon,
+  ClockIcon,
+  WrenchScrewdriverIcon,
+  ArrowTrendingUpIcon,
+  MapPinIcon,
+  TruckIcon,
+  AcademicCapIcon,
+  ShieldCheckIcon,
+  SparklesIcon,
+  BeakerIcon,
+  PaintBrushIcon,
+  ArchiveBoxIcon,
+  CogIcon,
+  CircleStackIcon,
+  CpuChipIcon
+} from "@heroicons/react/24/outline";
 
-/* ========= Datos ========= */
+/* --- Data --- */
 const HERO_IMG = "/img/vending/5productos.jpg";
 
 const highlights = [
-  { icon: "🧴", title: "Hasta 5 productos", desc: "Cloro, detergente, suavizante y más" },
-  { icon: "💳", title: "Pago efectivo", desc: "Efectivo," },
-  { icon: "🖥️", title: "Botones", desc: "Flujo de compra intuitivo" },
-  { icon: "♻️", title: "Eco-friendly", desc: "Recarga y reutiliza envases" },
-];
-
-const especificacionesLimpieza = [
   {
-    imagen: "/img/limpieza/dispensador.png",
-    titulo: "Dispensador automático",
-    descripcion: "Dosifica con precisión el volumen elegido por el cliente.",
+    icon: BeakerIcon,
+    title: "Hasta 8 Productos",
+    desc: "Cloro, detergente, suavizante y más",
   },
   {
-    imagen: "/img/limpieza/envases.png",
-    titulo: "Envases reutilizables",
-    descripcion: "Admite PET y botellas reutilizables para reducir residuos.",
+    icon: CurrencyDollarIcon,
+    title: "Cobro en Efectivo",
+    desc: "Monedero de alta capacidad",
   },
   {
-    imagen: "/img/limpieza/productos.png",
-    titulo: "Portafolio flexible",
-    descripcion: "Configura cloro, detergente, suavizante, desinfectante y más.",
+    icon: CpuChipIcon,
+    title: "Fácil de Usar",
+    desc: "Flujo de compra simple e intuitivo",
   },
-
-  {
-    imagen: "/img/limpieza/formaspago.png",
-    titulo: "Pagos en efectivo",
-    descripcion: "Monedas, proxima mente billetes, tarjeta y códigos QR compatibles.",
+  { 
+    icon: SparklesIcon, 
+    title: "Eco-Friendly", 
+    desc: "Fomenta la recarga y reutilización" 
   },
 ];
 
-const pasos = [
-  { icon: "📦", title: "Abastecimiento", desc: "Carga de concentrados y calibración de dosificadores." },
-  { icon: "🏷️", title: "Precios", desc: "Define precios por litro y combos promocionales." },
-  { icon: "🧽", title: "Limpieza", desc: "Rutina de higiene y purga de líneas para operación segura." },
-  { icon: "📣", title: "Promoción", desc: "Visibilidad en punto, cupones y recompra." },
+const features = [
+    {
+        icon: CircleStackIcon,
+        title: "Dispensador de Precisión",
+        description: "Un sistema automático que dosifica con exactitud el volumen elegido por el cliente, evitando derrames y asegurando una venta justa y eficiente.",
+        image: "/img/limpieza/dispensador.png",
+    },
+    {
+        icon: ArchiveBoxIcon,
+        title: "Compatibilidad con Envases",
+        description: "Diseñado para admitir envases PET y otras botellas reutilizables, promoviendo un modelo de negocio sostenible que reduce los residuos plásticos.",
+        image: "/img/limpieza/envases.png",
+    },
+    {
+        icon: CogIcon,
+        title: "Portafolio de Productos Flexible",
+        description: "Te permite configurar una variedad de productos de alta demanda como cloro, detergente para ropa, suavizante, desinfectante de pisos y más.",
+        image: "/img/limpieza/productos.png",
+    },
 ];
+
+const processSteps = [
+  {
+    icon: ArchiveBoxIcon,
+    title: "1. Abastecimiento",
+    desc: "La carga de los contenedores de productos es sencilla. Te capacitamos en la calibración de los dosificadores para un control exacto.",
+  },
+  {
+    icon: CurrencyDollarIcon,
+    title: "2. Definición de Precios",
+    desc: "Establece fácilmente los precios por litro o fracción desde un panel de control simple, y crea promociones para atraer más clientes.",
+  },
+  {
+    icon: SparklesIcon,
+    title: "3. Mantenimiento y Limpieza",
+    desc: "Con una rutina de higiene simple y purga de líneas, aseguras una operación segura y confiable para tus clientes.",
+  },
+  {
+    icon: ArrowTrendingUpIcon,
+    title: "4. Crecimiento del Negocio",
+    desc: "Te asesoramos en estrategias de promoción en el punto de venta para fomentar la visibilidad, el uso de cupones y la recompra.",
+  },
+];
+
 
 const faqs = [
-  { q: "¿Qué espacio necesita?", a: "Un área compacta con toma eléctrica y, de ser posible, anclaje al piso/pared." },
-  { q: "¿Cada cuándo se recarga?", a: "Depende de la demanda. Te damos guías para planear reabastecimiento." },
-  { q: "¿Puedo cambiar los productos?", a: "Sí, puedes reconfigurar sabores/limpiadores y precios desde el panel." },
-  { q: "¿Incluye garantía y soporte?", a: "Sí, con capacitación, garantía y soporte técnico Darmax." },
+  { q: "¿Qué espacio necesita?", a: "Un área compacta con toma eléctrica y, de ser posible, anclaje al piso/pared es suficiente. Su diseño vertical optimiza el espacio." },
+  { q: "¿Cada cuándo se necesita recargar los productos?", a: "La frecuencia depende de la demanda de tu ubicación. El sistema incluye contadores que te ayudan a planificar el reabastecimiento de forma eficiente." },
+  { q: "¿Puedo cambiar los productos que ofrezco?", a: "Sí, el sistema es flexible. Puedes reconfigurar los productos y ajustar los precios en cualquier momento para adaptarte a las necesidades de tu mercado." },
+  { q: "¿Incluye garantía y soporte?", a: "Por supuesto. Todos nuestros equipos incluyen garantía completa, un kit de refacciones inicial, y acceso a nuestro soporte técnico para resolver cualquier duda." },
 ];
 
-/* ========= Componente ========= */
+const galleryImages = [
+  HERO_IMG, 
+  "/img/vending/productoslimpieza5.png", 
+  "/img/vending/9productos.jpeg", 
+  "/img/vending/productoslimpieza8.png"
+];
+
+/* --- Sub-components --- */
+const FaqItem = ({ q, a }) => (
+  <details className="group border-b border-slate-200/80 last:border-none">
+    <summary className="cursor-pointer list-none p-5 md:p-6 font-semibold text-slate-800 flex items-center justify-between hover:bg-slate-50 transition">
+      {q}
+      <div className="ml-4 text-slate-400 transition-transform duration-300 group-open:rotate-180">
+        <ChevronDownIcon className="h-5 w-5" />
+      </div>
+    </summary>
+    <div className="px-5 md:px-6 pb-6 text-slate-600 leading-relaxed">{a}</div>
+  </details>
+);
+
+const SectionTitle = ({ children, className = '' }) => (
+    <div className={`text-center mb-12 ${className}`}>
+        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+            {children}
+        </h2>
+    </div>
+);
+
+
+/* --- Main Component --- */
 export default function VendingLimpiezaInfo() {
   const navigate = useNavigate();
-  const containerRef = useRef(null);
+  const location = useLocation();
+  const contRef = useRef(null);
 
   useEffect(() => {
-    const t = setTimeout(() => containerRef.current?.scrollIntoView({ behavior: "auto" }), 200);
+    const t = setTimeout(() => contRef.current?.scrollIntoView({ behavior: "smooth" }), 200);
     return () => clearTimeout(t);
-  }, []);
+  }, [location.pathname]);
 
   return (
-    <div ref={containerRef} className="bg-white min-h-screen">
+    <div ref={contRef} className="min-h-screen bg-slate-50 text-slate-800">
       <Helmet>
         <title>Vending de Productos de Limpieza - Darmax</title>
         <meta
           name="description"
-          content="Automatiza la venta de detergentes, cloro y suavizantes con pago mixto y pantalla táctil. Reduce residuos con recarga y mejora tu margen con insumos a granel."
+          content="Automatiza la venta de detergentes, cloro y suavizantes. Un negocio ecológico y rentable con insumos a granel."
         />
       </Helmet>
+
+      {/* ===== Hero Section ===== */}
+      <section className="relative bg-gradient-to-tr from-pink-900 via-fuchsia-800 to-rose-700">
+        <div className="absolute inset-0">
+          <img src={HERO_IMG} alt="Vending de productos de limpieza" className="w-full h-full object-cover opacity-20" />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-center min-h-[85vh] text-center text-white pt-24 pb-12">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+                <span className="inline-block px-4 py-1.5 mb-4 bg-white/10 text-rose-300 rounded-full text-sm font-semibold">Negocio Innovador y Ecológico</span>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
+                    Vende Productos de Limpieza <span className="text-rose-300">a Granel, 24/7</span>.
+                </h1>
+                <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-200 leading-relaxed">
+                    Ofrece a tus clientes una forma económica y sostenible de comprar productos de limpieza, mientras generas ingresos de forma automática.
+                </p>
+                <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+                    <Link
+                        to="/configurar-maquina/Vending-Limpieza"
+                        className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-rose-400 shadow-lg hover:bg-rose-300 transition-all transform hover:scale-105"
+                    >
+                        Configurar mi Vending
+                    </Link>
+                    <Link
+                        to="#features"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="px-8 py-3 rounded-full font-semibold border-2 border-slate-600 text-slate-200 hover:bg-slate-800 hover:border-slate-800 transition"
+                    >
+                        Descubrir Características
+                    </Link>
+                </div>
+            </motion.div>
+        </div>
+      </section>
+
+      {/* ===== Highlights Section ===== */}
+      <section className="bg-slate-800 py-12">
+          <div className="max-w-7xl mx-auto px-6 md:px-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
+                  {highlights.map((h, i) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: i * 0.1 }}
+                        className="flex items-center gap-4 text-white"
+                      >
+                          <div className="flex-shrink-0 bg-slate-700 p-3 rounded-lg">
+                            <h.icon className="h-7 w-7 text-rose-400"/>
+                          </div>
+                          <div>
+                              <p className="font-bold text-lg">{h.title}</p>
+                              <p className="text-sm text-slate-400">{h.desc}</p>
+                          </div>
+                      </motion.div>
+                  ))}
+              </div>
+          </div>
+      </section>
+
+      {/* ===== Key Features Section ===== */}
+      <section id="features" className="py-20 md:py-28">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+            <div className="max-w-3xl mx-auto text-center mb-16">
+                 <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+                    Eficiencia y Sostenibilidad en un Solo Equipo
+                </h2>
+                <p className="mt-4 text-lg text-slate-600">
+                    Diseñado para una operación rentable y un impacto ambiental positivo.
+                </p>
+            </div>
+
+            <div className="space-y-16">
+                {features.map((feature, i) => (
+                    <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.6 }}
+                        className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}
+                    >
+                        <div className="md:w-1/2">
+                            <div className="inline-flex items-center gap-3 mb-4">
+                                <span className="p-2 bg-rose-100 rounded-full">
+                                    <feature.icon className="h-6 w-6 text-rose-700"/>
+                                </span>
+                                <h3 className="text-2xl font-bold">{feature.title}</h3>
+                            </div>
+                            <p className="text-slate-600 leading-relaxed text-base">
+                                {feature.description}
+                            </p>
+                        </div>
+                        <div className="md:w-1/2">
+                            <img src={feature.image} alt={feature.title} className="w-full h-auto rounded-2xl shadow-xl object-cover" />
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+        </div>
+      </section>
       
-      {/* ===== Header blanco + banner full-bleed ===== */}
-      <section className="bg-white overflow-x-hidden">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 pt-10 pb-6">
-          <h2 className="text-2xl md:text-4xl font-extrabold italic text-slate-900">
-            Conoce más
-          </h2>
-          <p className="text-xs md:text-sm text-slate-500 mt-1">
-            Mejora tu margen con insumos a granel
-          </p>
-        </div>
-
-        <div className="relative w-screen left-1/2 -translate-x-1/2">
-          <div className="relative h-[260px] sm:h-[320px] md:h-[420px] overflow-hidden">
-            <img
-              src={HERO_IMG}
-              alt="Vending de limpieza Darmax"
-              className="w-full h-full object-cover"
-              onError={(e) => (e.currentTarget.style.display = "none")}
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Bloque de color pegado ===== */}
-      <section className="relative -mt-4">
-        <div className="bg-gradient-to-tr from-fuchsia-800 via-pink-700 to-rose-700">
-          <div className="max-w-7xl mx-auto px-6 md:px-10 pt-14 pb-14">
-            <div className="text-center">
-              <h1 className="text-4xl md:text-6xl font-extrabold italic text-white leading-tight">
-                Vending de <span className="not-italic text-[#ccff00]">Productos de Limpieza</span>
-              </h1>
-              <p className="mt-7 max-w-4xl mx-auto text-white/80 text-base md:text-lg leading-relaxed">
-                Automatiza la venta de detergentes, cloro y suavizantes con pago mixto y pantalla táctil. Reduce residuos con recarga y mejora tu margen con insumos a granel.
-              </p>
-            </div>
-
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-              {highlights.map((h, i) => (
-                <motion.div
-                  key={h.title}
-                  initial={{ opacity: 0, y: 14 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.35, delay: i * 0.07 }}
-                  className="flex flex-col items-center justify-center min-h-[120px] rounded-lg bg-white/10 border border-white/20 backdrop-blur-sm px-4 py-5 text-center text-white"
-                >
-                  <div className="text-3xl">{h.icon}</div>
-                  <div className="text-base font-semibold leading-tight mt-2">{h.title}</div>
-                  <div className="text-sm italic text-white/80">{h.desc}</div>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                to="/configurar-maquina/Vending-Limpieza"
-                className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
-                style={{ backgroundColor: "#ccff00" }}
-              >
-                Configurar mi máquina
-              </Link>
-              <Link
-                to="/productos"
-                className="px-6 py-3 rounded-xl font-semibold border border-white/20 text-white hover:bg-white/10 transition"
-              >
-                Ver insumos
-              </Link>
-            </div>
-          </div>
-          
-          <svg className="w-full block -mb-px" viewBox="0 0 1440 120" preserveAspectRatio="none">
-            <path fill="#ffffff" d="M0,56 C240,0 960,160 1440,56 L1440,140 L0,140 Z" />
-          </svg>
-        </div>
-      </section>
-
-      {/* Especificaciones */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-12">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 text-center">
-          Características clave
-        </h2>
-        <p className="text-slate-600 text-center mt-2">
-          Todo lo que necesitas para operar con eficiencia y buena experiencia de usuario.
-        </p>
-
-        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {especificacionesLimpieza.map((e, i) => (
-            <CardFeatureKey
-              key={i}
-              imagen={e.imagen}
-              titulo={e.titulo}
-              descripcion={e.descripcion}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Cómo funciona */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-12">
-        <div className="rounded-3xl bg-gradient-to-tr from-fuchsia-900 via-pink-800 to-rose-800 text-white p-8 md:p-10">
-          <h2 className="text-2xl md:text-3xl font-extrabold">¿Cómo funciona el proyecto?</h2>
-          <p className="text-white/85 mt-2 max-w-2xl">
-            Te acompañamos desde la planeación hasta la operación diaria con rutinas claras.
-          </p>
-
-          <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {pasos.map((p, i) => (
+      {/* ===== How It Works Section ===== */}
+      <section className="py-20 md:py-28 bg-white">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <SectionTitle>Tu Negocio en 4 Simples Pasos</SectionTitle>
+          <div className="mt-16 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+            {processSteps.map((step, i) => (
               <motion.div
-                key={p.title}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-                className="bg-white/10 border border-white/20 rounded-2xl p-4"
+                key={i}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="text-center p-6 bg-slate-50 rounded-2xl border border-slate-200/80"
               >
-                <div className="text-3xl">{p.icon}</div>
-                <div className="mt-2 font-bold">{p.title}</div>
-                <div className="text-sm text-white/80">{p.desc}</div>
+                <div className="inline-block p-4 bg-rose-100 text-rose-700 rounded-full mb-4">
+                    <step.icon className="h-8 w-8" />
+                </div>
+                <h3 className="font-bold text-lg">{step.title}</h3>
+                <p className="text-sm text-slate-600 mt-1">{step.desc}</p>
               </motion.div>
             ))}
           </div>
+            <div className="mt-12 text-center">
+                 <Link
+                    to="/contacto"
+                    className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-rose-400 shadow-lg hover:bg-rose-300 transition-all transform hover:scale-105"
+                    >
+                    Solicitar Asesoría
+                </Link>
+            </div>
+        </div>
+      </section>
 
-          <div className="mt-7">
-            <Link
-              to="/contacto"
-              className="inline-flex px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
-              style={{ backgroundColor: "#ccff00" }}
-            >
-              Solicitar asesoría
-            </Link>
+      {/* ===== Gallery Section ===== */}
+      <section className="py-20 md:py-28">
+        <div className="max-w-7xl mx-auto">
+          <SectionTitle className="px-6">Equipos y Configuraciones</SectionTitle>
+        </div>
+        <div className="mt-8 relative">
+            <div className="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-6 md:px-10">
+                {galleryImages.map((src, i) => (
+                    <motion.div
+                        key={i}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true, amount: 0.4 }}
+                        transition={{ duration: 0.5, delay: i * 0.08 }}
+                        className="flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 snap-center"
+                    >
+                        <img src={src} alt={`Vending de limpieza ${i+1}`} className="w-full h-80 rounded-2xl object-cover shadow-lg bg-white p-4" />
+                    </motion.div>
+                ))}
+            </div>
+        </div>
+      </section>
+
+      {/* ===== FAQ Section ===== */}
+      <section className="py-20 md:py-28 bg-white">
+        <div className="max-w-4xl mx-auto px-6 md:px-10">
+          <SectionTitle>Preguntas Frecuentes</SectionTitle>
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+            {faqs.map((f, i) => <FaqItem key={i} q={f.q} a={f.a} />)}
           </div>
         </div>
       </section>
 
-      {/* Galería */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 py-12">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 text-center">En acción</h2>
-        <p className="text-slate-600 text-center mt-2">Vitrinas y ejemplos de configuración.</p>
+       {/* ===== Final CTA Section ===== */}
+       <section className="py-20">
+         <div className="max-w-3xl mx-auto text-center px-6">
+            <h2 className="text-3xl font-extrabold text-slate-900">Inicia tu Negocio de Recarga Hoy</h2>
+            <p className="mt-4 text-lg text-slate-600">
+                Aprovecha la creciente demanda de soluciones ecológicas y económicas. Configura tu vending de limpieza o contáctanos para una asesoría sin costo.
+            </p>
+             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+                <Link
+                    to="/configurar-maquina/Vending-Limpieza"
+                    className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-rose-400 shadow-lg hover:bg-rose-300 transition-all transform hover:scale-105"
+                >
+                    Configurar mi Vending
+                </Link>
+                <button
+                    onClick={() => navigate(-1)}
+                    className="px-8 py-3 rounded-full font-semibold bg-slate-200 hover:bg-slate-300 text-slate-800 transition"
+                >
+                    Volver
+                </button>
+            </div>
+         </div>
+       </section>
 
-        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[HERO_IMG, "/img/vending/productoslimpieza5.png", "/img/vending/9productos.jpeg", "/img/vending/productoslimpieza8.png"].map(
-            (src, i) => (
-              <motion.div
-                key={src + i}
-                initial={{ opacity: 0, scale: 0.96 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: i * 0.06 }}
-                className="h-40 md:h-48 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white"
-              >
-                <img
-                  src={src}
-                  alt={`Galería ${i}`}
-                  className="w-full h-full object-contain p-4"
-                  onError={(e) => (e.currentTarget.style.display = "none")}
-                />
-              </motion.div>
-            )
-          )}
-        </div>
-      </section>
-
-      {/* FAQ + CTAs */}
-      <section className="max-w-5xl mx-auto px-6 md:px-10 pb-16">
-        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 text-center">
-          Preguntas frecuentes
-        </h2>
-        <div className="mt-6 divide-y rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
-          {faqs.map((f, i) => (
-            <details key={i} className="group">
-              <summary className="cursor-pointer list-none p-5 md:p-6 font-semibold text-slate-900 flex items-center justify-between">
-                {f.q}
-                <span className="ml-4 text-slate-400 transition group-open:rotate-180">⌄</span>
-              </summary>
-              <div className="px-5 md:px-6 pb-6 text-slate-600">{f.a}</div>
-            </details>
-          ))}
-        </div>
-
-        <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <Link
-            to="/configurar-maquina/Vending-Limpieza"
-            className="px-6 py-3 rounded-xl font-semibold text-black hover:brightness-95 transition shadow-lg"
-            style={{ backgroundColor: "#ccff00" }}
-          >
-            Configurar mi máquina
-          </Link>
-          <button
-            onClick={() => navigate(-1)}
-            className="px-6 py-3 rounded-xl font-semibold bg-gray-100 hover:bg-gray-200 text-slate-900 transition"
-          >
-            Volver
-          </button>
-        </div>
-      </section>
     </div>
   );
 }
