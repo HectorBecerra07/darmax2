@@ -44,7 +44,7 @@ const bundleStepsConfig = {
       step: 0,
       title: "Paso 1: Selecciona tu Vending de Agua",
       modelType: "vendingAgua",
-      filter: (m) => m.name.toLowerCase().includes('touch') || m.name.toLowerCase().includes('tradicional') || m.name.toLowerCase().includes('atlantis'),
+      filter: (m) => m.name.toLowerCase().includes('touch') || m.name.toLowerCase().includes('atlantis'),
       imageType: 'secondary',
     },
     {
