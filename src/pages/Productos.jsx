@@ -159,7 +159,7 @@ function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar }) {
               <p className="text-[11px] font-bold text-gray-500 tracking-wide">
                 Precio
               </p>
-              <p className="text-xl sm:text-2xl font-extrabold text-[#007377] leading-none">
+              <p className="text-2xl sm:text-3xl font-extrabold text-[#007377] leading-none">
                 {money(p.precio)}
               </p>
             </div>
@@ -581,7 +581,7 @@ export default function Productos() {
             {/* Main */}
             <main className="md:col-span-9">
               {loading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6 sm:gap-8">
                   {Array.from({ length: 12 }).map((_, i) => (
                     <SkeletonCard key={i} />
                   ))}
@@ -656,7 +656,7 @@ export default function Productos() {
                     </div>
                   ) : (
                     <>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6 sm:gap-8">
                         {productosPaginados.map((p) => {
                           const itemEnCarrito = carrito.find(
                             (item) => item.id === p.id
