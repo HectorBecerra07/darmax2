@@ -430,11 +430,8 @@ export default function ProyectosEmpresariales() {
                 <div className="flex flex-wrap items-center justify-center gap-6 pt-4">
                   <button
                     type="submit"
-<<<<<<< HEAD
                     className="group flex items-center justify-center gap-3 rounded-2xl bg-lime-300 px-10 py-4 font-black text-slate-950 shadow-xl shadow-lime-500/20 transition-all duration-300 hover:-translate-y-1 hover:bg-lime-200 hover:shadow-lime-500/40"
-=======
-                    className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
->>>>>>> 2bb8e1da7e8974b1ba92efe4e702019354a7e27f
+
                   >
                     Abrir Gmail y Enviar
                     <ArrowRight />
@@ -480,11 +477,11 @@ function MotionCard({ children, delay = 0 }) {
   );
 }
 
-/* ========= Cards Estilo "ModeloCard" ========= */
+/* ========= Cards Estilo "ModeloCard" de PurificadoresCaseros ========= */
 function ProjectCard({ proyecto, setForm }) {
   const imgSrc = proyecto.imagen?.trim()
     ? proyecto.imagen
-    : "https://placehold.co/600x450/1e293b/ffffff?text=Darmax";
+    : "https://placehold.co/600x450/e2e8f0/475569?text=Proyecto";
 
   return (
     <button
@@ -500,156 +497,45 @@ function ProjectCard({ proyecto, setForm }) {
           ?.scrollIntoView({ behavior: "smooth" });
       }}
       className="
-        group relative w-full overflow-hidden rounded-2xl
-        bg-slate-900 text-left h-full min-h-[320px]
-        border border-slate-200/10 shadow-md
+        group relative overflow-hidden rounded-3xl
+        border border-white/10 bg-slate-950
         transition-all duration-500
-        hover:-translate-y-1 hover:shadow-2xl hover:border-lime-300/30
-        focus:outline-none focus:ring-2 focus:ring-lime-300/70
+        hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyan-500/10
+        focus:outline-none focus:ring-2 focus:ring-cyan-400/70
+        w-full h-full min-h-[300px] text-left
       "
     >
-<<<<<<< HEAD
-      {/* Imagen de Fondo */}
+      {/* Fondo con Imagen */}
       <div className="absolute inset-0">
-=======
-      {/* Glow on hover */}
-      <div className="pointer-events-none absolute -inset-24 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-48 w-72 rounded-full bg-lime-300/25 blur-3xl" />
-      </div>
-
-      <div className="relative isolate overflow-hidden">
-        <div className="aspect-[4/3] w-full bg-slate-50">
-          <img
-            src={imgSrc}
-            alt={proyecto.titulo}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-          />
-        </div>
-
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-
-        {badge && (
-          <span className="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-white/95 text-slate-900 text-xs font-bold px-3 py-1 shadow-sm">
-            {badge}
-          </span>
-        )}
-
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-      </div>
-
-      <div className="p-5 flex flex-col">
-        <h3 className="text-lg font-extrabold text-slate-900 leading-snug line-clamp-2">
-          {proyecto.titulo}
-        </h3>
-        <p className="mt-2 text-sm text-slate-600 leading-relaxed line-clamp-3">
-          {proyecto.descripcion}
-        </p>
-
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <span className="inline-flex items-center rounded-md bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-1">
-            {proyecto.industria}
-          </span>
-
-          <button
-            type="button"
-            onClick={() => {
-              setForm((prev) => ({
-                ...prev,
-                proyecto: proyecto.titulo,
-                industria: proyecto.industria,
-              }));
-              document
-                .getElementById("formulario-proyectos")
-                ?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-4 py-2 text-sm font-extrabold text-slate-950 transition-all duration-300 hover:bg-lime-200"
-          >
-            Cotizar
-            <ArrowRight />
-          </button>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-/* Vista Lista */
-function ProjectRow({ proyecto, setForm }) {
-  const badge = getBadge(proyecto.industria, proyecto.titulo);
-  const imgSrc = proyecto.imagen?.trim()
-    ? proyecto.imagen
-    : "https://placehold.co/600x450/e2e8f0/475569?text=Proyecto";
-
-  return (
-    <article
-      className="
-        group relative
-        grid grid-cols-1 md:grid-cols-[minmax(0,320px)_1fr]
-        gap-6 items-start
-        rounded-2xl bg-white
-        border border-slate-200/70
-        shadow-sm transition-all duration-300
-        hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-200/70
-        overflow-hidden
-      "
-    >
-      {/* Glow */}
-      <div className="pointer-events-none absolute -inset-24 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-48 w-72 rounded-full bg-lime-300/18 blur-3xl" />
-      </div>
-
-      <div className="relative isolate overflow-hidden">
->>>>>>> 2bb8e1da7e8974b1ba92efe4e702019354a7e27f
         <img
           src={imgSrc}
           alt={proyecto.titulo}
-          className="h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-60"
+          className="h-full w-full object-cover opacity-70 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-50"
           loading="lazy"
         />
-        {/* Gradiente para legibilidad */}
+        {/* Gradiente profundo para legibilidad */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
       </div>
 
-      {/* Glow Effect */}
-      <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 h-56 w-80 rounded-full bg-lime-300/20 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      {/* Glow Effect en Hover */}
+      <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 h-40 w-64 rounded-full bg-cyan-400/20 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
       {/* Contenido */}
       <div className="relative p-6 h-full flex flex-col justify-end z-10">
         <div className="flex items-center justify-between gap-2 mb-3">
-          <span className="inline-flex items-center rounded-full bg-lime-300/90 px-2.5 py-1 text-xs font-bold text-slate-950 shadow-sm">
+          <span className="inline-flex items-center rounded-full bg-cyan-400/90 px-3 py-1 text-[10px] font-black text-slate-950 uppercase tracking-widest">
             {proyecto.industria}
           </span>
-<<<<<<< HEAD
-          <span className="text-white/80 text-xs font-medium bg-black/30 px-2 py-1 rounded-lg backdrop-blur-md group-hover:bg-lime-300 group-hover:text-slate-950 transition-colors">
+          <span className="text-white/80 text-xs font-bold bg-white/10 backdrop-blur-md px-2 py-1 rounded-lg">
             Cotizar →
           </span>
-=======
-
-          <button
-            type="button"
-            onClick={() => {
-              setForm((prev) => ({
-                ...prev,
-                proyecto: proyecto.titulo,
-                industria: proyecto.industria,
-              }));
-              document
-                .getElementById("formulario-proyectos")
-                ?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-5 py-2.5 text-sm font-extrabold text-slate-950 transition-all duration-300 hover:bg-lime-200"
-          >
-            Cotizar por Email
-            <ArrowRight />
-          </button>
->>>>>>> 2bb8e1da7e8974b1ba92efe4e702019354a7e27f
         </div>
 
-        <h3 className="text-xl font-extrabold text-white leading-tight mb-2 drop-shadow-sm">
+        <h3 className="text-xl font-black text-white leading-tight mb-2 drop-shadow-md">
           {proyecto.titulo}
         </h3>
-        <p className="text-slate-300 text-sm line-clamp-3 leading-relaxed drop-shadow-sm">
+        
+        <p className="text-slate-300 text-sm line-clamp-2 leading-relaxed opacity-0 transform translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
           {proyecto.descripcion}
         </p>
       </div>
