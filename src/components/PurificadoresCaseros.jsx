@@ -743,107 +743,123 @@ function SkeletonCard() {
   );
 }
 
+/* ✅ ProductCard rediseñada (Estilo Productos.jsx) */
 function ProductCard({ item, onAddToCart, carrito = [] }) {
-  const precioN = Number(item.precio || 0);
+  const p = item; // Alias para reutilizar código
+  const precioN = Number(p.precio || 0);
+  const priceFormatted = precioN.toFixed(2);
 
-  const itemEnCarrito = carrito.find((i) => i.id === item.id);
+  const itemEnCarrito = carrito.find((i) => i.id === p.id);
   const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
-  const stockEfectivo = (item.stock ?? 0) - cantidadEnCarrito;
-
-  const img = item.imagen || "https://placehold.co/900x700/e2e8f0/475569?text=Darmax";
+  const stockEfectivo = (p.stock ?? 0) - cantidadEnCarrito;
 
   return (
     <article
       className="
-        group relative
-        rounded-2xl bg-white
-        border border-slate-200/70
-        shadow-sm transition-all duration-300
-        hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/70
-        overflow-hidden
+        group cursor-pointer
+        rounded-2xl overflow-hidden
+        bg-white border border-slate-200
+        hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/5
+        transition-all duration-300
+        flex flex-col h-full
       "
     >
-      <div className="pointer-events-none absolute -inset-24 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-48 w-72 rounded-full bg-lime-300/25 blur-3xl" />
-      </div>
+      {/* Sección Imagen */}
+      <div className="relative w-full aspect-[4/3] bg-white p-4 overflow-hidden border-b border-slate-50">
+        {/* Background sutil en hover */}
+        <div className="absolute inset-0 bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <div className="relative w-full aspect-[4/3] bg-slate-50 flex items-center justify-center">
-        <img
-          src={img}
-          alt={item.nombre}
-          loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          onError={(e) => (e.currentTarget.style.display = "none")}
-        />
-
-        <div className="absolute top-3 left-3">
-          <span
-            className={[
-              "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold backdrop-blur border",
-              stockEfectivo <= 0
-                ? "bg-red-500/15 text-red-700 border-red-500/20"
-                : "bg-emerald-500/15 text-emerald-700 border-emerald-500/20",
-            ].join(" ")}
-          >
-            <span
-              className={[
-                "h-2 w-2 rounded-full",
-                stockEfectivo <= 0 ? "bg-red-500" : "bg-emerald-500",
-              ].join(" ")}
-            />
-            {stockEfectivo <= 0 ? "Agotado" : `${stockEfectivo} disponibles`}
-          </span>
-        </div>
-
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-      </div>
-
-      <div className="p-4 flex flex-col text-center">
-        <h3 className="text-sm md:text-base font-extrabold text-slate-900 leading-snug line-clamp-2">
-          {item.nombre}
-        </h3>
-
-        {item.descripcion && (
-          <p className="text-xs text-slate-600 mt-1 leading-relaxed line-clamp-2">
-            {item.descripcion}
-          </p>
-        )}
-
-        <div className="mt-3 flex items-center justify-center gap-2">
-          <p className="text-2xl md:text-3xl font-extrabold text-slate-900">
-            {mxn(precioN)}
-          </p>
-        </div>
-
-        <button
-          onClick={() => onAddToCart(item)}
-          disabled={stockEfectivo <= 0}
-          className={[
-            "mt-4 w-full px-4 py-2.5 rounded-xl text-sm font-extrabold transition-all duration-300",
-            "focus:outline-none focus:ring-2 focus:ring-lime-400/70",
+        {/* Badge Stock */}
+        <span
+          className={`absolute top-3 left-3 z-10 text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm backdrop-blur-sm ${
             stockEfectivo <= 0
-              ? "bg-slate-200 text-slate-500 cursor-not-allowed"
-              : "bg-[#24d4da] text-slate-950 hover:-translate-y-0.5 shadow-md shadow-lime-500/15",
-          ].join(" ")}
+              ? "bg-slate-100/90 text-slate-500 border-slate-200"
+              : stockEfectivo <= 5
+              ? "bg-red-50/90 text-red-600 border-red-100"
+              : "bg-emerald-50/90 text-emerald-600 border-emerald-100"
+          }`}
         >
-          {stockEfectivo <= 0 ? "Agotado" : "Agregar al carrito"}
-        </button>
+          {stockEfectivo <= 0
+            ? "Agotado"
+            : stockEfectivo <= 5
+            ? `¡Quedan ${stockEfectivo}!`
+            : "Disponible"}
+        </span>
 
-        {(item.pesoKg || item.largoCm || item.anchoCm || item.altoCm) && (
-          <div className="mt-4 text-[11px] text-slate-500 text-left w-full border-t border-slate-200 pt-3">
-            {item.pesoKg && (
-              <div className="leading-snug">
-                <strong>Peso:</strong> {item.pesoKg} kg
+        {/* Imagen */}
+        <div className="relative w-full h-full flex items-center justify-center">
+          <img
+            src={p.imagen || "https://via.placeholder.com/400x300"}
+            alt={p.nombre}
+            loading="lazy"
+            className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105 mix-blend-multiply"
+            onError={(e) => {
+              e.currentTarget.src = "https://via.placeholder.com/400x300";
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Cuerpo de la tarjeta */}
+      <div className="flex flex-col flex-1">
+        <div className="p-5 pb-0 flex-1">
+          {/* Categoría pequeña (si existe) */}
+          {p.categoria?.nombre && (
+            <div className="mb-2 text-center">
+              <span className="inline-block text-[10px] font-bold text-[#007377] uppercase tracking-wider bg-teal-50 px-2 py-0.5 rounded border border-teal-100/50">
+                {p.categoria.nombre}
+              </span>
+            </div>
+          )}
+          
+          {/* Título */}
+          <h3 className="text-[15px] font-bold text-slate-800 text-center leading-snug line-clamp-2 group-hover:text-[#007377] transition-colors">
+            {p.nombre}
+          </h3>
+        </div>
+
+        {/* Footer: Precio + Botón (Tamaño Fijo) */}
+        <div className="p-5 mt-auto">
+          <div className="flex flex-col items-center">
+            {/* Contenedor del Precio */}
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">
+                Precio
+              </span>
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-xl font-black text-slate-900 leading-none">
+                  ${priceFormatted}
+                </span>
+                <span className="text-[10px] font-bold text-slate-400">MXN</span>
               </div>
-            )}
-            {(item.largoCm || item.anchoCm || item.altoCm) && (
-              <div className="leading-snug">
-                <strong>Dimensiones:</strong>{" "}
-                {[item.largoCm, item.anchoCm, item.altoCm].filter(Boolean).join(" × ")} cm
+            </div>
+
+            {/* Espacio reservado para el Botón (Sin movimiento) */}
+            <div className="w-full h-14 mt-2 flex items-center justify-center">
+              <div className="w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={() => onAddToCart(p)}
+                  disabled={stockEfectivo <= 0}
+                  className={`
+                    w-full h-10 rounded-xl flex items-center justify-center gap-2
+                    text-sm font-bold transition-all duration-300
+                    ${
+                      stockEfectivo <= 0
+                        ? "bg-slate-50 text-slate-400 cursor-not-allowed border border-slate-100"
+                        : "border-2 border-[#24d4da] text-[#24d4da] bg-transparent hover:bg-[#24d4da] hover:text-white shadow-sm hover:shadow-md"
+                    }
+                  `}
+                  title="Agregar al carrito"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                    <path d="M1 1.75A.75.75 0 011.75 1h1.628a.75.75 0 01.73.593l.35 2.513h12.91a.75.75 0 01.748.879l-1.08 6.5a.75.75 0 01-.74.627H7.03a.75.75 0 01-.748-.65l-.356-3.027-.373-2.672H1.75a.75.75 0 01-.75-.75zM6.625 15.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm9.5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                  </svg>
+                  <span>Agregar</span>
+                </button>
               </div>
-            )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </article>
   );
