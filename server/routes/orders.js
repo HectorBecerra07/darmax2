@@ -81,6 +81,7 @@ router.post("/confirm", async (req, res) => {
 
       // 1.2 Descontar stock de cada producto
       for (const item of cartItems) {
+        console.log(`[ORDER] Descontando stock - Producto ID: ${item.id}, Cantidad: ${item.cantidad}`);
         await tx.producto.update({
           where: { id: Number(item.id) },
           data: {

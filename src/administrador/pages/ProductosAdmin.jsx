@@ -14,8 +14,8 @@ export default function ProductosAdmin() {
   const fetchData = useCallback(async () => {
     try {
       const [productosRes, categoriasRes] = await Promise.all([
-        fetch(`${API_URL}/api/productos`),
-        fetch(`${API_URL}/api/categorias`),
+        fetch(`${API_URL}/api/productos`, { cache: "no-store" }),
+        fetch(`${API_URL}/api/categorias`, { cache: "no-store" }),
       ]);
 
       if (!productosRes.ok || !categoriasRes.ok) {
