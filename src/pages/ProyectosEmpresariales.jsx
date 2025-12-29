@@ -204,7 +204,7 @@ export default function ProyectosEmpresariales() {
           <div className="relative px-4 md:px-10 pt-14 pb-14 max-w-screen-2xl mx-auto">
             <div className="text-center max-w-4xl mx-auto">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-white/90 text-sm backdrop-blur">
-                <span className="h-2 w-2 rounded-full bg-lime-300" />
+                <span className="h-2 w-2 rounded-full bg-[#24d4da]" />
                 Llave en mano • Ingeniería • Instalación • Soporte
               </span>
 
@@ -223,7 +223,7 @@ export default function ProyectosEmpresariales() {
                       .getElementById("catalogo-proyectos")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
+                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
                 >
                   Ver industrias
                   <ArrowRight />
@@ -274,7 +274,7 @@ export default function ProyectosEmpresariales() {
                         className={[
                           "px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 border",
                           activo
-                            ? "bg-lime-300 text-slate-950 border-lime-200 shadow-sm"
+                            ? "bg-[#24d4da] text-slate-950 border-[#24d4da] shadow-sm"
                             : "bg-white/10 text-white/85 border-white/15 hover:bg-white/15",
                         ].join(" ")}
                         aria-pressed={activo}
@@ -430,7 +430,11 @@ export default function ProyectosEmpresariales() {
                 <div className="flex flex-wrap items-center justify-center gap-6 pt-4">
                   <button
                     type="submit"
+<<<<<<< HEAD
                     className="group flex items-center justify-center gap-3 rounded-2xl bg-lime-300 px-10 py-4 font-black text-slate-950 shadow-xl shadow-lime-500/20 transition-all duration-300 hover:-translate-y-1 hover:bg-lime-200 hover:shadow-lime-500/40"
+=======
+                    className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
+>>>>>>> 2bb8e1da7e8974b1ba92efe4e702019354a7e27f
                   >
                     Abrir Gmail y Enviar
                     <ArrowRight />
@@ -504,8 +508,99 @@ function ProjectCard({ proyecto, setForm }) {
         focus:outline-none focus:ring-2 focus:ring-lime-300/70
       "
     >
+<<<<<<< HEAD
       {/* Imagen de Fondo */}
       <div className="absolute inset-0">
+=======
+      {/* Glow on hover */}
+      <div className="pointer-events-none absolute -inset-24 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-48 w-72 rounded-full bg-lime-300/25 blur-3xl" />
+      </div>
+
+      <div className="relative isolate overflow-hidden">
+        <div className="aspect-[4/3] w-full bg-slate-50">
+          <img
+            src={imgSrc}
+            alt={proyecto.titulo}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+
+        {badge && (
+          <span className="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-white/95 text-slate-900 text-xs font-bold px-3 py-1 shadow-sm">
+            {badge}
+          </span>
+        )}
+
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+      </div>
+
+      <div className="p-5 flex flex-col">
+        <h3 className="text-lg font-extrabold text-slate-900 leading-snug line-clamp-2">
+          {proyecto.titulo}
+        </h3>
+        <p className="mt-2 text-sm text-slate-600 leading-relaxed line-clamp-3">
+          {proyecto.descripcion}
+        </p>
+
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <span className="inline-flex items-center rounded-md bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-1">
+            {proyecto.industria}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => {
+              setForm((prev) => ({
+                ...prev,
+                proyecto: proyecto.titulo,
+                industria: proyecto.industria,
+              }));
+              document
+                .getElementById("formulario-proyectos")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-4 py-2 text-sm font-extrabold text-slate-950 transition-all duration-300 hover:bg-lime-200"
+          >
+            Cotizar
+            <ArrowRight />
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* Vista Lista */
+function ProjectRow({ proyecto, setForm }) {
+  const badge = getBadge(proyecto.industria, proyecto.titulo);
+  const imgSrc = proyecto.imagen?.trim()
+    ? proyecto.imagen
+    : "https://placehold.co/600x450/e2e8f0/475569?text=Proyecto";
+
+  return (
+    <article
+      className="
+        group relative
+        grid grid-cols-1 md:grid-cols-[minmax(0,320px)_1fr]
+        gap-6 items-start
+        rounded-2xl bg-white
+        border border-slate-200/70
+        shadow-sm transition-all duration-300
+        hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-200/70
+        overflow-hidden
+      "
+    >
+      {/* Glow */}
+      <div className="pointer-events-none absolute -inset-24 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-48 w-72 rounded-full bg-lime-300/18 blur-3xl" />
+      </div>
+
+      <div className="relative isolate overflow-hidden">
+>>>>>>> 2bb8e1da7e8974b1ba92efe4e702019354a7e27f
         <img
           src={imgSrc}
           alt={proyecto.titulo}
@@ -525,9 +620,30 @@ function ProjectCard({ proyecto, setForm }) {
           <span className="inline-flex items-center rounded-full bg-lime-300/90 px-2.5 py-1 text-xs font-bold text-slate-950 shadow-sm">
             {proyecto.industria}
           </span>
+<<<<<<< HEAD
           <span className="text-white/80 text-xs font-medium bg-black/30 px-2 py-1 rounded-lg backdrop-blur-md group-hover:bg-lime-300 group-hover:text-slate-950 transition-colors">
             Cotizar →
           </span>
+=======
+
+          <button
+            type="button"
+            onClick={() => {
+              setForm((prev) => ({
+                ...prev,
+                proyecto: proyecto.titulo,
+                industria: proyecto.industria,
+              }));
+              document
+                .getElementById("formulario-proyectos")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-5 py-2.5 text-sm font-extrabold text-slate-950 transition-all duration-300 hover:bg-lime-200"
+          >
+            Cotizar por Email
+            <ArrowRight />
+          </button>
+>>>>>>> 2bb8e1da7e8974b1ba92efe4e702019354a7e27f
         </div>
 
         <h3 className="text-xl font-extrabold text-white leading-tight mb-2 drop-shadow-sm">

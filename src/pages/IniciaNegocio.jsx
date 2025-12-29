@@ -521,77 +521,230 @@ const IniciaNegocio = () => {
 };
 
 /* =========================
-   MODAL (Estilo Specs Sheet)
+   MODAL COMPARAR (Premium + Mobile Friendly)
+   - Mobile: cards verticales con specs
+   - Desktop: tabla scrollable (sticky headers + primera columna)
 ========================= */
 function CompareModal({ open, onClose, models = [], navigate }) {
   if (!open) return null;
 
+  const rows = [
+    { label: "Tipo de negocio", key: "etiqueta" },
+    { label: "Descripción", key: "descripcion" },
+    { label: "Precio", key: "__precio" },
+  ];
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in">
-      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onClick={onClose} />
-      <div className="relative w-full max-w-7xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-up">
-        
-        <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100">
-          <h3 className="text-2xl font-bold text-slate-900">Comparativa Técnica</h3>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-slate-950/70 backdrop-blur-md"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative w-full max-w-7xl max-h-[92vh] overflow-hidden rounded-[2rem] bg-white shadow-2xl border border-slate-100">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 sm:px-8 py-4 sm:py-6 border-b border-slate-100 bg-white sticky top-0 z-20">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.28em] font-extrabold text-[#24d4da]">
+              Comparativa
+            </p>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+              Comparativa Técnica
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              Desliza horizontalmente para ver más modelos.
+            </p>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition"
+            aria-label="Cerrar"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
         </div>
 
-        <div className="flex-1 overflow-auto bg-[#f5f5f7]">
-            <div className="min-w-[800px]">
+        {/* Content */}
+        <div className="bg-[#f5f5f7] overflow-auto max-h-[calc(92vh-84px)]">
+          {/* ===== MOBILE (cards) ===== */}
+          <div className="block lg:hidden p-4 sm:p-6">
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {models.map((m) => (
+                <div
+                  key={m.id}
+                  className="snap-center shrink-0 w-[86%] sm:w-[70%]"
+                >
+                  <div className="rounded-3xl bg-white border border-slate-100 shadow-[0_18px_60px_-35px_rgba(15,23,42,0.35)] overflow-hidden">
+                    {/* Top */}
+                    <div className="p-6">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h4 className="text-lg font-extrabold text-slate-900 leading-tight">
+                            {m.nombre}
+                          </h4>
+                          <p className="text-sm font-semibold text-slate-500 mt-1">
+                            {m.etiqueta}
+                          </p>
+                        </div>
+
+                        <span className="text-[#24d4da] font-extrabold text-sm">
+                          {formatMXN(m.precio)}
+                        </span>
+                      </div>
+
+                      {/* Image */}
+                      <div className="mt-5 rounded-2xl bg-slate-50 border border-slate-100 h-44 grid place-items-center overflow-hidden">
+                        <img
+                          src={m.imagen}
+                          alt={m.nombre}
+                          className="h-36 w-auto object-contain"
+                          onError={(e) => (e.currentTarget.style.display = "none")}
+                        />
+                      </div>
+
+                      {/* Specs */}
+                      <div className="mt-5 space-y-3">
+                        <Spec label="Tipo de negocio" value={m.etiqueta} />
+                        <Spec label="Descripción" value={m.descripcion} />
+                      </div>
+                    </div>
+
+                    {/* Footer actions */}
+                    <div className="p-6 pt-0">
+                      <button
+                        onClick={() => navigate(`/configurar-maquina/${m.id}`)}
+                        className="w-full py-3.5 rounded-2xl font-extrabold text-white shadow-lg shadow-[#24d4da]/20 hover:shadow-[#24d4da]/40 transition-all active:scale-[0.99]"
+                        style={{ backgroundColor: BRAND_COLOR }}
+                      >
+                        Seleccionar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-center text-xs text-slate-500 mt-4">
+              Tip: desliza para comparar modelos → 
+            </p>
+          </div>
+
+          {/* ===== DESKTOP (table) ===== */}
+          <div className="hidden lg:block">
+            <div className="min-w-[980px]">
               <table className="w-full text-left">
                 <thead>
                   <tr>
-                    <th className="p-6 w-1/4 bg-white sticky left-0 z-10 border-b border-r border-slate-100"></th>
+                    <th className="p-6 w-72 bg-white sticky left-0 z-20 border-b border-r border-slate-100">
+                      <span className="text-xs font-extrabold tracking-widest uppercase text-slate-500">
+                        Características
+                      </span>
+                    </th>
+
                     {models.map((m) => (
-                      <th key={m.id} className="p-6 bg-white border-b border-slate-100 align-top">
-                         <img src={m.imagen} className="h-32 w-auto object-contain mx-auto mb-4" alt="" onError={(e)=>e.target.style.display='none'}/>
-                         <h4 className="text-xl font-black text-center text-slate-900">{m.nombre}</h4>
-                         <p className="text-center text-[#24d4da] font-bold text-lg mt-1">{formatMXN(m.precio)}</p>
+                      <th
+                        key={m.id}
+                        className="p-6 bg-white border-b border-slate-100 align-top"
+                      >
+                        <div className="rounded-2xl bg-white border border-slate-100 shadow-sm p-4">
+                          <img
+                            src={m.imagen}
+                            className="h-28 w-auto object-contain mx-auto"
+                            alt={m.nombre}
+                            onError={(e) => (e.currentTarget.style.display = "none")}
+                          />
+                          <h4 className="mt-3 text-lg font-extrabold text-center text-slate-900 leading-tight">
+                            {m.nombre}
+                          </h4>
+                          <p className="text-center text-slate-500 font-semibold text-sm mt-1">
+                            {m.etiqueta}
+                          </p>
+                          <p className="text-center text-[#24d4da] font-extrabold text-xl mt-2">
+                            {formatMXN(m.precio)}
+                          </p>
+                        </div>
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="text-sm text-slate-600">
-                  {[
-                      { label: "Tipo de Negocio", val: "etiqueta" },
-                      { label: "Descripción", val: "descripcion" },
-                  ].map((row, idx) => (
-                     <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-[#fafafa]"}>
-                        <td className="p-6 font-bold text-slate-900 uppercase text-xs tracking-wider border-r border-slate-100 sticky left-0 z-10 bg-inherit">
-                            {row.label}
-                        </td>
-                        {models.map((m) => (
-                            <td key={m.id} className="p-6 text-center leading-relaxed border-slate-100 border-l-0">
-                                {m[row.val]}
-                            </td>
-                        ))}
-                     </tr>
-                  ))}
-                  
-                  {/* Fila de Acciones */}
-                  <tr className="bg-white">
-                      <td className="p-6 border-r border-slate-100 sticky left-0 bg-white"></td>
+
+                <tbody className="text-sm text-slate-700">
+                  {rows.map((row, idx) => (
+                    <tr key={row.label} className={idx % 2 === 0 ? "bg-white" : "bg-[#fafafa]"}>
+                      <td className="p-6 font-extrabold text-slate-900 uppercase text-xs tracking-wider border-r border-slate-100 sticky left-0 z-10 bg-inherit">
+                        {row.label}
+                      </td>
+
                       {models.map((m) => (
-                          <td key={m.id} className="p-6">
-                              <button
-                                onClick={() => navigate(`/configurar-maquina/${m.id}`)}
-                                className="w-full py-3 rounded-xl font-bold text-white shadow-lg shadow-[#24d4da]/20 hover:shadow-[#24d4da]/40 transition-all"
-                                style={{ backgroundColor: BRAND_COLOR }}
-                              >
-                                  Seleccionar
-                              </button>
-                          </td>
+                        <td key={m.id + row.key} className="p-6 align-top">
+                          {row.key === "__precio"
+                            ? formatMXN(m.precio)
+                            : m[row.key]}
+                        </td>
                       ))}
+                    </tr>
+                  ))}
+
+                  {/* Row actions */}
+                  <tr className="bg-white">
+                    <td className="p-6 border-r border-slate-100 sticky left-0 bg-white" />
+                    {models.map((m) => (
+                      <td key={m.id} className="p-6">
+                        <button
+                          onClick={() => navigate(`/configurar-maquina/${m.id}`)}
+                          className="w-full py-3 rounded-2xl font-extrabold text-white shadow-lg shadow-[#24d4da]/20 hover:shadow-[#24d4da]/40 transition-all active:scale-[0.99]"
+                          style={{ backgroundColor: BRAND_COLOR }}
+                        >
+                          Seleccionar
+                        </button>
+                      </td>
+                    ))}
                   </tr>
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+
+        {/* Footer (mobile close) */}
+        <div className="lg:hidden px-4 sm:px-6 py-4 border-t border-slate-100 bg-white">
+          <button
+            onClick={onClose}
+            className="w-full py-3 rounded-2xl font-extrabold text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition"
+          >
+            Cerrar comparación
+          </button>
         </div>
       </div>
     </div>
   );
 }
+
+function Spec({ label, value }) {
+  return (
+    <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
+      <p className="text-[11px] uppercase tracking-widest font-extrabold text-slate-500">
+        {label}
+      </p>
+      <p className="mt-2 text-sm text-slate-800 leading-relaxed">{value}</p>
+    </div>
+  );
+}
+
 
 export default IniciaNegocio;

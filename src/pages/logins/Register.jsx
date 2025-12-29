@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { EyeIcon, EyeSlashIcon, AtSymbolIcon, LockClosedIcon } from "@heroicons/react/24/solid";
+import { EyeIcon, EyeSlashIcon, UserIcon, EnvelopeIcon, PhoneIcon, LockClosedIcon } from "@heroicons/react/24/solid";
 import "./Login.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -76,7 +76,7 @@ const Register = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="input-group">
-              <AtSymbolIcon className="input-icon" />
+              <UserIcon className="input-icon" />
               <input
                 type="text"
                 placeholder="Nombre completo"
@@ -88,7 +88,7 @@ const Register = () => {
               />
             </div>
             <div className="input-group">
-              <AtSymbolIcon className="input-icon" />
+              <EnvelopeIcon className="input-icon" />
               <input
                 type="email"
                 placeholder="Correo electrónico"
@@ -100,7 +100,7 @@ const Register = () => {
               />
             </div>
             <div className="input-group">
-              <AtSymbolIcon className="input-icon" />
+              <PhoneIcon className="input-icon" />
               <input
                 type="tel"
                 placeholder="Número de teléfono"

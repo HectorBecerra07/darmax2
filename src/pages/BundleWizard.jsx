@@ -42,13 +42,15 @@ const bundleStepsConfig = {
   "Duo-Emprendedor": [
     {
       step: 0,
-      title: "Paso 1: Selecciona tu Purificadora",
-      modelType: "mostrador",
+      title: "Paso 1: Selecciona tu Vending de Agua",
+      modelType: "vendingAgua",
+      filter: (m) => m.name.toLowerCase().includes('touch') || m.name.toLowerCase().includes('tradicional') || m.name.toLowerCase().includes('atlantis'),
+      imageType: 'secondary',
     },
     {
       step: 1,
-      title: "Paso 2: Configura Extras de Purificadora",
-      modelType: "mostrador",
+      title: "Paso 2: Configura Extras del Vending de Agua",
+      modelType: "vendingAgua",
       type: "extras",
     },
     {
@@ -67,83 +69,94 @@ const bundleStepsConfig = {
   Tridente: [
     {
       step: 0,
-      title: "Paso 1: Selecciona tu Purificadora",
-      modelType: "mostrador",
+      title: "Paso 1: Selecciona tu Vending de Agua",
+      modelType: "vendingAgua",
+      imageType: 'secondary',
+      filter: (m) => !(m.slug.toLowerCase().includes('vending5') || m.slug.toLowerCase().includes('vending8') || m.name.toLowerCase().includes('mostrador')),
     },
     {
       step: 1,
-      title: "Paso 2: Configura Extras de Purificadora",
-      modelType: "mostrador",
+      title: "Paso 2: Configura Extras de Vending de Agua",
+      modelType: "vendingAgua",
       type: "extras",
     },
     {
       step: 2,
-      title: "Paso 3: Selecciona tu Vending de Agua",
-      modelType: "vendingAgua",
+      title: "Paso 3: Selecciona tu Purificadora",
+      modelType: "mostrador",
+      imageType: 'secondary',
     },
     {
       step: 3,
-      title: "Paso 4: Configura Extras de Vending de Agua",
-      modelType: "vendingAgua",
-      type: "extras",
+      title: "Paso 4: Selecciona tu Vending de Limpieza",
+      modelType: "vendingLimpieza",
+      imageType: 'secondary',
+      filter: (m) => m.slug.toLowerCase() === 'vending5',
     },
     {
       step: 4,
-      title: "Paso 5: Selecciona tu Vending de Limpieza",
-      modelType: "vendingLimpieza",
-    },
-    {
-      step: 5,
-      title: "Paso 6: Configura Extras de Vending de Limpieza",
+      title: "Paso 5: Configura Extras de Vending de Limpieza",
       modelType: "vendingLimpieza",
       type: "extras",
     },
-    { step: 6, title: "Paso 7: Resumen del Paquete", type: "summary" },
+    { step: 5, title: "Paso 6: Resumen del Paquete", type: "summary" },
   ],
   Megalodon: [
     {
       step: 0,
-      title: "Paso 1: Selecciona tu Purificadora con Ósmosis Inversa",
-      modelType: "mostrador",
-      filter: (m) => m.name.toLowerCase().includes('osmosis'),
+      title: "Paso 1: Selecciona tu Vending de Agua",
+      modelType: "vendingAgua",
+      imageType: 'secondary',
+      filter: (m) => ['atlantis', 'atlantis max', 'atlantis max touch', 'atlantis touch'].includes(m.name.toLowerCase()),
     },
     {
       step: 1,
-      title: "Paso 2: Configura Extras de Purificadora",
-      modelType: "mostrador",
+      title: "Paso 2: Configura Extras de Vending de Agua",
+      modelType: "vendingAgua",
       type: "extras",
     },
     {
       step: 2,
-      title: "Paso 3: Selecciona tu Vending de Agua (Atlantis MAX)",
-      modelType: "vendingAgua",
-      filter: (m) => m.name.toLowerCase().includes('max'),
+      title: "Paso 3: Selecciona tu Purificadora",
+      modelType: "mostrador",
+      imageType: 'secondary',
     },
     {
       step: 3,
-      title: "Paso 4: Configura Extras de Vending de Agua",
-      modelType: "vendingAgua",
-      type: "extras",
+      title: "Paso 4: Selecciona tu Vending de Limpieza (8 Productos)",
+      modelType: "vendingLimpieza",
+      filter: (m) => m.slug.toLowerCase() === "vending8",
+      imageType: 'secondary',
     },
     {
       step: 4,
-      title: "Paso 5: Selecciona tu Vending de Limpieza (8 Productos)",
-      modelType: "vendingLimpieza",
-      filter: (m) => m.slug.toLowerCase() === "vending8",
-    },
-    {
-      step: 5,
-      title: "Paso 6: Configura Extras de Vending de Limpieza",
+      title: "Paso 5: Configura Extras de Vending de Limpieza",
       modelType: "vendingLimpieza",
       type: "extras",
     },
-    { step: 6, title: "Paso 7: Resumen del Paquete", type: "summary" },
+    { step: 5, title: "Paso 6: Resumen del Paquete", type: "summary" },
   ],
 };
 
 // --- Child Components ---
 
-const ModelCard = ({ model, onSelect, isSelected }) => (
+const ModelCard = ({ model, onSelect, isSelected, imageType }) => {
+    const imageToShow = useMemo(() => {
+        if (!model.images || model.images.length === 0) return null;
+
+        const sortedImages = [...model.images].sort((a, b) => a.priority - b.priority);
+
+        if (imageType === 'secondary') {
+            const secondaryImage = sortedImages.find(img => img.isSecondary);
+            if (secondaryImage) return secondaryImage;
+        }
+        
+        // Fallback to the first non-secondary image if available, otherwise first image overall.
+        const primaryImage = sortedImages.find(img => !img.isSecondary);
+        return primaryImage || sortedImages[0];
+    }, [model.images, imageType]);
+
+    return (
     <div
       onClick={() => onSelect(model)}
       className={`relative rounded-2xl p-5 cursor-pointer transition-all duration-300 text-center ${
@@ -157,10 +170,10 @@ const ModelCard = ({ model, onSelect, isSelected }) => (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
           </div>
       )}
-      {model.images && model.images.length > 0 ? (
+      {imageToShow ? (
           <img
-              src={model.images[0].url}
-              alt={model.images[0].alt || model.name}
+              src={imageToShow.url}
+              alt={imageToShow.alt || model.name}
               className="w-full h-48 object-contain rounded-lg mb-4 shadow-md"
           />
       ) : (
@@ -180,7 +193,8 @@ const ModelCard = ({ model, onSelect, isSelected }) => (
         </p>
       </div>
     </div>
-  );
+    )
+};
   
 
 const ModelSelectionStep = ({
@@ -188,6 +202,7 @@ const ModelSelectionStep = ({
   models,
   onSelect,
   selectedModelId,
+  imageType,
 }) => (
   <div className="space-y-6">
     <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center">{title}</h2>
@@ -199,6 +214,7 @@ const ModelSelectionStep = ({
             model={model}
             onSelect={onSelect}
             isSelected={selectedModelId === model.id}
+            imageType={imageType}
           />
         ))}
       </div>
@@ -302,6 +318,7 @@ export default function BundleWizard() {
   const [step, setStep] = useState(0);
   const [allModels, setAllModels] = useState([]);
   const [loadingModels, setLoadingModels] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [bundleConfig, setBundleConfig] = useState({
     mostrador: null,
@@ -318,6 +335,16 @@ export default function BundleWizard() {
   const steps = useMemo(() => bundleStepsConfig[id] || [], [id]);
   const currentStepInfo = useMemo(() => steps[step], [step, steps]);
   const totalSteps = steps.length;
+
+  useEffect(() => {
+    if (isModalOpen) {
+      const timer = setTimeout(() => {
+        navigate("/inicia-tu-negocio");
+      }, 3000); 
+
+      return () => clearTimeout(timer);
+    }
+  }, [isModalOpen, navigate]);
 
   useEffect(() => {
     const fetchAllModels = async () => {
@@ -520,6 +547,10 @@ export default function BundleWizard() {
     }
   };
 
+  const handleFinish = () => {
+    setIsModalOpen(true);
+  };
+
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, totalSteps - 1));
   const prevStep = () => setStep((prev) => Math.max(0, prev - 1));
@@ -540,7 +571,7 @@ export default function BundleWizard() {
     nextStep();
   };
 
-  const getModelsForCurrentStep = () => {
+  const getModelsForCurrentStep = (bundleConfig, id) => {
     if (!currentStepInfo || currentStepInfo.type === "summary" || currentStepInfo.type === "extras") return [];
     
     const { modelType, filter: specificFilter } = currentStepInfo;
@@ -548,9 +579,21 @@ export default function BundleWizard() {
     let baseFiltered = allModels.filter(m => {
         const slug = m.slug.toLowerCase();
         switch(modelType) {
-            case 'mostrador': return slug.includes('neptuno') || slug.includes('poseidon');
-            case 'vendingAgua': return slug.includes('atlantis');
+            case 'mostrador':
+                if ((id === 'Tridente' || id === 'Megalodon') && bundleConfig.vendingAgua) {
+                    const vendingName = bundleConfig.vendingAgua.name.toLowerCase();
+                    if (vendingName.includes('max')) {
+                        return (slug.includes('neptuno') || slug.includes('poseidon')) && m.name.toLowerCase().includes('osmosis');
+                    } else {
+                        return (slug.includes('neptuno') || slug.includes('poseidon')) && !m.name.toLowerCase().includes('osmosis');
+                    }
+                }
+                return slug.includes('neptuno') || slug.includes('poseidon');
+
+            case 'vendingAgua': return true;
+
             case 'vendingLimpieza': return slug === 'vending5' || slug === 'vending8';
+
             default: return false;
         }
     });
@@ -576,7 +619,7 @@ export default function BundleWizard() {
     return (
         <div className="text-center p-8 my-20">
             <h2 className="text-2xl font-bold text-red-600">Configurador no encontrado</h2>
-            <p className="text-gray-600 mt-2">El tipo de paquete "{id}" no es válido.</p>
+            <p className="text-gray-600 mt-2">El tipo de paquete "${id}" no es válido.</p>
             <button onClick={() => navigate('/inicia-tu-negocio')} className="mt-8 px-6 py-3 bg-cyan-600 text-white rounded-lg font-semibold hover:bg-cyan-700 transition-colors">
                 Volver a Modelos de Negocio
             </button>
@@ -609,13 +652,14 @@ export default function BundleWizard() {
 
     }
     
-    const models = getModelsForCurrentStep();
+    const models = getModelsForCurrentStep(bundleConfig, id);
     return (
       <ModelSelectionStep
         title={currentStepInfo.title}
         models={models}
         onSelect={handleSelect}
         selectedModelId={bundleConfig[currentStepInfo.modelType]?.id}
+        imageType={currentStepInfo.imageType}
       />
     );
   };
@@ -689,7 +733,7 @@ export default function BundleWizard() {
                     Descargar PDF
                 </button>
                 <button
-                    onClick={() => toast.success("¡Configuración completada!")}
+                    onClick={handleFinish}
                     className="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-xl font-semibold transition-colors hover:bg-green-700 shadow-sm"
                 >
                     Finalizar
@@ -698,6 +742,25 @@ export default function BundleWizard() {
             )}
         </div>
         </div>
+        {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 transition-opacity duration-300">
+            <motion.div 
+                initial={{ opacity: 0, y: -30, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-sm mx-4"
+            >
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                    <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">¡Configuración Terminada!</h2>
+                <p className="text-gray-600">Gracias por configurar tu paquete.</p>
+                <p className="mt-3 text-sm text-gray-500 animate-pulse">Serás redirigido en unos segundos...</p>
+            </motion.div>
+        </div>
+      )}
     </div>
   );
 }
