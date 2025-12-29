@@ -68,136 +68,113 @@ function SkeletonCard() {
   );
 }
 
-/** ✅ Card Premium */
+/** ✅ Card Armoniosa con Footer Dividido */
 function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar }) {
+  // Extraer el precio numérico para estilizarlo mejor
+  const priceFormatted = Number(p.precio || 0).toFixed(2);
+
   return (
     <article
       onClick={() => onVerMas(p)}
       className="
         group cursor-pointer
-        rounded-3xl overflow-hidden
-        border border-gray-200 bg-white
-        shadow-sm hover:shadow-xl hover:border-gray-300
+        rounded-2xl overflow-hidden
+        bg-white border border-slate-200
+        hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/5 hover:-translate-y-1
         transition-all duration-300
-        flex flex-col
+        flex flex-col h-full
       "
     >
-      {/* Media */}
-      <div className="relative p-4 bg-gradient-to-b from-gray-50 via-white to-white">
+      {/* Sección Imagen */}
+      <div className="relative w-full aspect-[4/3] bg-white p-4 overflow-hidden border-b border-slate-50">
+        {/* Background sutil en hover */}
+        <div className="absolute inset-0 bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        {/* Badge Stock */}
         <span
-          className={`absolute top-3 left-3 z-10 text-[11px] font-extrabold px-3 py-1 rounded-full ${badge.cls}`}
+          className={`absolute top-3 left-3 z-10 text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm backdrop-blur-sm ${
+            stockEfectivo <= 0
+              ? "bg-slate-100/90 text-slate-500 border-slate-200"
+              : stockEfectivo <= 5
+              ? "bg-red-50/90 text-red-600 border-red-100"
+              : "bg-emerald-50/90 text-emerald-600 border-emerald-100"
+          }`}
         >
-          {badge.text}
+          {stockEfectivo <= 0
+            ? "Agotado"
+            : stockEfectivo <= 5
+            ? `¡Quedan ${stockEfectivo}!`
+            : "Disponible"}
         </span>
 
-        <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition">
-          <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-white/90 border border-gray-200 text-gray-700 shadow-sm">
-            Ver detalles →
-          </span>
-        </div>
-
-        <div className="aspect-[4/3]">
-          <div
-            className="
-              h-full w-full
-              rounded-2xl
-              bg-white
-              border border-gray-100
-              shadow-[0_12px_30px_rgba(0,0,0,0.06)]
-              p-4
-              flex items-center justify-center
-              transition-transform duration-300
-              group-hover:scale-[1.02]
-            "
-          >
-            <img
-              src={p.imagen || "https://via.placeholder.com/400x300"}
-              alt={p.nombre}
-              loading="lazy"
-              className="h-full w-full object-contain"
-              onError={(e) => {
-                e.currentTarget.src = "https://via.placeholder.com/400x300";
-              }}
-            />
-          </div>
+        {/* Imagen */}
+        <div className="relative w-full h-full flex items-center justify-center">
+          <img
+            src={p.imagen || "https://via.placeholder.com/400x300"}
+            alt={p.nombre}
+            loading="lazy"
+            className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-110 mix-blend-multiply"
+            onError={(e) => {
+              e.currentTarget.src = "https://via.placeholder.com/400x300";
+            }}
+          />
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-4 pt-3 flex flex-col gap-3 flex-grow">
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-extrabold px-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-gray-700">
-              {p.categoria?.nombre || "Sin categoría"}
-            </span>
-
-            <span
-              className={`text-[11px] font-extrabold px-3 py-1 rounded-full border ${
-                stockEfectivo <= 0
-                  ? "bg-gray-100 border-gray-200 text-gray-500"
-                  : stockEfectivo <= 5
-                  ? "bg-red-50 border-red-200 text-red-700"
-                  : "bg-emerald-50 border-emerald-200 text-emerald-700"
-              }`}
-            >
-              {stockEfectivo <= 0
-                ? "Sin stock"
-                : stockEfectivo <= 5
-                ? `Quedan ${stockEfectivo}`
-                : "En stock"}
+      {/* Cuerpo de la tarjeta */}
+      <div className="flex flex-col flex-1">
+        <div className="p-5 pb-0 flex-1">
+          {/* Categoría pequeña */}
+          <div className="mb-2">
+            <span className="inline-block text-[10px] font-bold text-[#007377] uppercase tracking-wider bg-teal-50 px-2 py-0.5 rounded border border-teal-100/50">
+              {p.categoria?.nombre || "General"}
             </span>
           </div>
-
-          <h3 className="text-[15px] sm:text-base font-extrabold text-gray-900 leading-snug line-clamp-2">
+          
+          {/* Título */}
+          <h3 className="text-[15px] font-bold text-slate-800 leading-snug line-clamp-2 group-hover:text-[#007377] transition-colors">
             {p.nombre}
           </h3>
         </div>
 
-        <div className="mt-auto flex flex-col gap-3">
-          <div className="flex items-end justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold text-gray-500 tracking-wide">
+        {/* Footer: Precio + Botón */}
+        <div className="p-5 pt-4 mt-auto">
+          <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-100">
+            {/* Precio estilizado */}
+            <div className="flex flex-col">
+              <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">
                 Precio
-              </p>
-              <p className="text-2xl sm:text-3xl font-extrabold text-[#007377] leading-none">
-                {money(p.precio)}
-              </p>
+              </span>
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-lg font-black text-slate-900 leading-none">
+                  ${priceFormatted}
+                </span>
+                <span className="text-[10px] font-bold text-slate-400">MXN</span>
+              </div>
             </div>
 
-            <div className="hidden sm:flex items-center gap-2 text-[11px] text-gray-500">
-              <span className="h-2 w-2 rounded-full bg-[#24d4da]" />
-              <span className="font-bold">Entrega rápida</span>
-            </div>
+            {/* Botón de acción */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAgregar(p);
+              }}
+              disabled={stockEfectivo <= 0}
+              className={`
+                h-10 px-5 rounded-xl flex items-center justify-center gap-2
+                text-sm font-bold shadow-sm transition-all duration-300
+                ${
+                  stockEfectivo <= 0
+                    ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                    : "bg-[#24d4da] text-white hover:bg-[#1a9ea3] hover:shadow-md hover:-translate-y-0.5"
+                }
+              `}
+              title="Agregar al carrito"
+            >
+              <FaCartPlus className="text-base" />
+              <span className="hidden min-[1150px]:inline">Agregar</span>
+            </button>
           </div>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAgregar(p);
-            }}
-            disabled={stockEfectivo <= 0}
-            className={`
-              w-full
-              relative inline-flex items-center justify-center gap-2
-              px-4 py-3 rounded-2xl text-sm font-extrabold
-              transition active:scale-[0.98]
-              ${
-                stockEfectivo <= 0
-                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  : "bg-[#24d4da] text-white hover:bg-[#007377] shadow-sm hover:shadow"
-              }
-            `}
-          >
-            <FaCartPlus />
-            {stockEfectivo <= 0 ? "Agotado" : "Añadir al carrito"}
-            {stockEfectivo > 0 && (
-              <span className="absolute inset-0 rounded-2xl ring-0 group-hover:ring-2 ring-[#24d4da]/20 transition" />
-            )}
-          </button>
-
-          <p className="text-[11px] text-gray-500">
-            Toca la tarjeta para ver descripción y detalles.
-          </p>
         </div>
       </div>
     </article>
