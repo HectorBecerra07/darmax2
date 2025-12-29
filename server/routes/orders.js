@@ -40,41 +40,56 @@ router.post("/confirm", async (req, res) => {
 
     const direccionCompleta = shippingAddress.calle || "";
 
-    // 1. Crear el Pedido, Productos y Envío en la BD
-    const pedido = await prisma.pedido.create({
-      data: {
-        total: totalConEnvio,
-        estado: "PAGADO",
-        clienteNombre: shippingAddress.nombre,
-        clienteEmail: shippingAddress.email,
-        clienteTelefono: shippingAddress.telefono || null,
-        direccion: direccionCompleta,
-        colonia: shippingAddress.colonia || null,
-        ciudad: shippingAddress.ciudad,
-        estadoEnvio: shippingAddress.estado,
-        codigoPostal: shippingAddress.codigoPostal,
-        paymentIntentId: paymentIntentId, // Guardar el ID de pago
-        user: userIdInt ? { connect: { id: userIdInt } } : undefined,
-        productos: {
-          create: cartItems.map((item) => ({
-            productoId: item.id,
-            cantidad: item.cantidad,
-            precioAlComprar: Number(item.precio),
-          })),
-        },
-        envio: {
-          create: {
-            quotationId: quotationId || "",
-            rateId: rateId || "",
-            provider: rateInfo?.provider || null,
-            service: rateInfo?.service || null,
-            days: rateInfo?.days ?? null,
-            costoEnvio: Number(shippingTotal || 0),
-            moneda: "MXN",
+    // 1. Crear el Pedido, Productos y Envío en la BD dentro de una transacción para descontar stock
+    const pedido = await prisma.$transaction(async (tx) => {
+      // 1.1 Crear el pedido
+      const nuevoPedido = await tx.pedido.create({
+        data: {
+          total: totalConEnvio,
+          estado: "PAGADO",
+          clienteNombre: shippingAddress.nombre,
+          clienteEmail: shippingAddress.email,
+          clienteTelefono: shippingAddress.telefono || null,
+          direccion: direccionCompleta,
+          colonia: shippingAddress.colonia || null,
+          ciudad: shippingAddress.ciudad,
+          estadoEnvio: shippingAddress.estado,
+          codigoPostal: shippingAddress.codigoPostal,
+          paymentIntentId: paymentIntentId, // Guardar el ID de pago
+          user: userIdInt ? { connect: { id: userIdInt } } : undefined,
+          productos: {
+            create: cartItems.map((item) => ({
+              productoId: item.id,
+              cantidad: item.cantidad,
+              precioAlComprar: Number(item.precio),
+            })),
+          },
+          envio: {
+            create: {
+              quotationId: quotationId || "",
+              rateId: rateId || "",
+              provider: rateInfo?.provider || null,
+              service: rateInfo?.service || null,
+              days: rateInfo?.days ?? null,
+              costoEnvio: Number(shippingTotal || 0),
+              moneda: "MXN",
+            },
           },
         },
-      },
-      include: { envio: true },
+        include: { envio: true },
+      });
+
+      // 1.2 Descontar stock de cada producto
+      for (const item of cartItems) {
+        await tx.producto.update({
+          where: { id: Number(item.id) },
+          data: {
+            stock: { decrement: Number(item.cantidad) },
+          },
+        });
+      }
+
+      return nuevoPedido;
     });
 
     // 2. Responder inmediatamente al frontend para que no espere.
