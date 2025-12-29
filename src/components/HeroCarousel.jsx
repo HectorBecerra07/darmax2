@@ -8,15 +8,13 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 
 const videos = [
-   "/img/video1.mp4",
-   "/img/video2.mp4",
-   "/img/video3.mp4",
-   "/img/video1.mp4",
+   
 ];
 
 const imagenes = [
-  // Puedes agregar URLs de imágenes aquí en el futuro
-  // por ejemplo: "/img/banners/imagen1.jpg",
+  
+  "/img/banner/banerdarmax.jpg",
+  
 ];
 
 export default function HeroCarousel({ className }) {
