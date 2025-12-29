@@ -45,7 +45,11 @@ const proyectos = [
     titulo: "Vending personalizado para hoteles",
     descripcion:
       "Vending machines con branding del hotel, operando 24/7 sin personal.",
+<<<<<<< HEAD
+    imagen: "/img/proyectosEmpresariales/Hoteles.png",
+=======
     imagen: "/img/cardsprojects/hotel.png",
+>>>>>>> 73bbd0aceb516ded84304db650016e343b3a01ba
     industria: "Hoteles",
   },
   {
@@ -54,7 +58,7 @@ const proyectos = [
     descripcion:
       "Proyecto llave en mano (+10,000 L/día). Incluye consultoría y capacitación.",
     imagen:
-      "https://placehold.co/600x450/3f3f46/white?text=Centros+Comerciales",
+      "/img/proyectosEmpresariales/centros.png",
     industria: "Centros comerciales",
   },
   {
@@ -62,7 +66,11 @@ const proyectos = [
     titulo: "Equipos de calentamiento de agua",
     descripcion:
       "Soluciones de calentamiento eficientes para aplicaciones residenciales, comerciales e industriales.",
+<<<<<<< HEAD
+    imagen: "/img/proyectosEmpresariales/equipos.png",
+=======
     imagen: "/img/cardsprojects/house.png",
+>>>>>>> 73bbd0aceb516ded84304db650016e343b3a01ba
     industria: "Calentamiento de agua",
   },
   {
@@ -70,7 +78,7 @@ const proyectos = [
     titulo: "Equipos y accesorios para piscina y spa",
     descripcion:
       "Filtración, circulación y accesorios para mantener tu piscina y spa en óptimas condiciones.",
-    imagen: "https://placehold.co/600x450/0ea5e9/white?text=Piscinas",
+    imagen: "/img/proyectosEmpresariales/piscinas.png",
     industria: "Piscinas y Spa",
   },
   {
@@ -78,7 +86,7 @@ const proyectos = [
     titulo: "Presurizadoras individuales y múltiples",
     descripcion:
       "Sistemas tradicionales y de presión constante para caudal estable en todo momento.",
-    imagen: "https://placehold.co/600x450/f97316/white?text=Presurización",
+    imagen: "/img/proyectosEmpresariales/Presurizadoras.jpg",
     industria: "Presurización",
   },
   {
@@ -86,7 +94,7 @@ const proyectos = [
     titulo: "Bombas de superficie",
     descripcion:
       "Bombas para aplicaciones residenciales, comerciales e industriales con alta confiabilidad.",
-    imagen: "https://placehold.co/600x450/16a34a/white?text=Bombas",
+    imagen: "/img/proyectosEmpresariales/bombaagua.jpg",
     industria: "Bombas de superficie",
   },
   {
@@ -94,7 +102,7 @@ const proyectos = [
     titulo: "Equipos para aguas residuales",
     descripcion:
       "Manejo de efluentes y tratamiento de aguas residuales con equipos robustos y eficientes.",
-    imagen: "https://placehold.co/600x450/64748b/white?text=Aguas+Residuales",
+    imagen: "/img/proyectosEmpresariales/residuales.jpg",
     industria: "Aguas residuales",
   },
   {
@@ -102,7 +110,7 @@ const proyectos = [
     titulo: "Equipos y accesorios sumergibles",
     descripcion:
       "Bombas y accesorios sumergibles para pozos, drenaje y aplicaciones exigentes.",
-    imagen: "https://placehold.co/600x450/475569/white?text=Sumergibles",
+    imagen: "/img/proyectosEmpresariales/sumergible.webp",
     industria: "Sumergibles",
   },
 ];
