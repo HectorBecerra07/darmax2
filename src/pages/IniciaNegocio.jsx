@@ -341,9 +341,9 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
 
         {/* Grid */}
         <div className="mx-auto mt-16 max-w-6xl sm:mt-20 lg:mt-24">
-          <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" role="list">
             {ventajas.map((v) => (
-              <div
+              <li
                 key={v.title}
                 className="
                   group relative overflow-hidden rounded-[28px]
@@ -366,35 +366,30 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
                 <div className="relative px-5 py-8 text-center">
                   {/* Icono */}
                   <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-white border border-white/10">
-                    <img
-                      src={v.img}
-                      alt={v.title}
-                      className="h-12 w-12 object-contain drop-shadow"
-                      loading="lazy"
-                    />
+                    <img src={v.img} alt="" aria-hidden="true" className="h-12 w-12 object-contain drop-shadow" loading="lazy" />
                   </div>
 
                   {/* Título */}
-                  <dt className="text-[16px] font-extrabold text-white">
+                  <h3 className="text-[16px] font-extrabold text-white">
                     {v.title}
-                  </dt>
+                  </h3>
 
                   {/* Descripción */}
-                  <dd className="mt-3 text-[13px] leading-relaxed text-white/75">
+                  <p className="mt-3 text-[13px] leading-relaxed text-white/75">
                     {v.desc}
-                  </dd>
+                  </p>
 
                   {/* Mini acento */}
                   <div className="mt-6 flex justify-center">
-                    <span className="h-1 w-12 rounded-full bg-gradient-to-r from-[#24d4da] to-blue-500 opacity-70 group-hover:opacity-100 transition-opacity" />
+                    <span className="h-1 w-12 rounded-full bg-gradient-to-r from-[BRAND_DARK] to-blue-500 opacity-70 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
 
                 {/* Ring glow */}
                 <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-0 ring-[#24d4da]/25 transition group-hover:ring-2" />
-              </div>
+              </li>
             ))}
-          </dl>
+          </ul>
         </div>
       </div>
     </section>
