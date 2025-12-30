@@ -118,7 +118,7 @@ function ResultadosPanel({ data, theme }) {
        {!isTotal && (
           <div className="absolute top-0 right-0 w-16 h-16 bg-white opacity-[0.03] rounded-full -mr-8 -mt-8 blur-xl"></div>
        )}
-       <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${isTotal ? "text-white/90" : "text-slate-500"}`}>
+       <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${isTotal ? "text-white/90" : "text-slate-400"}`}>
           {title}
        </p>
        <p className={`font-black tracking-tighter ${isTotal ? "text-4xl md:text-5xl text-white" : "text-2xl text-white"}`}>
@@ -158,7 +158,7 @@ function ResultadosPanel({ data, theme }) {
             </div>
          </div>
          
-         <p className="text-[10px] text-center text-slate-600 mt-6 max-w-xs mx-auto">
+         <p className="text-[10px] text-center text-slate-400 mt-6 max-w-xs mx-auto">
             *Los resultados son estimaciones y pueden variar según la ubicación y administración.
          </p>
       </div>
@@ -315,7 +315,7 @@ export default function CalculadoraNegocio() {
       <div className="text-center mb-10 max-w-2xl">
         <span
           className="font-bold tracking-widest text-xs uppercase mb-3 block animate-pulse"
-          style={{ color: BRAND.accentDark }}
+          style={{ color: BRAND.accentDarker }}
         >
             Herramienta de Inversión
         </span>
