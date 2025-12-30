@@ -90,7 +90,8 @@ router.get('/extras', async (req, res) => {
 router.post('/extras', async (req, res) => {
     const { code, name, description, basePrice, isTinaco, tinacoKey, tinacoCapacityLiters } = req.body;
 
-    if (!code || !name || !basePrice) {
+    // Validación: code y name son obligatorios. basePrice puede ser 0, pero no undefined/null.
+    if (!code || !name || basePrice === undefined || basePrice === null) {
         return res.status(400).json({ message: 'Los campos code, name y basePrice son requeridos.' });
     }
 
@@ -99,15 +100,18 @@ router.post('/extras', async (req, res) => {
             data: {
                 code,
                 name,
-                description,
+                description: description || "",
                 basePrice: parseInt(basePrice),
                 isTinaco: Boolean(isTinaco),
-                tinacoKey,
+                tinacoKey: tinacoKey || null,
                 tinacoCapacityLiters: tinacoCapacityLiters ? parseInt(tinacoCapacityLiters) : null,
             },
         });
         res.status(201).json(newExtra);
     } catch (error) {
+        if (error.code === 'P2002') {
+            return res.status(409).json({ message: 'Ya existe un extra con ese código (slug).' });
+        }
         console.error("Error creating extra:", error);
         res.status(500).json({ message: 'Error al crear el extra', error: error.message });
     }
@@ -118,7 +122,7 @@ router.put('/extras/:id', async (req, res) => {
     const { id } = req.params;
     const { code, name, description, basePrice, isTinaco, tinacoKey, tinacoCapacityLiters } = req.body;
 
-    if (!code || !name || !basePrice) {
+    if (!code || !name || basePrice === undefined || basePrice === null) {
         return res.status(400).json({ message: 'Los campos code, name y basePrice son requeridos.' });
     }
     
@@ -128,15 +132,18 @@ router.put('/extras/:id', async (req, res) => {
             data: {
                 code,
                 name,
-                description,
+                description: description || "",
                 basePrice: parseInt(basePrice),
                 isTinaco: Boolean(isTinaco),
-                tinacoKey,
+                tinacoKey: tinacoKey || null,
                 tinacoCapacityLiters: tinacoCapacityLiters ? parseInt(tinacoCapacityLiters) : null,
             },
         });
         res.json(updatedExtra);
     } catch (error) {
+         if (error.code === 'P2002') {
+            return res.status(409).json({ message: 'Ya existe un extra con ese código (slug).' });
+        }
         console.error(`Error updating extra ${id}:`, error);
         res.status(500).json({ message: 'Error al actualizar el extra', error: error.message });
     }

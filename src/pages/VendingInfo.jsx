@@ -145,11 +145,37 @@ export default function VendingInfo() {
   return (
     <div ref={contRef} className="min-h-screen bg-slate-50 text-slate-800">
       <Helmet>
-        <title>Máquinas Vending de Agua Purificada - Darmax</title>
+        <title>Vending de Agua Purificada 24 Horas | Negocio Rentable | Darmax</title>
         <meta
           name="description"
-          content="Descubre nuestras máquinas vending de agua: una inversión inteligente con operación 24/7, construcción robusta y múltiples métodos de pago."
+          content="Inicia tu negocio de Vending de Agua Purificada 24/7. Equipos de acero inoxidable, alta rentabilidad y bajo mantenimiento. Compite con las grandes franquicias."
         />
+        <meta name="keywords" content="vending de agua, purificadora de agua 24 horas, negocio de agua, franquicia de agua, vending machine agua, agua inmaculada competencia" />
+        <link rel="canonical" href="https://darmaxagua.com.mx/vending-info" />
+        
+        {/* Datos Estructurados (Schema.org) para Producto/Servicio */}
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org/",
+              "@type": "Product",
+              "name": "Máquina Vending de Agua Purificada Darmax",
+              "image": "https://darmaxagua.com.mx/img/vending/TOUCHAGUA.png",
+              "description": "Máquina expendedora de agua purificada 24/7 con capacidad de 1200 garrafones al mes, acero inoxidable y múltiples métodos de pago.",
+              "brand": {
+                "@type": "Brand",
+                "name": "Darmax Agua"
+              },
+              "offers": {
+                "@type": "AggregateOffer",
+                "priceCurrency": "MXN",
+                "lowPrice": "55000",
+                "highPrice": "120000",
+                "offerCount": "5"
+              }
+            }
+          `}
+        </script>
       </Helmet>
 
       {/* ===== Hero Section ===== */}
