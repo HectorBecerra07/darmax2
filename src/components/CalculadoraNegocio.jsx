@@ -3,15 +3,22 @@ import React, { useState, useEffect } from "react";
 /* =========================
    UTILIDADES & CONSTANTES
 ========================= */
+const BRAND = {
+  accent: "#24d4da",
+  accentDark: "#168387",
+  accentDarker: "#106366"
+};
+
 const THEME = {
   agua: {
-    primary: "#24d4da", // Cyan Darmax
-    secondary: "#0ea5e9", // Sky Blue
-    gradient: "from-[#24d4da] to-cyan-500",
+    primary: BRAND.accent,
+    secondary: "#0ea5e9",
+    gradient: `from-[${BRAND.accent}] to-cyan-500`,
     shadow: "shadow-cyan-500/20",
     bgResults: "bg-slate-900",
     icon: "💧"
   },
+  
   limpieza: {
     primary: "#e879f9", // Fuchsia Neon
     secondary: "#d946ef",
@@ -42,11 +49,11 @@ const StyledInput = ({ label, value, setValue, color }) => {
 
   return (
     <div className="group">
-      <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 group-focus-within:text-slate-700 transition-colors">
+      <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-2 group-focus-within:text-slate-900 transition-colors">
         {label}
       </label>
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">$</span>
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 font-semibold">$</span>
         <input
           type="text"
           inputMode="numeric"
@@ -64,11 +71,13 @@ const CustomSlider = ({ value, min, max, onChange, color, label }) => {
   // Calculamos el porcentaje para el fondo del slider
   const percentage = ((value - min) / (max - min)) * 100;
 
+  const displayColor = (color === BRAND.accent) ? BRAND.accentDark : color;
+
   return (
     <div className="w-full mb-8">
       <div className="flex justify-between items-end mb-4">
          <span className="text-xs font-bold uppercase tracking-widest text-slate-500">{label}</span>
-         <span className="text-3xl font-black tracking-tight" style={{ color }}>
+         <span className="text-3xl font-black tracking-tight" style={{ color: displayColor }}>
             ${value}
          </span>
       </div>
@@ -109,7 +118,7 @@ function ResultadosPanel({ data, theme }) {
        {!isTotal && (
           <div className="absolute top-0 right-0 w-16 h-16 bg-white opacity-[0.03] rounded-full -mr-8 -mt-8 blur-xl"></div>
        )}
-       <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${isTotal ? "text-white/90" : "text-slate-400"}`}>
+       <p className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${isTotal ? "text-white/90" : "text-slate-500"}`}>
           {title}
        </p>
        <p className={`font-black tracking-tighter ${isTotal ? "text-4xl md:text-5xl text-white" : "text-2xl text-white"}`}>
@@ -127,7 +136,7 @@ function ResultadosPanel({ data, theme }) {
       <div className="relative z-10 space-y-6">
          <div>
             <h2 className="text-3xl font-black text-white mb-2">Proyección Financiera</h2>
-            <p className="text-slate-400 text-sm">Estimación basada en tus datos operativos.</p>
+            <p className="text-slate-300 text-sm">Estimación basada en tus datos operativos.</p>
          </div>
 
          <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent my-6"></div>
@@ -138,7 +147,7 @@ function ResultadosPanel({ data, theme }) {
             <ResultCard title="Utilidad Mensual" amount={data.utilidadMensual} isTotal={true} />
             <ResultCard title="Utilidad Anual" amount={data.utilidadAnual} />
             <div className="bg-slate-800/50 border border-white/5 rounded-2xl p-5 flex items-center justify-center text-center">
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-300">
                     Margen de Ganancia <br/>
                     <span className="text-xl font-bold" style={{ color }}>
                         {data.ingresosDiarios > 0 
@@ -196,7 +205,7 @@ function CalculadoraAgua({ isActive }) {
       <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
          <div className="mb-8">
             <h3 className="text-xl font-bold text-slate-900 mb-1">Configuración Purificadora</h3>
-            <p className="text-xs text-slate-400">Ajusta los valores del mercado.</p>
+            <p className="text-xs text-slate-600">Ajusta los valores del mercado.</p>
          </div>
 
          <CustomSlider 
@@ -263,7 +272,7 @@ function CalculadoraLimpieza({ isActive }) {
       <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
          <div className="mb-8">
             <h3 className="text-xl font-bold text-slate-900 mb-1">Configuración Productos</h3>
-            <p className="text-xs text-slate-400">Venta de químicos a granel.</p>
+            <p className="text-xs text-slate-600">Venta de químicos a granel.</p>
          </div>
 
          <CustomSlider 
@@ -304,12 +313,15 @@ export default function CalculadoraNegocio() {
       
       {/* Header Section */}
       <div className="text-center mb-10 max-w-2xl">
-        <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block animate-pulse">
+        <span
+          className="font-bold tracking-widest text-xs uppercase mb-3 block animate-pulse"
+          style={{ color: BRAND.accentDark }}
+        >
             Herramienta de Inversión
         </span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-4">
           Calculadora de <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#24d4da] to-blue-500">Rentabilidad</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[${BRAND.accentDark}] to-blue-600">Rentabilidad</span>
         </h1>
         <p className="text-slate-500 text-sm md:text-base max-w-lg mx-auto">
             Proyecta tus ganancias mensuales y anuales basándote en costos reales y tráfico estimado.
@@ -330,13 +342,13 @@ export default function CalculadoraNegocio() {
 
                 <button
                     onClick={() => setTipo("agua")}
-                    className={`relative z-10 w-[140px] py-2.5 text-sm font-bold rounded-full transition-colors duration-300 flex items-center justify-center gap-2 ${tipo === "agua" ? "text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
+                    className={`relative z-10 w-[140px] py-2.5 text-sm font-bold rounded-full transition-colors duration-300 flex items-center justify-center gap-2 ${tipo === "agua" ? "text-slate-900" : "text-slate-600 hover:text-slate-900"}`}
                 >
                     <span>{THEME.agua.icon}</span> Agua
                 </button>
                 <button
                     onClick={() => setTipo("limpieza")}
-                    className={`relative z-10 w-[140px] py-2.5 text-sm font-bold rounded-full transition-colors duration-300 flex items-center justify-center gap-2 ${tipo === "limpieza" ? "text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
+                    className={`relative z-10 w-[140px] py-2.5 text-sm font-bold rounded-full transition-colors duration-300 flex items-center justify-center gap-2 ${tipo === "limpieza" ? "text-slate-900" : "text-slate-600 hover:text-slate-900"}`}
                 >
                     <span>{THEME.limpieza.icon}</span> Limpieza
                 </button>
