@@ -321,7 +321,7 @@ export default function CalculadoraNegocio() {
         </span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-4">
           Calculadora de <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[${BRAND.accentDark}] to-blue-600">Rentabilidad</span>
+          <span className="text-slate-900 bg-clip-text bg-gradient-to-r from-[${BRAND.accentDark}] to-blue-600">Rentabilidad</span>
         </h1>
         <p className="text-slate-500 text-sm md:text-base max-w-lg mx-auto">
             Proyecta tus ganancias mensuales y anuales basándote en costos reales y tráfico estimado.
