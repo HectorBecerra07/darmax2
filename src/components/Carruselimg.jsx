@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 
 const imagenes = [
-  "/img/trabajos/trabajos1.jpg",
+  "/img/trabajos/trabajos1.jpeg",
   "/img/trabajos/trabajos2.jpg",
   "/img/trabajos/trabajos3.jpg",
-  "/img/trabajos/trabajos4.jpg",
+  "/img/trabajos/trabajos5.jpeg",
 ];
 
 export default function GaleriaMosaicoPremium() {
@@ -192,10 +192,6 @@ function MediaCard({ src, title, desc, className = "", badge, hero = false }) {
           {desc}
         </p>
         <div className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold">
-          Ver detalles
-          <span className="transition-transform duration-300 group-hover:translate-x-1 text-[#24d4da]">
-            →
-          </span>
         </div>
       </figcaption>
 
