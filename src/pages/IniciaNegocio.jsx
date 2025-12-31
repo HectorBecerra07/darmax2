@@ -7,6 +7,8 @@ import VendingPrecise3D from "../components/Vending";
    CONSTANTES Y CONFIGURACIÓN
 ========================= */
 const BRAND_COLOR = "#24d4da"; // Tu color cyan
+const BRAND_DARK = "#168387"; // Botones con texto blanco (AA)
+const BRAND_TEXT = "#168387"; // Texto en fondo blanco (AA)
 const WHATSAPP_PHONE = "525519655369";
 const BUNDLE_IDS = new Set(["Duo-Emprendedor", "Tridente", "Megalodon"]);
 
@@ -112,7 +114,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
   return (
     <article
       className={[
-        "border border-slate-200 group relative flex flex-col h-full overflow-hidden rounded-3xl bg-white",
+        "isolate border border-slate-200 group relative flex flex-col h-full overflow-hidden rounded-3xl bg-white",
         "transition-all duration-300",
         "hover:-translate-y-2 hover:shadow-[0_28px_70px_-30px_rgba(15,23,42,0.35)]",
         "focus-within:-translate-y-2 focus-within:shadow-[0_28px_70px_-30px_rgba(15,23,42,0.35)]",
@@ -120,15 +122,15 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       ].join(" ")}
     >
       {/* Borde degradado premium (no rompe el layout) */}
-      <div className="pointer-events-none absolute inset-0 rounded-3xl p-[1px] bg-gradient-to-br from-[#24d4da]/35 via-transparent to-slate-200/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="pointer-events-none absolute inset-0 rounded-3xl bg-white" />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl p-[1px] bg-gradient-to-br from-[#24d4da]/35 via-transparent to-slate-200/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl bg-white z-0" />
 
       {/* Glow suave */}
-      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-[#24d4da]/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <div className="pointer-events-none absolute -bottom-24 -left-24 h-56 w-56 rounded-full bg-blue-400/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-[#24d4da]/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 h-56 w-56 rounded-full bg-blue-400/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
 
       {/* Header */}
-      <div className="relative p-7">
+      <div className="relative z-10 p-7">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             {modelo.badge && (
@@ -159,7 +161,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
               "transition-all duration-300",
               "active:scale-[0.98]",
               isSelected
-                ? "border-[#24d4da] bg-[#24d4da]/10 text-[#24d4da] shadow-[0_10px_25px_-15px_rgba(36,212,218,0.65)]"
+                ? "border-[#24d4da] bg-[#24d4da]/10 text-[BRAND_TEXT] shadow-[0_10px_25px_-15px_rgba(36,212,218,0.65)]"
                 : "border-slate-200 text-slate-600 hover:border-[#24d4da] hover:text-[#24d4da] hover:bg-[#24d4da]/5",
             ].join(" ")}
             title="Comparar"
@@ -194,7 +196,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
               onError={() => setErrorImagen(true)}
             />
           ) : (
-            <div className="text-slate-400 text-sm font-semibold">
+            <div className="text-slate-600 text-sm font-semibold">
               Imagen no disponible
             </div>
           )}
@@ -209,7 +211,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
             <span className="text-2xl font-black text-slate-900">
               {formatMXN(modelo.precio)}
             </span>
-            <span className="text-xs text-slate-400 font-semibold">+ IVA</span>
+            <span className="text-xs text-slate-600 font-semibold">+ IVA</span>
           </div>
 
           <p className="mt-3 text-sm text-slate-600 leading-relaxed line-clamp-3">
@@ -222,7 +224,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       </div>
 
       {/* Footer acciones */}
-      <div className="relative mt-auto p-7 pt-0">
+      <div className="relative z-10 mt-auto p-7 pt-0">
         <div className="flex gap-3">
           {/* Configurar */}
           <button
@@ -234,7 +236,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
               active:scale-[0.99]
               relative overflow-hidden
             "
-            style={{ backgroundColor: BRAND_COLOR }}
+            style={{ backgroundColor: BRAND_DARK }}
           >
             {/* glow sweep */}
             <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -249,7 +251,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
             className="
               flex-1 py-3.5 rounded-2xl font-extrabold text-slate-700
               border border-slate-200
-              hover:text-[#24d4da] hover:border-[#24d4da]
+              hover:text-[BRAND_TEXT] hover:border-[#24d4da]
               hover:bg-[#24d4da]/5
               transition-all duration-300
               active:scale-[0.99]
@@ -260,12 +262,12 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
         </div>
 
         {/* hint en hover (muy discreto) */}
-        <div className="mt-4 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="mt-4 flex items-center justify-between text-[11px] text-slate-600">
           <span className="opacity-0 group-hover:opacity-100 transition-opacity">
             Tip: compara 2+ modelos
           </span>
           {isSelected && (
-            <span className="text-[#24d4da] font-bold">
+            <span className="text-[BRAND_TEXT] font-bold">
               Seleccionado ✓
             </span>
           )}
@@ -327,7 +329,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl lg:text-center">
-          <h2 className="text-xs font-extrabold tracking-[0.35em] uppercase text-[#24d4da]">
+          <h2 className="text-xs font-extrabold tracking-[0.35em] uppercase text-[BRAND_TEXT]">
             Tu Éxito, Nuestra Misión
           </h2>
           <p className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
@@ -340,9 +342,9 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
 
         {/* Grid */}
         <div className="mx-auto mt-16 max-w-6xl sm:mt-20 lg:mt-24">
-          <dl className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" role="list">
             {ventajas.map((v) => (
-              <div
+              <li
                 key={v.title}
                 className="
                   group relative overflow-hidden rounded-[28px]
@@ -365,35 +367,30 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
                 <div className="relative px-5 py-8 text-center">
                   {/* Icono */}
                   <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-white border border-white/10">
-                    <img
-                      src={v.img}
-                      alt={v.title}
-                      className="h-12 w-12 object-contain drop-shadow"
-                      loading="lazy"
-                    />
+                    <img src={v.img} alt="" aria-hidden="true" className="h-12 w-12 object-contain drop-shadow" loading="lazy" />
                   </div>
 
                   {/* Título */}
-                  <dt className="text-[16px] font-extrabold text-white">
+                  <h3 className="text-[16px] font-extrabold text-white">
                     {v.title}
-                  </dt>
+                  </h3>
 
                   {/* Descripción */}
-                  <dd className="mt-3 text-[13px] leading-relaxed text-white/75">
+                  <p className="mt-3 text-[13px] leading-relaxed text-white/75">
                     {v.desc}
-                  </dd>
+                  </p>
 
                   {/* Mini acento */}
                   <div className="mt-6 flex justify-center">
-                    <span className="h-1 w-12 rounded-full bg-gradient-to-r from-[#24d4da] to-blue-500 opacity-70 group-hover:opacity-100 transition-opacity" />
+                    <span className="h-1 w-12 rounded-full bg-gradient-to-r from-[BRAND_DARK] to-blue-500 opacity-70 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
 
                 {/* Ring glow */}
                 <div className="pointer-events-none absolute inset-0 rounded-[28px] ring-0 ring-[#24d4da]/25 transition group-hover:ring-2" />
-              </div>
+              </li>
             ))}
-          </dl>
+          </ul>
         </div>
       </div>
     </section>
@@ -435,7 +432,7 @@ const IniciaNegocio = () => {
                   <p className="text-slate-500 mt-2">Emprende a tus posibilidades con darmax.</p>
               </div>
               {selected.length > 0 && (
-                  <div className="mt-4 md:mt-0 px-4 py-2 bg-[#24d4da]/10 text-[#24d4da] rounded-lg font-medium text-sm animate-fade-in">
+                  <div className="mt-4 md:mt-0 px-4 py-2 bg-[#24d4da]/10 text-[BRAND_TEXT] rounded-lg font-medium text-sm animate-fade-in">
                       {selected.length} equipos seleccionados para comparar
                   </div>
               )}
@@ -514,7 +511,7 @@ const IniciaNegocio = () => {
                    target="_blank"
                    rel="noopener noreferrer"
                    className="inline-block px-10 py-4 rounded-full text-white font-bold text-lg transition-all hover:shadow-xl hover:shadow-[#24d4da]/30 hover:-translate-y-1"
-                   style={{ background: `linear-gradient(135deg, ${BRAND_COLOR} 0%, #0ea5e9 100%)` }}
+                   style={{ background: `linear-gradient(135deg, ${BRAND_DARK} 0%, #0ea5e9 100%)` }}
                 >
                    Solicitar Consultoría Gratuita
                 </a>
@@ -525,7 +522,7 @@ const IniciaNegocio = () => {
         <div className={`fixed bottom-8 left-0 right-0 flex justify-center z-50 pointer-events-none transition-all duration-500 ${selected.length > 0 ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"}`}>
            <div className="pointer-events-auto flex items-center gap-6 px-8 py-4 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl shadow-black/50 text-white">
               <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Comparando</span>
+                  <span className="text-[10px] uppercase tracking-wider text-slate-600 font-bold">Comparando</span>
                   <span className="font-bold text-lg leading-none">{selected.length} <span className="text-slate-500 text-sm font-normal">Modelos</span></span>
               </div>
 
@@ -542,7 +539,7 @@ const IniciaNegocio = () => {
               
               <button
                 onClick={() => setSelected([])}
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-red-500/20 hover:text-red-400 transition-colors text-slate-400"
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-red-500/20 hover:text-red-400 transition-colors text-slate-600"
               >
                 ✕
               </button>
@@ -589,7 +586,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
         {/* Header */}
         <div className="flex items-center justify-between px-5 sm:px-8 py-4 sm:py-6 border-b border-slate-100 bg-white sticky top-0 z-20">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.28em] font-extrabold text-[#24d4da]">
+            <p className="text-[10px] uppercase tracking-[0.28em] font-extrabold text-[BRAND_TEXT]">
               Comparativa
             </p>
             <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900">
@@ -602,7 +599,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition"
+            className="p-2 rounded-full hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition"
             aria-label="Cerrar"
           >
             <svg
@@ -644,7 +641,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
                           </p>
                         </div>
 
-                        <span className="text-[#24d4da] font-extrabold text-sm">
+                        <span className="text-[BRAND_TEXT] font-extrabold text-sm">
                           {formatMXN(m.precio)}
                         </span>
                       </div>
@@ -671,7 +668,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
                       <button
                         onClick={() => navigate(`/configurar-maquina/${m.id}`)}
                         className="w-full py-3.5 rounded-2xl font-extrabold text-white shadow-lg shadow-[#24d4da]/20 hover:shadow-[#24d4da]/40 transition-all active:scale-[0.99]"
-                        style={{ backgroundColor: BRAND_COLOR }}
+                        style={{ backgroundColor: BRAND_DARK }}
                       >
                         Seleccionar
                       </button>
@@ -716,7 +713,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
                           <p className="text-center text-slate-500 font-semibold text-sm mt-1">
                             {m.etiqueta}
                           </p>
-                          <p className="text-center text-[#24d4da] font-extrabold text-xl mt-2">
+                          <p className="text-center text-[BRAND_TEXT] font-extrabold text-xl mt-2">
                             {formatMXN(m.precio)}
                           </p>
                         </div>
@@ -750,7 +747,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
                         <button
                           onClick={() => navigate(`/configurar-maquina/${m.id}`)}
                           className="w-full py-3 rounded-2xl font-extrabold text-white shadow-lg shadow-[#24d4da]/20 hover:shadow-[#24d4da]/40 transition-all active:scale-[0.99]"
-                          style={{ backgroundColor: BRAND_COLOR }}
+                          style={{ backgroundColor: BRAND_DARK }}
                         >
                           Seleccionar
                         </button>
