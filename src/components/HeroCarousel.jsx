@@ -46,10 +46,16 @@ export default function HeroCarousel({ className }) {
           }
         }
         .hero-carousel-container .swiper-pagination {
+          display: none; /* Ocultar en móvil */
           position: absolute;
           left: 50%;
           transform: translateX(-50%);
-          bottom: 20px; /* Adjust as needed */
+          bottom: 20px;
+        }
+        @media (min-width: 640px) {
+          .hero-carousel-container .swiper-pagination {
+            display: block; /* Mostrar en desktop */
+          }
         }
         .hero-carousel-container .swiper-pagination-bullet {
           background-color: rgba(255, 255, 255, 0.5);
