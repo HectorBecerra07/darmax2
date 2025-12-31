@@ -73,10 +73,10 @@ export default function NavBar() {
   
     ];
   
-    const baseLinkClass = "font-semibold italic transition-colors duration-200";
-    const hoverLinkClass = "hover:text-[#24d4da]";
-    const activeLinkClass = "text-[#24d4da]";
-    const inactiveLinkClass = "text-white";
+    const baseLinkClass = "px-4 py-2 rounded-full font-medium italic transition-all duration-300 text-[13px] tracking-wide whitespace-nowrap";
+    const hoverLinkClass = "hover:text-[#24d4da] transition-colors duration-200";
+    const activeLinkClass = "bg-[#24d4da]/20 text-[#24d4da] border border-[#24d4da]/20";
+    const inactiveLinkClass = "text-white hover:bg-white/5 hover:text-[#24d4da]";
   
     return (
       <>
@@ -105,11 +105,13 @@ export default function NavBar() {
               />
             </Link>
             {/* Menú escritorio */}
-            <div className="hidden nav:flex items-center justify-center gap-6 nav:gap-10 flex-1">
+            <div className="hidden nav:flex items-center justify-center gap-2 nav:gap-4 flex-1">
               {navLinks.map((link) => {
                 const isActive = link.href === "/" 
                   ? location.pathname === "/" 
                   : location.pathname.startsWith(link.href);
+
+                const finalClass = `${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass}`;
 
                 if (link.scrollTarget) {
                   return (
@@ -121,9 +123,7 @@ export default function NavBar() {
                         });
                         scrollToTop();
                       }}
-                      className={`${baseLinkClass} ${
-                        isActive ? activeLinkClass : inactiveLinkClass
-                      } hover:bg-[#24d4da]/20 hover:rounded-md px-2 py-1 text-sm`}
+                      className={finalClass}
                     >
                       {link.text}
                     </button>
@@ -134,11 +134,7 @@ export default function NavBar() {
                     key={link.href}
                     to={link.href}
                     onClick={scrollToTop}
-                    className={`${baseLinkClass} ${
-                      isActive
-                        ? activeLinkClass
-                        : inactiveLinkClass
-                    } hover:bg-[#24d4da]/20 hover:rounded-md px-2 py-1 text-sm`}
+                    className={finalClass}
                   >
                     {link.text}
                   </Link>
@@ -146,27 +142,27 @@ export default function NavBar() {
               })}
             </div>
             {/* Usuario + carrito */}{" "}
-            <div className="hidden nav:flex items-center gap-4 nav:gap-8">
+            <div className="hidden nav:flex items-center gap-4 nav:gap-6 h-full">
               <button
                 onClick={() => setShowCart(true)}
-                className={`relative text-white ${hoverLinkClass}`}
+                className={`relative flex items-center justify-center text-white ${hoverLinkClass}`}
                 aria-label="Abrir carrito"
               >
-                <ShoppingBagIcon className="w-7 h-7" />
+                <ShoppingBagIcon className="w-6 h-6" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-gray-900">
                     {totalItems}
                   </span>
                 )}
               </button>
 
-              <div className="relative" ref={userMenuRef}>
+              <div className="relative flex items-center" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className={`relative text-white ${hoverLinkClass}`}
+                  className={`flex items-center justify-center text-white ${hoverLinkClass}`}
                   aria-label="Menú de usuario"
                 >
-                  <UserIcon className="w-7 h-7" />
+                  <UserIcon className="w-6 h-6" />
                 </button>
 
                 {userMenuOpen && (
@@ -228,28 +224,28 @@ export default function NavBar() {
               </div>
             </div>
             {/* Botón menú móvil */}
-            <div className="flex items-center justify-end nav:hidden col-span-2 gap-x-4">
+            <div className="flex items-center justify-end nav:hidden col-span-2 gap-x-5">
               <button
                 onClick={() => setShowCart(true)}
-                className="relative text-white hover:text-[#24d4da]"
+                className="relative flex items-center justify-center text-white hover:text-[#24d4da]"
                 aria-label="Abrir carrito"
               >
-                <ShoppingBagIcon className="w-7 h-7" />
+                <ShoppingBagIcon className="w-6 h-6" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-gray-900">
                     {totalItems}
                   </span>
                 )}
               </button>
               <button
                 onClick={() => setNavOpen(!navOpen)}
-                className="text-white"
+                className="flex items-center justify-center text-white"
                 aria-label="Abrir menú"
               >
                 {navOpen ? (
-                  <XMarkIcon className="w-8 h-8" />
+                  <XMarkIcon className="w-7 h-7" />
                 ) : (
-                  <Bars3Icon className="w-8 h-8" />
+                  <Bars3Icon className="w-7 h-7" />
                 )}
               </button>
             </div>
@@ -268,7 +264,7 @@ export default function NavBar() {
               <XMarkIcon className="w-8 h-8 text-white" />
             </button>
           </div>
-          <nav className="flex flex-col p-5 space-y-4">
+          <nav className="flex flex-col p-5 space-y-3">
             {navLinks.map((link) => {
               const isActive = link.href === "/" 
                 ? location.pathname === "/" 
@@ -277,10 +273,10 @@ export default function NavBar() {
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={`text-white text-base font-semibold p-3 rounded-lg transition-colors duration-200 ${
+                  className={`px-5 py-3 rounded-2xl font-medium italic transition-all duration-200 ${
                     isActive
-                      ? "bg-gray-700"
-                      : "hover:bg-gray-800"
+                      ? "bg-[#24d4da]/20 text-[#24d4da] border border-[#24d4da]/20"
+                      : "text-white hover:bg-white/5"
                   }`}
                   onClick={() => {
                     setNavOpen(false);
