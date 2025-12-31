@@ -15,6 +15,7 @@ const imagenes = [
   
   "/img/banner/banerdarmax.jpg",
   "/img/banner/Banneranonuevo.png",
+  "/img/banner/banerdarmax.jpg",
 ];
 
 export default function HeroCarousel({ className }) {
