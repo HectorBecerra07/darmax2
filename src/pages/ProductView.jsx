@@ -195,7 +195,7 @@ const ProductView = () => {
               <span className="text-xs text-gray-500 mt-2">ID de producto: #{product.id}</span>
               
               <p className="text-4xl font-black text-[#24d4da] mt-4">
-                ${Number(product.precio).toFixed(2)} <span className="text-2xl text-gray-500 font-medium">MXN</span>
+                ${Number(product.precio).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-2xl text-gray-500 font-medium">MXN</span>
               </p>
 
               <div className="mt-6">

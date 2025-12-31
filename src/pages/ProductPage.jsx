@@ -80,7 +80,7 @@ export default function ProductPage({ onAddToCart }) {
             <h1 className="text-3xl font-bold text-gray-900">{producto.nombre}</h1>
             <p className="text-gray-700">{producto.descripcion}</p>
             <p className="text-2xl font-semibold text-gray-900">
-              ${producto.precio.toFixed(2)}
+              ${producto.precio.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
 
             <button

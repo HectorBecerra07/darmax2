@@ -224,11 +224,11 @@ const CheckoutForm = ({
           </div>
           <div className="flex justify-between text-sm text-gray-600">
             <span>Envío</span>
-            <span>${shippingTotal.toFixed(2)}</span>
+            <span>${shippingTotal.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
           <div className="flex justify-between items-center text-base font-bold text-gray-800 mt-1">
             <span>Total</span>
-            <span>${totalConEnvio.toFixed(2)} MXN</span>
+            <span>${totalConEnvio.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</span>
           </div>
         </div>
       </div>
@@ -245,7 +245,7 @@ const CheckoutForm = ({
         >
           {loading
             ? "Procesando pago..."
-            : `Pagar $${totalConEnvio.toFixed(2)}`}
+            : `Pagar $${totalConEnvio.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
         </button>
         <p className="mt-3 text-xs text-gray-500 text-center">
           Al completar tu compra, aceptas nuestros{" "}

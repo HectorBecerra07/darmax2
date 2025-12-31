@@ -61,7 +61,7 @@ const SlideCart = ({ isOpen, onClose }) => {
                     <div className="flex-1">
                       <h4 className="text-sm font-medium">{nombre}</h4>
                       <p className="text-xs text-gray-500">
-                        {cantidad} × ${precio.toFixed(2)}
+                        {cantidad} × ${precio.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                     </div>
                     <button
@@ -100,7 +100,7 @@ const SlideCart = ({ isOpen, onClose }) => {
           <div className="mt-4 space-y-3">
             <div className="flex justify-between font-semibold">
               <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
+              <span>${total.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             <button className="w-full bg-[#24d4da] text-black font-bold py-2 rounded-lg hover:brightness-90">
               Finalizar pedido

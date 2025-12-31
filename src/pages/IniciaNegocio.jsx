@@ -484,7 +484,7 @@ const IniciaNegocio = () => {
             </div>
 
             {/* Modelo a la derecha */}
-            <div className="lg:w-1/2 w-full relative z-0 flex justify-center lg:justify-end py-10">
+            <div className="lg:w-1/2 w-full relative z-20 flex justify-center lg:justify-end py-10">
                <div className="scale-75 sm:scale-85 lg:scale-100 xl:scale-110 origin-center lg:origin-right transform-gpu">
                   <VendingPrecise3D />
                </div>

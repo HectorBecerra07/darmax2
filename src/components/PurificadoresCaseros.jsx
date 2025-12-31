@@ -747,7 +747,10 @@ function SkeletonCard() {
 function ProductCard({ item, onAddToCart, carrito = [] }) {
   const p = item; // Alias para reutilizar código
   const precioN = Number(p.precio || 0);
-  const priceFormatted = precioN.toFixed(2);
+  const priceFormatted = precioN.toLocaleString("es-MX", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
   const itemEnCarrito = carrito.find((i) => i.id === p.id);
   const cantidadEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
@@ -792,7 +795,7 @@ function ProductCard({ item, onAddToCart, carrito = [] }) {
             src={p.imagen || "https://via.placeholder.com/400x300"}
             alt={p.nombre}
             loading="lazy"
-            className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105 mix-blend-multiply"
+            className="max-h-full max-w-full object-contain mix-blend-multiply"
             onError={(e) => {
               e.currentTarget.src = "https://via.placeholder.com/400x300";
             }}

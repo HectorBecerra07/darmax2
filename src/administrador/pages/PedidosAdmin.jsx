@@ -191,10 +191,10 @@ const crearGuia = async (pedidoId) => {
         [
           "Envío",
           pedido.envio
-            ? `$${Number(pedido.envio.costoEnvio || 0).toFixed(2)} MXN`
+            ? `$${Number(pedido.envio.costoEnvio || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`
             : "N/D",
         ],
-        ["Total", `$${Number(pedido.total || 0).toFixed(2)} MXN`],
+        ["Total", `$${Number(pedido.total || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`],
         ["Estado", estado.label],
       ],
       startY: 40,
@@ -300,7 +300,7 @@ const crearGuia = async (pedidoId) => {
                   <span className="font-semibold dark:text-slate-200">
                     Total:
                   </span>{" "}
-                  ${Number(pedido.total || 0).toFixed(2)}
+                  ${Number(pedido.total || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
                 <p className="line-clamp-2">
                   <span className="font-semibold dark:text-slate-200">
@@ -434,7 +434,7 @@ const crearGuia = async (pedidoId) => {
                     {productosTexto.join(", ")}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap font-semibold text-slate-600 dark:text-slate-300">
-                    ${Number(pedido.total || 0).toFixed(2)}
+                    ${Number(pedido.total || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">

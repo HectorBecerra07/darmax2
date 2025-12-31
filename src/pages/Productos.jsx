@@ -24,7 +24,7 @@ const agruparPorCategoria = (productos) =>
     return acc;
   }, {});
 
-const money = (n) => `MXN $${Number(n || 0).toFixed(2)}`;
+const money = (n) => `MXN $${Number(n || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 // 🔥 Paginación con ellipsis (se ve pro)
 function buildPagination(current, total) {
@@ -71,14 +71,17 @@ function SkeletonCard() {
 /** ✅ Card Armoniosa con Footer Dividido */
 function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar }) {
   // Extraer el precio numérico para estilizarlo mejor
-  const priceFormatted = Number(p.precio || 0).toFixed(2);
+  const priceFormatted = Number(p.precio || 0).toLocaleString("es-MX", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
   return (
     <article
       onClick={() => onVerMas(p)}
       className="
         group cursor-pointer
-        rounded-2xl overflow-hidden
+        rounded-xl sm:rounded-2xl overflow-hidden
         bg-white border border-slate-200
         hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/5 hover:-translate-y-1
         transition-all duration-300
@@ -86,13 +89,13 @@ function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar }) {
       "
     >
       {/* Sección Imagen */}
-      <div className="relative w-full aspect-[4/3] bg-white p-4 overflow-hidden border-b border-slate-50">
+      <div className="relative w-full aspect-[4/3] bg-white p-2 sm:p-4 overflow-hidden border-b border-slate-50">
         {/* Background sutil en hover */}
         <div className="absolute inset-0 bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         {/* Badge Stock */}
         <span
-          className={`absolute top-3 left-3 z-10 text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm backdrop-blur-sm ${
+          className={`absolute top-2 left-2 z-10 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full border shadow-sm backdrop-blur-sm ${
             stockEfectivo <= 0
               ? "bg-slate-100/90 text-slate-500 border-slate-200"
               : stockEfectivo <= 5
@@ -113,7 +116,7 @@ function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar }) {
             src={p.imagen || "https://via.placeholder.com/400x300"}
             alt={p.nombre}
             loading="lazy"
-            className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-110 mix-blend-multiply"
+            className="max-h-full max-w-full object-contain mix-blend-multiply"
             onError={(e) => {
               e.currentTarget.src = "https://via.placeholder.com/400x300";
             }}
@@ -123,33 +126,33 @@ function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar }) {
 
       {/* Cuerpo de la tarjeta */}
       <div className="flex flex-col flex-1">
-        <div className="p-5 pb-0 flex-1">
+        <div className="p-3 sm:p-5 pb-0 flex-1">
           {/* Categoría pequeña */}
-          <div className="mb-2">
-            <span className="inline-block text-[10px] font-bold text-[#007377] uppercase tracking-wider bg-teal-50 px-2 py-0.5 rounded border border-teal-100/50">
+          <div className="mb-1 sm:mb-2">
+            <span className="inline-block text-[8px] sm:text-[10px] font-bold text-[#007377] uppercase tracking-wider bg-teal-50 px-1.5 py-0.5 rounded border border-teal-100/50">
               {p.categoria?.nombre || "General"}
             </span>
           </div>
           
           {/* Título */}
-          <h3 className="text-[15px] font-bold text-slate-800 leading-snug line-clamp-2 group-hover:text-[#007377] transition-colors">
+          <h3 className="text-[12px] sm:text-[15px] font-bold text-slate-800 leading-tight sm:leading-snug line-clamp-2 group-hover:text-[#007377] transition-colors">
             {p.nombre}
           </h3>
         </div>
 
         {/* Footer: Precio + Botón */}
-        <div className="p-5 pt-4 mt-auto">
-          <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-100">
+        <div className="p-3 sm:p-5 pt-3 sm:pt-4 mt-auto">
+          <div className="flex items-center justify-between gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-slate-100">
             {/* Precio estilizado */}
             <div className="flex flex-col">
-              <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wide">
+              <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold uppercase tracking-wide">
                 Precio
               </span>
               <div className="flex items-baseline gap-0.5">
-                <span className="text-lg font-black text-slate-900 leading-none">
+                <span className="text-sm sm:text-lg font-black text-slate-900 leading-none">
                   ${priceFormatted}
                 </span>
-                <span className="text-[10px] font-bold text-slate-400">MXN</span>
+                <span className="text-[9px] sm:text-[10px] font-bold text-slate-400">MXN</span>
               </div>
             </div>
 
@@ -161,7 +164,7 @@ function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar }) {
               }}
               disabled={stockEfectivo <= 0}
               className={`
-                h-10 px-5 rounded-xl flex items-center justify-center gap-2
+                h-8 sm:h-10 w-8 sm:w-auto sm:px-5 rounded-lg sm:rounded-xl flex items-center justify-center gap-2
                 text-sm font-bold shadow-sm transition-all duration-300
                 ${
                   stockEfectivo <= 0
@@ -172,7 +175,7 @@ function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar }) {
               title="Agregar al carrito"
             >
               <FaCartPlus className="text-base" />
-              <span className="hidden min-[1150px]:inline">Agregar</span>
+              <span className="hidden md:inline">Agregar</span>
             </button>
           </div>
         </div>
@@ -558,7 +561,7 @@ export default function Productos() {
             {/* Main */}
             <main className="md:col-span-9">
               {loading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6 sm:gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-8">
                   {Array.from({ length: 12 }).map((_, i) => (
                     <SkeletonCard key={i} />
                   ))}
@@ -633,7 +636,7 @@ export default function Productos() {
                     </div>
                   ) : (
                     <>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-6 sm:gap-8">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-8">
                         {productosPaginados.map((p) => {
                           const itemEnCarrito = carrito.find(
                             (item) => item.id === p.id

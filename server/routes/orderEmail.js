@@ -41,7 +41,7 @@ export async function sendOrderConfirmationEmail(orderId) {
       orderId: orderId,
       paymentId: pedido.paymentIntentId,
       date: pedido.createdAt.toLocaleDateString('es-MX'),
-      total: `$${total.toFixed(2)} MXN`,
+      total: `$${total.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`,
       product: productosList.join(", "),
       url: `https://darmax.mx/perfil`, // URL al perfil del cliente
       // Nuevos datos de envío
