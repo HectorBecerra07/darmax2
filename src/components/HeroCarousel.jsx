@@ -14,6 +14,7 @@ const videos = [
 const imagenes = [
   
   "/img/banner/banerdarmax.jpg",
+  "/img/banner/Banneranonuevo.png",
   
 ];
 
