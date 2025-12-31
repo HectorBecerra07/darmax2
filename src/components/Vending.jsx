@@ -109,7 +109,7 @@ const VendingPrecise3D = () => {
   // =========================
   // MODELO
   // =========================
-  const sc = 5;
+  const sc = 4;
   const totalS = 80.5 * sc;
   const fThick = 2 * sc;
 
@@ -211,38 +211,38 @@ const VendingPrecise3D = () => {
       title: "Módulo Agua",
       body: "Área principal para recibir el garrafón y despacho.",
       side: "left",
-      bubble: { x: 8, y: 36 },
-      to: { x: 30, y: 44 },
+      bubble: { x: -10, y: 45 },
+      to: { x: 30, y: 45 },
     },
     {
       id: "monedas",
       title: "Monedero",
       body: "Inserción y validación de monedas.",
       side: "right",
-      bubble: { x: 92, y: 9 },
-      to: { x: 84, y: 14 },
+      bubble: { x: 110, y: 5 },
+      to: { x: 82, y: 18 },
     },
     {
       id: "pantalla",
       title: "Pantalla Touch",
       body: "Selección de tipo de agua y flujo guiado.",
       side: "right",
-      bubble: { x: 92, y: 30 },
-      to: { x: 75, y: 33 },
+      bubble: { x: 125, y: 45 },
+      to: { x: 75, y: 38 },
     },
     {
       id: "tapas",
       title: "Dispensador Tapas",
       body: "Entrega de tapas por marca o tipo.",
       side: "right",
-      bubble: { x: 92, y: 72 },
-      to: { x: 72, y: 82 },
+      bubble: { x: 110, y: 85 },
+      to: { x: 75, y: 82 },
     },
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white overflow-hidden font-sans p-10">
-      <div className="relative" style={{ width: totalS + 360, maxWidth: "95vw" }}>
+    <div className="flex flex-col items-center justify-center font-sans py-12">
+      <div className="relative" style={{ width: totalS + 450, maxWidth: "100%" }}>
         <div
           className="relative mx-auto"
           style={{
