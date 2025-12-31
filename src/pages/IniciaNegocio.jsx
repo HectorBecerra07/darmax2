@@ -29,7 +29,7 @@ const modelos = [
     id: "Vending",
     nombre: "Vending Touch ",
     etiqueta: "Máquina Vending",
-    imagen: "/img/vending/TOUCHAGUA.png",
+    imagen: "/img/vending/vending.png",
     precio: 54950,
     descripcion: "Automatización total 24/7. Genera ingresos pasivos con tecnología de despacho automático y cero personal.",
     rutaInfo: "/vending-info",
@@ -39,7 +39,7 @@ const modelos = [
     id: "Purificadora",
     nombre: "Mostrador Darmax",
     etiqueta: "Purificadora",
-    imagen: "/img/vending/mostrador.jpg",
+    imagen: "/img/vending/mostrador.png",
     precio: 52950,
     descripcion: "El punto de entrada perfecto. Capacidad industrial de 600 garrafones, diseño compacto para locales comerciales.",
     rutaInfo: "/purificadora-info",
@@ -49,7 +49,7 @@ const modelos = [
     id: "Vending-Limpieza",
     nombre: "Vending Limpieza",
     etiqueta: "Vending Limpieza",
-    imagen: "/img/vending/9productos.jpeg",
+    imagen: "/img/vending/9productos.png",
     precio: 34950,
     descripcion: "Diversifica tu portafolio. Despacho automático de productos de limpieza a granel de alta demanda.",
     rutaInfo: "/vending-limpieza-info",
@@ -93,7 +93,7 @@ const modelos = [
 
 const SectionTitle = ({ subtitle, title, align = "center" }) => (
   <div className={`mb-12 ${align === "center" ? "text-center" : "text-left"}`}>
-    <span className="text-[] font-bold tracking-widest text-xs uppercase mb-3 block">
+    <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
       {subtitle}
     </span>
     <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -189,9 +189,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
               alt={modelo.nombre}
               loading="lazy"
               className="
-                relative z-10 max-h-[82%] w-auto object-contain
-                transition-transform duration-500 ease-out
-                group-hover:scale-[1.06]
+                relative z-10 h-full w-full object-cover
               "
               onError={() => setErrorImagen(true)}
             />
