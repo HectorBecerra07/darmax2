@@ -73,7 +73,7 @@ export default function NavBar() {
   
     ];
   
-    const baseLinkClass = "font-semibold transition-colors duration-200";
+    const baseLinkClass = "font-semibold italic transition-colors duration-200";
     const hoverLinkClass = "hover:text-[#24d4da]";
     const activeLinkClass = "text-[#24d4da]";
     const inactiveLinkClass = "text-white";
@@ -107,10 +107,10 @@ export default function NavBar() {
             {/* Menú escritorio */}
             <div className="hidden nav:flex items-center justify-center gap-6 nav:gap-10 flex-1">
               {navLinks.map((link) => {
-                const isActive =
-                  location.pathname === link.href &&
-                  (!link.scrollTarget ||
-                    location.state?.scrollTo === link.scrollTarget);
+                const isActive = link.href === "/" 
+                  ? location.pathname === "/" 
+                  : location.pathname.startsWith(link.href);
+
                 if (link.scrollTarget) {
                   return (
                     <button
@@ -135,7 +135,7 @@ export default function NavBar() {
                     to={link.href}
                     onClick={scrollToTop}
                     className={`${baseLinkClass} ${
-                      location.pathname.startsWith(link.href)
+                      isActive
                         ? activeLinkClass
                         : inactiveLinkClass
                     } hover:bg-[#24d4da]/20 hover:rounded-md px-2 py-1 text-sm`}
@@ -269,23 +269,28 @@ export default function NavBar() {
             </button>
           </div>
           <nav className="flex flex-col p-5 space-y-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`text-white text-base font-semibold p-3 rounded-lg transition-colors duration-200 ${
-                  location.pathname.startsWith(link.href)
-                    ? "bg-gray-700"
-                    : "hover:bg-gray-800"
-                }`}
-                onClick={() => {
-                  setNavOpen(false);
-                  scrollToTop();
-                }}
-              >
-                {link.text}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = link.href === "/" 
+                ? location.pathname === "/" 
+                : location.pathname.startsWith(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={`text-white text-base font-semibold p-3 rounded-lg transition-colors duration-200 ${
+                    isActive
+                      ? "bg-gray-700"
+                      : "hover:bg-gray-800"
+                  }`}
+                  onClick={() => {
+                    setNavOpen(false);
+                    scrollToTop();
+                  }}
+                >
+                  {link.text}
+                </Link>
+              );
+            })}
             <div className="border-t border-gray-700 my-4"></div>
             {user ? (
               <>

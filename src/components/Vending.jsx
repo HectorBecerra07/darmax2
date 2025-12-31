@@ -258,20 +258,22 @@ const VendingPrecise3D = () => {
           onPointerCancel={endDrag}
           onPointerLeave={endDrag}
         >
-          {/* ✅ UI LAYER (no se captura el pointer) */}
-          <button
-            type="button"
-            data-ui="true"
-            onClick={(ev) => {
-              ev.stopPropagation();
-              setShowCallouts((v) => !v);
-            }}
-            className="absolute right-3 top-3 z-[60] rounded-full px-3 py-2 text-[11px] font-semibold
-                       bg-white/70 backdrop-blur border border-slate-200 text-slate-900 hover:bg-white/90 shadow-sm"
-            style={{ pointerEvents: "auto" }}
-          >
-            {showCallouts ? "Ocultar info" : "Mostrar info"}
-          </button>
+          {/* ✅ UI LAYER (no se captura el pointer) - Visible solo en MD+ */}
+          <div className="hidden md:block">
+            <button
+              type="button"
+              data-ui="true"
+              onClick={(ev) => {
+                ev.stopPropagation();
+                setShowCallouts((v) => !v);
+              }}
+              className="absolute right-3 top-3 z-[60] rounded-full px-3 py-2 text-[11px] font-semibold
+                        bg-white/70 backdrop-blur border border-slate-200 text-slate-900 hover:bg-white/90 shadow-sm"
+              style={{ pointerEvents: "auto" }}
+            >
+              {showCallouts ? "Ocultar info" : "Mostrar info"}
+            </button>
+          </div>
 
           <div
             className="relative w-full h-full"
@@ -361,9 +363,9 @@ const VendingPrecise3D = () => {
             </div>
           </div>
 
-          {/* CALLOUTS */}
+          {/* CALLOUTS (Solo visibles en md+) */}
           {showCallouts && (
-            <>
+            <div className="hidden md:block">
               <svg className="absolute inset-0 pointer-events-none z-[40]" viewBox="0 0 100 100" preserveAspectRatio="none">
                 {CALLOUTS.map((c) => (
                   <g key={c.id}>
@@ -398,7 +400,7 @@ const VendingPrecise3D = () => {
                   </div>
                 </div>
               ))}
-            </>
+            </div>
           )}
         </div>
 
