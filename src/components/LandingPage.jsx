@@ -5,6 +5,7 @@ import IniciaNegocio from "../pages/IniciaNegocio";
 import CalculadoraNegocio from "./CalculadoraNegocio";
 import Carruselimg from "./Carruselimg";
 import HeroCarousel from "./HeroCarousel";
+import { InlineWidget } from "react-calendly";
 
 const BRAND_COLOR = "#24d4da"; // Tu color cyan
 const WHATSAPP_PHONE = "525519655369";
