@@ -5,6 +5,7 @@ import IniciaNegocio from "../pages/IniciaNegocio";
 import CalculadoraNegocio from "./CalculadoraNegocio";
 import Carruselimg from "./Carruselimg";
 import HeroCarousel from "./HeroCarousel";
+import { InlineWidget } from "react-calendly";
 
 const BRAND_COLOR = "#24d4da"; // Tu color cyan
 const WHATSAPP_PHONE = "525519655369";
@@ -96,6 +97,18 @@ export default function LandingPage() {
       <div ref={calculadoraRef} id="calculadora-negocio" className="scroll-mt-1">
         <CalculadoraNegocio />
       </div>
+      {/* SECCIÓN DE CALENDARIO */}
+      <section id="agendar-reunion" className="py-20 bg-slate-800">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold text-white mb-4">Agenda una Reunión</h2>
+          <p className="text-slate-400 mb-8">
+            Elige un horario para una demostración de nuestros equipos y resuelve todas tus dudas con un asesor.
+          </p>
+          <div className="calendly-container rounded-lg overflow-hidden">
+            <InlineWidget url="https://calendly.com/your-username/your-event" styles={{height: '1000px'}} />
+          </div>
+        </div>
+      </section>
       </main>
     </>
   );
