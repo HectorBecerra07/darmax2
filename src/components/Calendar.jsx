@@ -10,6 +10,8 @@ const Calendar = () => {
   const [time, setTime] = useState("10:00"); // HH:MM
   const [duration, setDuration] = useState(30); // minutes
   const [timezone, setTimezone] = useState("America/Mexico_City");
+  const [email, setEmail] = useState("");
+  const [nombre, setNombre] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -57,6 +59,12 @@ const Calendar = () => {
     setError("");
     setMeetingLink("");
 
+    if (!email || !nombre) {
+      setError("Por favor, ingresa tu nombre y correo electrónico.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const start_time = buildStartISO();
 
@@ -67,6 +75,8 @@ const Calendar = () => {
           topic,
           start_time: start_time,
           duration: Number(duration),
+          email,
+          nombre,
         }),
       });
 
@@ -90,6 +100,8 @@ const Calendar = () => {
     setTopic("Reunión Zoom");
     setTime("10:00");
     setDuration(30);
+    setEmail("");
+    setNombre("");
   };
 
   const renderHeader = () => (
@@ -229,6 +241,27 @@ const Calendar = () => {
                   </select>
                 </div>
               </div>
+
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">
+                Nombre
+              </label>
+              <input
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#24d4da]/40"
+                placeholder="Tu nombre"
+              />
+
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">
+                Correo Electrónico
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#24d4da]/40"
+                placeholder="tu@ejemplo.com"
+              />
 
               {error ? (
                 <div className="mt-3 text-sm text-red-600 break-words">
