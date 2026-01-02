@@ -116,7 +116,7 @@ function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar }) {
             src={p.imagen || "https://via.placeholder.com/400x300"}
             alt={p.nombre}
             loading="lazy"
-            className="max-h-full max-w-full object-contain mix-blend-multiply"
+            className="w-full h-full object-cover mix-blend-multiply"
             onError={(e) => {
               e.currentTarget.src = "https://via.placeholder.com/400x300";
             }}
