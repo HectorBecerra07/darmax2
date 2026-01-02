@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import Calendar from '../components/Calendar';
 import VendingPrecise3D from "../components/Vending";
 
 /* =========================
@@ -494,27 +495,43 @@ const IniciaNegocio = () => {
         {/* VENTAJAS */}
         <VentajasSection />
 
-        {/* CTA FINAL (Clean) */}
-        <section className="py-20 px-4 bg-white">
-             <div className="max-w-5xl mx-auto bg-slate-50 border border-slate-100 rounded-[3rem] p-12 md:p-16 text-center relative overflow-hidden">
-                {/* Decoración */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#24d4da] opacity-5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-                
-                <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-6">¿Necesitas una cotización a medida?</h2>
-                <p className="text-slate-500 mb-8 max-w-xl mx-auto text-lg">
-                    Nuestro equipo pueden ayudarte a configurar la planta ideal según tu local y presupuesto.
-                </p>
-                <a
-                   href={buildWaUrl({})}
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   className="inline-block px-10 py-4 rounded-full text-white font-bold text-lg transition-all hover:shadow-xl hover:shadow-[#24d4da]/30 hover:-translate-y-1"
-                   style={{ background: `linear-gradient(135deg, ${BRAND_DARK} 0%, #0ea5e9 100%)` }}
-                >
-                   Solicitar Consultoría Gratuita
-                </a>
-             </div>
+        {/* SECCIÓN DE AGENDAR CITA */}
+        <section className="py-24 bg-[#Fbfbfd]">
+          <div className="max-w-7xl mx-auto px-4">
+            <SectionTitle
+              subtitle="Da el siguiente paso"
+              title="Agenda una cita con un asesor experto"
+            />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
+              <div className="lg:col-span-2">
+                <Calendar />
+              </div>
+              <div className="lg:col-span-1">
+                <div className="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 p-8 h-full">
+                  <h3 className="text-lg font-extrabold text-slate-800 mb-4">
+                    Horarios Disponibles
+                  </h3>
+                  <div className="space-y-3">
+                    {['09:00 AM', '10:00 AM', '11:00 AM', '02:00 PM', '03:00 PM', '04:00 PM'].map(time => (
+                      <button 
+                        key={time}
+                        className="w-full text-center py-3 px-4 rounded-xl border-2 border-slate-200 bg-white font-semibold text-slate-700 hover:bg-[#168387] hover:text-white hover:border-[#168387] transition-all"
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                  <button className="w-full mt-6 py-4 rounded-2xl font-extrabold text-white bg-[#168387] hover:shadow-xl hover:shadow-[#168387]/30 transition-all">
+                    Confirmar Cita
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
+
+        {/* CTA FINAL (Clean) */}
+       
 
         {/* BARRA COMPARATIVA FLOTANTE (Glassmorphism Puro) */}
         <div className={`fixed bottom-8 left-0 right-0 flex justify-center z-50 pointer-events-none transition-all duration-500 ${selected.length > 0 ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"}`}>
