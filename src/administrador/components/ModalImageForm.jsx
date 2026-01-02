@@ -121,7 +121,7 @@ const ModalImageForm = ({ show, onClose, onSaveSuccess, model, allExtras, imageT
           
           <div>
             <label className="text-sm font-medium text-slate-700 dark:text-slate-300">URL de la Imagen</label>
-            <input type="url" name="url" placeholder="https://..." value={formData.url} onChange={handleChange} className="w-full border rounded p-2 mt-1 bg-white dark:bg-slate-800 dark:border-slate-700" required />
+            <input type="text" name="url" placeholder="https://... o /img/..." value={formData.url} onChange={handleChange} className="w-full border rounded p-2 mt-1 bg-white dark:bg-slate-800 dark:border-slate-700" required />
           </div>
 
           <div>
