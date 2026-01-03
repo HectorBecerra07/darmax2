@@ -233,7 +233,7 @@ const Calendar = () => {
                     onChange={(e) => setDuration(e.target.value)}
                     className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#24d4da]/40"
                   >
-                    {[15, 30, 45, 60, 90, 120].map((m) => (
+                    {[15, 30, 45,].map((m) => (
                       <option key={m} value={m}>
                         {m} min
                       </option>
