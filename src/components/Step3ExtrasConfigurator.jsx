@@ -104,6 +104,16 @@ export default function Step3ExtrasConfigurator({
     let image = null;
 
     if (selectedTinacoExtraId) {
+      if (hasAguaAlcalina) {
+        // Try TINACO_ALCALINA context first (explicit combination)
+        image = getRelevantImage("TINACO_ALCALINA", true, selectedTinacoExtraId, true);
+        if (!image) {
+          // Try with onlyWhenAlcalina=false just in case
+          image = getRelevantImage("TINACO_ALCALINA", true, selectedTinacoExtraId, false);
+        }
+        if (image) return image;
+      }
+
       image = getRelevantImage("TINACO", true, selectedTinacoExtraId, hasAguaAlcalina);
       if (!image && hasAguaAlcalina) {
         image = getRelevantImage("TINACO", true, selectedTinacoExtraId, false);
@@ -122,7 +132,18 @@ export default function Step3ExtrasConfigurator({
   const secondaryImageSrc = useMemo(() => {
     if (!modelData) return null;
 
-    let image = getRelevantImage("SECONDARY", true, null, hasAguaAlcalina, true);
+    let image = null;
+
+    if (hasAguaAlcalina) {
+      // Try SECONDARY_ALCALINA context first
+      image = getRelevantImage("SECONDARY_ALCALINA", true, null, true, true);
+      if (!image) {
+        image = getRelevantImage("SECONDARY_ALCALINA", true, null, false, true);
+      }
+      if (image) return image;
+    }
+
+    image = getRelevantImage("SECONDARY", true, null, hasAguaAlcalina, true);
     if (!image && hasAguaAlcalina) {
       image = getRelevantImage("SECONDARY", true, null, false, true);
     }
