@@ -204,7 +204,10 @@ const Calendar = () => {
                   <div>
                     <h3 className="text-lg font-bold text-slate-800">¡Reunión creada!</h3>
                     <p className="text-sm text-slate-600 mt-1">
-                      Tu reunión ha sido agendada. Puedes unirte con el siguiente enlace:
+                      Tu reunión ha sido agendada y se ha enviado un correo de confirmación a <b>{email}</b> con los detalles y el enlace para unirte.
+                    </p>
+                    <p className="text-sm text-slate-600 mt-1">
+                      También puedes unirte directamente desde aquí:
                     </p>
                     <a
                       href={meetingLink}
