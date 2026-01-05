@@ -7,6 +7,7 @@ export const getZoomMeetingEmailTemplate = ({
   startTime,
   startDate,
   joinUrl,
+  telefono, // Added telefono
 }) => {
   const safeName = name || "participante";
   
@@ -16,7 +17,8 @@ export const getZoomMeetingEmailTemplate = ({
     <br/><br/>
     <strong>Tema:</strong> ${topic}<br/>
     <strong>Fecha:</strong> ${startDate}<br/>
-    <strong>Hora:</strong> ${startTime}
+    <strong>Hora:</strong> ${startTime}<br/>
+    <strong>Teléfono:</strong> ${telefono}
   `;
 
   return getBaseEmailHtml({
