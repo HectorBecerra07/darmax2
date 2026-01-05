@@ -60,7 +60,7 @@ const modelos = [
     id: "Duo-Emprendedor",
     nombre: "Dúo Emprendedor 2 en 1",
     etiqueta: "Vending y Limpieza",
-    imagen: "/img/vending/duo-emprendedor.png", // Placeholder, replace with actual image
+    imagen: "/img/Iniciatunegocio/negocio3.jpg", // Placeholder, replace with actual image
     precio: 84950,
     descripcion: "Combina la venta de agua purificada con productos de limpieza a granel, maximizando tu oferta y rentabilidad en un solo espacio.",
     rutaInfo: "/duo-emprendedor-info",
@@ -70,7 +70,7 @@ const modelos = [
     id: "Tridente",
     nombre: "Tridente",
     etiqueta: "Triple Modelo de Negocio",
-    imagen: "/img/vending/tridente.png", // Placeholder, replace with actual image
+    imagen: "/img/Iniciatunegocio/fachadacalle.jpg", // Placeholder, replace with actual image
     precio: 109950,
     descripcion: "Una solución completa que integra agua purificada, productos de limpieza y otros artículos esenciales, ofreciendo una experiencia integral a tus clientes.",
     rutaInfo: "/tridente-info",
@@ -80,7 +80,7 @@ const modelos = [
     id: "Megalodon",
     nombre: "Megalodon",
     etiqueta: "Mega Vending",
-    imagen: "/img/vending/megalodon.png", // Placeholder, replace with actual image
+    imagen: "/img/Iniciatunegocio/fachadacalle.jpg", // Placeholder, replace with actual image
     precio: 150000,
     descripcion: "La estación de vending más avanzada y de mayor capacidad. Ideal para ubicaciones de alto tráfico, ofreciendo múltiples productos y servicios.",
     rutaInfo: "/megalodon-info",
@@ -500,19 +500,20 @@ const IniciaNegocio = () => {
 
 
         {/* SECCIÓN DE AGENDAR CITA */}
-        <section className="py-24 bg-[#Fbfbfd]">
-          <div className="max-w-7xl mx-auto px-4">
-            <SectionTitle
-              subtitle="Da el siguiente paso"
-              title="Agenda una cita con un asesor experto"
-            />
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
-              <div className="lg:col-span-2">
-                <Calendar />
-              </div> 
-            </div>
-          </div>
-        </section>
+<section className="py-24 bg-[#Fbfbfd]">
+  <div className="max-w-7xl mx-auto px-4">
+    <SectionTitle
+      subtitle="Da el siguiente paso"
+      title="Agenda una cita con un asesor experto"
+    />
+
+    {/* CONTENEDOR CENTRADO */}
+    <div className="mt-12 flex justify-center">
+      <Calendar />
+    </div>
+  </div>
+</section>
+
 
 
 
