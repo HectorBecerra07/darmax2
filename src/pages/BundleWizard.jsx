@@ -107,7 +107,7 @@ const bundleStepsConfig = {
       title: "Paso 1: Selecciona tu Vending de Agua",
       modelType: "vendingAgua",
       imageType: 'secondary',
-      filter: (m) => ['atlantis', 'atlantis max', 'atlantis max touch', 'atlantis touch'].includes(m.name.toLowerCase()),
+      filter: (m) => m.name.toLowerCase().includes('atlantis'),
     },
     {
       step: 1,
