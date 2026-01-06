@@ -102,8 +102,15 @@ router.get('/models', async (req, res) => {
 
 // GET: Obtener todos los Extras
 router.get('/extras', async (req, res) => {
+  const { isTinaco } = req.query;
   try {
+    const where = {};
+    if (isTinaco !== undefined) {
+      where.isTinaco = isTinaco === 'true';
+    }
+
     const extras = await prisma.extra.findMany({
+      where,
       orderBy: {
         name: 'asc',
       },

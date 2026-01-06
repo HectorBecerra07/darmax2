@@ -19,12 +19,17 @@ export const getExtrasByModelSlug = async (slug) => {
 };
 
 /**
- * Obtiene todos los extras disponibles en el sistema (sin filtrar por modelo).
- * @returns {Promise<Array>} - Lista de todos los extras.
+ * Obtiene todos los extras disponibles en el sistema.
+ * @param {boolean|null} isTinaco - true para solo tinacos, false para no tinacos, null para todos.
+ * @returns {Promise<Array>} - Lista de extras.
  */
-export const getAllExtras = async () => {
+export const getAllExtras = async (isTinaco = null) => {
   try {
-    const response = await fetch(`${API_URL}/api/configurador/extras`);
+    let url = `${API_URL}/api/configurador/extras`;
+    if (isTinaco !== null) {
+      url += `?isTinaco=${isTinaco}`;
+    }
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Error al obtener todos los extras: ${response.statusText}`);
     }
