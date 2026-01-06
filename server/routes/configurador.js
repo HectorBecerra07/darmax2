@@ -39,6 +39,35 @@ router.get('/models/:slug', async (req, res) => {
   }
 });
 
+// GET: Obtener solo los extras de un modelo por slug
+router.get('/models/:slug/extras', async (req, res) => {
+    const { slug } = req.params;
+    try {
+        const model = await prisma.machineModel.findUnique({
+            where: { slug },
+            select: {
+                extras: {
+                    include: {
+                        extra: true,
+                    },
+                    orderBy: {
+                        sortOrder: 'asc',
+                    },
+                },
+            },
+        });
+
+        if (!model) {
+            return res.status(404).json({ message: 'Modelo de máquina no encontrado.' });
+        }
+
+        res.json(model.extras);
+    } catch (error) {
+        console.error(`Error fetching extras for model ${slug}:`, error);
+        res.status(500).json({ message: 'Error al obtener los extras del modelo', error: error.message });
+    }
+});
+
 // GET: Obtener todos los MachineModels con sus relaciones
 router.get('/models', async (req, res) => {
   try {
@@ -73,8 +102,15 @@ router.get('/models', async (req, res) => {
 
 // GET: Obtener todos los Extras
 router.get('/extras', async (req, res) => {
+  const { isTinaco } = req.query;
   try {
+    const where = {};
+    if (isTinaco !== undefined) {
+      where.isTinaco = isTinaco === 'true';
+    }
+
     const extras = await prisma.extra.findMany({
+      where,
       orderBy: {
         name: 'asc',
       },
