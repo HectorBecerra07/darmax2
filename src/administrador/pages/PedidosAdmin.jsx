@@ -177,7 +177,7 @@ const loadImage = (src) =>
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
       
-      const templateImage = await loadImage("/img/Plantillas/coti_dar.png");
+      const templateImage = await loadImage("/img/Plantillas/coti_dar.jpg");
 
       const direccionCompleta = `${pedido.direccion || ""}, ${
         pedido.ciudad || ""

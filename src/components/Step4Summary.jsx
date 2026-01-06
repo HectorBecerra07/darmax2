@@ -52,7 +52,7 @@ export default function Step4Summary({
       const M = 15;
 
       // Carga la plantilla de fondo
-      const templateImage = await loadImage("/img/Plantillas/coti_dar.png");
+      const templateImage = await loadImage("/img/Plantillas/coti_dar.jpg");
 
       // Dibuja cabecera/plantilla para cada página
       const addHeader = (pageNumber = 1) => {

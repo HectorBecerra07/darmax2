@@ -372,7 +372,7 @@ export default function BundleWizard() {
     let y = 45;
 
     try {
-        const templateImage = await loadImage("/img/Plantillas/coti_dar.png");
+        const templateImage = await loadImage("/img/Plantillas/coti_dar.jpg");
 
         const addHeader = (pageNumber = 1) => {
             doc.addImage(templateImage, "PNG", 0, 0, pageW, pageH);
