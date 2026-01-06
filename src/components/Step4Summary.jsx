@@ -51,67 +51,29 @@ export default function Step4Summary({
       const pageH = doc.internal.pageSize.getHeight();
       const M = 15;
 
-      // Carga logo
-      const logo = await loadImage("/img/logo_darmaxnav.png");
-      const LOGO_W = 30;
-      const LOGO_H = (logo.height / logo.width) * LOGO_W;
+      // Carga la plantilla de fondo
+      const templateImage = await loadImage("/img/Plantillas/coti_dar.png");
 
-      // Dibuja cabecera/lineas para cada página
+      // Dibuja cabecera/plantilla para cada página
       const addHeader = (pageNumber = 1) => {
-        // Logo
-        doc.addImage(logo, "PNG", M, 10, LOGO_W, LOGO_H);
+        // Añade la plantilla como fondo
+        doc.addImage(templateImage, "PNG", 0, 0, pageW, pageH);
 
-        // Info derecha
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(11);
-        doc.setTextColor("#111");
-        doc.text("DARMAX Agua y Tecnología", pageW - M, 14, { align: "right" });
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(10);
-        doc.setTextColor("#444");
-        doc.text("darmaxagua@gmail.com | 55 1965 5369", pageW - M, 20, { align: "right" });
-
-        // === Líneas superiores SIN tocar el logo ===
-        const GAP = 8; // separa las líneas del borde derecho del logo
-        const xStartTop = M + LOGO_W + GAP;
-        const rgbB = hexToRgb(BRAND_BLUE);
-        const rgbT = hexToRgb(BRAND_TEAL);
-
-        doc.setDrawColor(rgbB.r, rgbB.g, rgbB.b);
-        doc.setLineWidth(1.2);
-        doc.line(xStartTop, 32, pageW - M, 32);
-
-        doc.setDrawColor(rgbT.r, rgbT.g, rgbT.b);
-        doc.setLineWidth(0.8);
-        doc.line(xStartTop, 35, pageW - M, 35);
-
-        // === Líneas inferiores (al pie) ===
-        const yBot1 = pageH - 20;
-        const yBot2 = pageH - 17;
-
-        doc.setDrawColor(rgbB.r, rgbB.g, rgbB.b);
-        doc.setLineWidth(1.2);
-        doc.line(M, yBot1, pageW - M, yBot1);
-
-        doc.setDrawColor(rgbT.r, rgbT.g, rgbT.b);
-        doc.setLineWidth(0.8);
-        doc.line(M, yBot2, pageW - M, yBot2);
-
-        // Número de página
+        // Número de página (opcional, si no está en la plantilla)
         doc.setFontSize(9);
         doc.setTextColor("#888");
-        doc.text(`Página ${pageNumber}`, pageW / 2, pageH - 8, { align: "center" }); // Centered for less conflict
+        doc.text(`Página ${pageNumber}`, pageW / 2, pageH - 8, { align: "center" });
       };
 
-      let y = 45; // contenido
+      let y = 45; // Ajustar la 'y' inicial para el contenido, dejando espacio para el encabezado de la plantilla
       const maxWidth = pageW - M * 2;
 
       const ensureSpace = (need = 8) => {
-        if (y + need > pageH - 25) {
+        // Ajustar el límite inferior para no sobreescribir el pie de página de la plantilla
+        if (y + need > pageH - 25) { 
           doc.addPage();
           addHeader(doc.getNumberOfPages());
-          y = 45;
+          y = 45; // Reiniciar 'y' en la nueva página
         }
       };
 
@@ -205,16 +167,6 @@ export default function Step4Summary({
       write(`Precio Base: $${toMoney(precioBaseModelo)} MXN`);
       write(`Extras: $${toMoney(precioExtras)} MXN`);
       write(`Total: $${toMoney(precioTotal)} MXN`, { bold: true });
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setTextColor("#888");
-      doc.text(
-        "Gracias por tu preferencia — DARMAX Agua y Tecnología",
-        pageW / 2,
-        pageH - 8,
-        { align: "center" }
-      );
 
       doc.save("Darmax_Cotizacion.pdf");
     } catch (error) {

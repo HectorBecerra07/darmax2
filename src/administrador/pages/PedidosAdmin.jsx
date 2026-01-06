@@ -158,53 +158,97 @@ const crearGuia = async (pedidoId) => {
 };
 
 
+const loadImage = (src) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+
+
+// ... (resto del componente)
+
   // 👉 Generar PDF usando datos de la BD
-  const generarPDF = (pedido) => {
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text(`Orden de Compra #${pedido.orden || "N/A"}`, 14, 20);
-    doc.text("Detalle del Pedido", 14, 30);
+  const generarPDF = async (pedido) => {
+    try {
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      
+      const templateImage = await loadImage("/img/Plantillas/coti_dar.png");
 
-    const direccionCompleta = `${pedido.direccion || ""}, ${
-      pedido.ciudad || ""
-    }, ${pedido.estadoEnvio || ""}, CP: ${pedido.codigoPostal || ""}`;
+      const direccionCompleta = `${pedido.direccion || ""}, ${
+        pedido.ciudad || ""
+      }, ${pedido.estadoEnvio || ""}, CP: ${pedido.codigoPostal || ""}`;
 
-    const productosTexto =
-      pedido.productos?.map(
-        (pp) => `${pp.producto?.nombre || "Producto"} x ${pp.cantidad}`
-      ) || [];
+      const productosTexto =
+        pedido.productos?.map(
+          (pp) => `${pp.producto?.nombre || "Producto"} x ${pp.cantidad}`
+        ) || [];
 
-    const estado = estadoConfig[pedido.estado] || {
-      label: pedido.estado,
-      className: "",
-    };
+      const estado = estadoConfig[pedido.estado] || {
+        label: pedido.estado,
+        className: "",
+      };
 
-    autoTable(doc, {
-      head: [["Campo", "Valor"]],
-      body: [
-        ["Número de Orden", `#${pedido.orden || "No asignado"}`],
-        ["Cliente", pedido.clienteNombre || ""],
-        ["Correo", pedido.clienteEmail || ""],
-        ["Teléfono", pedido.clienteTelefono || ""],
-        ["Dirección", direccionCompleta],
-        ["Productos", productosTexto.join(", ")],
-        [
-          "Envío",
-          pedido.envio
-            ? `$${Number(pedido.envio.costoEnvio || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`
-            : "N/D",
+      autoTable(doc, {
+        head: [["Campo", "Valor"]],
+        body: [
+          ["Número de Orden", `#${pedido.orden || "No asignado"}`],
+          ["Cliente", pedido.clienteNombre || ""],
+          ["Correo", pedido.clienteEmail || ""],
+          ["Teléfono", pedido.clienteTelefono || ""],
+          ["Dirección", direccionCompleta],
+          ["Productos", productosTexto.join(", ")],
+          [
+            "Envío",
+            pedido.envio
+              ? `$${Number(pedido.envio.costoEnvio || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`
+              : "N/D",
+          ],
+          ["Total", `$${Number(pedido.total || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`],
+          ["Estado", estado.label],
         ],
-        ["Total", `$${Number(pedido.total || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`],
-        ["Estado", estado.label],
-      ],
-      startY: 40,
-    });
+        startY: 50, // Ajustado para la nueva plantilla
+        didDrawPage: (data) => {
+          // Añade la plantilla como fondo en cada página
+          doc.addImage(templateImage, "PNG", 0, 0, pageW, pageH);
+          
+          // Título solo en la primera página
+          if (data.pageNumber === 1) {
+            doc.setFontSize(18);
+            doc.setFont("helvetica", "bold");
+            doc.text(`Orden de Compra #${pedido.orden || "N/A"}`, pageW / 2, 40, { align: "center" });
+          }
+        },
+        // Estilos para que la tabla se vea bien sobre el fondo
+        styles: {
+          fillColor: [255, 255, 255], // Fondo blanco para las celdas
+          textColor: [0, 0, 0],
+          lineColor: [200, 200, 200],
+          lineWidth: 0.1,
+        },
+        headStyles: {
+          fillColor: [240, 240, 240], // Un gris claro para la cabecera
+          textColor: [0, 0, 0],
+          fontStyle: 'bold',
+        },
+        alternateRowStyles: {
+          fillColor: [250, 250, 250], // Un blanco un poco más oscuro para filas alternas
+        },
+      });
 
-    doc.save(
-      `Orden-${pedido.orden || "SinNumero"}-${
-        (pedido.clienteNombre || "").replace(/ /g, "_") || "Cliente"
-      }.pdf`
-    );
+      doc.save(
+        `Orden-${pedido.orden || "SinNumero"}-${
+          (pedido.clienteNombre || "").replace(/ /g, "_") || "Cliente"
+        }.pdf`
+      );
+    } catch (error) {
+      console.error("Error al generar PDF:", error);
+      alert("No se pudo generar el PDF. Revisa la consola para más detalles.");
+    }
   };
 
   if (loading) {

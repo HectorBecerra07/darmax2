@@ -372,51 +372,17 @@ export default function BundleWizard() {
     let y = 45;
 
     try {
-        const logo = await loadImage("/img/logo_darmaxnav.png");
-        const LOGO_W = 30;
-        const LOGO_H = (logo.height / logo.width) * LOGO_W;
+        const templateImage = await loadImage("/img/Plantillas/coti_dar.png");
 
         const addHeader = (pageNumber = 1) => {
-            doc.addImage(logo, "PNG", M, 10, LOGO_W, LOGO_H);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(11);
-            doc.setTextColor("#111");
-            doc.text("DARMAX Agua y Tecnología", pageW - M, 14, { align: "right" });
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.setTextColor("#444");
-            doc.text("darmaxagua@gmail.com | 55 1965 5369", pageW - M, 20, { align: "right" });
-            const GAP = 8;
-            const xStartTop = M + LOGO_W + GAP;
-            const rgbB = hexToRgb(BRAND_BLUE);
-            const rgbT = hexToRgb(BRAND_TEAL);
-            doc.setDrawColor(rgbB.r, rgbB.g, rgbB.b);
-            doc.setLineWidth(1.2);
-            doc.line(xStartTop, 32, pageW - M, 32);
-            doc.setDrawColor(rgbT.r, rgbT.g, rgbT.b);
-            doc.setLineWidth(0.8);
-            doc.line(xStartTop, 35, pageW - M, 35);
-        };
-
-        const addFooter = (pageNumber) => {
-            const yBot1 = pageH - 20;
-            const yBot2 = pageH - 17;
-            const rgbB = hexToRgb(BRAND_BLUE);
-            const rgbT = hexToRgb(BRAND_TEAL);
-            doc.setDrawColor(rgbB.r, rgbB.g, rgbB.b);
-            doc.setLineWidth(1.2);
-            doc.line(M, yBot1, pageW - M, yBot1);
-            doc.setDrawColor(rgbT.r, rgbT.g, rgbT.b);
-            doc.setLineWidth(0.8);
-            doc.line(M, yBot2, pageW - M, yBot2);
+            doc.addImage(templateImage, "PNG", 0, 0, pageW, pageH);
             doc.setFontSize(9);
             doc.setTextColor("#888");
-            doc.text(`Página ${pageNumber}`, pageW / 2, pageH - 10, { align: "center" });
-        }
+            doc.text(`Página ${pageNumber}`, pageW / 2, pageH - 8, { align: "center" });
+        };
 
         const ensureSpace = (need = 8) => {
             if (y + need > pageH - 25) {
-                addFooter(doc.getNumberOfPages());
                 doc.addPage();
                 addHeader(doc.getNumberOfPages());
                 y = 45;
@@ -536,8 +502,6 @@ export default function BundleWizard() {
         doc.text(formatCurrency(total), pageW - M, y, { align: "right" });
         y += 10;
         
-        addFooter(doc.getNumberOfPages());
-
         doc.save(`Darmax_Paquete_${id}.pdf`);
         toast.success("PDF generado con éxito", { id: "pdf-toast" });
 

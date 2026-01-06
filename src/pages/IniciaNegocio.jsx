@@ -61,7 +61,7 @@ const modelos = [
     nombre: "Dúo Emprendedor 2 en 1",
     etiqueta: "Vending y Limpieza",
     imagen: "/img/Iniciatunegocio/negocio3.jpg", // Placeholder, replace with actual image
-    precio: 84950,
+    precio: 89900,
     descripcion: "Combina la venta de agua purificada con productos de limpieza a granel, maximizando tu oferta y rentabilidad en un solo espacio.",
     rutaInfo: "/duo-emprendedor-info",
     badge: "Doble Ganancia",
@@ -71,7 +71,7 @@ const modelos = [
     nombre: "Tridente",
     etiqueta: "Triple Modelo de Negocio",
     imagen: "/img/Iniciatunegocio/fachadacalle.jpg", // Placeholder, replace with actual image
-    precio: 109950,
+    precio: 107900,
     descripcion: "Una solución completa que integra agua purificada, productos de limpieza y otros artículos esenciales, ofreciendo una experiencia integral a tus clientes.",
     rutaInfo: "/tridente-info",
     badge: "Versatilidad Extrema",
@@ -81,13 +81,14 @@ const modelos = [
     nombre: "Megalodon",
     etiqueta: "Mega Vending",
     imagen: "/img/Iniciatunegocio/fachadacalle.jpg", // Placeholder, replace with actual image
-    precio: 150000,
+    precio: 117900,
     descripcion: "La estación de vending más avanzada y de mayor capacidad. Ideal para ubicaciones de alto tráfico, ofreciendo múltiples productos y servicios.",
     rutaInfo: "/megalodon-info",
     badge: "Líder del Mercado",
+
   },
 ];
-
+ 
 /* =========================
    COMPONENTES UI PREMIUM
 ========================= */
@@ -328,7 +329,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl lg:text-center">
-          <h2 className="text-xs font-extrabold tracking-[0.35em] uppercase text-[BRAND_TEXT]">
+          <h2 className="text-xs font-extrabold tracking-[0.35em] uppercase text-[BRAND_TEXT] text-white">
             Tu Éxito, Nuestra Misión
           </h2>
           <p className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
