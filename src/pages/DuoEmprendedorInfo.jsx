@@ -1,353 +1,639 @@
-import { useEffect, useRef } from "react";
-import { Helmet } from "react-helmet-async";
-import { motion } from "framer-motion";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
+  CheckCircleIcon,
+  SparklesIcon,
+  ShieldCheckIcon,
+  CpuChipIcon,
+  RectangleGroupIcon,
+  CircleStackIcon,
+  BoltIcon,
+  ChevronRightIcon,
   ChevronDownIcon,
+  BuildingStorefrontIcon,
   WrenchScrewdriverIcon,
   MapPinIcon,
   TruckIcon,
   AcademicCapIcon,
-  ShieldCheckIcon,
-  CpuChipIcon,
-  SparklesIcon,
-  RectangleGroupIcon,
-  CircleStackIcon,
-  BoltIcon
 } from "@heroicons/react/24/outline";
 
-/* --- Data --- */
-const HERO_IMG = "/img/vending/duo-emprendedor.png"; 
+const cn = (...c) => c.filter(Boolean).join(" ");
 
-const highlights = [
-  {
-    icon: RectangleGroupIcon,
-    title: "Agua + Limpieza",
-    desc: "Dos negocios de alta demanda en uno",
-  },
-  {
-    icon: BoltIcon,
-    title: "Alta Rentabilidad",
-    desc: "Maximiza ingresos por metro cuadrado",
-  },
-  {
-    icon: CpuChipIcon,
-    title: "Operación Simplificada",
-    desc: "Gestiona ambos negocios fácilmente",
-  },
-  { 
-    icon: SparklesIcon, 
-    title: "Crecimiento Acelerado", 
-    desc: "Capta una base de clientes más amplia" 
-  },
-];
+const fadeUp = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.2, 0.8, 0.2, 1] } },
+};
 
-const features = [
-    {
-        icon: RectangleGroupIcon,
-        title: "Dispensadores Independientes",
-        description: "Un sistema robusto con módulos separados para agua purificada y hasta 8 productos de limpieza a granel, permitiendo una operación simultánea y eficiente.",
-        image: "/img/purificadoras/purificadora-comercial.jpg", // Placeholder
-    },
-    {
-        icon: CpuChipIcon,
-        title: "Punto de Cobro Centralizado",
-        description: "Un solo punto de cobro inteligente para todos los productos, compatible con múltiples métodos de pago para una experiencia de cliente sin fricciones.",
-        image: "/img/vending/TOUCHAGUA.png", // Placeholder
-    },
-    {
-        icon: ShieldCheckIcon,
-        title: "Diseño Compacto y Eficiente",
-        description: "Nuestra ingeniería optimiza el espacio al combinar dos máquinas en una sola estructura sólida y atractiva, ideal para locales con espacio limitado.",
-        image: "/img/purificadora/tanque.png", // Placeholder
-    },
-];
+const cardSwap = {
+  hidden: { opacity: 0, y: 14, scale: 0.985 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.2, 0.8, 0.2, 1] } },
+  exit: { opacity: 0, y: 10, scale: 0.985, transition: { duration: 0.3 } },
+};
 
-const processSteps = [
-  {
-    icon: MapPinIcon,
-    title: "1. Estrategia de Mercado",
-    desc: "Analizamos tu ubicación para determinar la mezcla de productos de limpieza con mayor potencial de venta junto al agua purificada.",
-  },
-  {
-    icon: TruckIcon,
-    title: "2. Instalación Integral",
-    desc: "Nos encargamos de la instalación completa de tu Dúo Emprendedor, incluyendo conexiones de agua, drenaje y electricidad.",
-  },
-  {
-    icon: AcademicCapIcon,
-    title: "3. Capacitación de Doble Negocio",
-    desc: "Te enseñamos a gestionar ambos inventarios, a configurar precios y a mantener el equipo en perfectas condiciones operativas.",
-  },
-  {
-    icon: WrenchScrewdriverIcon,
-    title: "4. Soporte y Expansión",
-    desc: "Cuentas con nuestro respaldo técnico y te asesoramos para escalar tu negocio, añadiendo más productos o equipos.",
-  },
-];
-
-
-const faqs = [
-    {
-    q: "¿Qué ventajas ofrece el modelo 2 en 1?",
-    a: "La principal ventaja es la diversificación de ingresos y la captación de una base de clientes más amplia. Ofreces dos servicios esenciales en un solo punto, aumentando la rentabilidad por metro cuadrado y la frecuencia de visitas.",
-  },
-  {
-    q: "¿La gestión de dos inventarios es complicada?",
-    a: "No, el sistema está diseñado para ser gestionado de forma centralizada. Nuestro software te da una visión clara de las ventas y el inventario de cada módulo, simplificando el reabastecimiento.",
-  },
-  {
-    q: "¿Puedo elegir qué productos de limpieza vender?",
-    a: "Sí, el módulo de limpieza es personalizable. Puedes seleccionar una gama de hasta 8 productos según la demanda de tu zona, como detergente, suavizante, cloro, limpiador de pisos, etc.",
-  },
-];
-
-const galleryImages = [
-  "/img/trabajos/trabajos1.jpg",
-  "/img/trabajos/trabajos2.jpg",
-  "/img/trabajos/trabajos3.jpg",
-  "/img/trabajos/trabajos5.jpg",
-  "/img/purificadoras/purificadora-negocio.jpeg",
-  "/img/purificadoras/purificadora-comercial.jpg",
-];
-
-/* --- Sub-components --- */
-const FaqItem = ({ q, a }) => (
-  <details className="group border-b border-slate-200/80 last:border-none">
-    <summary className="cursor-pointer list-none p-5 md:p-6 font-semibold text-slate-800 flex items-center justify-between hover:bg-slate-50 transition">
-      {q}
-      <div className="ml-4 text-slate-400 transition-transform duration-300 group-open:rotate-180">
-        <ChevronDownIcon className="h-5 w-5" />
-      </div>
-    </summary>
-    <div className="px-5 md:px-6 pb-6 text-slate-600 leading-relaxed">{a}</div>
-  </details>
-);
-
-const SectionTitle = ({ children, className = '' }) => (
-    <div className={`text-center mb-12 ${className}`}>
-        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-            {children}
-        </h2>
-    </div>
-);
-
-
-/* --- Main Component --- */
-export default function DuoEmprendedorInfo() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const contRef = useRef(null);
-
+function useActiveSection(sectionIds = []) {
+  const [active, setActive] = useState(sectionIds[0] || "");
   useEffect(() => {
-    const t = setTimeout(() => contRef.current?.scrollIntoView({ behavior: "smooth" }), 200);
-    return () => clearTimeout(t);
-  }, [location.pathname]);
+    const els = sectionIds.map((id) => document.getElementById(id)).filter(Boolean);
+    if (!els.length) return;
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0))[0];
+        if (visible?.target?.id) setActive(visible.target.id);
+      },
+      { rootMargin: "-20% 0px -65% 0px", threshold: [0.12, 0.22, 0.35, 0.5, 0.65] }
+    );
+
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, [sectionIds.join("|")]);
+
+  return active;
+}
+
+const Glass = ({ className, children }) => (
+  <div
+    className={cn(
+      "rounded-3xl border border-white/40 bg-white/75 backdrop-blur-xl shadow-[0_10px_30px_-12px_rgba(15,23,42,0.28)]",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
+
+const Bullet = ({ children }) => (
+  <li className="flex items-start gap-2">
+    <CheckCircleIcon className="h-5 w-5 text-lime-600 mt-0.5 flex-shrink-0" />
+    <span className="text-slate-700">{children}</span>
+  </li>
+);
+
+const NavChip = ({ active, label, onClick }) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      "px-4 py-2 rounded-full text-sm font-semibold border transition",
+      active
+        ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+        : "bg-white/80 text-slate-700 border-slate-200 hover:bg-white"
+    )}
+  >
+    {label}
+  </button>
+);
+
+const ModelCard = ({ active, title, subtitle, tag, onClick }) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      "w-full text-left rounded-2xl border p-5 transition relative overflow-hidden",
+      active
+        ? "border-lime-200 bg-gradient-to-br from-lime-50 to-white shadow-sm"
+        : "border-slate-200 bg-white/80 hover:bg-white"
+    )}
+  >
+    <div className="flex items-start justify-between gap-3">
+      <div>
+        <p className="font-extrabold text-slate-900">{title}</p>
+        <p className="text-sm text-slate-600 mt-1">{subtitle}</p>
+      </div>
+      <span
+        className={cn(
+          "text-xs font-extrabold px-3 py-1 rounded-full border",
+          active
+            ? "bg-slate-900 text-white border-slate-900"
+            : "bg-slate-50 text-slate-700 border-slate-200"
+        )}
+      >
+        {tag}
+      </span>
+    </div>
+
+    {active ? (
+      <motion.div
+        layoutId="activeGlowDuo"
+        className="absolute inset-0 pointer-events-none"
+        initial={false}
+        transition={{ type: "spring", stiffness: 320, damping: 30 }}
+      >
+        <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-lime-300/25 blur-3xl" />
+        <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-emerald-300/20 blur-3xl" />
+      </motion.div>
+    ) : null}
+  </button>
+);
+
+const SectionHeader = ({ icon: Icon, title, subtitle }) => (
+  <div className="flex items-start gap-3">
+    <span className="p-2 rounded-2xl bg-lime-50 border border-lime-100">
+      <Icon className="h-6 w-6 text-lime-700" />
+    </span>
+    <div>
+      <h3 className="text-xl md:text-2xl font-extrabold text-slate-900">{title}</h3>
+      {subtitle ? <p className="mt-1 text-sm md:text-base text-slate-600">{subtitle}</p> : null}
+    </div>
+  </div>
+);
+
+const Accordion = ({ title, icon: Icon, children, defaultOpen = false }) => {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+      <button
+        onClick={() => setOpen((s) => !s)}
+        className="w-full px-5 py-4 flex items-center justify-between gap-4 hover:bg-slate-50 transition"
+      >
+        <div className="flex items-center gap-3">
+          <span className="p-2 rounded-xl bg-lime-50 border border-lime-100">
+            <Icon className="h-5 w-5 text-lime-700" />
+          </span>
+          <p className="font-extrabold text-slate-900">{title}</p>
+        </div>
+        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.25 }} className="text-slate-400">
+          <ChevronDownIcon className="h-5 w-5" />
+        </motion.span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open ? (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1, transition: { duration: 0.35 } }}
+            exit={{ height: 0, opacity: 0, transition: { duration: 0.25 } }}
+            className="px-5 pb-5"
+          >
+            {children}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default function ConoceMasDuoEmprendedor() {
+  // Basado en fichas DUO 5 / 8: componentes del agua + características del módulo limpieza + requisitos + regalo + condiciones (SIN montos).
+  const models = useMemo(
+    () => [
+      {
+        key: "duo5",
+        name: "Dúo Emprendedor",
+        tag: "Limpieza 5 Productos",
+        subtitle: "Agua purificada + recargas a granel en una sola estación",
+        important: [
+          "Módulo de agua: despacho automático con 4 modalidades y validador de monedas (da cambio y enjuaga).",
+          "Tratamiento: lecho profundo + carbón activado + suavizador (tanques NSF) + pulidor 10” + UV 25 LPM + ozono + ventury.",
+          "Módulo limpieza: gabinete inoxidable, TOUCH 8”, sensores/solenoides, luz interna y registro de ventas.",
+          "Acepta monedas y da cambio; flujo de compra simple para el cliente.",
+          "Incluye tinaco grado alimenticio (según ficha).",
+        ],
+        waterComponents: [
+          "Bomba Jet acero inoxidable 127V + presurizador automático.",
+          "Filtro lecho profundo: tanque 9x48 NSF, válvula manual 3 vías (gravas/arenas/zeolita NSF).",
+          "Filtro carbón activado: tanque 9x48 NSF, válvula manual 3 vías.",
+          "Suavizador: tanque 9x48 NSF, válvula manual 5 pasos + tanque salmuera + resina catiónica NSF.",
+          "Pulidor 10” Slim (NSF).",
+          "UV 25 LPM con balastro en acero inoxidable.",
+          "Generador de ozono + ventury 3/4.",
+          "Despachador automático para 4 modalidades (da cambio y enjuaga).",
+        ],
+        cleanModule: [
+          "Gabinete de acero inoxidable (grado alimenticio / quirúrgico) y marco de puerta en acero inoxidable.",
+          "Pantalla TOUCH de 8”.",
+          "Monedero antirrobo + sistema de verificación de fallas.",
+          "Sensado de litros, sensor de flujo, solenoides.",
+          "Luz interna, bocina, vinil laminado contra luz UV.",
+          "Registra ventas.",
+        ],
+        gift: [
+          "Materiales de instalación en PVC hidráulico C.D. 40",
+          "Instalación",
+          "Capacitación",
+          "Bidones de 20 L (5 piezas, según ficha).",
+          "Vinil (según ficha).",
+        ],
+        requirements: [
+          "Local mínimo recomendado: 16 m².",
+          "Conexiones: luz independiente + regulador de voltaje/No Break + contactos + drenaje dentro del local.",
+          "Tinacos para agua cruda: 2 tinacos de 2,500 L o 1 tinaco de 5,000 L (según ficha).",
+          "Levantamiento de muro: 80.5 x 80.5 (máquina) y altura del suelo a la vending 90 cm.",
+          "*Flete y viáticos se cotizan con Código Postal.",
+        ],
+        payment: [
+          "50% de anticipo.",
+          "50% restante a la entrega del equipo.",
+          "Si requieres factura: costo + IVA.",
+          "Entrega estimada: entre 15 y 20 días naturales (a la firma del contrato).",
+        ],
+        extras: [
+          "Trámite de aviso de funcionamiento.",
+          "Toma de pipa 2” PVC cédula 40.",
+          "Kit de insumos anuales.",
+          "Seguro de vending.",
+          "Mantenimiento anual.",
+          "Paquete para promoción / inauguración.",
+          "Opciones: mostrador, ósmosis inversa, automatización de ósmosis, agua alcalina (según requerimiento).",
+        ],
+      },
+      {
+        key: "duo8",
+        name: "Dúo Emprendedor",
+        tag: "Limpieza 8 Productos",
+        subtitle: "Más variedad de limpieza para subir el ticket promedio",
+        important: [
+          "Módulo de agua: despacho automático con 4 modalidades y validador de monedas (da cambio y enjuaga).",
+          "Tratamiento: lecho profundo + carbón activado + suavizador (tanques NSF) + pulidor 10” + UV 25 LPM + ozono + ventury.",
+          "Módulo limpieza: gabinete inoxidable, TOUCH 8”, sensores/solenoides, luz interna y registro de ventas.",
+          "Acepta monedas y da cambio; experiencia de compra rápida.",
+          "Incluye tinaco grado alimenticio (según ficha).",
+        ],
+        waterComponents: [
+          "Bomba Jet acero inoxidable 127V + presurizador automático.",
+          "Filtro lecho profundo: tanque 9x48 NSF, válvula manual 3 vías (gravas/arenas/zeolita NSF).",
+          "Filtro carbón activado: tanque 9x48 NSF, válvula manual 3 vías.",
+          "Suavizador: tanque 9x48 NSF, válvula manual 5 pasos + tanque salmuera + resina catiónica NSF.",
+          "Pulidor 10” Slim (NSF).",
+          "UV 25 LPM con balastro en acero inoxidable.",
+          "Generador de ozono + ventury 3/4.",
+          "Despachador automático para 4 modalidades (da cambio y enjuaga).",
+        ],
+        cleanModule: [
+          "Gabinete de acero inoxidable (grado alimenticio / quirúrgico) y marco de puerta en acero inoxidable.",
+          "Pantalla TOUCH de 8”.",
+          "Monedero antirrobo + sistema de verificación de fallas.",
+          "Sensado de litros, sensor de flujo, solenoides.",
+          "Luz interna, bocina, vinil laminado contra luz UV.",
+          "Registra ventas.",
+        ],
+        gift: [
+          "Materiales de instalación en PVC hidráulico C.D. 40",
+          "Instalación",
+          "Capacitación",
+          "Bidones de 20 L (8 piezas, según ficha).",
+          "Vinil (según ficha).",
+        ],
+        requirements: [
+          "Local mínimo recomendado: 16 m².",
+          "Conexiones: luz independiente + regulador de voltaje/No Break + contactos + drenaje dentro del local.",
+          "Tinacos para agua cruda: 2 tinacos de 2,500 L o 1 tinaco de 5,000 L (según ficha).",
+          "Levantamiento de muro: 80.5 x 80.5 (máquina) y altura del suelo a la vending 90 cm.",
+          "*Flete y viáticos se cotizan con Código Postal.",
+        ],
+        payment: [
+          "50% de anticipo.",
+          "50% restante a la entrega del equipo.",
+          "Si requieres factura: costo + IVA.",
+          "Entrega estimada: entre 15 y 20 días naturales (a la firma del contrato).",
+        ],
+        extras: [
+          "Trámite de aviso de funcionamiento.",
+          "Toma de pipa 2” PVC cédula 40.",
+          "Kit de insumos anuales.",
+          "Seguro de vending.",
+          "Mantenimiento anual.",
+          "Paquete para promoción / inauguración.",
+          "Opciones: mostrador, ósmosis inversa, automatización de ósmosis, agua alcalina (según requerimiento).",
+        ],
+      },
+    ],
+    []
+  );
+
+  const sectionIds = ["imp", "agua", "limp", "inst", "incl", "proc", "extras"];
+  const [activeModel, setActiveModel] = useState(models[0].key);
+  const model = models.find((m) => m.key === activeModel);
+  const activeSection = useActiveSection(sectionIds);
+
+  const contRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: contRef, offset: ["start start", "end end"] });
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 25, mass: 0.3 });
+
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <div ref={contRef} className="min-h-screen bg-slate-50 text-slate-800">
-      <Helmet>
-        <title>Dúo Emprendedor 2 en 1 - Darmax</title>
-        <meta
-          name="description"
-          content="La solución definitiva que combina una purificadora de agua y un vending de productos de limpieza. Doble impacto, doble ganancia."
+    <div ref={contRef} className="relative min-h-screen bg-slate-50 text-slate-800 overflow-hidden">
+      <motion.div style={{ scaleX: progress }} className="fixed top-0 left-0 right-0 h-1 origin-left bg-lime-400 z-[60]" />
+
+      {/* Background blobs */}
+      <div className="pointer-events-none absolute inset-0">
+        <motion.div
+          className="absolute -top-40 -left-40 h-[32rem] w-[32rem] rounded-full bg-lime-300/18 blur-3xl"
+          animate={{ x: [0, 22, 0], y: [0, 14, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
-      </Helmet>
+        <motion.div
+          className="absolute top-24 -right-40 h-[34rem] w-[34rem] rounded-full bg-emerald-300/14 blur-3xl"
+          animate={{ x: [0, -24, 0], y: [0, 18, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
 
-      {/* ===== Hero Section ===== */}
-      <section className="relative bg-slate-900">
-        <div className="absolute inset-0">
-          <img src={HERO_IMG} alt="Estación Duo Emprendedor de Darmax" className="w-full h-full object-cover opacity-30" />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-center min-h-[85vh] text-center text-white pt-24 pb-12">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-                <span className="inline-block px-4 py-1.5 mb-4 bg-white/10 text-lime-300 rounded-full text-sm font-semibold">Doble Negocio, Doble Impacto</span>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
-                    Dúo Emprendedor: <span className="text-lime-400">Agua y Limpieza en Uno</span>.
-                </h1>
-                <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-300 leading-relaxed">
-                   La solución 2 en 1 que revoluciona el comercio local. Ofrece agua purificada y productos de limpieza a granel desde una sola estación automatizada y maximiza tus ganancias.
-                </p>
-                <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-                    <Link
-                        to="/configurar-maquina/Duo-Emprendedor"
-                        className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-lime-400 shadow-lg hover:bg-lime-300 transition-all transform hover:scale-105"
-                    >
-                        Configurar mi Dúo
-                    </Link>
-                    <Link
-                        to="#features"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="px-8 py-3 rounded-full font-semibold border-2 border-slate-600 text-slate-200 hover:bg-slate-800 hover:border-slate-800 transition"
-                    >
-                        Ver Características
-                    </Link>
-                </div>
-            </motion.div>
-        </div>
-      </section>
-
-      {/* ===== Highlights Section ===== */}
-      <section className="bg-slate-800 py-12">
-          <div className="max-w-7xl mx-auto px-6 md:px-10">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
-                  {highlights.map((h, i) => (
-                      <motion.div 
-                        key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: i * 0.1 }}
-                        className="flex items-center gap-4 text-white"
-                      >
-                          <div className="flex-shrink-0 bg-slate-700 p-3 rounded-lg">
-                            <h.icon className="h-7 w-7 text-lime-400"/>
-                          </div>
-                          <div>
-                              <p className="font-bold text-lg">{h.title}</p>
-                              <p className="text-sm text-slate-400">{h.desc}</p>
-                          </div>
-                      </motion.div>
-                  ))}
-              </div>
-          </div>
-      </section>
-
-      {/* ===== Key Features Section ===== */}
-      <section id="features" className="py-20 md:py-28">
+      {/* Header */}
+      <section className="relative pt-20 pb-8">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
-            <div className="max-w-3xl mx-auto text-center mb-16">
-                 <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-                    Un Negocio Diversificado y Eficiente
-                </h2>
-                <p className="mt-4 text-lg text-slate-600">
-                    Combina lo mejor de dos mundos en una estación robusta, diseñada para una gestión simple y máxima rentabilidad.
-                </p>
-            </div>
-
-            <div className="space-y-16">
-                {features.map((feature, i) => (
-                    <motion.div 
-                        key={i}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{ duration: 0.6 }}
-                        className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}
-                    >
-                        <div className="md:w-1/2">
-                            <div className="inline-flex items-center gap-3 mb-4">
-                                <span className="p-2 bg-lime-100 rounded-full">
-                                    <feature.icon className="h-6 w-6 text-lime-700"/>
-                                </span>
-                                <h3 className="text-2xl font-bold">{feature.title}</h3>
-                            </div>
-                            <p className="text-slate-600 leading-relaxed text-base">
-                                {feature.description}
-                            </p>
-                        </div>
-                        <div className="md:w-1/2">
-                            <img src={feature.image} alt={feature.title} className="w-full h-auto rounded-2xl shadow-xl object-cover" />
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
-        </div>
-      </section>
-      
-      {/* ===== How It Works Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Tu Doble Negocio, Listo para Operar</SectionTitle>
-          <div className="mt-16 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-            {processSteps.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="text-center p-6 bg-slate-50 rounded-2xl border border-slate-200/80"
-              >
-                <div className="inline-block p-4 bg-lime-100 text-lime-700 rounded-full mb-4">
-                    <step.icon className="h-8 w-8" />
-                </div>
-                <h3 className="font-bold text-lg">{step.title}</h3>
-                <p className="text-sm text-slate-600 mt-1">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-            <div className="mt-12 text-center">
-                 <Link
-                    to="/contacto"
-                    className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-lime-400 shadow-lg hover:bg-lime-300 transition-all transform hover:scale-105"
-                    >
-                    Solicitar Asesoría
-                </Link>
-            </div>
-        </div>
-      </section>
-
-      {/* ===== Gallery Section ===== */}
-      <section className="py-20 md:py-28">
-        <div className="max-w-7xl mx-auto">
-          <SectionTitle className="px-6">Nuestros Equipos 2 en 1</SectionTitle>
-        </div>
-        <div className="mt-8 relative">
-            <div className="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-6 md:px-10">
-                {galleryImages.map((src, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true, amount: 0.4 }}
-                        transition={{ duration: 0.5, delay: i * 0.08 }}
-                        className="flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 snap-center"
-                    >
-                        <img src={src} alt={`Concepto Duo Emprendedor ${i+1}`} className="w-full h-80 rounded-2xl object-cover shadow-lg" />
-                    </motion.div>
-                ))}
-            </div>
-        </div>
-      </section>
-
-      {/* ===== FAQ Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-4xl mx-auto px-6 md:px-10">
-          <SectionTitle>Preguntas Frecuentes</SectionTitle>
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-            {faqs.map((f, i) => <FaqItem key={i} q={f.q} a={f.a} />)}
-          </div>
-        </div>
-      </section>
-
-       {/* ===== Final CTA Section ===== */}
-       <section className="py-20">
-         <div className="max-w-3xl mx-auto text-center px-6">
-            <h2 className="text-3xl font-extrabold text-slate-900">Duplica tus Oportunidades de Ingreso</h2>
-            <p className="mt-4 text-lg text-slate-600">
-                No elijas entre un negocio u otro, ¡tenlos los dos! Configura tu Dúo Emprendedor y empieza a construir un negocio más sólido y rentable.
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.5 }} className="text-center max-w-3xl mx-auto">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold text-lime-700 bg-lime-50 border border-lime-100 px-4 py-1.5 rounded-full">
+              <SparklesIcon className="h-4 w-4" />
+              Conoce más • Dúo Emprendedor (sin precios)
             </p>
-             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-                <Link
-                    to="/configurar-maquina/Duo-Emprendedor"
-                    className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-lime-400 shadow-lg hover:bg-lime-300 transition-all transform hover:scale-105"
-                >
-                    Configurar mi Dúo
-                </Link>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="px-8 py-3 rounded-full font-semibold bg-slate-200 hover:bg-slate-300 text-slate-800 transition"
-                >
-                    Volver
-                </button>
-            </div>
-         </div>
-       </section>
+            <h2 className="mt-5 text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
+              Agua + Limpieza en una sola estación <span className="text-lime-600">2 en 1</span>
+            </h2>
+            <p className="mt-4 text-lg text-slate-600 leading-relaxed">
+              Elige configuración 5/8 productos. Te mostramos lo importante: tratamiento, módulo de limpieza, instalación, incluye, proceso y extras.
+            </p>
 
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                to="/configurar-maquina/Duo-Emprendedor"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full font-semibold text-slate-900 bg-lime-400 hover:bg-lime-300 transition shadow-lg hover:shadow-xl"
+              >
+                Configurar mi Dúo <ChevronRightIcon className="h-5 w-5" />
+              </Link>
+              <Link
+                to="/contacto"
+                className="inline-flex items-center justify-center px-7 py-3 rounded-full font-semibold border border-slate-200 bg-white/80 hover:bg-white transition"
+              >
+                Asesoría
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Sticky nav */}
+      <div className="sticky top-2 z-50">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <div className="rounded-2xl border border-slate-200 bg-white/75 backdrop-blur-xl shadow-sm px-3 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap gap-2">
+                <NavChip active={activeSection === "imp"} label="Lo importante" onClick={() => scrollTo("imp")} />
+                <NavChip active={activeSection === "agua"} label="Módulo Agua" onClick={() => scrollTo("agua")} />
+                <NavChip active={activeSection === "limp"} label="Módulo Limpieza" onClick={() => scrollTo("limp")} />
+                <NavChip active={activeSection === "inst"} label="Instalación" onClick={() => scrollTo("inst")} />
+                <NavChip active={activeSection === "incl"} label="Incluye" onClick={() => scrollTo("incl")} />
+                <NavChip active={activeSection === "proc"} label="Proceso" onClick={() => scrollTo("proc")} />
+                <NavChip active={activeSection === "extras"} label="Extras" onClick={() => scrollTo("extras")} />
+              </div>
+
+              <div className="flex gap-2 items-center">
+                <span className="hidden sm:inline-flex items-center gap-2 text-xs font-semibold text-slate-600">
+                  <span className="h-2 w-2 rounded-full bg-lime-400" />
+                  {model?.tag}
+                </span>
+                <Link
+                  to="/configurar-maquina/Duo-Emprendedor"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-full font-semibold text-slate-900 bg-lime-400 hover:bg-lime-300 transition shadow-sm"
+                >
+                  Configurar
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main */}
+      <section className="relative pb-24">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left rail */}
+            <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
+              <Glass className="p-4 md:p-5">
+                <p className="text-sm font-extrabold text-slate-900">Elige configuración</p>
+                <p className="text-sm text-slate-600 mt-1">5 o 8 productos de limpieza.</p>
+
+                <div className="mt-4 space-y-3">
+                  {models.map((m) => (
+                    <ModelCard
+                      key={m.key}
+                      active={m.key === activeModel}
+                      title={m.name}
+                      subtitle={m.subtitle}
+                      tag={m.tag}
+                      onClick={() => setActiveModel(m.key)}
+                    />
+                  ))}
+                </div>
+              </Glass>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
+                <div className="rounded-2xl bg-white/80 backdrop-blur border border-slate-200 shadow-sm p-4">
+                  <div className="flex items-center gap-3">
+                    <span className="p-2 rounded-xl bg-lime-50 border border-lime-100">
+                      <RectangleGroupIcon className="h-5 w-5 text-lime-700" />
+                    </span>
+                    <div>
+                      <p className="font-extrabold text-slate-900">2 módulos</p>
+                      <p className="text-sm text-slate-600">Agua + limpieza, en un punto.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl bg-white/80 backdrop-blur border border-slate-200 shadow-sm p-4">
+                  <div className="flex items-center gap-3">
+                    <span className="p-2 rounded-xl bg-lime-50 border border-lime-100">
+                      <CpuChipIcon className="h-5 w-5 text-lime-700" />
+                    </span>
+                    <div>
+                      <p className="font-extrabold text-slate-900">Operación</p>
+                      <p className="text-sm text-slate-600">Da cambio + registro de ventas.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl bg-white/80 backdrop-blur border border-slate-200 shadow-sm p-4 sm:col-span-2 lg:col-span-1">
+                  <div className="flex items-center gap-3">
+                    <span className="p-2 rounded-xl bg-lime-50 border border-lime-100">
+                      <ShieldCheckIcon className="h-5 w-5 text-lime-700" />
+                    </span>
+                    <div>
+                      <p className="font-extrabold text-slate-900">Construcción</p>
+                      <p className="text-sm text-slate-600">Acero inoxidable + componentes NSF.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-3xl bg-slate-900 text-white p-6 shadow-lg">
+                <p className="text-sm text-slate-300 font-semibold">Siguiente paso</p>
+                <p className="mt-1 text-xl font-extrabold">Configura tu Dúo y te asesoramos con layout + mix de productos.</p>
+                <div className="mt-5 flex flex-col sm:flex-row gap-3">
+                  <Link
+                    to="/configurar-maquina/Duo-Emprendedor"
+                    className="text-center px-6 py-3 rounded-full font-semibold text-slate-900 bg-lime-400 hover:bg-lime-300 transition"
+                  >
+                    Configurar mi Dúo
+                  </Link>
+                  <Link
+                    to="/contacto"
+                    className="text-center px-6 py-3 rounded-full font-semibold border border-white/20 bg-white/10 hover:bg-white/15 transition"
+                  >
+                    Solicitar asesoría
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Right content */}
+            <div className="lg:col-span-8 space-y-6">
+              <AnimatePresence mode="wait">
+                <motion.div key={model.key} variants={cardSwap} initial="hidden" animate="show" exit="exit">
+                  <Glass className="p-6 md:p-8">
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-semibold text-lime-700">Conoce más • {model.subtitle}</p>
+                        <h3 className="mt-1 text-2xl md:text-4xl font-extrabold text-slate-900">
+                          {model.name} <span className="text-lime-600">({model.tag})</span>
+                        </h3>
+                      </div>
+                      <span className="inline-flex items-center rounded-full bg-slate-900 text-white px-4 py-2 text-sm font-extrabold">
+                        {model.tag}
+                      </span>
+                    </div>
+
+                    <div className="mt-7 space-y-6">
+                      {/* Lo importante */}
+                      <div id="imp" className="scroll-mt-28">
+                        <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                          <SectionHeader icon={BoltIcon} title="Lo importante importante" subtitle="Lo que te conviene saber sin rollo." />
+                          <ul className="mt-5 space-y-2">
+                            {model.important.map((t, i) => (
+                              <Bullet key={i}>{t}</Bullet>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* Agua */}
+                      <div id="agua" className="scroll-mt-28">
+                        <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                          <SectionHeader icon={CircleStackIcon} title="Módulo Agua (Atlantis 300)" subtitle="Tratamiento + despacho automático." />
+                          <Accordion title="Ver componentes del tratamiento" icon={CircleStackIcon} defaultOpen>
+                            <ul className="mt-3 space-y-2">
+                              {model.waterComponents.map((t, i) => (
+                                <Bullet key={i}>{t}</Bullet>
+                              ))}
+                            </ul>
+                          </Accordion>
+                        </div>
+                      </div>
+
+                      {/* Limpieza */}
+                      <div id="limp" className="scroll-mt-28">
+                        <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                          <SectionHeader icon={RectangleGroupIcon} title="Módulo Limpieza" subtitle="Venta por litros con experiencia simple." />
+                          <Accordion title="Ver características del módulo" icon={RectangleGroupIcon} defaultOpen>
+                            <ul className="mt-3 space-y-2">
+                              {model.cleanModule.map((t, i) => (
+                                <Bullet key={i}>{t}</Bullet>
+                              ))}
+                            </ul>
+                          </Accordion>
+                        </div>
+                      </div>
+
+                      {/* Instalación */}
+                      <div id="inst" className="scroll-mt-28">
+                        <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                          <SectionHeader icon={BuildingStorefrontIcon} title="¿Qué requieres para instalar?" subtitle="Checklist para instalar sin sorpresas." />
+                          <ul className="mt-5 space-y-2">
+                            {model.requirements.map((t, i) => (
+                              <Bullet key={i}>{t}</Bullet>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* Incluye */}
+                      <div id="incl" className="scroll-mt-28">
+                        <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                          <SectionHeader icon={WrenchScrewdriverIcon} title="Incluye" subtitle="Lo que te entregamos (sin montos)." />
+                          <ul className="mt-5 space-y-2">
+                            {model.gift.map((t, i) => (
+                              <Bullet key={i}>{t}</Bullet>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* Proceso */}
+                      <div id="proc" className="scroll-mt-28">
+                        <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                          <SectionHeader icon={AcademicCapIcon} title="Proceso / Entrega" subtitle="Flujo claro (sin precios)." />
+                          <Accordion title="Ver condiciones" icon={AcademicCapIcon} defaultOpen>
+                            <ul className="mt-3 space-y-2">
+                              {model.payment.map((t, i) => (
+                                <Bullet key={i}>{t}</Bullet>
+                              ))}
+                            </ul>
+                          </Accordion>
+                        </div>
+                      </div>
+
+                      {/* Extras */}
+                      <div id="extras" className="scroll-mt-28">
+                        <div className="rounded-3xl border border-slate-200 bg-white p-6">
+                          <SectionHeader icon={ShieldCheckIcon} title="Extras" subtitle="Opcionales para escalar el negocio." />
+                          <ul className="mt-5 space-y-2">
+                            {model.extras.map((t, i) => (
+                              <Bullet key={i}>{t}</Bullet>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* CTA */}
+                      <div className="rounded-3xl bg-slate-900 text-white p-7 md:p-8">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                          <div>
+                            <p className="text-sm text-slate-300 font-semibold">¿Listo para iniciar?</p>
+                            <p className="mt-1 text-2xl font-extrabold">Configura tu Dúo y te asesoramos con instalación + productos.</p>
+                            <p className="mt-2 text-slate-300">Recomendación de mix de limpieza según tu zona y ticket objetivo.</p>
+                          </div>
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            <Link
+                              to="/configurar-maquina/Duo-Emprendedor"
+                              className="text-center px-7 py-3 rounded-full font-semibold text-slate-900 bg-lime-400 hover:bg-lime-300 transition shadow-lg"
+                            >
+                              Configurar mi Dúo
+                            </Link>
+                            <Link
+                              to="/contacto"
+                              className="text-center px-7 py-3 rounded-full font-semibold border border-white/20 bg-white/10 hover:bg-white/15 transition"
+                            >
+                              Solicitar asesoría
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Glass>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile CTA */}
+      <div className="fixed bottom-4 left-0 right-0 z-50 px-4 sm:hidden">
+        <div className="max-w-md mx-auto rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-xl shadow-lg p-3 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-slate-500">Configuración</p>
+            <p className="text-sm font-extrabold text-slate-900 truncate">{model.tag}</p>
+          </div>
+          <Link
+            to="/configurar-maquina/Duo-Emprendedor"
+            className="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full font-semibold text-slate-900 bg-lime-400 hover:bg-lime-300 transition"
+          >
+            Configurar <ChevronRightIcon className="h-5 w-5" />
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,9 @@
 // server/controllers/zoomController.js
 import { zoomRequest } from "../utils/zoomClient.js";
 import { sendEmail } from "../utils/mailer.js";
+import prisma from '../prisma.js'; // Import prisma
+import { getZoomMeetingEmailTemplate } from "../utils/templates/zoomEmailTemplate.js";
+import { getAdminMeetingNotificationEmailTemplate } from "../utils/templates/adminMeetingNotificationTemplate.js"; // Import admin template
 
 export async function listUsers(req, res) {
   try {
@@ -14,6 +17,45 @@ export async function listUsers(req, res) {
   }
 }
 
+// New endpoint to get meetings by date
+export async function getMeetingsByDate(req, res) {
+  try {
+    const { date } = req.query; // Expects YYYY-MM-DD format
+
+    if (!date) {
+      return res.status(400).json({ message: "Se requiere la fecha (YYYY-MM-DD)." });
+    }
+
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0); // Start of the day in UTC
+
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999); // End of the day in UTC
+
+    const meetings = await prisma.meeting.findMany({
+      where: {
+        startTime: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+      select: {
+        startTime: true,
+        duration: true,
+      },
+      orderBy: {
+        startTime: 'asc',
+      },
+    });
+
+    res.json(meetings);
+  } catch (e) {
+    console.error("Error obteniendo reuniones por fecha:", e);
+    res.status(500).json({ message: "Error del servidor al obtener reuniones." });
+  }
+}
+
+
 export async function createMeeting(req, res) {
   try {
     const {
@@ -23,12 +65,13 @@ export async function createMeeting(req, res) {
       duration,
       email,
       nombre,
+      telefono, // Added telefono
     } = req.body;
 
-    if (!topic || !start_time || !duration || !email || !nombre) {
+    if (!topic || !start_time || !duration || !email || !nombre || !telefono) { // Added telefono to validation
       return res.status(400).json({
         message:
-          "Faltan campos requeridos: topic, start_time, duration, email, nombre",
+          "Faltan campos requeridos: topic, start_time, duration, email, nombre, telefono",
       });
     }
 
@@ -45,9 +88,22 @@ export async function createMeeting(req, res) {
     });
 
     const meeting = r.data;
-
-    // Formatear la fecha y hora para el correo
     const meetingStartTime = new Date(meeting.start_time);
+
+    // Save meeting to database
+    await prisma.meeting.create({
+      data: {
+        topic: meeting.topic,
+        startTime: meetingStartTime,
+        duration: Number(duration),
+        joinUrl: meeting.join_url,
+        participantName: nombre,
+        participantEmail: email,
+        participantPhone: telefono,
+      },
+    });
+
+    // Formatear la fecha y hora para los correos
     const formattedDate = meetingStartTime.toLocaleDateString("es-MX", {
       dateStyle: "full",
     });
@@ -56,21 +112,39 @@ export async function createMeeting(req, res) {
       hour12: true,
     });
 
-    // Enviar correo de confirmación
+    // 1. Enviar correo de confirmación al usuario
+    const userEmailHtml = getZoomMeetingEmailTemplate({
+      name: nombre,
+      topic: meeting.topic,
+      startDate: formattedDate,
+      startTime: formattedTime,
+      joinUrl: meeting.join_url,
+      telefono: telefono,
+    });
+
     await sendEmail({
       to: email,
       subject: `Confirmación de tu reunión: ${meeting.topic}`,
-      html: `
-        <h1>¡Hola, ${nombre}!</h1>
-        <p>Tu reunión ha sido confirmada con éxito.</p>
-        <p><strong>Tema:</strong> ${meeting.topic}</p>
-        <p><strong>Fecha:</strong> ${formattedDate}</p>
-        <p><strong>Hora:</strong> ${formattedTime}</p>
-        <p>Puedes unirte a la reunión haciendo clic en el siguiente enlace:</p>
-        <a href="${meeting.join_url}">${meeting.join_url}</a>
-        <p>¡Esperamos verte!</p>
-      `,
+      html: userEmailHtml,
     });
+
+    // 2. Enviar correo de notificación al admin
+    const adminEmailHtml = getAdminMeetingNotificationEmailTemplate({
+      name: nombre,
+      email: email,
+      phone: telefono,
+      topic: meeting.topic,
+      startDate: formattedDate,
+      startTime: formattedTime,
+      joinUrl: meeting.join_url,
+    });
+
+    await sendEmail({
+      to: "darmaxaguameli@gmail.com", // Admin email address
+      subject: `NUEVA CITA AGENDADA: ${meeting.topic} con ${nombre}`,
+      html: adminEmailHtml,
+    });
+
 
     return res.json(meeting);
   } catch (e) {

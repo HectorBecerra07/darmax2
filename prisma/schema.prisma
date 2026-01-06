@@ -332,3 +332,18 @@ model Configuration {
   key String @unique
   value String
 }
+
+model Meeting {
+  id              String   @id @default(cuid())
+  topic           String
+  startTime       DateTime
+  duration        Int
+  joinUrl         String   @db.Text
+  participantName String
+  participantEmail String
+  participantPhone String
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+

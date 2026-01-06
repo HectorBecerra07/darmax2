@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, CalendarPlus, Loader2 } from "lucide-react";
+import React, { useMemo, useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight, CalendarPlus, Loader2, Clock } from "lucide-react";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -7,17 +7,60 @@ const Calendar = () => {
 
   // Form
   const [topic, setTopic] = useState("Reunión Zoom");
-  const [time, setTime] = useState("10:00"); // HH:MM
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(""); // Stores 'HH:MM' string
   const [duration, setDuration] = useState(30); // minutes
-  const [timezone, setTimezone] = useState("America/Mexico_City");
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
+  const [telefono, setTelefono] = useState(""); // Added telefono state
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [meetingLink, setMeetingLink] = useState("");
 
+  const [bookedTimes, setBookedTimes] = useState([]); // State to store booked times for the selected date
+  const [fetchingBookedTimes, setFetchingBookedTimes] = useState(false);
+
   const daysOfWeek = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+  // Helper to format date to YYYY-MM-DD
+  const formatDateToYYYYMMDD = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Fetch booked times when selectedDate changes
+  useEffect(() => {
+    const fetchBookedTimes = async () => {
+      setFetchingBookedTimes(true);
+      setError("");
+      try {
+        const formattedDate = formatDateToYYYYMMDD(selectedDate);
+        const res = await fetch(`/api/zoom/meetings?date=${formattedDate}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || `Error fetching booked times: ${res.status}`);
+        }
+
+        // Convert fetched meeting start times to 'HH:MM' strings
+        const times = data.map(meeting => {
+          const date = new Date(meeting.startTime);
+          return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        });
+        setBookedTimes(times);
+      } catch (e) {
+        console.error("Error fetching booked times:", e);
+        setError("Error al cargar horarios disponibles.");
+      } finally {
+        setFetchingBookedTimes(false);
+      }
+    };
+
+    fetchBookedTimes();
+  }, [selectedDate]);
+
 
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
@@ -28,7 +71,9 @@ const Calendar = () => {
   };
 
   const handleDateClick = (day) => {
-    setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), day));
+    const newSelectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    setSelectedDate(newSelectedDate);
+    setSelectedTimeSlot(""); // Reset selected time slot on date change
     setMeetingLink("");
     setError("");
   };
@@ -48,8 +93,8 @@ const Calendar = () => {
     return fmt.format(selectedDate);
   }, [selectedDate]);
 
-  const buildStartISO = () => {
-    const [hh, mm] = time.split(":").map((x) => parseInt(x, 10));
+  const buildStartISO = (timeSlot) => {
+    const [hh, mm] = timeSlot.split(":").map((x) => parseInt(x, 10));
     const d = new Date(selectedDate);
     d.setHours(hh, mm, 0, 0);
     return d.toISOString().slice(0, -5); // YYYY-MM-DDTHH:mm:ss
@@ -60,14 +105,14 @@ const Calendar = () => {
     setError("");
     setMeetingLink("");
 
-    if (!email || !nombre) {
-      setError("Por favor, ingresa tu nombre y correo electrónico.");
+    if (!email || !nombre || !telefono || !selectedTimeSlot) {
+      setError("Por favor, ingresa tu nombre, correo electrónico, teléfono y selecciona un horario.");
       setLoading(false);
       return;
     }
 
     try {
-      const start_time = buildStartISO();
+      const start_time = buildStartISO(selectedTimeSlot);
 
       const res = await fetch("/api/zoom/meetings", {
         method: "POST",
@@ -78,6 +123,7 @@ const Calendar = () => {
           duration: Number(duration),
           email,
           nombre,
+          telefono, // Send telefono to backend
         }),
       });
 
@@ -88,6 +134,17 @@ const Calendar = () => {
       }
 
       setMeetingLink(data.join_url);
+      // Re-fetch booked times to update availability for the selected day
+      // This ensures the scheduled slot disappears/is marked as occupied
+      const formattedDate = formatDateToYYYYMMDD(selectedDate);
+      const updatedRes = await fetch(`/api/zoom/meetings?date=${formattedDate}`);
+      const updatedData = await updatedRes.json();
+      const updatedTimes = updatedData.map(meeting => {
+        const date = new Date(meeting.startTime);
+        return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+      });
+      setBookedTimes(updatedTimes);
+
     } catch (e) {
       setError(e?.message || "Error creando la reunión");
     } finally {
@@ -99,10 +156,11 @@ const Calendar = () => {
     setMeetingLink("");
     setError("");
     setTopic("Reunión Zoom");
-    setTime("10:00");
+    setSelectedTimeSlot(""); // Reset selected time slot
     setDuration(30);
     setEmail("");
     setNombre("");
+    setTelefono(""); // Reset telefono
   };
 
   const renderHeader = () => (
@@ -181,6 +239,44 @@ const Calendar = () => {
     return <div className="grid grid-cols-7 gap-1 p-4">{cells}</div>;
   };
 
+  // Function to generate time slots (10:00 to 16:00)
+  const generateTimeSlots = (intervalMinutes) => {
+    const slots = [];
+    const startHour = 10;
+    const endHour = 16; // Up to 16:00
+    
+    for (let h = startHour; h <= endHour; h++) {
+      for (let m = 0; m < 60; m += intervalMinutes) {
+        if (h === endHour && m > 0) continue; // Don't add 16:30 etc if duration is 30 mins
+
+        const slotTime = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), h, m);
+        
+        // Only include slots if the selected date is not in the past
+        if (selectedDate.setHours(0,0,0,0) < new Date().setHours(0,0,0,0)) {
+          continue; // Skip past days entirely
+        }
+
+        // For today, filter out past times
+        if (selectedDate.toDateString() === new Date().toDateString()) {
+          const now = new Date();
+          const slotEndTime = new Date(slotTime.getTime() + intervalMinutes * 60 * 1000);
+          if (slotEndTime <= now) {
+            continue; // Skip if slot has already passed
+          }
+        }
+        
+        slots.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+      }
+    }
+    return slots;
+  };
+
+  const availableTimeSlots = useMemo(() => {
+    const allSlots = generateTimeSlots(duration);
+    return allSlots.filter(slot => !bookedTimes.includes(slot));
+  }, [selectedDate, duration, bookedTimes]);
+
+
   return (
     <section className="w-full bg-white">
       {/* Contenedor que centra TODO */}
@@ -243,26 +339,14 @@ const Calendar = () => {
                     <div className="grid grid-cols-2 gap-3 mt-3">
                       <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-                          Hora
-                        </label>
-                        <input
-                          type="time"
-                          value={time}
-                          onChange={(e) => setTime(e.target.value)}
-                          className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#24d4da]/40"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
                           Duración
                         </label>
                         <select
                           value={duration}
-                          onChange={(e) => setDuration(e.target.value)}
+                          onChange={(e) => setDuration(Number(e.target.value))}
                           className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#24d4da]/40"
                         >
-                          {[15, 30, 45].map((m) => (
+                          {[15, 30, 45, 60].map((m) => ( // Added 60 min option
                             <option key={m} value={m}>
                               {m} min
                             </option>
@@ -270,6 +354,37 @@ const Calendar = () => {
                         </select>
                       </div>
                     </div>
+
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">
+                      Horarios Disponibles
+                      {fetchingBookedTimes && (
+                          <Loader2 className="w-4 h-4 inline-block ml-2 animate-spin text-slate-500" />
+                      )}
+                    </label>
+                    <div className="mt-1 grid grid-cols-3 gap-2 max-h-48 overflow-y-auto custom-scrollbar p-1">
+                      {availableTimeSlots.length > 0 ? (
+                        availableTimeSlots.map((slot) => (
+                          <button
+                            key={slot}
+                            onClick={() => setSelectedTimeSlot(slot)}
+                            className={`
+                              px-3 py-2 rounded-xl text-sm font-medium transition-colors
+                              ${selectedTimeSlot === slot ? "bg-[#24d4da] text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-700"}
+                            `}
+                          >
+                            {slot}
+                          </button>
+                        ))
+                      ) : (
+                        <p className="col-span-3 text-sm text-slate-500 text-center py-2">No hay horarios disponibles para este día.</p>
+                      )}
+                    </div>
+                    {selectedTimeSlot && (
+                      <p className="text-sm font-semibold text-slate-700 mt-2 flex items-center gap-1">
+                        <Clock className="w-4 h-4" /> Horario seleccionado: {selectedTimeSlot}
+                      </p>
+                    )}
+
 
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">
                       Nombre
@@ -292,6 +407,17 @@ const Calendar = () => {
                       placeholder="tu@ejemplo.com"
                     />
 
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">
+                      Teléfono
+                    </label>
+                    <input
+                      type="tel"
+                      value={telefono}
+                      onChange={(e) => setTelefono(e.target.value)}
+                      className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#24d4da]/40"
+                      placeholder="Ej: 5512345678"
+                    />
+
                     {error ? (
                       <div className="mt-3 text-sm text-red-600 break-words">
                         <b>Error:</b> {error}
@@ -300,7 +426,7 @@ const Calendar = () => {
 
                     <button
                       onClick={scheduleMeeting}
-                      disabled={loading}
+                      disabled={loading || !selectedTimeSlot}
                       className="mt-4 w-full flex items-center justify-center gap-2 rounded-2xl bg-[#168387] text-white font-bold py-3 hover:opacity-95 disabled:opacity-60"
                     >
                       {loading ? (
