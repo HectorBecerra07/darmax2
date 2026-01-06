@@ -24,6 +24,7 @@ const allowedOrigins = [
   "https://darmaxagua.com.mx",
   "https://darmax2.vercel.app",
   "http://localhost:5173",
+  "https://ventas-darmax-gestion.vercel.app"
 ];
 
 app.use(
