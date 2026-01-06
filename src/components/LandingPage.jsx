@@ -6,6 +6,7 @@ import CalculadoraNegocio from "./CalculadoraNegocio";
 import Carruselimg from "./Carruselimg";
 import HeroCarousel from "./HeroCarousel";
 import { InlineWidget } from "react-calendly";
+import Banner from "./Banner";
 
 const BRAND_COLOR = "#24d4da"; // Tu color cyan
 const WHATSAPP_PHONE = "525519655369";
@@ -29,6 +30,7 @@ export default function LandingPage() {
       <Helmet>
         <title>Darmax | Inicio</title>
       </Helmet>
+      <Banner />
 
       <main className="min-h-screenz bg-slate-900 selection:bg-[#24d4da] selection:text-white">
         {/* HERO SECTION (Estilo Dark Tech) */}
