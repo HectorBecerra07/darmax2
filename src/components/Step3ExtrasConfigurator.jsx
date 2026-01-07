@@ -68,6 +68,12 @@ export default function Step3ExtrasConfigurator({
     );
   }, [seleccionados, modelData, extras]);
 
+  const isMostrador = useMemo(() => {
+    if (!modelData) return false;
+    const s = modelData.slug.toLowerCase();
+    return s.includes("neptuno") || modelData.name.toLowerCase().includes("mostrador");
+  }, [modelData]);
+
   const getRelevantImage = useMemo(
     () =>
       (
@@ -103,6 +109,44 @@ export default function Step3ExtrasConfigurator({
     if (!modelData) return null;
     let image = null;
 
+    // Logic for Mostrador (Neptuno): Prioritize showing SOMETHING (Base or Secondary) 
+    // because Mostrador is often just one main furniture image.
+    if (isMostrador) {
+       // 1. Try Tinaco specific (if exists)
+       if (selectedTinacoExtraId) {
+         if (hasAguaAlcalina) {
+            image = getRelevantImage("TINACO_ALCALINA", true, selectedTinacoExtraId, true);
+            if (!image) image = getRelevantImage("TINACO_ALCALINA", true, selectedTinacoExtraId, false);
+         }
+         if (!image) image = getRelevantImage("TINACO", true, selectedTinacoExtraId, hasAguaAlcalina);
+         if (!image && hasAguaAlcalina) image = getRelevantImage("TINACO", true, selectedTinacoExtraId, false);
+         
+         if (image) return image;
+       }
+       
+       // 2. Fallback to Base (standard)
+       if (hasAguaAlcalina) {
+         image = getRelevantImage("MODEL_BASE_ALCALINA", true, null, true);
+       }
+       if (!image) {
+         image = getRelevantImage("MODEL_BASE", true, null, false);
+       }
+       if (image) return image;
+
+       // 3. Fallback to Secondary (if user uploaded Mostrador as Secondary like a Vending Machine)
+       // This ensures the furniture shows up in the main box if no base/tinaco image is found.
+       if (hasAguaAlcalina) {
+          image = getRelevantImage("SECONDARY_ALCALINA", true, null, true, true);
+          if (!image) image = getRelevantImage("SECONDARY_ALCALINA", true, null, false, true);
+       }
+       if (!image) {
+          image = getRelevantImage("SECONDARY", true, null, hasAguaAlcalina, true);
+          if (!image && hasAguaAlcalina) image = getRelevantImage("SECONDARY", true, null, false, true);
+       }
+       return image;
+    }
+
+    // Standard Logic (Vending, etc.)
     if (selectedTinacoExtraId) {
       if (hasAguaAlcalina) {
         // Try TINACO_ALCALINA context first (explicit combination)
@@ -127,7 +171,7 @@ export default function Step3ExtrasConfigurator({
     }
 
     return getRelevantImage("MODEL_BASE", true, null, false);
-  }, [modelData, selectedTinacoExtraId, hasAguaAlcalina, getRelevantImage]);
+  }, [modelData, selectedTinacoExtraId, hasAguaAlcalina, getRelevantImage, isMostrador]);
 
   const secondaryImageSrc = useMemo(() => {
     if (!modelData) return null;
@@ -140,15 +184,23 @@ export default function Step3ExtrasConfigurator({
       if (!image) {
         image = getRelevantImage("SECONDARY_ALCALINA", true, null, false, true);
       }
-      if (image) return image;
+      if (image) {
+          // Prevent duplicate if Mostrador used this as primary
+          if (isMostrador && image === displayImageSrc) return null;
+          return image;
+      }
     }
 
     image = getRelevantImage("SECONDARY", true, null, hasAguaAlcalina, true);
     if (!image && hasAguaAlcalina) {
       image = getRelevantImage("SECONDARY", true, null, false, true);
     }
+    
+    // Prevent duplicate if Mostrador used this as primary
+    if (isMostrador && image === displayImageSrc) return null;
+
     return image;
-  }, [modelData, hasAguaAlcalina, getRelevantImage]);
+  }, [modelData, hasAguaAlcalina, getRelevantImage, isMostrador, displayImageSrc]);
 
   const currentDisplayString = useMemo(() => {
     if (!modelData) return "Cargando...";
