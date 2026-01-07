@@ -562,11 +562,20 @@ export default function BundleWizard() {
         }
     });
 
-    if (specificFilter) {
-        return baseFiltered.filter(specificFilter);
-    }
-    
-    return baseFiltered;
+        const models = baseFiltered.map(m => {
+            if ((id === 'Tridente' || id === 'Megalodon') && modelType === 'mostrador') {
+                return { ...m,
+                    basePrice: 18000
+                };
+            }
+            return m;
+        });
+
+        if (specificFilter) {
+            return models.filter(specificFilter);
+        }
+
+        return models;
   };
 
   if (loadingModels) {
