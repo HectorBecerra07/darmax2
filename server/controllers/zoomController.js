@@ -26,11 +26,9 @@ export async function getMeetingsByDate(req, res) {
       return res.status(400).json({ message: "Se requiere la fecha (YYYY-MM-DD)." });
     }
 
-    const startOfDay = new Date(date);
-    startOfDay.setUTCHours(0, 0, 0, 0); // Start of the day in UTC
-
-    const endOfDay = new Date(date);
-    endOfDay.setUTCHours(23, 59, 59, 999); // End of the day in UTC
+    // A safer way to create a date object that is timezone-agnostic (parses as UTC).
+    const startOfDay = new Date(`${date}T00:00:00.000Z`);
+    const endOfDay = new Date(`${date}T23:59:59.999Z`);
 
     const meetings = await prisma.meeting.findMany({
       where: {
@@ -61,17 +59,18 @@ export async function createMeeting(req, res) {
     const {
       userId = "me",
       topic,
-      start_time,
+      start_time_local, // Changed from start_time
+      timezone, // Added timezone
       duration,
       email,
       nombre,
-      telefono, // Added telefono
+      telefono,
     } = req.body;
 
-    if (!topic || !start_time || !duration || !email || !nombre || !telefono) { // Added telefono to validation
+    if (!topic || !start_time_local || !timezone || !duration || !email || !nombre || !telefono) {
       return res.status(400).json({
         message:
-          "Faltan campos requeridos: topic, start_time, duration, email, nombre, telefono",
+          "Faltan campos requeridos: topic, start_time_local, timezone, duration, email, nombre, telefono",
       });
     }
 
@@ -81,7 +80,8 @@ export async function createMeeting(req, res) {
       data: {
         topic,
         type: 2,
-        start_time,
+        start_time: start_time_local, // Use local time
+        timezone, // And specify timezone
         duration,
         settings: { join_before_host: false },
       },
@@ -106,10 +106,12 @@ export async function createMeeting(req, res) {
     // Formatear la fecha y hora para los correos
     const formattedDate = meetingStartTime.toLocaleDateString("es-MX", {
       dateStyle: "full",
+      timeZone: "America/Mexico_City",
     });
     const formattedTime = meetingStartTime.toLocaleTimeString("es-MX", {
       timeStyle: "short",
       hour12: true,
+      timeZone: "America/Mexico_City",
     });
 
     // 1. Enviar correo de confirmación al usuario
