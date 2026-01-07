@@ -112,28 +112,30 @@ export default function Step3ExtrasConfigurator({
     // Logic for Mostrador (Neptuno): Prioritize showing SOMETHING (Base or Secondary) 
     // because Mostrador is often just one main furniture image.
     if (isMostrador) {
-       // 1. Try Tinaco specific (if exists)
-       if (selectedTinacoExtraId) {
-         if (hasAguaAlcalina) {
+       // 1. Try Tinaco specific WITH Alcalina (Most specific)
+       if (selectedTinacoExtraId && hasAguaAlcalina) {
             image = getRelevantImage("TINACO_ALCALINA", true, selectedTinacoExtraId, true);
             if (!image) image = getRelevantImage("TINACO_ALCALINA", true, selectedTinacoExtraId, false);
-         }
-         if (!image) image = getRelevantImage("TINACO", true, selectedTinacoExtraId, hasAguaAlcalina);
-         if (!image && hasAguaAlcalina) image = getRelevantImage("TINACO", true, selectedTinacoExtraId, false);
-         
-         if (image) return image;
+            if (image) return image;
        }
        
-       // 2. Fallback to Base (standard)
+       // 2. Fallback to Base WITH Alcalina (Prioritize showing Alcalina feature over generic Tinaco)
        if (hasAguaAlcalina) {
          image = getRelevantImage("MODEL_BASE_ALCALINA", true, null, true);
+         if (image) return image;
        }
-       if (!image) {
-         image = getRelevantImage("MODEL_BASE", true, null, false);
+
+       // 3. Try Tinaco specific (Standard/Generic)
+       if (selectedTinacoExtraId) {
+         image = getRelevantImage("TINACO", true, selectedTinacoExtraId, false); // Generic Tinaco
+         if (image) return image;
        }
+
+       // 4. Fallback to Base (Standard)
+       image = getRelevantImage("MODEL_BASE", true, null, false);
        if (image) return image;
 
-       // 3. Fallback to Secondary (if user uploaded Mostrador as Secondary like a Vending Machine)
+       // 5. Fallback to Secondary (if user uploaded Mostrador as Secondary like a Vending Machine)
        // This ensures the furniture shows up in the main box if no base/tinaco image is found.
        if (hasAguaAlcalina) {
           image = getRelevantImage("SECONDARY_ALCALINA", true, null, true, true);
