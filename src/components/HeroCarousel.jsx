@@ -13,9 +13,12 @@ const videos = [
 
 const imagenes = [
   
-  "/img/banner/banerdarmax.jpg",
-  "/img/banner/Banneranonuevo.png",
-  "/img/banner/banerdarmax.jpg",
+  "/img/banners/baner1.jpg",
+  "/img/banners/baner3.jpg",
+  "/img/banners/baner2.jpg",
+  "/img/banners/baner4.jpg",
+  "/img/banners/baner5.jpg",
+
 ];
 
 export default function HeroCarousel({ className }) {
