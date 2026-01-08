@@ -13,7 +13,7 @@ const videos = [
 
 const imagenes = [
   
-  "/img/banners/baner1.jpg",
+  
   "/img/banners/baner3.jpg",
   "/img/banners/baner2.jpg",
   "/img/banners/baner4.jpg",
