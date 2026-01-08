@@ -16,7 +16,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <GoogleReCaptchaProvider
         reCaptchaKey={RECAPTCHA_KEY}
         container={{
-          element: "recaptcha-badge", // Optional: Control where badge renders if needed, or default
           parameters: {
             badge: "bottomleft", // Explicitly requesting bottom left
           },
