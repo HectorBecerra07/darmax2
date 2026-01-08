@@ -4,6 +4,7 @@ import { sendEmail } from "../utils/mailer.js";
 import prisma from '../prisma.js'; // Import prisma
 import { getZoomMeetingEmailTemplate } from "../utils/templates/zoomEmailTemplate.js";
 import { getAdminMeetingNotificationEmailTemplate } from "../utils/templates/adminMeetingNotificationTemplate.js"; // Import admin template
+import { verifyRecaptcha } from "../utils/recaptcha.js";
 
 export async function listUsers(req, res) {
   try {
@@ -65,6 +66,7 @@ export async function createMeeting(req, res) {
       email,
       nombre,
       telefono,
+      captchaToken,
     } = req.body;
 
     if (!topic || !start_time_local || !timezone || !duration || !email || !nombre || !telefono) {
@@ -72,6 +74,12 @@ export async function createMeeting(req, res) {
         message:
           "Faltan campos requeridos: topic, start_time_local, timezone, duration, email, nombre, telefono",
       });
+    }
+
+    // Verify reCAPTCHA
+    const isCaptchaValid = await verifyRecaptcha(captchaToken);
+    if (!isCaptchaValid) {
+      return res.status(400).json({ message: "Verificación de reCAPTCHA fallida. Por favor intenta de nuevo." });
     }
 
     const r = await zoomRequest({

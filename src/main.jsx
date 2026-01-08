@@ -2,19 +2,32 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import App from "./App";
 import { CarritoProvider } from "./context/CarritoContext";
 import { UserProvider } from "./context/UserContext";
 import "./index.css";
 
+const RECAPTCHA_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <UserProvider>
-      <CarritoProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </CarritoProvider>
+      <GoogleReCaptchaProvider
+        reCaptchaKey={RECAPTCHA_KEY}
+        container={{
+          element: "recaptcha-badge", // Optional: Control where badge renders if needed, or default
+          parameters: {
+            badge: "bottomleft", // Explicitly requesting bottom left
+          },
+        }}
+      >
+        <CarritoProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </CarritoProvider>
+      </GoogleReCaptchaProvider>
     </UserProvider>
   </React.StrictMode>
 );
