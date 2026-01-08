@@ -60,7 +60,7 @@ const modelos = [
     id: "Duo-Emprendedor",
     nombre: "Dúo Emprendedor 2 en 1",
     etiqueta: "Vending y Limpieza",
-    imagen: "/img/Iniciatunegocio/negocio3.jpg", // Placeholder, replace with actual image
+    imagen: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png", // Placeholder, replace with actual image
     precio: 89900,
     descripcion: "Combina la venta de agua purificada con productos de limpieza a granel, maximizando tu oferta y rentabilidad en un solo espacio.",
     rutaInfo: "/duo-emprendedor-info",
@@ -70,7 +70,7 @@ const modelos = [
     id: "Tridente",
     nombre: "Tridente",
     etiqueta: "Triple Modelo de Negocio",
-    imagen: "/img/Iniciatunegocio/fachadacalle.jpg", // Placeholder, replace with actual image
+    imagen: "/img/Iniciatunegocio/negocio3.jpg", // Placeholder, replace with actual image
     precio: 107900,
     descripcion: "Una solución completa que integra agua purificada, productos de limpieza y otros artículos esenciales, ofreciendo una experiencia integral a tus clientes.",
     rutaInfo: "/tridente-info",

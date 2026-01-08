@@ -16,7 +16,7 @@ export default function WhatsAppButton() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-14 right-6 z-50 flex flex-col items-end">
       {isOpen && (
         <div className="bg-white rounded-lg shadow-lg p-4 mb-4 w-64">
           <p className="font-semibold text-gray-800 mb-2">¿Cómo podemos ayudarte?</p>
