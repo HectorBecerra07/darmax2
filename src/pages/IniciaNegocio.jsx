@@ -504,8 +504,10 @@ const IniciaNegocio = () => {
 <section className="py-24 bg-[#Fbfbfd]">
   <div className="max-w-7xl mx-auto px-4">
     <SectionTitle
-      subtitle="Da el siguiente paso"
-      title="Agenda una cita con un asesor experto"
+      
+      title="Agenda una reunión con un asesor experto"
+      subtitle="Asesoría Personalizada quieres saber como iniciar tu negocio"
+      
     />
 
     {/* CONTENEDOR CENTRADO */}
