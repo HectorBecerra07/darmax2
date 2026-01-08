@@ -30,7 +30,7 @@ export default function LandingPage() {
       <Helmet>
         <title>Darmax | Inicio</title>
       </Helmet>
-      <Banner />
+      
 
       <main className="min-h-screenz bg-slate-900 selection:bg-[#24d4da] selection:text-white">
         {/* HERO SECTION (Estilo Dark Tech) */}
