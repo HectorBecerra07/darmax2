@@ -150,13 +150,13 @@ nav a {
 .grecaptcha-badge {
   right: 0 !important;
   left: auto !important;
-  bottom: 0 !important; /* Stick to the bottom */
-  transform: scale(0.8) !important; /* Scaled down slightly */
+  bottom: 100px !important; /* Raised to clear footer links */
+  transform: scale(0.8) !important; 
   transform-origin: bottom right !important; 
-  border-radius: 5px 0 0 0 !important; /* Smooth corner integration */
-  box-shadow: -1px -1px 5px rgba(0,0,0,0.1) !important;
+  border-radius: 5px 0 0 5px !important; /* Adjusted border radius for floating look */
+  box-shadow: -1px 1px 5px rgba(0,0,0,0.1) !important;
   transition: all 0.3s ease !important;
-  z-index: 40 !important; /* Ensure it stays behind WhatsApp modal if needed, but above background */
+  z-index: 40 !important; 
 }
 
 /* Allow native hover expansion but keep the base scale */
