@@ -167,6 +167,17 @@ const Footer = () => {
               Pagos seguros y fáciles para tus pedidos de agua.
             </p>
           </div>
+
+          {/* Google reCAPTCHA Disclaimer */}
+          <div className="mt-6 pt-4 border-t border-white/5">
+             <p className="text-[10px] text-gray-500 leading-tight">
+              Este sitio está protegido por reCAPTCHA y se aplican la 
+              <a href="https://policies.google.com/privacy" className="text-sky-600 hover:underline mx-1" target="_blank" rel="noreferrer">Política de privacidad</a> 
+              y los 
+              <a href="https://policies.google.com/terms" className="text-sky-600 hover:underline mx-1" target="_blank" rel="noreferrer">Términos de servicio</a> 
+              de Google.
+            </p>
+          </div>
         </div>
       </div>
 
