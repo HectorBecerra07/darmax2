@@ -70,7 +70,7 @@ const modelos = [
     id: "Tridente",
     nombre: "Tridente",
     etiqueta: "Triple Modelo de Negocio",
-    imagen: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767914277/tridente_d5nvcm.png", // Placeholder, replace with actual image
+    imagen: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767984401/tridente_1_tqcl26.png", // Placeholder, replace with actual image
     precio: 107900,
     descripcion: "Una solución completa que integra agua purificada, productos de limpieza y otros artículos esenciales, ofreciendo una experiencia integral a tus clientes.",
     rutaInfo: "/tridente-info",
