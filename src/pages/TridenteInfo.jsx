@@ -10,65 +10,70 @@ import {
   AcademicCapIcon,
   ShieldCheckIcon,
   CpuChipIcon,
-  CubeIcon,
   SparklesIcon,
   DocumentTextIcon,
   RectangleStackIcon,
-  BoltIcon
+  BoltIcon,
+  CurrencyDollarIcon,
+  BeakerIcon,
+  ArchiveBoxIcon,
 } from "@heroicons/react/24/outline";
 
 /* --- Data --- */
-const HERO_IMG = "/img/vending/tridente.png"; 
+const HERO_IMG = "/img/vending/tridente.png";
 
 const highlights = [
   {
     icon: RectangleStackIcon,
-    title: "Triple Negocio Integrado",
-    desc: "Agua, limpieza y un módulo extra",
+    title: "Paquete Tridente Completo",
+    desc: "Atlantis 300 + mostrador + limpieza 5 productos",
   },
   {
-    icon: BoltIcon,
-    title: "Máxima Versatilidad",
-    desc: "Adapta tu oferta al mercado",
+    icon: CurrencyDollarIcon,
+    title: "Precio $117,900 MXN",
+    desc: "Ahorro de $13,300 MXN vs compra por separado",
   },
   {
     icon: DocumentTextIcon,
-    title: "Solución Todo en Uno",
-    desc: "Gestiona todo desde un lugar",
+    title: "Agua Alcalina Opcional",
+    desc: "Añádela por solo $12,000 MXN",
   },
-  { 
-    icon: SparklesIcon, 
-    title: "Diferenciación Total", 
-    desc: "Lidera el mercado local" 
+  {
+    icon: SparklesIcon,
+    title: "Regalos Incluidos",
+    desc: "Tinaco 2,500 L + 5 bidones de 20 L",
   },
 ];
 
 const features = [
-    {
-        icon: RectangleStackIcon,
-        title: "Tres Módulos de Negocio",
-        description: "Integra en una sola estación la venta de agua purificada, productos de limpieza a granel y un tercer módulo personalizable para snacks, café, o cualquier producto de alta rotación.",
-        image: "/img/purificadoras/purificadora-comercial.jpg", // Placeholder
-    },
-    {
-        icon: CpuChipIcon,
-        title: "Plataforma de Gestión Unificada",
-        description: "Controla los tres negocios desde un solo panel de administración. Obtén estadísticas de ventas, alertas de inventario y gestiona precios para toda la estación en tiempo real.",
-        image: "/img/vending/TOUCHAGUA.png", // Placeholder
-    },
-    {
-        icon: ShieldCheckIcon,
-        title: "Experiencia de Cliente Inigualable",
-        description: "Ofrece una conveniencia sin precedentes que fideliza a tus clientes. Un solo punto para resolver múltiples necesidades, disponible 24/7.",
-        image: "/img/purificadora/tanque.png", // Placeholder
-    },
+  {
+    icon: BeakerIcon,
+    title: "Vending Touch Atlantis 300 con Mostrador",
+    description:
+      "Sistema de purificación con bomba Jet 1.5 hp en acero inoxidable, filtros de lecho profundo, carbón activado y suavizador 10x34 NSF, pulidor 10” Slim NSF, luz UV de 30 LPM y generador de ozono. Incluye mostrador mixto en acero inoxidable para lavado interior y exterior de garrafones y llenado simultáneo de dos garrafones.",
+    image: "/img/vending/TOUCHAGUA.png",
+  },
+  {
+    icon: RectangleStackIcon,
+    title: "Vending 5 Productos de Limpieza",
+    description:
+      "Máquina Darmax Clean con gabinete de acero inoxidable, bombas de 1/2 hp con válvula check, mangueras y conectores, luz interna y vinil de alta calidad. Registra ventas, sensa litros y despacha 1 litro por ciclo. Acepta monedas de $1, $2, $5 y $10 pesos y da cambio, con monedero antirrobo.",
+    image: "/img/vending/productoslimpieza5.png",
+  },
+  {
+    icon: CpuChipIcon,
+    title: "Estación Multiservicio Lista para Crecer",
+    description:
+      "Con este paquete atiendes dos necesidades clave: agua purificada en garrafón y productos de limpieza a granel. Una sola inversión, dos fuentes de ingreso y un punto de venta de alto retorno.",
+    image: "/img/purificadoras/purificadora-comercial.jpg",
+  },
 ];
 
 const processSteps = [
   {
     icon: MapPinIcon,
     title: "1. Diseño Estratégico",
-    desc: "Evaluamos tu ubicación y mercado para definir la mejor combinación de productos para los tres módulos de tu Tridente.",
+    desc: "Evaluamos tu ubicación y mercado para definir la mejor forma de instalar el Tridente y aprovechar el flujo de personas.",
   },
   {
     icon: TruckIcon,
@@ -78,28 +83,31 @@ const processSteps = [
   {
     icon: AcademicCapIcon,
     title: "3. Capacitación Integral",
-    desc: "Te formamos en la gestión de la plataforma unificada, el reabastecimiento de los 3 módulos y el mantenimiento preventivo.",
+    desc: "Te formamos en la operación del sistema de agua, la vending de limpieza, el manejo del dinero y el mantenimiento preventivo.",
   },
   {
     icon: WrenchScrewdriverIcon,
     title: "4. Soporte y Crecimiento",
-    desc: "Recibe soporte técnico continuo y asesoría para optimizar tu oferta de productos y maximizar la rentabilidad de tu estación.",
+    desc: "Recibe soporte técnico continuo y asesoría comercial para optimizar tu oferta y maximizar la rentabilidad de tu estación.",
   },
 ];
 
-
 const faqs = [
   {
-    q: "¿Qué puedo incluir en el tercer módulo?",
-    a: "El tercer módulo es altamente flexible. Podemos adaptarlo para vender una amplia gama de productos como snacks, bebidas frías, café de grano, artículos de higiene personal, o cualquier otro producto que se ajuste a un formato de vending automatizado."
+    q: "¿Qué incluye exactamente el paquete Tridente?",
+    a: "Incluye la Vending Touch Atlantis 300 con sistema completo de purificación y mostrador de acero inoxidable para lavado y llenado de garrafones, más la vending Darmax Clean para 5 productos de limpieza con gabinete metálico, bombas, mangueras, conectores y sistema de cobro. Además, recibes un tinaco de 2,500 L grado alimenticio y 5 bidones de 20 L como regalo, más instalación y capacitación.",
   },
   {
-    q: "¿Este modelo es para cualquier ubicación?",
-    a: "El Tridente brilla en ubicaciones de alto a mediano tráfico con una comunidad residente o recurrente, como grandes complejos residenciales, universidades, centros de oficinas, y plazas comerciales de barrio.",
+    q: "¿Cuál es el precio y cómo se paga?",
+    a: "El paquete Tridente tiene un precio de $117,900 MXN. La forma de pago es 50% de anticipo y 50% restante a la entrega del equipo. Si requieres factura, se maneja esquema Costo + IVA.",
   },
   {
-    q: "¿Requiere una instalación muy especializada?",
-    a: "Necesita un espacio más amplio que un vending tradicional, además de acceso a toma de agua, drenaje y conexiones eléctricas adecuadas. Nuestro equipo técnico realiza una visita de factibilidad y se encarga de todo el proceso.",
+    q: "¿Qué tiempo de entrega manejan?",
+    a: "El tiempo de entrega estimado es entre 15 y 20 días naturales a partir de la firma del contrato, ya con tu anticipo aplicado.",
+  },
+  {
+    q: "¿Qué requisitos tiene el local para instalar este paquete?",
+    a: "Necesitas un local de 30 a 40 m², conexiones de luz independiente con regulador de voltaje no break, contactos y drenaje dentro del local, dos tinacos de 5,000 L grado alimenticio translúcido para agua cruda y un muro con medidas 96 x 58 cm a 75 cm de altura del piso para la vending de agua.",
   },
 ];
 
@@ -110,6 +118,94 @@ const galleryImages = [
   "/img/trabajos/trabajos5.jpg",
   "/img/purificadoras/purificadora-negocio.jpeg",
   "/img/purificadoras/purificadora-comercial.jpg",
+];
+
+/* Pricing, agua alcalina, regalos y extras */
+
+const pricingCards = [
+  {
+    name: "Tridente · Atlantis 300 con Mostrador + Limpieza 5 Productos",
+    price: "$117,900 MXN",
+    badge: "Paquete principal",
+    description:
+      "Incluye Vending Touch Atlantis 300 con sistema de purificación completo, mostrador mixto de acero inoxidable y vending Darmax Clean para 5 productos de limpieza.",
+    items: [
+      "Bomba Jet 1.5 hp en acero inoxidable 127 V",
+      "Filtros 10x34 NSF: lecho profundo, carbón activado y suavizador",
+      "Pulidor 10\" Slim NSF, lámpara UV 30 LPM y generador de ozono",
+      "Despachador automático con 4 modalidades: 1, 4, 10 y 20 L (enjuaga garrafón y da cambio)",
+      "Mesa mixta de acero inoxidable para lavado interior, exterior y llenado de garrafones",
+      "Vending limpieza con bombas 1/2 hp, gabinete de acero inoxidable y monedero antirrobo",
+    ],
+  },
+  {
+    name: "Upgrade Agua Alcalina",
+    price: "+ $12,000 MXN",
+    badge: "Opcional recomendado",
+    description:
+      "Añade agua alcalina a tu sistema para ofrecer dos tipos de agua y aumentar tu ticket promedio.",
+    items: [
+      "Filtro alcalinizador",
+      "Pre-filtro pulidor",
+      "Lámpara UV 16 watts",
+      "Tarjeta vending para 2 tipos de agua",
+    ],
+  },
+  {
+    name: "Regalo Atlantis 300 con Mostrador",
+    price: "Incluido",
+    badge: "Beneficio extra",
+    description:
+      "Regalo al adquirir tu paquete Tridente con Atlantis 300.",
+    items: ["Tinaco 2,500 litros grado alimenticio (precio regular $5,500 MXN)"],
+  },
+  {
+    name: "Regalo Vending Limpieza",
+    price: "Incluido",
+    badge: "Beneficio extra",
+    description:
+      "Complemento inicial para tu vending de 5 productos de limpieza.",
+    items: [
+      "5 bidones de 20 litros para producto (no incluye rack, valor aproximado $2,000 MXN)",
+    ],
+  },
+];
+
+const extras = [
+  { name: "Trámite de aviso de funcionamiento", price: "+ $3,500 MXN" },
+  { name: "Tinaco 5,000 L grado alimenticio translúcido", price: "+ $10,500 MXN" },
+  { name: "Tinaco 2,500 L grado alimenticio translúcido", price: "+ $5,500 MXN" },
+  { name: "Tinaco 1,100 L grado alimenticio translúcido", price: "+ $3,300 MXN" },
+  {
+    name: "Tinaco 1,100 L grado alimenticio translúcido tipo bala",
+    price: "+ $3,600 MXN",
+  },
+  { name: "Toma de pipa 2” PVC cédula 40", price: "+ $5,500 MXN" },
+  { name: "Paquete para promoción o inauguración", price: "+ $7,500 MXN" },
+  { name: "Seguro de vending", price: "+ $4,950 MXN" },
+  { name: "Mantenimiento anual", price: "+ $8,500 MXN" },
+  { name: "Kit de insumos anuales", price: "+ $6,900 MXN" },
+  { name: "Ósmosis inversa", price: "+ $28,000 MXN" },
+  { name: "Automatización de ósmosis", price: "+ $9,000 MXN" },
+];
+
+const installRequirements = [
+  {
+    title: "Espacio Comercial",
+    desc: "Local de 30 m² a 40 m², con buena visibilidad y flujo de personas.",
+  },
+  {
+    title: "Instalación Eléctrica y Drenaje",
+    desc: "Conexiones de luz independiente, regulador de voltaje no break, contactos y drenaje dentro del local.",
+  },
+  {
+    title: "Almacenamiento de Agua Cruda",
+    desc: "Dos tinacos grado alimenticio translúcido de 5,000 litros para agua cruda.",
+  },
+  {
+    title: "Muro para Vending de Agua",
+    desc: "Levantamiento de muro con medidas 96 cm de altura x 58 cm de largo, a 75 cm del piso (con cajón interior de 15 cm de ancho).",
+  },
 ];
 
 /* --- Sub-components --- */
@@ -125,14 +221,13 @@ const FaqItem = ({ q, a }) => (
   </details>
 );
 
-const SectionTitle = ({ children, className = '' }) => (
-    <div className={`text-center mb-12 ${className}`}>
-        <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-            {children}
-        </h2>
-    </div>
+const SectionTitle = ({ children, className = "" }) => (
+  <div className={`text-center mb-12 ${className}`}>
+    <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+      {children}
+    </h2>
+  </div>
 );
-
 
 /* --- Main Component --- */
 export default function TridenteInfo() {
@@ -141,124 +236,383 @@ export default function TridenteInfo() {
   const contRef = useRef(null);
 
   useEffect(() => {
-    const t = setTimeout(() => contRef.current?.scrollIntoView({ behavior: "smooth" }), 200);
+    const t = setTimeout(
+      () => contRef.current?.scrollIntoView({ behavior: "smooth" }),
+      200
+    );
     return () => clearTimeout(t);
   }, [location.pathname]);
 
   return (
     <div ref={contRef} className="min-h-screen bg-slate-50 text-slate-800">
       <Helmet>
-        <title>Modelo Tridente 3 en 1 - Darmax</title>
+        <title>
+          Tridente · Atlantis 300 con Mostrador + Limpieza 5 Productos | Darmax
+        </title>
         <meta
           name="description"
-          content="La estación de multiservicio definitiva. Combina agua, limpieza y un tercer negocio a tu elección para dominar el mercado."
+          content="Paquete Tridente: Vending Touch Atlantis 300 con mostrador + Vending 5 productos de limpieza. Sistema completo de purificación, mostrador mixto, vending de limpieza a granel, regalos, extras y requisitos de instalación."
         />
       </Helmet>
 
       {/* ===== Hero Section ===== */}
-      <section className="relative bg-slate-900">
+      <section className="relative bg-slate-900 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={HERO_IMG} alt="Estación Tridente de Darmax" className="w-full h-full object-cover opacity-30" />
+          <img
+            src={HERO_IMG}
+            alt="Estación Tridente de Darmax"
+            className="w-full h-full object-cover opacity-30"
+          />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/70 to-slate-900/95" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-center min-h-[85vh] text-center text-white pt-24 pb-12">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-                <span className="inline-block px-4 py-1.5 mb-4 bg-white/10 text-teal-300 rounded-full text-sm font-semibold">Solución Multiservicio 3 en 1</span>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
-                    Modelo <span className="text-teal-400">Tridente</span>: Tres Negocios, Un Mismo Lugar.
-                </h1>
-                <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-300 leading-relaxed">
-                   Revoluciona el vending con la estación multiservicio definitiva. Combina agua purificada, productos de limpieza y un tercer negocio a tu elección para dominar tu mercado.
-                </p>
-                <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-                    <Link
-                        to="/configurar-maquina/Tridente"
-                        className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-teal-400 shadow-lg hover:bg-teal-300 transition-all transform hover:scale-105"
-                    >
-                        Configurar mi Tridente
-                    </Link>
-                    <Link
-                        to="#features"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="px-8 py-3 rounded-full font-semibold border-2 border-slate-600 text-slate-200 hover:bg-slate-800 hover:border-slate-800 transition"
-                    >
-                        Ver Módulos
-                    </Link>
-                </div>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <span className="inline-block px-4 py-1.5 mb-4 bg-white/10 text-teal-300 rounded-full text-sm font-semibold">
+              Paquete Tridente · Agua + Limpieza
+            </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
+              Atlantis 300 con Mostrador + Limpieza 5 Productos,{" "}
+              <span className="text-teal-400">2 Negocios en 1 Estación</span>.
+            </h1>
+            <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-200 leading-relaxed">
+              Combina una vending de agua purificada de alto rendimiento con
+              mostrador profesional y una vending de productos de limpieza a
+              granel. Más ingresos, más clientes y una sola inversión.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+              <Link
+                to="/configurar-maquina/Tridente"
+                className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-teal-400 shadow-lg hover:bg-teal-300 transition-all transform hover:scale-105"
+              >
+                Configurar mi Tridente
+              </Link>
+              <Link
+                to="#pricing"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document
+                    .getElementById("pricing")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="px-8 py-3 rounded-full font-semibold border-2 border-slate-600 text-slate-200 hover:bg-slate-800 hover:border-slate-800 transition"
+              >
+                Ver Precio y Qué Incluye
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ===== Highlights Section ===== */}
       <section className="bg-slate-800 py-12">
-          <div className="max-w-7xl mx-auto px-6 md:px-10">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
-                  {highlights.map((h, i) => (
-                      <motion.div 
-                        key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: i * 0.1 }}
-                        className="flex items-center gap-4 text-white"
-                      >
-                          <div className="flex-shrink-0 bg-slate-700 p-3 rounded-lg">
-                            <h.icon className="h-7 w-7 text-teal-400"/>
-                          </div>
-                          <div>
-                              <p className="font-bold text-lg">{h.title}</p>
-                              <p className="text-sm text-slate-400">{h.desc}</p>
-                          </div>
-                      </motion.div>
-                  ))}
-              </div>
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
+            {highlights.map((h, i) => (
+              <motion.div
+                key={h.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="flex items-center gap-4 text-white"
+              >
+                <div className="flex-shrink-0 bg-slate-700 p-3 rounded-lg">
+                  <h.icon className="h-7 w-7 text-teal-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg">{h.title}</p>
+                  <p className="text-sm text-slate-400">{h.desc}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
+        </div>
+      </section>
+
+      {/* ===== Pricing & What's Included ===== */}
+      <section
+        id="pricing"
+        className="py-20 md:py-28 bg-gradient-to-b from-slate-50 via-white to-slate-50"
+      >
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <SectionTitle>Inversión, Agua Alcalina y Regalos</SectionTitle>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+            {pricingCards.map((card, i) => (
+              <motion.div
+                key={card.name}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.6, delay: i * 0.08 }}
+                className={`relative rounded-3xl p-7 md:p-8 bg-white shadow-lg border ${
+                  i === 0
+                    ? "border-teal-200 shadow-teal-100"
+                    : "border-slate-200/80"
+                }`}
+              >
+                <span
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide mb-4 ${
+                    i >= 2 ? "bg-emerald-100 text-emerald-700" : "bg-teal-100 text-teal-700"
+                  }`}
+                >
+                  {card.badge}
+                </span>
+                <h3 className="text-xl font-bold text-slate-900">
+                  {card.name}
+                </h3>
+                <p className="mt-2 text-2xl font-extrabold text-slate-900">
+                  {card.price}
+                </p>
+                <p className="mt-3 text-sm text-slate-600">
+                  {card.description}
+                </p>
+                <ul className="mt-4 space-y-2 text-sm text-slate-600">
+                  {card.items.map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="mt-[6px] h-1.5 w-1.5 rounded-full bg-teal-500" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mt-8 max-w-3xl mx-auto text-center text-sm text-slate-500">
+            <p>
+              Forma de pago: <strong>50% de anticipo</strong> y{" "}
+              <strong>50% restante a la entrega</strong> del equipo. Si
+              requieres factura, se maneja esquema{" "}
+              <strong>Costo + IVA</strong>.
+            </p>
+            <p className="mt-2">
+              Tiempo de entrega estimado: entre{" "}
+              <strong>15 y 20 días naturales</strong> a partir de la firma del
+              contrato.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Technical Components Section ===== */}
+      <section className="py-20 md:py-28 bg-white">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <SectionTitle>Componentes de Purificación, Mostrador y Vending</SectionTitle>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
+            {/* Purificación + Mostrador */}
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6 }}
+              className="lg:col-span-2 rounded-3xl bg-slate-50 border border-slate-200/80 p-7 md:p-8"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <span className="p-2 rounded-full bg-teal-100 text-teal-700">
+                  <ShieldCheckIcon className="h-6 w-6" />
+                </span>
+                <h3 className="text-xl font-bold text-slate-900">
+                  Sistema de Purificación Atlantis 300 + Mostrador
+                </h3>
+              </div>
+              <p className="text-sm text-slate-600 mb-4">
+                Basado en tanques y medios filtrantes con certificación NSF y un
+                mostrador mixto de acero inoxidable para lavado y llenado de
+                garrafones.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm text-slate-700">
+                <ul className="space-y-2">
+                  <li>• Bomba 1.5 hp Jet de acero inoxidable 127 V.</li>
+                  <li>• Presurizador automático.</li>
+                  <li>
+                    • Filtro de lecho profundo 10x34 NSF con gravas, arenas
+                    sílicas y zeolita certificadas y difusores internos.
+                  </li>
+                  <li>
+                    • Filtro de carbón activado 10x34 NSF con carbón certificado
+                    y válvula manual de tres vías.
+                  </li>
+                  <li>
+                    • Filtro suavizador 10x34 NSF con válvula manual de 5 pasos,
+                    tanque de salmuera y resina catiónica certificada NSF.
+                  </li>
+                  <li>• Portacartuchos pulidor 10\" Slim certificado NSF.</li>
+                </ul>
+                <ul className="space-y-2">
+                  <li>
+                    • Lámpara de rayos ultravioleta de 30 LPM con balastro en
+                    acero inoxidable.
+                  </li>
+                  <li>• Generador de ozono metálico.</li>
+                  <li>• Ventury de 3/4\".</li>
+                  <li>
+                    • Despachador automático para 4 modalidades de llenado con
+                    validador de monedas (da cambio y enjuaga garrafón).
+                  </li>
+                  <li>
+                    • Mesa mixta de acero inoxidable calidad 304 con tarja y
+                    charola de lavado interior fija para un garrafón, lavado
+                    exterior para dos garrafones y llenado para dos garrafones.
+                  </li>
+                  <li>
+                    • Bomba 1/2 hp para mostrador y tubería en PVC cédula 40.
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
+
+            {/* Vending limpieza */}
+            <motion.div
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="rounded-3xl bg-slate-900 text-slate-50 p-7 md:p-8 relative overflow-hidden"
+            >
+              <div className="absolute -top-8 -right-10 h-32 w-32 rounded-full bg-teal-500/30 blur-2xl" />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="p-2 rounded-full bg-slate-800 text-teal-300">
+                    <ArchiveBoxIcon className="h-6 w-6" />
+                  </span>
+                  <h3 className="text-xl font-bold">
+                    Vending Gabinete de Acero Inoxidable · Limpieza
+                  </h3>
+                </div>
+                <ul className="space-y-2 text-sm text-slate-200/90">
+                  <li>• Registra ventas y sensa litros.</li>
+                  <li>• Llenado estándar de 1 litro por operación.</li>
+                  <li>• Configuración de precios de llenado.</li>
+                  <li>
+                    • Acepta monedas de $1, $2, $5 y $10 pesos (da cambio).
+                  </li>
+                  <li>• Monedero antirrobo.</li>
+                  <li>• Luz interna y vinil exterior Darmax Clean.</li>
+                  <li>
+                    • Pantalla inicial con botones de acero inoxidable y gabinete con llave para
+                    protección del dinero y del sistema.
+                  </li>
+                  <li>
+                    • Bombas de 1/2 hp con válvula check, mangueras, conectores
+                    y conexiones listas para instalación.
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </section>
 
       {/* ===== Key Features Section ===== */}
-      <section id="features" className="py-20 md:py-28">
+      <section id="features" className="py-20 md:py-28 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
-            <div className="max-w-3xl mx-auto text-center mb-16">
-                 <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-                    Una Oferta de Servicios sin Competencia
-                </h2>
-                <p className="mt-4 text-lg text-slate-600">
-                    Diseñado para una máxima versatilidad y una gestión simplificada que multiplica tus fuentes de ingreso.
-                </p>
-            </div>
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+              Una Oferta de Servicios sin Competencia
+            </h2>
+            <p className="mt-4 text-lg text-slate-600">
+              Dos líneas de negocio esenciales, integradas en una estación
+              multiservicio pensada para generar flujo constante de clientes.
+            </p>
+          </div>
 
-            <div className="space-y-16">
-                {features.map((feature, i) => (
-                    <motion.div 
-                        key={i}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{ duration: 0.6 }}
-                        className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}
-                    >
-                        <div className="md:w-1/2">
-                            <div className="inline-flex items-center gap-3 mb-4">
-                                <span className="p-2 bg-teal-100 rounded-full">
-                                    <feature.icon className="h-6 w-6 text-teal-700"/>
-                                </span>
-                                <h3 className="text-2xl font-bold">{feature.title}</h3>
-                            </div>
-                            <p className="text-slate-600 leading-relaxed text-base">
-                                {feature.description}
-                            </p>
-                        </div>
-                        <div className="md:w-1/2">
-                            <img src={feature.image} alt={feature.title} className="w-full h-auto rounded-2xl shadow-xl object-cover" />
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
+          <div className="space-y-16">
+            {features.map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6 }}
+                className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${
+                  i % 2 !== 0 ? "md:flex-row-reverse" : ""
+                }`}
+              >
+                <div className="md:w-1/2">
+                  <div className="inline-flex items-center gap-3 mb-4">
+                    <span className="p-2 bg-teal-100 rounded-full">
+                      <feature.icon className="h-6 w-6 text-teal-700" />
+                    </span>
+                    <h3 className="text-2xl font-bold">{feature.title}</h3>
+                  </div>
+                  <p className="text-slate-600 leading-relaxed text-base">
+                    {feature.description}
+                  </p>
+                </div>
+                <div className="md:w-1/2">
+                  <img
+                    src={feature.image}
+                    alt={feature.title}
+                    className="w-full h-auto rounded-2xl shadow-xl object-cover"
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
-      
+
+      {/* ===== Extras Section ===== */}
+      <section className="py-20 md:py-28 bg-white">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <SectionTitle>Extras y Servicios Opcionales</SectionTitle>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-7">
+            {extras.map((extra, i) => (
+              <motion.div
+                key={extra.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.4, delay: i * 0.06 }}
+                className="rounded-2xl border border-slate-200/80 bg-slate-50/60 hover:bg-white hover:shadow-md transition p-5 flex flex-col justify-between"
+              >
+                <p className="font-semibold text-sm text-slate-900">
+                  {extra.name}
+                </p>
+                <p className="mt-3 text-teal-700 font-bold text-sm">
+                  {extra.price}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+          <p className="mt-8 text-xs text-slate-500 flex items-center gap-2">
+            <TruckIcon className="h-4 w-4" />
+            *Flete y viáticos se cotizan de acuerdo con el código postal de
+            instalación.
+          </p>
+        </div>
+      </section>
+
+      {/* ===== Installation Requirements Section ===== */}
+      <section className="py-20 md:py-28 bg-slate-900 text-slate-50">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <SectionTitle className="text-left md:text-left">
+            ¿Qué requieres para instalar tu Tridente?
+          </SectionTitle>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {installRequirements.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.5, delay: i * 0.06 }}
+                className="relative rounded-2xl bg-slate-800/60 border border-slate-700/80 p-6"
+              >
+                <div className="absolute -top-4 -right-4 h-10 w-10 rounded-full bg-teal-500/30 blur-xl" />
+                <h3 className="font-semibold text-base mb-2">{item.title}</h3>
+                <p className="text-sm text-slate-300">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== How It Works Section ===== */}
       <section className="py-20 md:py-28 bg-white">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
@@ -266,7 +620,7 @@ export default function TridenteInfo() {
           <div className="mt-16 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
             {processSteps.map((step, i) => (
               <motion.div
-                key={i}
+                key={step.title}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, amount: 0.5 }}
@@ -274,44 +628,50 @@ export default function TridenteInfo() {
                 className="text-center p-6 bg-slate-50 rounded-2xl border border-slate-200/80"
               >
                 <div className="inline-block p-4 bg-teal-100 text-teal-700 rounded-full mb-4">
-                    <step.icon className="h-8 w-8" />
+                  <step.icon className="h-8 w-8" />
                 </div>
                 <h3 className="font-bold text-lg">{step.title}</h3>
                 <p className="text-sm text-slate-600 mt-1">{step.desc}</p>
               </motion.div>
             ))}
           </div>
-            <div className="mt-12 text-center">
-                 <Link
-                    to="/contacto"
-                    className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-teal-400 shadow-lg hover:bg-teal-300 transition-all transform hover:scale-105"
-                    >
-                    Solicitar Propuesta
-                </Link>
-            </div>
+          <div className="mt-12 text-center">
+            <Link
+              to="/contacto"
+              className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-teal-400 shadow-lg hover:bg-teal-300 transition-all transform hover:scale-105"
+            >
+              Solicitar Propuesta
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* ===== Gallery Section ===== */}
       <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto">
-          <SectionTitle className="px-6">Proyectos y Diseños Conceptuales</SectionTitle>
+          <SectionTitle className="px-6">
+            Proyectos y Diseños Conceptuales
+          </SectionTitle>
         </div>
         <div className="mt-8 relative">
-            <div className="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-6 md:px-10">
-                {galleryImages.map((src, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true, amount: 0.4 }}
-                        transition={{ duration: 0.5, delay: i * 0.08 }}
-                        className="flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 snap-center"
-                    >
-                        <img src={src} alt={`Concepto Tridente ${i+1}`} className="w-full h-80 rounded-2xl object-cover shadow-lg" />
-                    </motion.div>
-                ))}
-            </div>
+          <div className="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-6 md:px-10">
+            {galleryImages.map((src, i) => (
+              <motion.div
+                key={src}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                className="flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 snap-center"
+              >
+                <img
+                  src={src}
+                  alt={`Concepto Tridente ${i + 1}`}
+                  className="w-full h-80 rounded-2xl object-cover shadow-lg"
+                />
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -320,35 +680,40 @@ export default function TridenteInfo() {
         <div className="max-w-4xl mx-auto px-6 md:px-10">
           <SectionTitle>Preguntas Frecuentes</SectionTitle>
           <div className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-            {faqs.map((f, i) => <FaqItem key={i} q={f.q} a={f.a} />)}
+            {faqs.map((f, i) => (
+              <FaqItem key={i} q={f.q} a={f.a} />
+            ))}
           </div>
         </div>
       </section>
 
-       {/* ===== Final CTA Section ===== */}
-       <section className="py-20">
-         <div className="max-w-3xl mx-auto text-center px-6">
-            <h2 className="text-3xl font-extrabold text-slate-900">Una Solución, Múltiples Fuentes de Ingreso</h2>
-            <p className="mt-4 text-lg text-slate-600">
-                Diversifica tu inversión y captura a un público más amplio con el modelo Tridente. Contáctanos y diseña tu estación multiservicio.
-            </p>
-             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-                <Link
-                    to="/configurar-maquina/Tridente"
-                    className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-teal-400 shadow-lg hover:bg-teal-300 transition-all transform hover:scale-105"
-                >
-                    Configurar mi Tridente
-                </Link>
-                <button
-                    onClick={() => navigate(-1)}
-                    className="px-8 py-3 rounded-full font-semibold bg-slate-200 hover:bg-slate-300 text-slate-800 transition"
-                >
-                    Volver
-                </button>
-            </div>
-         </div>
-       </section>
-
+      {/* ===== Final CTA Section ===== */}
+      <section className="py-20">
+        <div className="max-w-3xl mx-auto text-center px-6">
+          <h2 className="text-3xl font-extrabold text-slate-900">
+            Una Solución, Múltiples Fuentes de Ingreso
+          </h2>
+          <p className="mt-4 text-lg text-slate-600">
+            Con el Tridente combinas agua purificada, mostrador profesional y
+            vending de limpieza en una sola estación. Contáctanos y diseña tu
+            proyecto multiservicio con Darmax.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              to="/configurar-maquina/Tridente"
+              className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-teal-400 shadow-lg hover:bg-teal-300 transition-all transform hover:scale-105"
+            >
+              Configurar mi Tridente
+            </Link>
+            <button
+              onClick={() => navigate(-1)}
+              className="px-8 py-3 rounded-full font-semibold bg-slate-200 hover:bg-slate-300 text-slate-800 transition"
+            >
+              Volver
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
