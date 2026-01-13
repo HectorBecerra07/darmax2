@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async"; // o "react-helmet" según uses
 import SEO from "../components/SEO";
 import {
   ChevronDownIcon,
@@ -255,7 +256,6 @@ export default function VendingInfo() {
 
   return (
     <div ref={contRef} className="min-h-screen bg-slate-50 text-slate-800">
-<<<<<<< HEAD
       <Helmet>
         <title>
           Atlantis 300 Vending Touch | Purificadora de Agua 24 Horas | Darmax
@@ -297,18 +297,17 @@ export default function VendingInfo() {
           `}
         </script>
       </Helmet>
-=======
+
       <SEO
         title="Vending de Agua Purificada 24/7 | Máquinas Rentables"
         description="Inicia tu negocio de Vending de Agua 24 horas con Darmax. Equipos automáticos de acero inoxidable, alta capacidad y múltiples formas de pago."
         keywords="vending de agua, purificadora 24 horas, negocio rentable, franquicia agua, vending machine precio"
         productData={{
           name: "Máquina Vending de Agua Purificada Darmax",
-          price: "54950"
+          price: "54950",
         }}
-        faqData={faqs.map(f => ({ question: f.q, answer: f.a }))}
+        faqData={faqs.map((f) => ({ question: f.q, answer: f.a }))}
       />
->>>>>>> d881b9f2c943b2b62953b13d09f763674298160b
 
       {/* ===== Hero Section ===== */}
       <section className="relative bg-slate-900 overflow-hidden">
@@ -634,10 +633,7 @@ export default function VendingInfo() {
       {/* ===== Installation Requirements Section ===== */}
       <section className="py-20 md:py-24 bg-slate-900 text-slate-50">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle
-            eyebrow="Antes de Instalar"
-            align="left"
-          >
+          <SectionTitle eyebrow="Antes de Instalar" align="left">
             Requisitos del Local e Instalación
           </SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
