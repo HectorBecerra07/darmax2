@@ -20,7 +20,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 /* --- Data --- */
-const HERO_IMG = "/img/vending/megalodon.png";
+const HERO_IMG = "/img/Iniciatunegocio/fachadacalle.jpg";
 
 const highlights = [
   {
@@ -152,17 +152,7 @@ const pricingCards = [
       "Tarjeta vending para 2 tipos de agua",
     ],
   },
-  {
-    name: "Regalo Tinaco 2,500 L",
-    price: "Incluido",
-    badge: "Beneficio extra",
-    description:
-      "Tinaco grado alimenticio translúcido para almacenar agua purificada.",
-    items: [
-      "Tinaco 2,500 litros grado alimenticio",
-      "Precio regular $5,500 MXN, incluido sin costo en el paquete",
-    ],
-  },
+
   {
     name: "Regalo 8 Bidones de 20 L",
     price: "Incluido",
@@ -267,7 +257,7 @@ export default function MegalodonInfo() {
             className="w-full h-full object-cover opacity-30"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/70 to-slate-900/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/40 to-slate-900/60" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-center min-h-[85vh] text-center text-white pt-24 pb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -596,9 +586,9 @@ export default function MegalodonInfo() {
       </section>
 
       {/* ===== Installation Requirements Section ===== */}
-      <section className="py-20 md:py-28 bg-slate-900 text-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle className="text-left md:text-left">
+      <section className="py-20 md:py-28 bg-slate-900 text-white" >
+        <div className="max-w-7xl mx-auto px-6 md:px-10 ">
+          <SectionTitle className="text-left md:text-left text-white">
             ¿Qué requieres para instalar tu Megalodón?
           </SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">

@@ -20,7 +20,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 /* --- Data --- */
-const HERO_IMG = "/img/vending/tridente.png";
+const HERO_IMG = "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767984401/tridente_1_tqcl26.png";
 
 const highlights = [
   {
@@ -264,7 +264,7 @@ export default function TridenteInfo() {
             className="w-full h-full object-cover opacity-30"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/70 to-slate-900/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/40 to-slate-900/60" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-center min-h-[85vh] text-center text-white pt-24 pb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
