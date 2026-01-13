@@ -13,7 +13,7 @@ const THEME = {
   agua: {
     primary: BRAND.accent,
     secondary: "#0ea5e9",
-    gradient: `from-[${BRAND.accent}] to-cyan-500`,
+    gradient: "from-[#24d4da] to-cyan-500",
     shadow: "shadow-cyan-500/20",
     bgResults: "bg-slate-900",
     icon: "💧"
@@ -321,7 +321,7 @@ export default function CalculadoraNegocio() {
         </span>
         <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-4">
           Calculadora de <br/>
-          <span className="text-slate-900 bg-clip-text bg-gradient-to-r from-[${BRAND.accentDark}] to-blue-600">Rentabilidad</span>
+          <span className="text-slate-900 bg-clip-text bg-gradient-to-r from-[#168387] to-blue-600">Rentabilidad</span>
         </h1>
         <p className="text-slate-500 text-sm md:text-base max-w-lg mx-auto">
             Proyecta tus ganancias mensuales y anuales basándote en costos reales y tráfico estimado.

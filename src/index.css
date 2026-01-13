@@ -38,7 +38,7 @@ body {
   min-height: 100vh;
   width: 100%;
   overflow: hidden;
-  background-image: url("/img/fondos.jpg"); /* Asegurate que esté aquí */
+  background-image: url("/img/banner.png"); /* Corregido de fondos.jpg a banner.png */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

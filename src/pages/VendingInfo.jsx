@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import SEO from "../components/SEO";
 import {
   ChevronDownIcon,
   CurrencyDollarIcon,
@@ -255,6 +255,7 @@ export default function VendingInfo() {
 
   return (
     <div ref={contRef} className="min-h-screen bg-slate-50 text-slate-800">
+<<<<<<< HEAD
       <Helmet>
         <title>
           Atlantis 300 Vending Touch | Purificadora de Agua 24 Horas | Darmax
@@ -296,6 +297,18 @@ export default function VendingInfo() {
           `}
         </script>
       </Helmet>
+=======
+      <SEO
+        title="Vending de Agua Purificada 24/7 | Máquinas Rentables"
+        description="Inicia tu negocio de Vending de Agua 24 horas con Darmax. Equipos automáticos de acero inoxidable, alta capacidad y múltiples formas de pago."
+        keywords="vending de agua, purificadora 24 horas, negocio rentable, franquicia agua, vending machine precio"
+        productData={{
+          name: "Máquina Vending de Agua Purificada Darmax",
+          price: "54950"
+        }}
+        faqData={faqs.map(f => ({ question: f.q, answer: f.a }))}
+      />
+>>>>>>> d881b9f2c943b2b62953b13d09f763674298160b
 
       {/* ===== Hero Section ===== */}
       <section className="relative bg-slate-900 overflow-hidden">

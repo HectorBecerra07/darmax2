@@ -1,5 +1,7 @@
- User-agent: *
+User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+
 Sitemap: https://darmaxagua.com.mx/sitemap.xml
-Allow: /logo_nav.ico

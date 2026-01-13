@@ -1,6 +1,6 @@
-import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import SEO from "../components/SEO";
 import Calendar from '../components/Calendar';
 import VendingPrecise3D from "../components/Vending";
 
@@ -70,7 +70,7 @@ const modelos = [
     id: "Tridente",
     nombre: "Tridente",
     etiqueta: "Triple Modelo de Negocio",
-    imagen: "/img/Iniciatunegocio/negocio3.jpg", // Placeholder, replace with actual image
+    imagen: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767984401/tridente_1_tqcl26.png", // Placeholder, replace with actual image
     precio: 107900,
     descripcion: "Una solución completa que integra agua purificada, productos de limpieza y otros artículos esenciales, ofreciendo una experiencia integral a tus clientes.",
     rutaInfo: "/tridente-info",
@@ -421,144 +421,137 @@ const IniciaNegocio = () => {
 
   return (
     <>
-      <>
+      <SEO 
+        title="Inicia tu Negocio de Agua Purificada"
+        description="Emprende con Darmax: Purificadoras de agua, Máquinas Vending 24/7 y Productos de Limpieza. Modelos rentables y soporte total en México."
+        keywords="negocio de agua, franquicia purificadora, vending de agua, darmax, ingresos pasivos"
+        localBizData={true}
+      />
 
-        {/* SECCIÓN DE MODELOS */}
-        <section id="catalogo" className="py-24 bg-[#Fbfbfd]">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-slate-200 pb-8">
-              <div>
-                  <h2 className="text-3xl font-bold text-slate-900">Elige tu modelo de negocio</h2>
-                  <p className="text-slate-500 mt-2">Emprende a tus posibilidades con darmax.</p>
-              </div>
-              {selected.length > 0 && (
-                  <div className="mt-4 md:mt-0 px-4 py-2 bg-[#24d4da]/10 text-[BRAND_TEXT] rounded-lg font-medium text-sm animate-fade-in">
-                      {selected.length} equipos seleccionados para comparar
-                  </div>
-              )}
+      {/* SECCIÓN DE MODELOS */}
+      <section id="catalogo" className="py-24 bg-[#Fbfbfd]">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-slate-200 pb-8">
+            <div>
+                <h2 className="text-3xl font-bold text-slate-900">Elige tu modelo de negocio</h2>
+                <p className="text-slate-500 mt-2">Emprende a tus posibilidades con darmax.</p>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" >
-              {modelos.map((modelo) => (
-                <TarjetaModelo
-                  key={modelo.id}
-                  modelo={modelo}
-                  navigate={navigate}
-                  selected={selected}
-                  onToggleSelect={toggleSelect}
-                />
-              ))}
-            </div>
+            {selected.length > 0 && (
+                <div className="mt-4 md:mt-0 px-4 py-2 bg-[#24d4da]/10 text-[BRAND_TEXT] rounded-lg font-medium text-sm animate-fade-in">
+                    {selected.length} equipos seleccionados para comparar
+                </div>
+            )}
           </div>
-        </section>
 
-        {/* SECCIÓN INTERACTIVA 3D */}
-        <section className="relative bg-white border-t border-slate-100 py-24">
-          <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row items-center gap-12">
-            
-            {/* Texto a la izquierda */}
-            <div className="lg:w-1/2 text-left relative z-10">
-                 <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
-                    Experiencia Inmersiva
-                 </span>
-                 <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
-                    Conoce tu próxima <br /> máquina de éxito
-                 </h2>
-                 <p className="mt-6 text-slate-600 text-lg leading-relaxed max-w-xl">
-                    Interactúa con el modelo 3D de alta precisión. Arrastra para rotar, explora los componentes y visualiza la calidad industrial de la Vending Touch antes de adquirirla.
-                 </p>
-                 
-                 <div className="mt-10 flex flex-wrap gap-4">
-                    <div className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700">
-                       <div className="w-10 h-10 rounded-full bg-[#24d4da]/10 flex items-center justify-center text-[#24d4da]">
-                          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
-                          </svg>
-                       </div>
-                       <div>
-                          <p className="text-sm font-bold">Rotación 360°</p>
-                          <p className="text-xs text-slate-500">Explora cada ángulo</p>
-                       </div>
-                    </div>
-                 </div>
-            </div>
-
-            {/* Modelo a la derecha */}
-            <div className="lg:w-1/2 w-full relative z-20 flex justify-center lg:justify-end py-10">
-               <div className="scale-75 sm:scale-85 lg:scale-100 xl:scale-110 origin-center lg:origin-right transform-gpu">
-                  <VendingPrecise3D />
-               </div>
-            </div>
-            
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" >
+            {modelos.map((modelo) => (
+              <TarjetaModelo
+                key={modelo.id}
+                modelo={modelo}
+                navigate={navigate}
+                selected={selected}
+                onToggleSelect={toggleSelect}
+              />
+            ))}
           </div>
-        </section>
-
-
-
-        {/* VENTAJAS */}
-        <VentajasSection />
-
-
-
-        {/* SECCIÓN DE AGENDAR CITA */}
-<section className="py-24 bg-[#Fbfbfd]">
-  <div className="max-w-7xl mx-auto px-4">
-    <SectionTitle
-      
-      title="Agenda una reunión con un asesor experto"
-      subtitle="Asesoría Personalizada quieres saber como iniciar tu negocio"
-      
-    />
-
-    {/* CONTENEDOR CENTRADO */}
-    <div className="mt-12 flex justify-center">
-      <Calendar />
-    </div>
-  </div>
-</section>
-
-
-
-
-
-        {/* CTA FINAL (Clean) */}
-        {/* BARRA COMPARATIVA FLOTANTE (Glassmorphism Puro) */}
-        <div className={`fixed bottom-8 left-0 right-0 flex justify-center z-50 pointer-events-none transition-all duration-500 ${selected.length > 0 ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"}`}>
-           <div className="pointer-events-auto flex items-center gap-6 px-8 py-4 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl shadow-black/50 text-white">
-              <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-wider text-slate-600 font-bold">Comparando</span>
-                  <span className="font-bold text-lg leading-none">{selected.length} <span className="text-slate-500 text-sm font-normal">Modelos</span></span>
-              </div>
-
-              <div className="h-8 w-px bg-white/20" />
-
-              <button
-                onClick={() => setCompareOpen(true)}
-                className="px-6 py-2 rounded-full font-bold text-slate-900 transition-transform hover:scale-105 active:scale-95"
-                style={{ backgroundColor: BRAND_COLOR }}
-                disabled={selected.length < 2}
-              >
-                 Ver Tabla
-              </button>
-              
-              <button
-                onClick={() => setSelected([])}
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-red-500/20 hover:text-red-400 transition-colors text-slate-600"
-              >
-                ✕
-              </button>
-           </div>
         </div>
+      </section>
 
-        {/* MODAL COMPARAR */}
-        <CompareModal
-          open={compareOpen}
-          onClose={() => setCompareOpen(false)}
-          models={selectedModels}
-          navigate={navigate}
-        />
+      {/* SECCIÓN INTERACTIVA 3D */}
+      <section className="relative bg-white border-t border-slate-100 py-24">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row items-center gap-12">
+          
+          {/* Texto a la izquierda */}
+          <div className="lg:w-1/2 text-left relative z-10">
+               <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
+                  Experiencia Inmersiva
+               </span>
+               <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
+                  Conoce tu próxima <br /> máquina de éxito
+               </h2>
+               <p className="mt-6 text-slate-600 text-lg leading-relaxed max-w-xl">
+                  Interactúa con el modelo 3D de alta precisión. Arrastra para rotar, explora los componentes y visualiza la calidad industrial de la Vending Touch antes de adquirirla.
+               </p>
+               
+               <div className="mt-10 flex flex-wrap gap-4">
+                  <div className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700">
+                     <div className="w-10 h-10 rounded-full bg-[#24d4da]/10 flex items-center justify-center text-[#24d4da]">
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                        </svg>
+                     </div>
+                     <div>
+                        <p className="text-sm font-bold">Rotación 360°</p>
+                        <p className="text-xs text-slate-500">Explora cada ángulo</p>
+                     </div>
+                  </div>
+               </div>
+          </div>
 
-      </>
+          {/* Modelo a la derecha */}
+          <div className="lg:w-1/2 w-full relative z-20 flex justify-center lg:justify-end py-10">
+             <div className="scale-75 sm:scale-85 lg:scale-100 xl:scale-110 origin-center lg:origin-right transform-gpu">
+                <VendingPrecise3D />
+             </div>
+          </div>
+          
+        </div>
+      </section>
+
+      {/* VENTAJAS */}
+      <VentajasSection />
+
+      {/* SECCIÓN DE AGENDAR CITA */}
+      <section className="py-24 bg-[#Fbfbfd]">
+        <div className="max-w-7xl mx-auto px-4">
+          <SectionTitle
+            title="Agenda una reunión con un asesor experto"
+            subtitle="Asesoría Personalizada quieres saber como iniciar tu negocio"
+          />
+
+          {/* CONTENEDOR CENTRADO */}
+          <div className="mt-12 flex justify-center">
+            <Calendar />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA FINAL (Clean) */}
+      {/* BARRA COMPARATIVA FLOTANTE (Glassmorphism Puro) */}
+      <div className={`fixed bottom-8 left-0 right-0 flex justify-center z-50 pointer-events-none transition-all duration-500 ${selected.length > 0 ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"}`}>
+         <div className="pointer-events-auto flex items-center gap-6 px-8 py-4 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl shadow-black/50 text-white">
+            <div className="flex flex-col">
+                <span className="text-[10px] uppercase tracking-wider text-slate-600 font-bold">Comparando</span>
+                <span className="font-bold text-lg leading-none">{selected.length} <span className="text-slate-500 text-sm font-normal">Modelos</span></span>
+            </div>
+
+            <div className="h-8 w-px bg-white/20" />
+
+            <button
+              onClick={() => setCompareOpen(true)}
+              className="px-6 py-2 rounded-full font-bold text-slate-900 transition-transform hover:scale-105 active:scale-95"
+              style={{ backgroundColor: BRAND_COLOR }}
+              disabled={selected.length < 2}
+            >
+               Ver Tabla
+            </button>
+            
+            <button
+              onClick={() => setSelected([])}
+              className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-red-500/20 hover:text-red-400 transition-colors text-slate-600"
+            >
+              ✕
+            </button>
+         </div>
+      </div>
+
+      {/* MODAL COMPARAR */}
+      <CompareModal
+        open={compareOpen}
+        onClose={() => setCompareOpen(false)}
+        models={selectedModels}
+        navigate={navigate}
+      />
     </>
   );
 };

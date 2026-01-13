@@ -41,6 +41,7 @@ export default function HeroCarousel({ className }) {
       <style>{`
         @media (min-width: 640px) {
           .hero-carousel-container .swiper-slide {
+            width: 75% !important; /* Force width to ensure spacing/peek effect */
             opacity: 0.4;
             transition: opacity 0.6s ease;
           }
@@ -133,4 +134,3 @@ export default function HeroCarousel({ className }) {
     </div>
   );
 }
-

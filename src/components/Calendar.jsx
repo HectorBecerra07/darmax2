@@ -334,14 +334,29 @@ const Calendar = () => {
                     </div>
 
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">
-                      Tema
+                      ¿Qué objetivo tiene tu sesión?
                     </label>
-                    <input
+                    <select
                       value={topic}
-                      onChange={(e) => setTopic(e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#24d4da]/40"
-                      placeholder="Reunión Zoom"
-                    />
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setTopic(val);
+                        // Ajuste inteligente de duración basado en el tipo
+                        if (val.includes("Estrategia")) setDuration(45);
+                        else if (val.includes("Consulta")) setDuration(15);
+                        else setDuration(30);
+                      }}
+                      className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#24d4da]/40 bg-white cursor-pointer font-medium"
+                    >
+                      <option value="Demo Virtual en Tiempo Real (Ver equipo en vivo)">🎥 Demo Virtual: Ver equipo en vivo</option>
+                      <option value="Sesión de Estrategia 1:1 (Plan de Negocio)">📊 Sesión de Estrategia: Mi Plan de Negocio</option>
+                      <option value="Consulta Rápida (Dudas Específicas)">☕ Consulta Rápida: Dudas Específicas</option>
+                    </select>
+                    <p className="text-[10px] text-slate-400 mt-1 italic px-1">
+                      {topic.includes("Demo") && "Verás la máquina funcionando y resolverás dudas técnicas en vivo."}
+                      {topic.includes("Estrategia") && "Analizaremos tu zona y presupuesto para maximizar tu rentabilidad."}
+                      {topic.includes("Consulta") && "Ideal para preguntas puntuales sobre envíos, pagos o instalación."}
+                    </p>
 
                     <div className="grid grid-cols-2 gap-3 mt-3">
                       <div>
@@ -441,7 +456,7 @@ const Calendar = () => {
                       ) : (
                         <CalendarPlus className="w-5 h-5" />
                       )}
-                      {loading ? "Creando..." : "Agendar Reunión"}
+                      {loading ? "Creando..." : "Confirmar mi Sesión Virtual"}
                     </button>
                   </>
                 )}
