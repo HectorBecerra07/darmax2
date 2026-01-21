@@ -16,8 +16,6 @@ const imagenes = [
   
   "/img/banners/baner3.jpg",
   "/img/banners/baner2.jpg",
-  "/img/banners/baner4.jpg",
-  "/img/banners/baner5.jpg",
 
 ];
 
