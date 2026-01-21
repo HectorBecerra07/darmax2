@@ -139,16 +139,12 @@ const pricingCards = [
     ],
   },
   {
-    name: "Regalos Incluidos",
-    price: "Valor +$3,000 MXN",
-    badge: "Incluido en la compra",
+    name: "Paquete de prodductos",
+    badge: "Inicia",
     description:
-      "Todo lo necesario para poner en marcha tu negocio de recarga de limpieza.",
+      "Todo lo necesario para poner en marcha tu negocio de recarga de limpieza adquiere con nostros el paquete inicial de productos.",
     items: [
       "5 bidones de 20 litros para producto",
-      "Vinil decorativo Darmax Clean",
-      "Materiales de instalación en PVC hidráulico C.D 40",
-      "Instalación y capacitación en sitio",
     ],
   },
 ];

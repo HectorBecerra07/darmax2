@@ -153,17 +153,7 @@ const pricingCards = [
     ],
   },
 
-  {
-    name: "Regalo 8 Bidones de 20 L",
-    price: "Incluido",
-    badge: "Beneficio extra",
-    description:
-      "Arranca tu vending de limpieza con bidones listos para producto.",
-    items: [
-      "8 bidones de 20 litros para producto",
-      "Precio regular $3,200 MXN, incluido sin costo (no incluye rack)",
-    ],
-  },
+ 
 ];
 
 const extras = [

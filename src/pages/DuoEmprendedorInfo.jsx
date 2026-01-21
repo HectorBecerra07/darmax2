@@ -153,21 +153,18 @@ const pricingCards = [
   },
   {
     name: "Regalos Incluidos",
-    price: "Valor +$7,500 MXN",
-    badge: "Incluido en la compra",
+    badge: "Inicia",
     description:
       "Beneficios adicionales al adquirir tu paquete Dúo Emprendedor.",
     items: [
-      "Tinaco grado alimenticio translúcido 2,500 L",
       "Materiales de instalación en PVC hidráulico Cédula 40",
       "Instalación profesional",
       "Capacitación al momento de la entrega",
     ],
   },
   {
-    name: "Regalo Vending Limpieza",
-    price: "Valor +$2,000 MXN",
-    badge: "Incluido",
+    name: "Inicia tu negocio de limpieza",
+    badge: "Inicia",
     description: "Complemento para tu vending de 5 productos de limpieza.",
     items: ["5 bidones de 20 L para producto (no incluye rack)"],
   },

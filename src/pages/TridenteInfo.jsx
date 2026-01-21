@@ -151,24 +151,8 @@ const pricingCards = [
       "Tarjeta vending para 2 tipos de agua",
     ],
   },
-  {
-    name: "Regalo Atlantis 300 con Mostrador",
-    price: "Incluido",
-    badge: "Beneficio extra",
-    description:
-      "Regalo al adquirir tu paquete Tridente con Atlantis 300.",
-    items: ["Tinaco 2,500 litros grado alimenticio (precio regular $5,500 MXN)"],
-  },
-  {
-    name: "Regalo Vending Limpieza",
-    price: "Incluido",
-    badge: "Beneficio extra",
-    description:
-      "Complemento inicial para tu vending de 5 productos de limpieza.",
-    items: [
-      "5 bidones de 20 litros para producto (no incluye rack, valor aproximado $2,000 MXN)",
-    ],
-  },
+  
+  
 ];
 
 const extras = [
