@@ -146,19 +146,6 @@ const pricingCards = [
       "Tarjeta vending para 2 tipos de agua",
     ],
   },
-  {
-    name: "Regalos Incluidos",
-    price: "Valor +$5,500 MXN",
-    badge: "Incluido en la compra",
-    description:
-      "Recibe equipo y servicios clave para iniciar tu negocio sin costos adicionales.",
-    items: [
-      "Tinaco grado alimenticio translúcido de 2,500 litros",
-      "Materiales de instalación en PVC hidráulico Cédula 40",
-      "Instalación profesional",
-      "Capacitación en sitio",
-    ],
-  },
 ];
 
 const extras = [
