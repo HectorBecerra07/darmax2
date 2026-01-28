@@ -53,8 +53,7 @@ const proyectos = [
     titulo: "Planta purificadora para centros comerciales",
     descripcion:
       "Proyecto llave en mano (+10,000 L/día). Incluye consultoría y capacitación.",
-    imagen:
-      "/img/proyectosEmpresariales/centros.png",
+    imagen: "/img/proyectosEmpresariales/centros.png",
     industria: "Centros comerciales",
   },
   {
@@ -185,8 +184,8 @@ export default function ProyectosEmpresariales() {
         />
       </Helmet>
 
-      <div className="bg-slate-50">
-        {/* HERO (estilo PurificadoresCaseros) */}
+      <div className="bg-white">
+        {/* HERO (rediseño para combinar: limpio, corporativo, azul/cyan) */}
         <section className="relative overflow-hidden">
           <div className="absolute inset-0">
             <img
@@ -195,16 +194,18 @@ export default function ProyectosEmpresariales() {
               className="h-full w-full object-cover"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/55 to-slate-50" />
-            {/* Glow decorativo */}
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 h-72 w-[42rem] rounded-full bg-cyan-400/20 blur-3xl" />
-            <div className="absolute top-10 right-10 h-56 w-56 rounded-full bg-lime-300/20 blur-3xl" />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/60 to-white" />
+
+            {/* halos sobrios (sin lime) */}
+            <div className="absolute -top-28 left-1/2 -translate-x-1/2 h-80 w-[46rem] rounded-full bg-sky-400/15 blur-3xl" />
+            <div className="absolute top-10 right-10 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           </div>
 
-          <div className="relative px-4 md:px-10 pt-14 pb-14 max-w-screen-2xl mx-auto">
+          <div className="relative px-4 md:px-10 pt-14 pb-12 max-w-screen-2xl mx-auto">
             <div className="text-center max-w-4xl mx-auto">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-white/90 text-sm backdrop-blur">
-                <span className="h-2 w-2 rounded-full bg-[#24d4da]" />
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white/90 text-sm backdrop-blur">
+                <span className="h-2 w-2 rounded-full bg-sky-400" />
                 Llave en mano • Ingeniería • Instalación • Soporte
               </span>
 
@@ -223,7 +224,7 @@ export default function ProyectosEmpresariales() {
                       .getElementById("catalogo-proyectos")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#24d4da] px-7 py-3 font-bold text-slate-950 shadow-lg shadow-lime-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-lime-200"
+                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-sky-400 px-7 py-3 font-bold text-slate-950 shadow-lg shadow-sky-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-sky-300"
                 >
                   Ver industrias
                   <ArrowRight />
@@ -243,9 +244,9 @@ export default function ProyectosEmpresariales() {
               </div>
             </div>
 
-            {/* Banda tipo “modelos y configuraciones” */}
+            {/* Banda tipo filtro (más limpia, “site-like”) */}
             <div className="mt-12">
-              <div className="mx-auto max-w-7xl rounded-3xl border border-white/10 bg-white/5 p-4 md:p-6 backdrop-blur">
+              <div className="mx-auto max-w-7xl rounded-3xl border border-white/15 bg-white/10 p-4 md:p-6 backdrop-blur">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div>
                     <h3 className="text-white font-extrabold text-xl md:text-2xl">
@@ -274,7 +275,7 @@ export default function ProyectosEmpresariales() {
                         className={[
                           "px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 border",
                           activo
-                            ? "bg-[#24d4da] text-slate-950 border-[#24d4da] shadow-sm"
+                            ? "bg-white text-slate-950 border-white shadow-sm"
                             : "bg-white/10 text-white/85 border-white/15 hover:bg-white/15",
                         ].join(" ")}
                         aria-pressed={activo}
@@ -292,7 +293,7 @@ export default function ProyectosEmpresariales() {
           </div>
         </section>
 
-            {/* CATÁLOGO */}
+        {/* CATÁLOGO (cards más “corporativas”, fondo blanco, borde gris suave) */}
         <section
           id="catalogo-proyectos"
           className="px-4 md:px-10 pt-10 pb-16 max-w-screen-2xl mx-auto"
@@ -308,13 +309,13 @@ export default function ProyectosEmpresariales() {
                 </p>
               </div>
 
-              {/* Ordenar */}
+              {/* Ordenar (neutral, acorde a sitio) */}
               <label className="flex items-center gap-2 text-sm">
                 <span className="text-slate-600 font-medium">Ordenar:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="rounded-xl border-slate-300 bg-white/80 px-3 py-2 text-slate-700 font-semibold shadow-sm outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400"
+                  className="rounded-xl border-slate-200 bg-white px-3 py-2 text-slate-700 font-semibold shadow-sm outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-300"
                 >
                   <option value="relevancia">Relevancia</option>
                   <option value="az">A-Z</option>
@@ -331,44 +332,51 @@ export default function ProyectosEmpresariales() {
               ))}
             </div>
 
-            <div className="mt-20 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+            <div className="mt-16 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
           </div>
         </section>
 
-        {/* FORM SECTION - Rediseñada con fondo profundo */}
-        <section className="relative py-24 mt-10 overflow-hidden">
-          {/* Capas de Fondo */}
-          <div className="absolute inset-0 z-0">
-            {/* Imagen de textura sutil (Industrial/Empresarial) */}
-            <img 
-              src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2000&q=80" 
-              className="w-full h-full object-cover opacity-10"
-              alt=""
-            />
-            {/* Gradiente principal (Oscuro a Azul Profundo) */}
+        {/* FORM SECTION (más “brand-corporate”, sin neón, dark elegante) */}
+        <section className="relative py-20 overflow-hidden">
+          {/* Fondo sobrio */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-slate-950" />
+            <div className="absolute inset-0 opacity-20">
+              <img
+                src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2000&q=80"
+                className="w-full h-full object-cover"
+                alt=""
+              />
+            </div>
             <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
-            
-            {/* Luces de neón decorativas */}
-            <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-lime-500/10 blur-[120px]" />
-            <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-cyan-500/10 blur-[120px]" />
-            
-            {/* Líneas divisorias suaves */}
+
+            {/* acentos suaves */}
+            <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-sky-400/10 blur-[120px]" />
+            <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-cyan-400/10 blur-[120px]" />
+
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           </div>
 
-          <div id="formulario-proyectos" className="relative z-10 px-4 md:px-10 max-w-5xl mx-auto scroll-mt-20">
-            <div className="bg-slate-900/40 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-8 md:p-12 text-white">
+          <div
+            id="formulario-proyectos"
+            className="relative z-10 px-4 md:px-10 max-w-5xl mx-auto scroll-mt-20"
+          >
+            <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_20px_80px_-40px_rgba(0,0,0,0.8)] p-8 md:p-12 text-white">
               <div className="text-center mb-10">
-                <span className="inline-flex items-center gap-2 rounded-full border border-lime-400/30 bg-lime-400/10 px-4 py-1.5 text-lime-300 text-xs font-bold uppercase tracking-wider mb-4">
+                <span className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-4 py-1.5 text-sky-200 text-xs font-bold uppercase tracking-wider mb-4">
                   Contacto Directo
                 </span>
                 <h3 className="text-3xl md:text-5xl font-extrabold tracking-tight">
                   ¿Listo para cotizar tu proyecto?
                 </h3>
                 <p className="mt-4 text-slate-300 text-lg max-w-2xl mx-auto">
-                  Completa el formulario y se abrirá tu correo con un borrador listo
-                  para enviar a <span className="text-lime-300 font-semibold">darmaxagua@gmail.com</span>.
+                  Completa el formulario y se abrirá tu correo con un borrador
+                  listo para enviar a{" "}
+                  <span className="text-sky-200 font-semibold">
+                    darmaxagua@gmail.com
+                  </span>
+                  .
                 </p>
               </div>
 
@@ -427,11 +435,10 @@ export default function ProyectosEmpresariales() {
                   placeholder="Describe tu proyecto: ubicación, capacidad requerida, presupuesto estimado, etc."
                 />
 
-                <div className="flex flex-wrap items-center justify-center gap-6 pt-4">
+                <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
                   <button
                     type="submit"
-                    className="group flex items-center justify-center gap-3 rounded-2xl bg-lime-300 px-10 py-4 font-black text-slate-950 shadow-xl shadow-lime-500/20 transition-all duration-300 hover:-translate-y-1 hover:bg-lime-200 hover:shadow-lime-500/40"
-
+                    className="group flex items-center justify-center gap-3 rounded-2xl bg-sky-400 px-10 py-4 font-black text-slate-950 shadow-xl shadow-sky-500/20 transition-all duration-300 hover:-translate-y-1 hover:bg-sky-300 hover:shadow-sky-500/30"
                   >
                     Abrir Gmail y Enviar
                     <ArrowRight />
@@ -443,7 +450,7 @@ export default function ProyectosEmpresariales() {
                       subject: "Consulta desde Proyectos Empresariales",
                       body: "",
                     })}
-                    className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-10 py-4 font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/10 hover:-translate-y-1"
+                    className="flex items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-10 py-4 font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/10 hover:-translate-y-1"
                   >
                     Usar otro cliente
                     <ExternalIcon />
@@ -451,7 +458,8 @@ export default function ProyectosEmpresariales() {
                 </div>
 
                 <p className="text-center text-sm text-slate-400">
-                  *Este proceso no es automático. Se generará un borrador profesional para que lo revises antes de enviar.
+                  *Este proceso no es automático. Se generará un borrador
+                  profesional para que lo revises antes de enviar.
                 </p>
               </form>
             </div>
@@ -477,7 +485,7 @@ function MotionCard({ children, delay = 0 }) {
   );
 }
 
-/* ========= Cards Estilo "ModeloCard" de PurificadoresCaseros ========= */
+/* ========= Cards (rediseño visual, MISMA lógica) ========= */
 function ProjectCard({ proyecto, setForm }) {
   const imgSrc = proyecto.imagen?.trim()
     ? proyecto.imagen
@@ -498,35 +506,34 @@ function ProjectCard({ proyecto, setForm }) {
       }}
       className="
         group relative overflow-hidden rounded-3xl
-        border border-white/10 bg-slate-950
-        transition-all duration-500
-        hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyan-500/10
-        focus:outline-none focus:ring-2 focus:ring-cyan-400/70
-        w-full h-full min-h-[300px] text-left
+        border border-slate-200 bg-white
+        transition-all duration-300
+        hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10
+        focus:outline-none focus:ring-2 focus:ring-sky-300
+        w-full h-full min-h-[320px] text-left
       "
     >
-      {/* Fondo con Imagen */}
+      {/* Imagen */}
       <div className="absolute inset-0">
         <img
           src={imgSrc}
           alt={proyecto.titulo}
-          className="h-full w-full object-cover opacity-70 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-50"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
           loading="lazy"
         />
-        {/* Gradiente profundo para legibilidad */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
       </div>
 
-      {/* Glow Effect en Hover */}
-      <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 h-40 w-64 rounded-full bg-cyan-400/20 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      {/* Halo sutil en hover */}
+      <div className="absolute -bottom-28 left-1/2 -translate-x-1/2 h-44 w-80 rounded-full bg-sky-400/15 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
       {/* Contenido */}
       <div className="relative p-6 h-full flex flex-col justify-end z-10">
         <div className="flex items-center justify-between gap-2 mb-3">
-          <span className="inline-flex items-center rounded-full bg-cyan-400/90 px-3 py-1 text-[10px] font-black text-slate-950 uppercase tracking-widest">
+          <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-[10px] font-black text-slate-950 uppercase tracking-widest">
             {proyecto.industria}
           </span>
-          <span className="text-white/80 text-xs font-bold bg-white/10 backdrop-blur-md px-2 py-1 rounded-lg">
+          <span className="text-white/90 text-xs font-bold bg-white/10 backdrop-blur-md px-2 py-1 rounded-lg border border-white/15">
             Cotizar →
           </span>
         </div>
@@ -534,28 +541,39 @@ function ProjectCard({ proyecto, setForm }) {
         <h3 className="text-xl font-black text-white leading-tight mb-2 drop-shadow-md">
           {proyecto.titulo}
         </h3>
-        
-        <p className="text-slate-300 text-sm line-clamp-2 leading-relaxed opacity-0 transform translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+
+        <p className="text-white/80 text-sm line-clamp-2 leading-relaxed opacity-0 transform translate-y-3 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
           {proyecto.descripcion}
         </p>
+      </div>
+
+      {/* Footer CTA sutil */}
+      <div className="absolute bottom-4 left-6 right-6 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+        <div className="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent mb-3" />
+        <div className="flex items-center justify-between text-xs text-white/80">
+          <span className="font-semibold">Abrir formulario</span>
+          <span className="inline-flex items-center gap-1 font-bold">
+            Continuar <ArrowRightSmall />
+          </span>
+        </div>
       </div>
     </button>
   );
 }
 
-/* ========= Form helpers (Dark / Glass version) ========= */
+/* ========= Form helpers (Dark / Glass version, rediseño de colores) ========= */
 function FormInput({ label, ...props }) {
   return (
     <label className="block">
       {label && (
         <span className="mb-2 block text-sm font-bold text-white/90 uppercase tracking-wide drop-shadow-sm">
           {label}
-          {props.required && <span className="text-lime-400 ml-1">*</span>}
+          {props.required && <span className="text-sky-300 ml-1">*</span>}
         </span>
       )}
       <input
         {...props}
-        className="block w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3.5 text-white placeholder:text-white/50 shadow-inner transition-all focus:border-lime-400 focus:bg-white/15 focus:ring-2 focus:ring-lime-400/30 outline-none backdrop-blur-md"
+        className="block w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3.5 text-white placeholder:text-white/45 shadow-inner transition-all focus:border-sky-300 focus:bg-white/15 focus:ring-2 focus:ring-sky-300/25 outline-none backdrop-blur-md"
       />
     </label>
   );
@@ -567,20 +585,24 @@ function FormSelect({ label, options = [], ...props }) {
       {label && (
         <span className="mb-2 block text-sm font-bold text-white/90 uppercase tracking-wide drop-shadow-sm">
           {label}
-          {props.required && <span className="text-lime-400 ml-1">*</span>}
+          {props.required && <span className="text-sky-300 ml-1">*</span>}
         </span>
       )}
       <select
         {...props}
-        className="block w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3.5 text-white shadow-inner transition-all focus:border-lime-400 focus:bg-white/15 focus:ring-2 focus:ring-lime-400/30 outline-none appearance-none cursor-pointer backdrop-blur-md"
+        className="block w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3.5 text-white shadow-inner transition-all focus:border-sky-300 focus:bg-white/15 focus:ring-2 focus:ring-sky-300/25 outline-none appearance-none cursor-pointer backdrop-blur-md"
       >
-        <option value="" className="bg-slate-900 text-slate-300">Selecciona industria…</option>
+        <option value="" className="bg-slate-900 text-slate-300">
+          Selecciona industria…
+        </option>
         {options.map((i) => (
           <option key={i} value={i} className="bg-slate-900 text-white">
             {i}
           </option>
         ))}
-        <option value="Otra" className="bg-slate-900 text-white">Otra</option>
+        <option value="Otra" className="bg-slate-900 text-white">
+          Otra
+        </option>
       </select>
     </label>
   );
@@ -592,13 +614,13 @@ function FormTextarea({ label, rows = 4, ...props }) {
       {label && (
         <span className="mb-2 block text-sm font-bold text-white/90 uppercase tracking-wide drop-shadow-sm">
           {label}
-          {props.required && <span className="text-lime-400 ml-1">*</span>}
+          {props.required && <span className="text-sky-300 ml-1">*</span>}
         </span>
       )}
       <textarea
         rows={rows}
         {...props}
-        className="block w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3.5 text-white placeholder:text-white/50 shadow-inner transition-all focus:border-lime-400 focus:bg-white/15 focus:ring-2 focus:ring-lime-400/30 outline-none resize-none backdrop-blur-md"
+        className="block w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3.5 text-white placeholder:text-white/45 shadow-inner transition-all focus:border-sky-300 focus:bg-white/15 focus:ring-2 focus:ring-sky-300/25 outline-none resize-none backdrop-blur-md"
       />
     </label>
   );
@@ -618,6 +640,21 @@ function ArrowRight() {
   return (
     <svg
       className="h-5 w-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M5 12h14" />
+      <path d="M13 5l7 7-7 7" />
+    </svg>
+  );
+}
+
+function ArrowRightSmall() {
+  return (
+    <svg
+      className="h-4 w-4"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
