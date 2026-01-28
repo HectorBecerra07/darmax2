@@ -40,7 +40,7 @@ const highlights = [
   },
   {
     icon: SparklesIcon,
-    title: "Regalos Incluidos",
+    title: "Adquiere tus extras para emprender",
     desc: "Tinaco 2,500 L + 5 bidones de 20 L",
   },
 ];

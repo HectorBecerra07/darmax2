@@ -336,8 +336,8 @@ export default function TridenteInfo() {
         className="py-20 md:py-28 bg-gradient-to-b from-slate-50 via-white to-slate-50"
       >
         <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Inversión, Agua Alcalina y Regalos</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+          <SectionTitle></SectionTitle>
+          <div className="grid grid-cols-1 md:gInversión, Agua Alcalina y Regalosrid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
             {pricingCards.map((card, i) => (
               <motion.div
                 key={card.name}
