@@ -39,11 +39,7 @@ const highlights = [
     title: "Calidad Certificada",
     desc: "Filtros y resinas con certificación NSF",
   },
-  {
-    icon: SparklesIcon,
-    title: "Regalos Incluidos",
-    desc: "Tinaco 2,500 L + instalación y capacitación",
-  },
+  
 ];
 
 const features = [
