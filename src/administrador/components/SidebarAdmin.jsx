@@ -32,7 +32,7 @@ const SidebarAdmin = ({ collapsed, theme, setTheme }) => {
       <div className="sidebar-hud-content space-y-6">
         <div className={`flex flex-col items-center gap-2 ${collapsed && "py-4"}`}>
           <img
-            src="/img/logo_darmaxnav.png"
+            src="/img/darmaxfoto.png"
             alt="Darmax"
             className="w-12 h-12 object-contain"
           />

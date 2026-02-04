@@ -38,7 +38,7 @@ const SEO = ({
         "@id": `${domain}/#organization`,
         "name": siteName,
         "url": domain,
-        "logo": `${domain}/img/darmax-logo.png`,
+        "logo": `${domain}/img/darmaxfoto.png`,
         "contactPoint": {
           "@type": "ContactPoint",
           "telephone": "+52-56-5375-1129",

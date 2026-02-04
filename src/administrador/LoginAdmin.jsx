@@ -64,7 +64,7 @@ const LoginAdmin = () => {
           {/* Header */}
           <div className="text-center space-y-4">
             <img
-              src="/img/logo_darmaxnav.png"
+              src="/img/darmaxfoto.png"
               alt="Darmax Logo"
               className="w-20 h-20 mx-auto object-contain"
             />

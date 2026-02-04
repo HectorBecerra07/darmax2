@@ -64,7 +64,7 @@ const ResetPassword = () => {
       <div className="login-container">
         <div className="login-form-container">
           <div className="logo-container">
-            <img src="/img/logo_darmaxnav.png" alt="Logo Darmax" className="logo" />
+            <img src="/img/darmaxfoto.png" alt="Logo Darmax" className="logo" />
           </div>
           <h2 className="login-title">Establecer Nueva Contraseña</h2>
 

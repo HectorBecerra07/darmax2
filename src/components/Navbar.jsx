@@ -94,7 +94,7 @@ export default function NavBar() {
               className="shrink-0 flex items-center"
             >
               <img
-                src="/img/logo_darmaxnav.png"
+                src="/img/darmaxfoto.png"
                 alt="Logo Darmax"
                 className="
                         h-14 md:h-16

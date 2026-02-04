@@ -23,7 +23,7 @@ export default function HeroBannerSlide() {
         {/* Left Column (Image) */}
         <div className="w-full lg:w-1/3 flex justify-center lg:justify-start">
           <img
-            src="/img/logo_darmaxnav.png"
+            src="/img/darmaxfoto.png"
             alt="Logo Darmax"
             className="w-[100px] sm:w-[150px] md:w-[200px] lg:w-[300px] h-auto object-contain"
           />

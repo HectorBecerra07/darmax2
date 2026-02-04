@@ -67,7 +67,7 @@ const Register = () => {
         <div className="login-form-container">
           <div className="logo-container">
             <img
-              src="/img/logo_darmaxnav.png"
+              src="/img/darmaxfoto.png"
               alt="Logo Darmax"
               className="logo"
             />
