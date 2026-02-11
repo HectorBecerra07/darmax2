@@ -6,10 +6,67 @@ import CheckoutForm from "../components/CheckoutForm";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useUser } from "../context/UserContext";
+import { useFavorites } from "../context/FavoritesContext";
+import { Link } from "react-router-dom";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
+const Wishlist = ({ items, loading, onAddToCart, onRemoveFromWishlist }) => {
+  if (loading) {
+    return (
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Mi Wishlist</h2>
+        <p>Cargando favoritos...</p>
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="mt-12 bg-white border border-gray-200 rounded-2xl shadow-sm p-8 text-center">
+        <h2 className="text-xl font-semibold text-gray-700">Tu wishlist está vacía</h2>
+        <p className="text-sm text-gray-500 mt-2">
+          Haz clic en el corazón de tus productos favoritos para guardarlos aquí.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-12">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Mi Wishlist</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {items.map((p) => (
+          <div key={p.id} className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 flex flex-col">
+            <Link to={`/producto/${p.id}`}>
+              <img src={p.imagen || "https://via.placeholder.com/150"} alt={p.nombre} className="w-full h-40 object-cover rounded-lg mb-4"/>
+            </Link>
+            <div className="flex-grow">
+              <h3 className="font-semibold text-gray-800">{p.nombre}</h3>
+              <p className="text-cyan-600 font-bold mt-1">${formatCurrency(p.precio)}</p>
+            </div>
+            <div className="mt-4 flex gap-2">
+              <button
+                onClick={() => { onAddToCart(p, 1); onRemoveFromWishlist(p.id); }}
+                className="flex-1 bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-cyan-700"
+              >
+                Mover al carrito
+              </button>
+              <button
+                onClick={() => onRemoveFromWishlist(p.id)}
+                className="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-200"
+              >
+                Quitar
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 // 🔹 Helper para formatear precios
 const formatCurrency = (value) =>
@@ -25,9 +82,37 @@ const Carrito = () => {
     disminuirCantidad,
     eliminarProducto,
     vaciarCarrito,
+    agregarProducto,
   } = useCarrito();
 
   const { user } = useUser();
+  const { favorites, toggleFavorite } = useFavorites();
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [loadingWishlist, setLoadingWishlist] = useState(true);
+
+  useEffect(() => {
+    const fetchWishlistProducts = async () => {
+      if (favorites.length === 0) {
+        setWishlistItems([]);
+        setLoadingWishlist(false);
+        return;
+      }
+      try {
+        setLoadingWishlist(true);
+        const res = await fetch(`${API_URL}/api/productos`);
+        if (!res.ok) throw new Error("No se pudieron cargar los productos.");
+        const allProducts = await res.json();
+        const favoriteProducts = allProducts.filter(p => favorites.includes(p.id));
+        setWishlistItems(favoriteProducts);
+      } catch (error) {
+        console.error("Error fetching wishlist products:", error);
+      } finally {
+        setLoadingWishlist(false);
+      }
+    };
+
+    fetchWishlistProducts();
+  }, [favorites]);
 
   // Total SOLO productos
   const totalProductos = useMemo(
@@ -675,6 +760,12 @@ const Carrito = () => {
             </div>
           </div>
         )}
+         <Wishlist
+          items={wishlistItems}
+          loading={loadingWishlist}
+          onAddToCart={agregarProducto}
+          onRemoveFromWishlist={toggleFavorite}
+        />
       </div>
     </section>
   );

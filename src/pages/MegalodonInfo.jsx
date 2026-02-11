@@ -207,8 +207,8 @@ const FaqItem = ({ q, a }) => (
 );
 
 const SectionTitle = ({ children, className = "" }) => (
-  <div className={`text-center mb-12 ${className}`}>
-    <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+  <div className={`text-center mb-12`}>
+    <h2 className={`text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight ${className}`}>
       {children}
     </h2>
   </div>

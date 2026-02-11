@@ -11,7 +11,12 @@ import {
   FaSortAmountDownAlt,
   FaCartPlus,
   FaSlidersH,
+  FaRegHeart,
+  FaEye,
+  FaStar,
+  FaHeart,
 } from "react-icons/fa";
+import { useFavorites } from "../context/FavoritesContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CATEGORIA_PURIFICADORES = "PurificadoresCaseros";
@@ -24,7 +29,11 @@ const agruparPorCategoria = (productos) =>
     return acc;
   }, {});
 
-const money = (n) => `MXN $${Number(n || 0).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const money = (n) =>
+  `MXN $${Number(n || 0).toLocaleString("es-MX", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 
 // 🔥 Paginación con ellipsis (se ve pro)
 function buildPagination(current, total) {
@@ -68,116 +77,184 @@ function SkeletonCard() {
   );
 }
 
-/** ✅ Card Armoniosa con Footer Dividido */
-function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar }) {
-  // Extraer el precio numérico para estilizarlo mejor
-  const priceFormatted = Number(p.precio || 0).toLocaleString("es-MX", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+function ImageModal({ src, onClose }) {
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative bg-white rounded-xl p-4 w-[90vw] max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[80vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute -top-4 -right-4 h-10 w-10 rounded-full bg-white text-gray-800 flex items-center justify-center shadow-lg hover:bg-gray-100 transition"
+          aria-label="Cerrar"
+        >
+          <FaTimes />
+        </button>
+        <img
+          src={src}
+          alt="Vista previa del producto"
+          className="w-full h-full object-contain"
+        />
+      </div>
+    </div>
+  );
+}
+
+/** ✅ Card NUEVA tipo "Flash Sales" (como la imagen) */
+function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar, onQuickView }) {
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const price = Number(p.precio || 0);
+
+  // Descuento:
+  // 1) si tu API tiene p.descuento, lo usa
+  // 2) si no, intenta sacar % desde badge.text (ej "-35%" o "35%")
+  const discountPct =
+    p.descuento != null
+      ? Number(p.descuento)
+      : badge?.text
+      ? Number(String(badge.text).replace("%", "").replace("-", ""))
+      : null;
+
+  // Precio anterior:
+  // 1) si existe p.precio_anterior, lo usa
+  // 2) si no, lo calcula con el descuento
+  const oldPrice =
+    p.precio_anterior != null
+      ? Number(p.precio_anterior)
+      : discountPct
+      ? price / (1 - discountPct / 100)
+      : null;
+
+  // Rating / reviews (si no vienen, usa defaults)
+  const rating = Math.min(5, Math.max(0, Number(p.rating ?? 4)));
+  const reviews = Number(p.reviews ?? 0);
 
   return (
     <article
       onClick={() => onVerMas(p)}
       className="
         group cursor-pointer
-        rounded-xl sm:rounded-2xl overflow-hidden
-        bg-white border border-slate-200
-        hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/5 hover:-translate-y-1
-        transition-all duration-300
+        rounded-2xl bg-white
+        shadow-sm hover:shadow-md
+        transition overflow-hidden
         flex flex-col h-full
       "
     >
-      {/* Sección Imagen */}
-      <div className="relative w-full aspect-[4/3] bg-white p-2 sm:p-4 overflow-hidden border-b border-slate-50">
-        {/* Background sutil en hover */}
-        <div className="absolute inset-0 bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      {/* Imagen + badge + iconos */}
+      <div className="relative p-4">
 
-        {/* Badge Stock */}
-        <span
-          className={`absolute top-2 left-2 z-10 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full border shadow-sm backdrop-blur-sm ${
-            stockEfectivo <= 0
-              ? "bg-slate-100/90 text-slate-500 border-slate-200"
-              : stockEfectivo <= 5
-              ? "bg-red-50/90 text-red-600 border-red-100"
-              : "bg-emerald-50/90 text-emerald-600 border-emerald-100"
-          }`}
-        >
-          {stockEfectivo <= 0
-            ? "Agotado"
-            : stockEfectivo <= 5
-            ? `¡Quedan ${stockEfectivo}!`
-            : "Disponible"}
-        </span>
 
-        {/* Imagen */}
-        <div className="relative w-full h-full flex items-center justify-center">
+        {/* Iconos corazón + ojo */}
+        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite(p.id);
+            }}
+            className="
+              h-9 w-9 rounded-full
+              bg-white border border-gray-200
+              flex items-center justify-center
+              text-gray-800 hover:text-cyan-600
+              shadow-sm transition
+            "
+            aria-label="Favoritos"
+            title="Favoritos"
+          >
+            {isFavorite(p.id) ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickView(p);
+            }}
+            className="
+              h-9 w-9 rounded-full
+              bg-white border border-gray-200
+              flex items-center justify-center
+              text-gray-800 hover:text-gray-950
+              shadow-sm transition
+            "
+            aria-label="Vista rápida"
+            title="Vista rápida"
+          >
+            <FaEye />
+          </button>
+        </div>
+
+        {/* Imagen centrada */}
+        <div className="aspect-[4/3] w-full flex items-center justify-center">
           <img
             src={p.imagen || "https://via.placeholder.com/400x300"}
             alt={p.nombre}
             loading="lazy"
-            className="w-full h-full object-cover mix-blend-multiply"
+            className="max-h-full max-w-full object-contain"
             onError={(e) => {
               e.currentTarget.src = "https://via.placeholder.com/400x300";
             }}
           />
         </div>
+
+        {/* Botón negro */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onAgregar(p);
+          }}
+          disabled={stockEfectivo <= 0}
+          className={`
+            absolute bottom-4 left-4 right-4 h-11 rounded-md
+            font-extrabold text-sm
+            flex items-center justify-center gap-2
+            transition z-20
+            ${
+              stockEfectivo <= 0
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-black text-white hover:bg-gray-900"
+            }
+            opacity-100 md:opacity-0 md:group-hover:opacity-100
+          `}
+          title="Agregar al carrito"
+        >
+          <FaCartPlus />
+          Agregar al carrito
+        </button>
       </div>
 
-      {/* Cuerpo de la tarjeta */}
-      <div className="flex flex-col flex-1">
-        <div className="p-3 sm:p-5 pb-0 flex-1">
-          {/* Categoría pequeña */}
-          <div className="mb-1 sm:mb-2">
-            <span className="inline-block text-[8px] sm:text-[10px] font-bold text-[#007377] uppercase tracking-wider bg-teal-50 px-1.5 py-0.5 rounded border border-teal-100/50">
-              {p.categoria?.nombre || "General"}
+      {/* Info */}
+      <div className="px-4 pb-4 flex flex-col flex-1">
+        {/* Nombre */}
+        <h3 className="text-[13px] sm:text-[15px] font-extrabold text-gray-900 line-clamp-2">
+          {p.nombre}
+        </h3>
+
+        {/* Precios */}
+        <div className="mt-2 flex items-end gap-3">
+          <span className="text-[#24d4da] font-extrabold text-[15px] sm:text-[16px]">
+            {money(price)}
+          </span>
+
+          {oldPrice ? (
+            <span className="text-gray-400 font-bold line-through text-[13px] sm:text-[14px]">
+              {money(oldPrice)}
             </span>
-          </div>
-          
-          {/* Título */}
-          <h3 className="text-[12px] sm:text-[15px] font-bold text-slate-800 leading-tight sm:leading-snug line-clamp-2 group-hover:text-[#007377] transition-colors">
-            {p.nombre}
-          </h3>
+          ) : null}
         </div>
 
-        {/* Footer: Precio + Botón */}
-        <div className="p-3 sm:p-5 pt-3 sm:pt-4 mt-auto">
-          <div className="flex items-center justify-between gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-slate-100">
-            {/* Precio estilizado */}
-            <div className="flex flex-col">
-              <span className="text-[9px] sm:text-[10px] text-slate-400 font-semibold uppercase tracking-wide">
-                Precio
-              </span>
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-sm sm:text-lg font-black text-slate-900 leading-none">
-                  ${priceFormatted}
-                </span>
-                <span className="text-[9px] sm:text-[10px] font-bold text-slate-400">MXN</span>
-              </div>
-            </div>
 
-            {/* Botón de acción */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onAgregar(p);
-              }}
-              disabled={stockEfectivo <= 0}
-              className={`
-                h-8 sm:h-10 w-8 sm:w-auto sm:px-5 rounded-lg sm:rounded-xl flex items-center justify-center gap-2
-                text-sm font-bold shadow-sm transition-all duration-300
-                ${
-                  stockEfectivo <= 0
-                    ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                    : "bg-[#24d4da] text-white hover:bg-[#1a9ea3] hover:shadow-md hover:-translate-y-0.5"
-                }
-              `}
-              title="Agregar al carrito"
-            >
-              <FaCartPlus className="text-base" />
-              <span className="hidden md:inline">Agregar</span>
-            </button>
-          </div>
+
+        {/* Stock (abajo) */}
+        <div className="mt-3 text-[11px] font-bold text-gray-500">
+          {stockEfectivo <= 0
+            ? "Agotado"
+            : stockEfectivo <= 5
+            ? `¡Quedan ${stockEfectivo}!`
+            : null}
         </div>
       </div>
     </article>
@@ -190,6 +267,7 @@ export default function Productos() {
   const navigate = useNavigate();
   const [paginaActual, setPaginaActual] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [modalImage, setModalImage] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("relevancia");
@@ -316,6 +394,10 @@ export default function Productos() {
     navigate(`/producto/${producto.id}`);
   };
 
+  const handleQuickView = (producto) => {
+    setModalImage(producto.imagen || "https://via.placeholder.com/400x300");
+  };
+
   const cambiarPagina = (nuevaPagina) => {
     if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
       setPaginaActual(nuevaPagina);
@@ -342,6 +424,10 @@ export default function Productos() {
           content="Explora nuestra amplia gama de productos en Darmax."
         />
       </Helmet>
+
+      {modalImage && (
+        <ImageModal src={modalImage} onClose={() => setModalImage(null)} />
+      )}
 
       {/* 🌈 Fondo premium */}
       <div className="min-h-screen bg-gradient-to-b from-[#f7fbfb] via-white to-white">
@@ -573,7 +659,8 @@ export default function Productos() {
                     <div className="flex flex-wrap items-center gap-2">
                       {searchTerm && (
                         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs font-extrabold text-gray-700 shadow-sm">
-                          Búsqueda: <span className="font-black">{searchTerm}</span>
+                          Búsqueda:{" "}
+                          <span className="font-black">{searchTerm}</span>
                           <button
                             onClick={() => setSearchTerm("")}
                             className="p-1 rounded-full hover:bg-gray-100"
@@ -599,8 +686,9 @@ export default function Productos() {
                     </div>
 
                     <div className="text-xs text-gray-500 font-bold">
-                      Página <span className="text-gray-900">{paginaActual}</span>{" "}
-                      de <span className="text-gray-900">{totalPaginas}</span>
+                      Página{" "}
+                      <span className="text-gray-900">{paginaActual}</span> de{" "}
+                      <span className="text-gray-900">{totalPaginas}</span>
                     </div>
                   </div>
 
@@ -646,18 +734,12 @@ export default function Productos() {
                             : 0;
                           const stockEfectivo = (p.stock ?? 0) - cantidadEnCarrito;
 
+                          // OJO: tu badge original era de stock. Para el % de descuento,
+                          // si tu API NO trae descuento, este fallback dará -35% cuando haya stock.
                           const badge =
                             stockEfectivo <= 0
                               ? { text: "Agotado", cls: "bg-gray-900 text-white" }
-                              : stockEfectivo <= 5
-                              ? {
-                                  text: `Últimos ${stockEfectivo}`,
-                                  cls: "bg-red-500 text-white",
-                                }
-                              : {
-                                  text: "Disponible",
-                                  cls: "bg-emerald-500 text-white",
-                                };
+                              : { text: "-35%", cls: "bg-red-600 text-white" };
 
                           return (
                             <ProductCard
@@ -667,6 +749,7 @@ export default function Productos() {
                               badge={badge}
                               onVerMas={handleVerMas}
                               onAgregar={handleAgregarCarrito}
+                              onQuickView={handleQuickView}
                             />
                           );
                         })}
@@ -746,7 +829,8 @@ export default function Productos() {
                           <div className="text-xs text-gray-500 font-bold">
                             Mostrando{" "}
                             <span className="text-gray-900">
-                              {inicio + 1}-{Math.min(fin, productosFiltrados.length)}
+                              {inicio + 1}-
+                              {Math.min(fin, productosFiltrados.length)}
                             </span>{" "}
                             de{" "}
                             <span className="text-gray-900">
@@ -772,9 +856,7 @@ export default function Productos() {
             />
             <div className="absolute inset-x-0 bottom-0 rounded-t-3xl bg-white border-t border-gray-200 shadow-2xl p-5">
               <div className="flex items-center justify-between">
-                <p className="text-base font-extrabold text-gray-900">
-                  Filtros
-                </p>
+                <p className="text-base font-extrabold text-gray-900">Filtros</p>
                 <button
                   onClick={() => setMostrarFiltrosMobile(false)}
                   className="h-10 w-10 rounded-2xl border border-gray-200 flex items-center justify-center hover:bg-gray-50"

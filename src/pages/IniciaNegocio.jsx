@@ -457,46 +457,72 @@ const IniciaNegocio = () => {
         </div>
       </section>
 
-      {/* SECCIÓN INTERACTIVA 3D */}
-      <section className="relative bg-white border-t border-slate-100 py-24">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row items-center gap-12">
+     {/* SECCIÓN INTERACTIVA 3D */}
+<section className="relative bg-white border-t border-slate-100 py-24">
+  <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-12">
+    
+    {/* Texto arriba */}
+    <div className="w-full text-center relative z-10">
+      
+      <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
+        Experiencia Inmersiva
+      </span>
+
+      <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
+        Conoce tu próxima <br /> máquina de éxito
+      </h2>
+
+      <p className="mt-6 text-slate-600 text-lg leading-relaxed max-w-2xl mx-auto">
+        Interactúa con el modelo 3D de alta precisión. Arrastra para rotar,
+        explora los componentes y visualiza la calidad industrial de la
+        Vending Touch antes de adquirirla.
+      </p>
+
+      <div className="mt-10 flex justify-center">
+        <div className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700">
           
-          {/* Texto a la izquierda */}
-          <div className="lg:w-1/2 text-left relative z-10">
-               <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
-                  Experiencia Inmersiva
-               </span>
-               <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
-                  Conoce tu próxima <br /> máquina de éxito
-               </h2>
-               <p className="mt-6 text-slate-600 text-lg leading-relaxed max-w-xl">
-                  Interactúa con el modelo 3D de alta precisión. Arrastra para rotar, explora los componentes y visualiza la calidad industrial de la Vending Touch antes de adquirirla.
-               </p>
-               
-               <div className="mt-10 flex flex-wrap gap-4">
-                  <div className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700">
-                     <div className="w-10 h-10 rounded-full bg-[#24d4da]/10 flex items-center justify-center text-[#24d4da]">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
-                        </svg>
-                     </div>
-                     <div>
-                        <p className="text-sm font-bold">Rotación 360°</p>
-                        <p className="text-xs text-slate-500">Explora cada ángulo</p>
-                     </div>
-                  </div>
-               </div>
+          <div className="w-10 h-10 rounded-full bg-[#24d4da]/10 flex items-center justify-center text-[#24d4da]">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"
+              />
+            </svg>
           </div>
 
-          {/* Modelo a la derecha */}
-          <div className="lg:w-1/2 w-full relative z-20 flex justify-center lg:justify-end py-10">
-             <div className="scale-75 sm:scale-85 lg:scale-100 xl:scale-110 origin-center lg:origin-right transform-gpu">
-                <VendingPrecise3D />
-             </div>
+          <div className="text-left">
+            <p className="text-sm font-bold">Rotación 360°</p>
+            <p className="text-xs text-slate-500">Explora cada ángulo</p>
           </div>
-          
+
         </div>
-      </section>
+      </div>
+
+    </div>
+
+    {/* Máquina abajo */}
+    <div className="w-full flex justify-center relative z-20">
+      
+      <div className="w-full max-w-4xl rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+
+        <div className="relative h-[420px] md:h-[520px] lg:h-[600px] flex items-center justify-center">
+          
+          <div className="scale-90 md:scale-100 transform-gpu">
+            <VendingPrecise3D />
+          </div>
+
+        </div>
+
+        <div className="border-t border-slate-100 px-4 py-3 text-center text-xs text-slate-500">
+          Arrastra para rotar (mouse o touch). Suelta para ver la inercia.
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
 
       {/* VENTAJAS */}
       <VentajasSection />

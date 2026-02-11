@@ -206,8 +206,8 @@ const FaqItem = ({ q, a }) => (
 );
 
 const SectionTitle = ({ children, className = "" }) => (
-  <div className={`text-center mb-12 ${className}`}>
-    <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+  <div className={`text-center mb-12`}>
+    <h2 className={`text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight ${className}`}>
       {children}
     </h2>
   </div>
@@ -575,7 +575,7 @@ export default function TridenteInfo() {
       {/* ===== Installation Requirements Section ===== */}
       <section className="py-20 md:py-28 bg-slate-900 text-slate-50">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle className="text-left md:text-left">
+          <SectionTitle className="text-left md:text-left text-white">
             ¿Qué requieres para instalar tu Tridente?
           </SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">

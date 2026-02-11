@@ -6,6 +6,7 @@ import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import App from "./App";
 import { CarritoProvider } from "./context/CarritoContext";
 import { UserProvider } from "./context/UserContext";
+import { FavoritesProvider } from "./context/FavoritesContext";
 import "./index.css";
 
 const RECAPTCHA_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
@@ -22,9 +23,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         }}
       >
         <CarritoProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
+          <FavoritesProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </FavoritesProvider>
         </CarritoProvider>
       </GoogleReCaptchaProvider>
     </UserProvider>

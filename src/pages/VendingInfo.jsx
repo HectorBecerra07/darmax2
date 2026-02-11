@@ -214,14 +214,14 @@ const FaqItem = ({ q, a }) => (
   </details>
 );
 
-const SectionTitle = ({ eyebrow, children, align = "center" }) => (
+const SectionTitle = ({ eyebrow, children, align = "center", className = "" }) => (
   <div className={`${align === "center" ? "text-center" : ""} mb-12`}>
     {eyebrow && (
       <p className="text-sm font-semibold tracking-[0.2em] uppercase text-cyan-600 mb-3">
         {eyebrow}
       </p>
     )}
-    <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+    <h2 className={`text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight ${className}`}>
       {children}
     </h2>
   </div>
@@ -620,7 +620,7 @@ export default function VendingInfo() {
       {/* ===== Installation Requirements Section ===== */}
       <section className="py-20 md:py-24 bg-slate-900 text-slate-50">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle eyebrow="Antes de Instalar" align="left">
+          <SectionTitle eyebrow="Antes de Instalar" align="left" className="text-white">
             Requisitos del Local e Instalación
           </SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">

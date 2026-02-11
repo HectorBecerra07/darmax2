@@ -13,10 +13,7 @@ const videos = [
 
 const imagenes = [
   
-  
-  
-  
-
+   
 ];
 
 export default function HeroCarousel({ className }) {
