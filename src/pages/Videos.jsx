@@ -1,36 +1,78 @@
 import React, { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
+import { PlayCircle, Search, Film, SlidersHorizontal } from "lucide-react";
 
+// Mock data (debería venir de una API en un caso real)
 const videos = [
   {
     id: "purificador-eco",
-    titulo: "Purificador DARMAX",
-    thumbnail: "img/PurificadoresCaseros/purificadorcasero2.jpg",
-    descripcion: "Detalles técnicos, instalación y mantenimiento del modelo Eco.",
+    titulo: "Instalación Purificador DARMAX Eco",
+    thumbnail: "/img/PurificadoresCaseros/purificadorcasero2.jpg",
+    descripcion: "Tutorial completo sobre la instalación, detalles técnicos y mantenimiento del purificador modelo Eco.",
     categoria: "Instalación",
     duracion: "6:12",
     destacado: true,
   },
   {
     id: "purificador-plus",
-    titulo: "Purificador Familiar Plus",
-    thumbnail: "img/PurificadoresCaseros/purificadorcasero1.jpg",
-    descripcion: "Demostración del modelo Plus y consejos de uso doméstico.",
+    titulo: "Guía de Uso: Purificador Familiar Plus",
+    thumbnail: "/img/PurificadoresCaseros/purificadorcasero1.jpg",
+    descripcion: "Demostración práctica del modelo Plus y consejos para el uso diario en el hogar.",
     categoria: "Uso en casa",
     duracion: "5:01",
     destacado: false,
   },
   {
     id: "purificador-premium",
-    titulo: "Purificador Premium UV",
-    thumbnail: "img/PurificadoresCaseros/purificadorcasero3.jpg",
-    descripcion: "Funcionamiento interno con luz UV y mantenimiento recomendado.",
+    titulo: "Mantenimiento del Purificador Premium UV",
+    thumbnail: "/img/PurificadoresCaseros/purificadorcasero3.jpg",
+    descripcion: "Explora el funcionamiento de la luz UV y aprende el mantenimiento recomendado para el modelo Premium.",
     categoria: "Mantenimiento",
     duracion: "7:40",
     destacado: false,
   },
 ];
+
+// --- Subcomponentes ---
+
+const VideoCard = ({ video, navigate }) => (
+  <button
+    key={video.id}
+    onClick={() => navigate(`/videos/${video.id}`)}
+    className="text-left bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden group border border-slate-200/80"
+  >
+    <div className="relative">
+      <img
+        src={video.thumbnail}
+        alt={video.titulo}
+        className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300"
+        loading="lazy"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent transition-opacity" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <PlayCircle className="w-14 h-14 text-white/80 drop-shadow-lg transform transition-transform group-hover:scale-110 group-hover:text-white" />
+      </div>
+      <div className="absolute bottom-3 left-3 flex gap-2">
+        {video.duracion && (
+          <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white/90 backdrop-blur-sm border border-slate-200/50 text-slate-800">
+            {video.duracion}
+          </span>
+        )}
+      </div>
+    </div>
+    <div className="p-5">
+      {video.categoria && (
+        <p className="text-sm font-semibold text-indigo-600 mb-1">{video.categoria}</p>
+      )}
+      <h4 className="text-lg font-bold text-slate-800 mb-2 leading-tight">
+        {video.titulo}
+      </h4>
+      <p className="text-sm text-slate-500 line-clamp-2">{video.descripcion}</p>
+    </div>
+  </button>
+);
+
 
 export default function Videos() {
   const navigate = useNavigate();
@@ -70,265 +112,145 @@ export default function Videos() {
         />
       </Helmet>
 
-      <div className="w-screen min-h-screen font-sans text-gray-900 bg-white overflow-x-hidden pt-20">
-        {/* HERO / LANDING */}
-        <section className="px-6 md:px-16 pt-10 pb-10 md:pt-14 md:pb-14">
-          <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-10 items-center">
-            {/* Copy */}
-            <div className="lg:col-span-6">
-              <p className="inline-flex items-center gap-2 text-sm font-semibold text-blue-700 bg-blue-50 px-3 py-1 rounded-full">
-                Centro de Videos Darmax Agua
-              </p>
+      <div className="min-h-screen font-sans text-slate-800 bg-slate-50 overflow-x-hidden">
+        {/* --- Hero Section --- */}
+        <section className="px-6 md:px-16 pt-28 pb-16 text-center">
+          <div className="max-w-4xl mx-auto">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200/80">
+              <Film className="w-4 h-4" />
+              Centro de Videos Darmax
+            </p>
+            <h1 className="mt-4 text-4xl md:text-5xl font-extrabold leading-tight text-slate-900">
+              Guías y tutoriales para tu purificador
+            </h1>
+            <p className="mt-4 text-lg text-slate-600">
+              Encuentra videos claros y concisos para instalar, usar y dar mantenimiento a tu equipo Darmax.
+            </p>
+          </div>
+        </section>
 
-              <h1 className="mt-4 text-4xl md:text-5xl font-extrabold leading-tight text-gray-900">
-                Tutoriales claros para instalar, usar y dar mantenimiento a tu purificador.
-              </h1>
-
-              <p className="mt-4 text-base md:text-lg text-gray-600">
-                Encuentra el video correcto por modelo o categoría. Todo en un solo lugar.
-              </p>
-
-              <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => {
-                    const el = document.getElementById("videos-grid");
-                    el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-semibold shadow-sm"
-                >
-                  Ver videos
-                </button>
-
+        {/* --- Video Destacado --- */}
+        {destacado && (
+          <section className="px-6 md:px-16 -mt-8 mb-16">
+            <div className="max-w-6xl mx-auto">
                 <button
                   onClick={() => navigate(`/videos/${destacado.id}`)}
-                  className="bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-2xl font-semibold shadow-sm"
+                  className="w-full group text-left rounded-2xl overflow-hidden shadow-2xl shadow-indigo-200/50"
+                  aria-label="Abrir video destacado"
                 >
-                  Ver destacado
+                  <div className="relative aspect-video bg-slate-200">
+                    <img
+                      src={destacado.thumbnail}
+                      alt={destacado.titulo}
+                      className="w-full h-full object-cover transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <PlayCircle className="w-20 h-20 text-white/80 drop-shadow-lg transform transition-transform group-hover:scale-110 group-hover:text-white" />
+                    </div>
+                    <div className="absolute bottom-0 left-0 p-8 text-white">
+                        <span className="text-sm font-bold px-3 py-1.5 rounded-full bg-indigo-600 shadow-lg">
+                          VIDEO DESTACADO
+                        </span>
+                        <h2 className="mt-4 text-3xl md:text-4xl font-bold text-white drop-shadow-md">
+                          {destacado.titulo}
+                        </h2>
+                        <p className="mt-2 text-base text-slate-200 drop-shadow-md max-w-2xl line-clamp-2">{destacado.descripcion}</p>
+                    </div>
+                  </div>
                 </button>
-              </div>
+            </div>
+          </section>
+        )}
 
-              {/* Buscador + Filtro */}
-              <div className="mt-8 bg-gray-50 border border-gray-200 rounded-3xl p-4 md:p-5">
-                <div className="grid md:grid-cols-12 gap-3">
-                  <div className="md:col-span-8">
-                    <label className="text-xs font-bold text-gray-600">Buscar</label>
+        {/* --- Barra de Búsqueda y Filtros --- */}
+        <section id="videos-grid" className="px-6 md:px-16 pb-12 sticky top-0 z-10 bg-slate-50/80 backdrop-blur-lg border-b border-slate-200/80">
+          <div className="max-w-7xl mx-auto py-4">
+              <div className="grid md:grid-cols-12 gap-4 items-center">
+                <div className="md:col-span-8">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <input
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Ej. Eco, UV, mantenimiento..."
-                      className="mt-1 w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
+                      placeholder="Buscar por modelo, función, etc. (ej. Eco, UV, mantenimiento...)"
+                      className="w-full bg-white border border-slate-300 rounded-xl px-12 py-3 outline-none focus:ring-2 focus:ring-indigo-300 transition"
                     />
-                  </div>
-
-                  <div className="md:col-span-4">
-                    <label className="text-xs font-bold text-gray-600">Categoría</label>
-                    <select
-                      value={categoria}
-                      onChange={(e) => setCategoria(e.target.value)}
-                      className="mt-1 w-full bg-white border border-gray-200 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
-                    >
-                      {categorias.map((c) => (
-                        <option key={c} value={c}>
-                          {c === "todos" ? "Todas" : c}
-                        </option>
-                      ))}
-                    </select>
                   </div>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between text-sm text-gray-500">
-                  <span>
-                    Mostrando{" "}
-                    <span className="font-bold text-gray-700">{filtrados.length}</span> video(s)
-                  </span>
-                  <button
+                <div className="md:col-span-4">
+                   <div className="relative">
+                     <SlidersHorizontal className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                    <select
+                      value={categoria}
+                      onChange={(e) => setCategoria(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-xl px-12 py-3 outline-none focus:ring-2 focus:ring-indigo-300 transition appearance-none"
+                    >
+                      {categorias.map((c) => (
+                        <option key={c} value={c}>
+                          {c === "todos" ? "Todas las categorías" : c}
+                        </option>
+                      ))}
+                    </select>
+                   </div>
+                </div>
+              </div>
+          </div>
+        </section>
+
+
+        {/* --- Grid de Videos --- */}
+        <section className="px-6 md:px-16 py-16">
+          <div className="max-w-7xl mx-auto">
+            {filtrados.length === 0 ? (
+              <div className="border border-dashed border-slate-300 rounded-2xl p-12 text-center bg-slate-100">
+                <h4 className="text-xl font-bold text-slate-700 mb-2">No se encontraron resultados</h4>
+                <p className="text-slate-500">Intenta con otra palabra clave o limpia los filtros.</p>
+                 <button
                     onClick={() => {
                       setQuery("");
                       setCategoria("todos");
                     }}
-                    className="font-semibold text-blue-700 hover:text-blue-800"
+                    className="mt-4 font-semibold text-indigo-600 hover:text-indigo-700"
                   >
-                    Limpiar
+                    Limpiar filtros
                   </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Tarjeta destacada */}
-            <div className="lg:col-span-6">
-              <div className="rounded-3xl border border-gray-200 bg-gradient-to-br from-blue-50 to-white p-5 md:p-7 shadow-sm">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-extrabold text-blue-700">VIDEO DESTACADO</p>
-                    <h2 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-900">
-                      {destacado.titulo}
-                    </h2>
-                    <p className="mt-3 text-gray-600">{destacado.descripcion}</p>
-
-                    <div className="mt-4 flex flex-wrap gap-2 text-sm">
-                      {destacado.categoria ? (
-                        <span className="px-3 py-1 rounded-full bg-white border border-gray-200 font-semibold text-gray-700">
-                          {destacado.categoria}
-                        </span>
-                      ) : null}
-                      {destacado.duracion ? (
-                        <span className="px-3 py-1 rounded-full bg-white border border-gray-200 font-semibold text-gray-700">
-                          {destacado.duracion}
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => navigate(`/videos/${destacado.id}`)}
-                  className="mt-5 w-full group text-left"
-                  aria-label="Abrir video destacado"
-                >
-                  <div className="relative aspect-video rounded-3xl overflow-hidden border border-gray-200 bg-white">
-                    <img
-                      src={destacado.thumbnail}
-                      alt={destacado.titulo}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="flex items-center gap-3 bg-white/90 backdrop-blur border border-gray-200 px-5 py-3 rounded-2xl shadow-sm group-hover:shadow">
-                        <span className="inline-flex w-10 h-10 rounded-full bg-blue-600 text-white items-center justify-center font-black">
-                          ▶
-                        </span>
-                        <div>
-                          <p className="font-extrabold leading-tight">Reproducir</p>
-                          <p className="text-xs text-gray-600">Abrir detalles del video</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </button>
-
-                <div className="mt-5 flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={() => navigate(`/videos/${destacado.id}`)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-semibold"
-                  >
-                    Ver ahora
-                  </button>
-                  <button
-                    onClick={() => navigate("/contacto")}
-                    className="flex-1 bg-white hover:bg-gray-50 border border-gray-200 px-6 py-3 rounded-2xl font-semibold"
-                  >
-                    ¿Necesitas ayuda?
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* GRID DE VIDEOS */}
-        <section id="videos-grid" className="px-6 md:px-16 pb-16">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-8 text-center">
-              <h3 className="text-3xl font-extrabold text-blue-900">Biblioteca de Videos</h3>
-              <p className="mt-2 text-gray-600">
-                Selecciona un video para ver el detalle y reproducirlo.
-              </p>
-            </div>
-
-            {filtrados.length === 0 ? (
-              <div className="border border-gray-200 rounded-3xl p-10 text-center bg-gray-50">
-                <h4 className="text-xl font-extrabold mb-2">No encontramos resultados</h4>
-                <p className="text-gray-600">Prueba otra búsqueda o cambia la categoría.</p>
               </div>
             ) : (
-              <div className="grid md:grid-cols-3 gap-8">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filtrados.map((video) => (
-                  <button
-                    key={video.id}
-                    onClick={() => navigate(`/videos/${video.id}`)}
-                    className="text-left bg-white border border-gray-200 rounded-3xl shadow-sm hover:shadow-lg transition overflow-hidden group"
-                  >
-                    <div className="relative">
-                      <img
-                        src={video.thumbnail}
-                        alt={video.titulo}
-                        className="w-full h-56 object-cover"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition" />
-
-                      <div className="absolute top-3 left-3 flex gap-2">
-                        {video.categoria ? (
-                          <span className="text-xs font-bold px-2 py-1 rounded-full bg-white/90 border border-gray-200">
-                            {video.categoria}
-                          </span>
-                        ) : null}
-                        {video.duracion ? (
-                          <span className="text-xs font-bold px-2 py-1 rounded-full bg-white/90 border border-gray-200">
-                            {video.duracion}
-                          </span>
-                        ) : null}
-                      </div>
-
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-black group-hover:scale-105 transition">
-                          ▶
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-6">
-                      <h4 className="text-xl font-extrabold text-blue-800 mb-2">
-                        {video.titulo}
-                      </h4>
-                      <p className="text-sm text-gray-700">{video.descripcion}</p>
-
-                      <div className="mt-4 flex items-center justify-between">
-                        <span className="text-sm font-semibold text-blue-700 group-hover:text-blue-800">
-                          Ver video →
-                        </span>
-                        {video.destacado ? (
-                          <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded-full">
-                            Destacado
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                  </button>
+                  <VideoCard key={video.id} video={video} navigate={navigate} />
                 ))}
               </div>
             )}
+          </div>
+        </section>
 
-            {/* CTA FINAL */}
-            <div className="mt-12 border border-gray-200 rounded-3xl p-8 md:p-10 bg-gray-50">
+        {/* --- CTA Final --- */}
+        <section className="px-6 md:px-16 pb-20">
+            <div className="max-w-7xl mx-auto border border-slate-200/80 rounded-2xl p-8 md:p-12 bg-white shadow-sm">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div>
-                  <h4 className="text-2xl font-extrabold text-gray-900">
-                    ¿No encuentras tu modelo?
+                  <h4 className="text-2xl font-bold text-slate-900">
+                    ¿No encuentras lo que buscas?
                   </h4>
-                  <p className="text-gray-600 mt-2">
-                    Escríbenos y te ayudamos con instalación, mantenimiento o refacciones.
+                  <p className="text-slate-600 mt-1">
+                    Nuestro equipo de soporte está listo para ayudarte con cualquier duda.
                   </p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-3 flex-shrink-0">
                   <button
                     onClick={() => navigate("/contacto")}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl font-semibold"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition shadow-sm"
                   >
-                    Contactar soporte
-                  </button>
-                  <button
-                    onClick={() => navigate("/productos")}
-                    className="bg-white hover:bg-gray-100 border border-gray-200 px-6 py-3 rounded-2xl font-semibold"
-                  >
-                    Ver productos
+                    Contactar a Soporte
                   </button>
                 </div>
               </div>
             </div>
-          </div>
         </section>
+
       </div>
     </>
   );

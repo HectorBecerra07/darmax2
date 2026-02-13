@@ -77,8 +77,12 @@ export async function createMeeting(req, res) {
     }
 
     // Verify reCAPTCHA
-    const isCaptchaValid = await verifyRecaptcha(captchaToken);
-    if (!isCaptchaValid) {
+    const captchaResult = await verifyRecaptcha(captchaToken);
+    if (!captchaResult.success) {
+      // Log the specific reason for failure for better debugging
+      console.error(`Fallo en la verificación de reCAPTCHA: ${captchaResult.message}`, captchaResult.errors || '');
+      
+      // Return a generic error message to the user for security
       return res.status(400).json({ message: "Verificación de reCAPTCHA fallida. Por favor intenta de nuevo." });
     }
 
