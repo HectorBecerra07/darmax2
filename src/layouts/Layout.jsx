@@ -21,8 +21,8 @@ const Layout = ({ children }) => {
     <div className="flex flex-col min-h-screen bg-white text-gray-800 overflow-hidden">
       <Navbar /> {/* Render original Navbar */}
       {/* <NewNavbar /> */} {/* Commented out new Navbar */}
-      {/* Agrega padding superior para compensar la altura de la Navbar fija */}
-      <main className="flex-1 pt-20">{children}</main>
+      {/* Eliminamos el padding superior para que el contenido empiece desde arriba (detrás de la Navbar transparente) */}
+      <main className="flex-1">{children}</main>
       {!hideFooter && <Footer />}
     </div>
   );

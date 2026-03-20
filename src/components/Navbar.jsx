@@ -14,7 +14,8 @@ export default function NavBar() {
   const [navOpen, setNavOpen] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  
   const { carrito } = useCarrito();
   const { user, logout } = useUser();
   const navigate = useNavigate();
@@ -27,11 +28,28 @@ export default function NavBar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 20);
+
+      // LÓGICA DE TEMA INTELIGENTE POR RUTA Y SCROLL
+      const darkSections = ["/purificadores-caseros", "/proyectos-empresariales"];
+      
+      if (location.pathname === "/") {
+        // En Inicio: Claro arriba (Hero), Oscuro abajo (Landing)
+        setIsDarkTheme(scrollY > 600);
+      } else if (darkSections.includes(location.pathname)) {
+        // En estas páginas: Siempre Oscuro (Hero oscuro)
+        setIsDarkTheme(true);
+      } else {
+        // En el resto de páginas: Siempre Claro
+        setIsDarkTheme(false); 
+      }
     };
+
     window.addEventListener("scroll", handleScroll);
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [location.pathname]);
   
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -40,309 +58,175 @@ export default function NavBar() {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (navMenuRef.current && !navMenuRef.current.contains(event.target) && navOpen) {
-        setNavOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [navOpen]);
-
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-    const navLinks = [
-      { href: "/", text: "INICIA TU NEGOCIO", scrollTarget: "inicioRef" },
-      { href: "/nosotros", text: "NOSOTROS" },
-      { href: "/productos", text: "PRODUCTOS" },
-      { href: "/purificadores-caseros", text: "PURIFICADORES CASEROS" },
-      { href: "/proyectos-empresariales", text: "PROYECTOS" },
+  const navLinks = [
+    { href: "/", text: "INICIA TU NEGOCIO", scrollTarget: "inicioRef" },
+    { href: "/nosotros", text: "NOSOTROS" },
+    // { href: "/purificadores-caseros", text: "PURIFICADORES CASEROS" },
+    { href: "/proyectos-empresariales", text: "PROYECTOS" },
+  ];
+
+  const isHome = location.pathname === "/";
   
-    ];
-  
-    const baseLinkClass = "px-4 py-2 rounded-full font-medium italic transition-all duration-300 text-[13px] tracking-wide whitespace-nowrap";
-    const hoverLinkClass = "hover:text-[#24d4da] transition-colors duration-200";
-    const activeLinkClass = "bg-[#24d4da]/20 text-[#24d4da] border border-[#24d4da]/20";
-    const inactiveLinkClass = "text-white hover:bg-white/5 hover:text-[#24d4da]";
-  
-    return (
-      <>
-        {/* NAVBAR */}
-        <nav
-          className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${
-            isScrolled ? 'bg-slate-800/70 backdrop-blur-lg' : 'bg-gray-900'
-          }`}
-        >
-          <div className="max-w-7xl mx-auto grid grid-cols-3 items-center h-20 px-4 sm:px-6 nav:px-8 md:flex md:justify-between">
-            {/* Logo */}
+  // CONFIGURACIÓN DE COLORES DINÁMICOS
+  const textClass = isDarkTheme ? "text-white" : "text-slate-900";
+  const iconClass = isDarkTheme ? "text-white" : "text-slate-900";
+  const accentText = isDarkTheme ? "text-cyan-400" : "text-[#168387]";
+  const badgeBg = isDarkTheme ? "bg-cyan-500" : "bg-[#168387]";
+  const navBg = isScrolled 
+    ? (isDarkTheme ? 'bg-slate-900/40' : 'bg-white/30') 
+    : 'bg-transparent';
+
+  // LOGO DINÁMICO SEGÚN EL TEMA
+  const logoSrc = isDarkTheme ? "/img/darmaxfoto3.png" : "/img/darmaxfoto.png";
+
+  return (
+    <>
+      <style>{`
+        @keyframes lineFlow {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .navbar-line-flow {
+          height: 1px;
+          width: 100%;
+          background: linear-gradient(to right, transparent, ${isDarkTheme ? 'rgba(34,211,238,0.4)' : 'rgba(22,131,135,0.4)'}, transparent);
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          animation: lineFlow 3s linear infinite;
+          opacity: ${isScrolled ? '1' : '0'};
+          transition: opacity 0.5s ease;
+        }
+      `}</style>
+
+      {/* NAVBAR ADAPTATIVA */}
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 h-20 overflow-hidden ${navBg} backdrop-blur-2xl ${isScrolled ? 'border-b border-white/10 shadow-xl' : ''}`}
+      >
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-full px-4 sm:px-6 lg:px-8 relative">
+          
+          {/* Logo Viajero / Dinámico */}
+          <div className="shrink-0 flex items-center relative h-14 w-32">
             <Link
               to="/"
               onClick={scrollToTop}
-              className="shrink-0 flex items-center"
+              className={`
+                transition-all duration-700 cubic-bezier(0.22, 1, 0.36, 1)
+                ${isScrolled || !isHome
+                  ? 'opacity-100 scale-100 blur-0 pointer-events-auto' 
+                  : 'opacity-0 scale-90 blur-md pointer-events-none'
+                }
+              `}
             >
               <img
-                src="/img/darmaxfoto.png"
+                src={logoSrc}
                 alt="Logo Darmax"
-                className="
-                        h-14 md:h-16
-                        w-auto object-contain
-                        transition-transform duration-300
-                        hover:scale-[1.03]
-                      "
+                className="h-12 md:h-14 w-auto object-contain transition-all duration-500 hover:scale-105"
               />
             </Link>
-            {/* Menú escritorio */}
-            <div className="hidden nav:flex items-center justify-center gap-2 nav:gap-4 flex-1">
-              {navLinks.map((link) => {
-                const isActive = link.href === "/" 
-                  ? location.pathname === "/" 
-                  : location.pathname.startsWith(link.href);
-
-                const finalClass = `${baseLinkClass} ${isActive ? activeLinkClass : inactiveLinkClass}`;
-
-                if (link.scrollTarget) {
-                  return (
-                    <button
-                      key={link.text}
-                      onClick={() => {
-                        navigate(link.href, {
-                          state: { scrollTo: link.scrollTarget },
-                        });
-                        scrollToTop();
-                      }}
-                      className={finalClass}
-                    >
-                      {link.text}
-                    </button>
-                  );
-                }
-                return (
-                  <Link
-                    key={link.href}
-                    to={link.href}
-                    onClick={scrollToTop}
-                    className={finalClass}
-                  >
-                    {link.text}
-                  </Link>
-                );
-              })}
-            </div>
-            {/* Usuario + carrito */}{" "}
-            <div className="hidden nav:flex items-center gap-4 nav:gap-6 h-full">
-              <button
-                onClick={() => setShowCart(true)}
-                className={`relative flex items-center justify-center text-white ${hoverLinkClass}`}
-                aria-label="Abrir carrito"
-              >
-                <ShoppingBagIcon className="w-6 h-6" />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-gray-900">
-                    {totalItems}
-                  </span>
-                )}
-              </button>
-
-              <div className="relative flex items-center" ref={userMenuRef}>
-                <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className={`flex items-center justify-center text-white ${hoverLinkClass}`}
-                  aria-label="Menú de usuario"
-                >
-                  <UserIcon className="w-6 h-6" />
-                </button>
-
-                {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 text-black">
-                    {user ? (
-                      <>
-                        <div className="px-4 py-2 text-sm text-gray-700 border-b">
-                          Hola,{" "}
-                          <span className="font-semibold">{firstName}</span>
-                        </div>
-                        <Link
-                          to="/perfil"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          onClick={() => {
-                            setUserMenuOpen(false);
-                            scrollToTop();
-                          }}
-                        >
-                          Mi Perfil
-                        </Link>
-                        <button
-                          onClick={() => {
-                            logout();
-                            navigate("/");
-                            setUserMenuOpen(false);
-                            scrollToTop();
-                          }}
-                          className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Cerrar Sesión
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <Link
-                          to="/login"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          onClick={() => {
-                            setUserMenuOpen(false);
-                            scrollToTop();
-                          }}
-                        >
-                          Iniciar Sesión
-                        </Link>
-                        <Link
-                          to="/register"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          onClick={() => {
-                            setUserMenuOpen(false);
-                            scrollToTop();
-                          }}
-                        >
-                          Registrarse
-                        </Link>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-            {/* Botón menú móvil */}
-            <div className="flex items-center justify-end nav:hidden col-span-2 gap-x-5">
-              <button
-                onClick={() => setShowCart(true)}
-                className="relative flex items-center justify-center text-white hover:text-[#24d4da]"
-                aria-label="Abrir carrito"
-              >
-                <ShoppingBagIcon className="w-6 h-6" />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-gray-900">
-                    {totalItems}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => setNavOpen(!navOpen)}
-                className="flex items-center justify-center text-white"
-                aria-label="Abrir menú"
-              >
-                {navOpen ? (
-                  <XMarkIcon className="w-7 h-7" />
-                ) : (
-                  <Bars3Icon className="w-7 h-7" />
-                )}
-              </button>
-            </div>
           </div>
-        </nav>
 
-        {/* Menú móvil (Slide-in from right) */}
-        <div
-          ref={navMenuRef}
-          className={`fixed top-0 right-0 h-full w-full max-w-xs bg-gray-900/95 backdrop-blur-lg z-40 transform transition-transform duration-300 ease-in-out ${
-            navOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <div className="flex justify-end p-5 h-20">
-            <button onClick={() => setNavOpen(false)} aria-label="Cerrar menú">
-              <XMarkIcon className="w-8 h-8 text-white" />
-            </button>
-          </div>
-          <nav className="flex flex-col p-5 space-y-3">
+          {/* Menú escritorio */}
+          <div className={`hidden nav:flex items-center justify-center gap-1 flex-1 px-8 transition-colors duration-500 ${textClass}`}>
             {navLinks.map((link) => {
               const isActive = link.href === "/" 
                 ? location.pathname === "/" 
                 : location.pathname.startsWith(link.href);
+
               return (
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={`px-5 py-3 rounded-2xl font-medium italic transition-all duration-200 ${
-                    isActive
-                      ? "bg-[#24d4da]/20 text-[#24d4da] border border-[#24d4da]/20"
-                      : "text-white hover:bg-white/5"
+                  className={`px-4 py-2 rounded-full font-bold transition-all duration-300 text-[12px] tracking-widest whitespace-nowrap ${
+                    isActive 
+                      ? `bg-white/10 ${accentText} border border-white/10` 
+                      : `hover:bg-white/5 ${textClass} opacity-80 hover:opacity-100`
                   }`}
-                  onClick={() => {
-                    setNavOpen(false);
-                    scrollToTop();
-                  }}
                 >
-                  {link.text}
+                  <span className={isActive ? accentText : ""}>{link.text}</span>
                 </Link>
               );
             })}
-            <div className="border-t border-gray-700 my-4"></div>
-            {user ? (
-              <>
-                <div className="px-3 py-2 text-white">
-                  Hola, <span className="font-semibold">{firstName}</span>
-                </div>
-                <Link
-                  to="/perfil"
-                  className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800"
-                  onClick={() => {
-                    setNavOpen(false);
-                    scrollToTop();
-                  }}
-                >
-                  Mi Perfil
-                </Link>
-                <button
-                  onClick={() => {
-                    logout();
-                    navigate("/");
-                    setNavOpen(false);
-                    scrollToTop();
-                  }}
-                  className="text-left text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800"
-                >
-                  Cerrar Sesión
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800"
-                  onClick={() => {
-                    setNavOpen(false);
-                    scrollToTop();
-                  }}
-                >
-                  Iniciar Sesión
-                </Link>
-                <Link
-                  to="/register"
-                  className="text-white text-base font-semibold p-3 rounded-lg hover:bg-gray-800"
-                  onClick={() => {
-                    setNavOpen(false);
-                    scrollToTop();
-                  }}
-                >
-                  Registrarse
-                </Link>
-              </>
-            )}
-          </nav>
+          </div>
+
+          {/* Usuario + carrito */}
+          <div className={`hidden nav:flex items-center gap-5 transition-colors duration-500 ${iconClass}`}>
+            <button
+              onClick={() => setShowCart(true)}
+              className="relative flex items-center justify-center transition-transform hover:scale-110"
+            >
+              <ShoppingBagIcon className="w-6 h-6" />
+              {totalItems > 0 && (
+                <span className={`absolute -top-1.5 -right-1.5 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full ${badgeBg} shadow-lg transition-colors duration-500`}>
+                  {totalItems}
+                </span>
+              )}
+            </button>
+
+            <div className="relative flex items-center">
+              <UserIcon className="w-6 h-6 transition-transform hover:scale-110 cursor-pointer" />
+            </div>
+          </div>
+
+          {/* Menú móvil */}
+          <div className={`flex items-center justify-end nav:hidden gap-x-4 transition-colors duration-500 ${iconClass}`}>
+            <button onClick={() => setShowCart(true)} className="relative flex items-center justify-center">
+              <ShoppingBagIcon className="w-6 h-6" />
+              {totalItems > 0 && (
+                <span className={`absolute -top-1.5 -right-1.5 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full ${badgeBg} transition-colors duration-500`}>
+                  {totalItems}
+                </span>
+              )}
+            </button>
+            <button onClick={() => setNavOpen(!navOpen)}>
+              {navOpen ? <XMarkIcon className="w-7 h-7" /> : <Bars3Icon className="w-7 h-7" />}
+            </button>
+          </div>
         </div>
 
-        <CarritoLateral isOpen={showCart} onClose={() => setShowCart(false)} />
-      </>
-    );
+        {/* LÍNEA DE ENERGÍA DINÁMICA */}
+        <div className="navbar-line-flow" />
+      </nav>
+
+      {/* Sidebar móvil */}
+      <div
+        className={`fixed top-0 right-0 h-full w-full max-w-xs bg-slate-900/95 backdrop-blur-xl z-[60] transform transition-transform duration-500 ease-in-out shadow-2xl ${
+          navOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center px-6 h-20 border-b border-white/5">
+          <img src="/img/darmaxfoto3.png" alt="Logo Darmax" className="h-10 w-auto object-contain italic" />
+          <button onClick={() => setNavOpen(false)}><XMarkIcon className="w-8 h-8 text-white" /></button>
+        </div>
+        <nav className="flex flex-col p-6 space-y-2">
+          {navLinks.map((link) => {
+            const isActive = link.href === "/" 
+              ? location.pathname === "/" 
+              : location.pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`px-5 py-4 rounded-2xl font-bold text-sm tracking-widest transition-all duration-200 ${
+                  isActive ? "bg-white/10 text-white" : "text-gray-400 hover:bg-white/5 hover:text-white"
+                }`}
+                onClick={() => setNavOpen(false)}
+              >
+                {link.text}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      <CarritoLateral isOpen={showCart} onClose={() => setShowCart(false)} />
+    </>
+  );
 }

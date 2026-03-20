@@ -317,15 +317,6 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
 
   return (
     <section className="relative overflow-hidden bg-slate-900 py-24 sm:py-32 selection:bg-[#24d4da] selection:text-white">
-      {/* Glow Effects Background (igual al HERO) */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full overflow-hidden z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-[#24d4da] rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-blue-600 rounded-full mix-blend-screen filter blur-[120px] opacity-20" />
-      </div>
-
-      {/* Gradiente suave para profundidad */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-transparent z-0 pointer-events-none" />
-
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl lg:text-center">

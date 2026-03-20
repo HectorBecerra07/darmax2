@@ -202,7 +202,7 @@ export default function ProyectosEmpresariales() {
             <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           </div>
 
-          <div className="relative px-4 md:px-10 pt-14 pb-12 max-w-screen-2xl mx-auto">
+          <div className="relative px-4 md:px-10 pt-24 sm:pt-32 pb-12 max-w-screen-2xl mx-auto">
             <div className="text-center max-w-4xl mx-auto">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white/90 text-sm backdrop-blur">
                 <span className="h-2 w-2 rounded-full bg-sky-400" />

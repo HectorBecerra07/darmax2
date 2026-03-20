@@ -431,18 +431,18 @@ export default function Productos() {
 
       {/* 🌈 Fondo premium */}
       <div className="min-h-screen bg-gradient-to-b from-[#f7fbfb] via-white to-white">
-        {/* HERO premium */}
-        <section className="max-w-7xl mx-auto pt-10 pb-6 px-4 sm:px-6 lg:px-8">
+        {/* HERO premium: Padding aumentado para la Navbar fija */}
+        <section className="max-w-7xl mx-auto pt-24 sm:pt-32 pb-6 px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
             {/* glow */}
-            <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[#24d4da]/15 blur-3xl" />
-            <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-[#007377]/10 blur-3xl" />
+            <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[#168387]/10 blur-3xl" />
+            <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-[#168387]/5 blur-3xl" />
 
             <div className="relative p-6 sm:p-8">
               <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
                 <div className="max-w-2xl">
                   <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-xs font-extrabold text-gray-700">
-                    <span className="h-2 w-2 rounded-full bg-[#24d4da]" />
+                    <span className="h-2 w-2 rounded-full bg-[#168387]" />
                     Catálogo Darmax
                   </div>
 
@@ -469,7 +469,7 @@ export default function Productos() {
                   {/* Botón filtros mobile */}
                   <button
                     onClick={() => setMostrarFiltrosMobile(true)}
-                    className="md:hidden inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#24d4da] text-white font-extrabold shadow-sm hover:shadow transition active:scale-[0.98]"
+                    className="md:hidden inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#168387] text-white font-extrabold shadow-sm hover:shadow transition active:scale-[0.98]"
                   >
                     <FaSlidersH />
                     Filtros
@@ -485,7 +485,7 @@ export default function Productos() {
                     placeholder="Buscar producto..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-11 pr-12 py-3.5 border border-gray-200 rounded-2xl text-sm bg-white shadow-sm focus:ring-2 focus:ring-[#24d4da] focus:border-transparent transition"
+                    className="w-full pl-11 pr-12 py-3.5 border border-gray-200 rounded-2xl text-sm bg-white shadow-sm focus:ring-2 focus:ring-[#168387] focus:border-transparent transition"
                   />
                   <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                   {searchTerm && (
@@ -539,10 +539,10 @@ export default function Productos() {
                           relative shrink-0
                           px-4 py-2 rounded-full text-sm font-extrabold
                           border transition
-                          focus:outline-none focus:ring-2 focus:ring-[#24d4da]/40
+                          focus:outline-none focus:ring-2 focus:ring-[#168387]/40
                           ${
                             active
-                              ? "bg-gray-900 text-white border-gray-900 shadow"
+                              ? "bg-slate-900 text-white border-slate-900 shadow"
                               : "bg-white text-gray-800 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                           }
                         `}
@@ -557,7 +557,7 @@ export default function Productos() {
                   <div className="mt-3 flex items-center justify-between">
                     <button
                       onClick={() => setMostrarTodasCategorias((prev) => !prev)}
-                      className="text-sm font-extrabold text-[#007377] hover:text-[#005b5e] transition"
+                      className="text-sm font-extrabold text-[#168387] hover:text-[#005b5e] transition"
                     >
                       {mostrarTodasCategorias ? "Ver menos" : "Ver más"}
                     </button>

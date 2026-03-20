@@ -284,7 +284,7 @@ export default function Nosotros() {
         {/* ======================
             HERO (nuevo, limpio)
         ====================== */}
-        <section className="pt-16 sm:pt-20">
+        <section className="pt-24 sm:pt-32 pb-16 sm:pb-20">
           <Container>
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
               {/* Copy */}

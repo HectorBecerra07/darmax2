@@ -154,7 +154,7 @@ export default function PurificadoresCaseros() {
           <div className="absolute top-10 right-10 h-56 w-56 rounded-full bg-lime-300/20 blur-3xl" />
         </div>
 
-        <div className="relative px-4 md:px-10 pt-14 pb-14 max-w-screen-2xl mx-auto">
+        <div className="relative px-4 md:px-10 pt-24 sm:pt-32 pb-14 max-w-screen-2xl mx-auto">
           <div className="text-center max-w-4xl mx-auto">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-white/90 text-sm backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-[#24d4da]" />

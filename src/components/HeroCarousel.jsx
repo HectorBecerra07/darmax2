@@ -24,7 +24,7 @@ export default function HeroCarousel({ className }) {
   // Caso 1: No hay videos ni imágenes, muestra el banner principal como fallback.
   if (!hasMedia) {
     return (
-      <div className={`w-full aspect-video max-h-[600px] ${className}`}>
+      <div className={`w-full h-[100svh] ${className}`}>
         <HeroBannerSlide />
       </div>
     );
