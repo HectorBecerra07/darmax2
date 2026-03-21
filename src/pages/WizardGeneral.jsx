@@ -176,7 +176,7 @@ export default function WizardGeneral() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="max-w-7xl mx-auto pt-20 px-6 py-4">
         <Breadcrumbs
           steps={breadcrumbSteps}
           currentStepIndex={actualBreadcrumbStepIndex}
