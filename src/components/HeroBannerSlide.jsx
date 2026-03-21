@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { 
   ClockIcon, 
   CalendarDaysIcon
@@ -6,6 +7,7 @@ import {
 
 export default function HeroBannerSlide() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 100);
@@ -14,33 +16,51 @@ export default function HeroBannerSlide() {
   }, []);
 
   return (
-    <div
-      className="relative w-full h-[100svh] flex flex-col items-center justify-center overflow-hidden bg-white"
-      style={{
-        // Fondo: Azul Agua -> Blanco -> Gris Piedra
-        background: 'linear-gradient(135deg, #7dd3fc 0%, #bae6fd 30%, #f8fafc 50%, #e2e8f0 75%, #cbd5e1 100%)',
-      }}
-    >
+    <div className="relative w-full h-[100svh] flex flex-col items-center justify-center overflow-hidden bg-white">
+      
+      {/* VIDEO DE FONDO PURO (Sin filtros ni grano) */}
+      <div className="absolute inset-0 z-0 bg-[#f8fafc] flex items-center justify-center">
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover scale-[1.15]"
+        >
+          <source 
+            src="https://res.cloudinary.com/defkuaytw/video/upload/q_auto:best,f_auto/v1774072458/Agua_fluyendo_efecto_202603202353_ioypg7.mp4" 
+            type="video/mp4" 
+          />
+        </video>
+      </div>
+
+      {/* Overlay de Vidrio Minimalista (Solo lo necesario para legibilidad) */}
+      <div className="absolute inset-0 bg-white/5 backdrop-blur-[0.5px] z-10 pointer-events-none" />
+
+      {/* Capas de luz sutiles */}
+      <div className="absolute inset-0 pointer-events-none z-10">
+        <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-white/10 to-transparent" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-white rounded-full blur-[140px] opacity-20" />
+      </div>
+
       <style>{`
         @keyframes revealUp {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-reveal {
-          animation: revealUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-          opacity: 0;
+        @keyframes custom-pulse {
+          0% { box-shadow: 0 0 0 0 rgba(22, 131, 135, 0.4); transform: scale(1); }
+          70% { box-shadow: 0 0 0 15px rgba(22, 131, 135, 0); transform: scale(1.05); }
+          100% { box-shadow: 0 0 0 0 rgba(22, 131, 135, 0); transform: scale(1); }
         }
-        .delay-1 { animation-delay: 0.15s; }
-        .delay-2 { animation-delay: 0.3s; }
+        .animate-reveal { animation: revealUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+        .animate-btn-pulse { animation: custom-pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1); }
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
         .delay-3 { animation-delay: 0.6s; }
       `}</style>
-
-      {/* Capa de luz orgánica */}
-      <div className="absolute inset-0 pointer-events-none z-10">
-        <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-white/10 to-transparent" />
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-white rounded-full blur-[140px] opacity-30" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-slate-300 rounded-full blur-[120px] opacity-20" />
-      </div>
 
       {/* CONTENIDO PRINCIPAL */}
       <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-16 flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12 sm:gap-14 pb-[15svh] lg:pb-0">
@@ -72,7 +92,7 @@ export default function HeroBannerSlide() {
           </p>
 
           <button
-            onClick={() => document.getElementById('calculadora-negocio')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })}
             className="
               relative z-30
               inline-flex items-center justify-center
@@ -85,13 +105,14 @@ export default function HeroBannerSlide() {
               text-[13px] sm:text-base
               uppercase tracking-widest
               shadow-lg
+              animate-btn-pulse
             "
             style={{ 
               backgroundColor: '#168387',
               boxShadow: '0 10px 25px rgba(22, 131, 135, 0.25)'
             }}
           >
-            <span>CALCULA TUS GANANCIAS</span>
+            <span>CONFIGURA TU NEGOCIO</span>
             <svg 
               className="ml-3 w-5 h-5 sm:w-6 sm:h-6" 
               fill="none" 
@@ -104,7 +125,7 @@ export default function HeroBannerSlide() {
         </div>
       </div>
 
-      {/* --- CUADROS INFERIORES: Restaurado Icono de WhatsApp --- */}
+      {/* --- CUADROS INFERIORES --- */}
       <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center px-4 animate-reveal delay-3">
         <div className="w-full max-w-5xl bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl border border-white overflow-hidden grid grid-cols-3 divide-x divide-slate-100">
           
@@ -113,7 +134,7 @@ export default function HeroBannerSlide() {
               <ClockIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[#168387]" />
             </div>
             <div className="text-center sm:text-left">
-              <p className="font-black text-slate-900 text-[9px] sm:text-[11px] uppercase tracking-tighter sm:tracking-wider leading-tight">Beneficios<br className="sm:hidden"/> 24/7</p>
+              <p className="font-black text-slate-900 text-[9px] sm:text-[11px] uppercase tracking-tighter sm:tracking-wider leading-tight">Beneficios 24/7</p>
               <p className="hidden sm:block text-slate-500 text-[9px] font-bold uppercase opacity-70 mt-1">Ingresos siempre</p>
             </div>
           </div>
@@ -126,7 +147,7 @@ export default function HeroBannerSlide() {
               <CalendarDaysIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[#168387]" />
             </div>
             <div className="text-center sm:text-left">
-              <p className="font-black text-slate-900 text-[9px] sm:text-[11px] uppercase tracking-tighter sm:tracking-wider leading-tight">Agenda<br className="sm:hidden"/> Llamada</p>
+              <p className="font-black text-slate-900 text-[9px] sm:text-[11px] uppercase tracking-tighter sm:tracking-wider leading-tight">Agenda Llamada</p>
               <p className="hidden sm:block text-slate-500 text-[9px] font-bold uppercase opacity-70 mt-1">Asesoría gratis</p>
             </div>
           </button>
