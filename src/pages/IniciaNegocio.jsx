@@ -58,34 +58,33 @@ const modelos = [
   },
   {
     id: "Duo-Emprendedor",
-    nombre: "Dúo Emprendedor 2 en 1",
-    etiqueta: "Vending y Limpieza",
-    imagen: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png", // Placeholder, replace with actual image
+    nombre: "Paquete Dúo Emprendedor",
+    etiqueta: "Paquete 2 en 1",
+    imagen: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png",
     precio: 89900,
-    descripcion: "Combina la venta de agua purificada con productos de limpieza a granel, maximizando tu oferta y rentabilidad en un solo espacio.",
+    descripcion: "Paquete integral que combina la venta de agua purificada con productos de limpieza a granel, maximizando tu oferta y rentabilidad en un solo espacio.",
     rutaInfo: "/duo-emprendedor-info",
     badge: "Doble Ganancia",
   },
   {
     id: "Tridente",
-    nombre: "Tridente",
-    etiqueta: "Triple Modelo de Negocio",
-    imagen: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767984401/tridente_1_tqcl26.png", // Placeholder, replace with actual image
+    nombre: "Paquete Tridente",
+    etiqueta: "Paquete Triple Modelo",
+    imagen: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767984401/tridente_1_tqcl26.png",
     precio: 107900,
-    descripcion: "Una solución completa que integra agua purificada, productos de limpieza y otros artículos esenciales, ofreciendo una experiencia integral a tus clientes.",
+    descripcion: "Paquete completo de alto impacto que integra agua purificada, productos de limpieza y otros artículos esenciales en una solución llave en mano.",
     rutaInfo: "/tridente-info",
     badge: "Versatilidad Extrema",
   },
   {
     id: "Megalodon",
-    nombre: "Megalodon",
-    etiqueta: "Mega Vending",
-    imagen: "/img/Iniciatunegocio/fachadacalle.jpg", // Placeholder, replace with actual image
+    nombre: "Paquete Megalodon",
+    etiqueta: "Paquete Mega Vending",
+    imagen: "/img/Iniciatunegocio/fachadacalle.jpg",
     precio: 117900,
-    descripcion: "La estación de vending más avanzada y de mayor capacidad. Ideal para ubicaciones de alto tráfico, ofreciendo múltiples productos y servicios.",
+    descripcion: "Nuestro paquete más avanzado y de mayor capacidad. La estación de vending definitiva para ubicaciones de alto tráfico.",
     rutaInfo: "/megalodon-info",
     badge: "Líder del Mercado",
-
   },
 ];
  
@@ -116,161 +115,101 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
   return (
     <article
       className={[
-        "isolate border border-slate-200 group relative flex flex-col h-full overflow-hidden rounded-3xl bg-white",
-        "transition-all duration-300",
-        "hover:-translate-y-2 hover:shadow-[0_28px_70px_-30px_rgba(15,23,42,0.35)]",
-        "focus-within:-translate-y-2 focus-within:shadow-[0_28px_70px_-30px_rgba(15,23,42,0.35)]",
+        "group relative flex flex-col h-full rounded-[2.5rem] bg-white border border-slate-100 p-3",
+        "transition-all duration-500 ease-out",
+        "hover:shadow-[0_20px_50px_-20px_rgba(0,0,0,0.08)] hover:-translate-y-2",
         isSelected ? "ring-2 ring-[#24d4da]" : "",
       ].join(" ")}
     >
-      {/* Borde degradado premium (no rompe el layout) */}
-      <div className="pointer-events-none absolute inset-0 rounded-3xl p-[1px] bg-gradient-to-br from-[#24d4da]/35 via-transparent to-slate-200/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
-      <div className="pointer-events-none absolute inset-0 rounded-3xl bg-white z-0" />
-
-      {/* Glow suave */}
-      <div className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full bg-[#24d4da]/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
-      <div className="pointer-events-none absolute -bottom-24 -left-24 h-56 w-56 rounded-full bg-blue-400/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
-
-      {/* Header */}
-      <div className="relative z-10 p-7">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            {modelo.badge && (
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-extrabold tracking-widest uppercase bg-slate-100 text-slate-700">
-                <span className="h-2 w-2 rounded-full bg-[#24d4da]" />
-                {modelo.badge}
-              </span>
-            )}
-
-            <h3 className="mt-3 text-xl font-extrabold text-slate-900 tracking-tight whitespace-nowrap">
-              {modelo.nombre}
-            </h3>
-
-            <p className="mt-1 text-sm font-semibold text-slate-500">
-              {modelo.etiqueta}
-            </p>
+      {/* Contenedor Imagen Rectangular - Imagen más grande y limpia */}
+      <div className="relative aspect-video overflow-hidden rounded-[2rem] bg-slate-50/50 border border-slate-50">
+        {!errorImagen ? (
+          <img
+            src={modelo.imagen}
+            alt={modelo.nombre}
+            loading="lazy"
+            className="h-full w-full object-contain p-2 transition-all duration-500"
+            onError={() => setErrorImagen(true)}
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-slate-300 text-sm">
+            Imagen no disponible
           </div>
+        )}
 
-          {/* Comparar pill (con micro-interacción) */}
+        {/* Badges Flotantes Minimalistas */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none">
+          {modelo.badge && (
+            <span className="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider bg-white/80 backdrop-blur-md text-slate-600 border border-white shadow-sm">
+              {modelo.badge}
+            </span>
+          )}
+          
           <button
             onClick={(e) => {
               e.stopPropagation();
               onToggleSelect(modelo.id);
             }}
             className={[
-              "shrink-0 inline-flex items-center gap-2",
-              "px-3 py-2 rounded-full border text-xs font-extrabold",
-              "transition-all duration-300",
-              "active:scale-[0.98]",
-              isSelected
-                ? "border-[#24d4da] bg-[#24d4da]/10 text-[BRAND_TEXT] shadow-[0_10px_25px_-15px_rgba(36,212,218,0.65)]"
-                : "border-slate-200 text-slate-600 hover:border-[#24d4da] hover:text-[#24d4da] hover:bg-[#24d4da]/5",
+              "pointer-events-auto h-9 w-9 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-md border",
+              isSelected 
+                ? "bg-[#24d4da] border-[#24d4da] text-white shadow-lg shadow-[#24d4da]/20" 
+                : "bg-white/60 border-white/40 text-slate-400 hover:bg-white hover:text-[#168387] hover:border-slate-200"
             ].join(" ")}
-            title="Comparar"
           >
-            <span
-              className={[
-                "inline-block h-2 w-2 rounded-full transition-colors duration-300",
-                isSelected ? "bg-[#24d4da]" : "bg-slate-300 group-hover:bg-[#24d4da]",
-              ].join(" ")}
-            />
-            {isSelected ? "Comparando" : "Comparar"}
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {isSelected ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              )}
+            </svg>
           </button>
-        </div>
-
-        {/* Imagen premium */}
-        <div className="relative mt-6 rounded-2xl bg-gradient-to-b from-slate-50 to-white h-56 flex items-center justify-center overflow-hidden">
-          {/* shimmer suave */}
-          <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            <div className="absolute -inset-x-10 top-0 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent rotate-12 translate-x-[-30%] group-hover:translate-x-[40%] transition-transform duration-[1200ms]" />
-          </div>
-
-          {!errorImagen ? (
-            <img
-              src={modelo.imagen}
-              alt={modelo.nombre}
-              loading="lazy"
-              className="
-                relative z-10 h-full w-full object-cover
-              "
-              onError={() => setErrorImagen(true)}
-            />
-          ) : (
-            <div className="text-slate-600 text-sm font-semibold">
-              Imagen no disponible
-            </div>
-          )}
-
-          {/* sombra inferior sutil */}
-          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-900/5 to-transparent" />
-        </div>
-
-        {/* Precio + texto */}
-        <div className="mt-6">
-          <div className="flex items-end justify-between gap-3">
-            <span className="text-2xl font-black text-slate-900">
-              {formatMXN(modelo.precio)}
-            </span>
-            <span className="text-xs text-slate-600 font-semibold">+ IVA</span>
-          </div>
-
-          <p className="mt-3 text-sm text-slate-600 leading-relaxed line-clamp-3">
-            {modelo.descripcion}
-          </p>
-
-          {/* mini divider */}
-          <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
         </div>
       </div>
 
-      {/* Footer acciones */}
-      <div className="relative z-10 mt-auto p-7 pt-0">
-        <div className="flex gap-3">
-          {/* Configurar */}
-          <button
-            onClick={() => navigate(configurePath)}
-            className="
-              flex-1 py-3.5 rounded-2xl font-extrabold text-white
-              transition-all duration-300
-              hover:shadow-[0_18px_35px_-18px_rgba(36,212,218,0.75)]
-              active:scale-[0.99]
-              relative overflow-hidden
-            "
-            style={{ backgroundColor: BRAND_DARK }}
-          >
-            {/* glow sweep */}
-            <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <span className="absolute -inset-x-10 top-0 h-full bg-gradient-to-r from-transparent via-white/35 to-transparent rotate-12 translate-x-[-40%] group-hover:translate-x-[45%] transition-transform duration-[1200ms]" />
-            </span>
-            <span className="relative">Configurar</span>
-          </button>
-
-          {/* Conoce más */}
-          <button
-            onClick={() => navigate(modelo.rutaInfo)}
-            className="
-              flex-1 py-3.5 rounded-2xl font-extrabold text-slate-700
-              border border-slate-200
-              hover:text-[BRAND_TEXT] hover:border-[#24d4da]
-              hover:bg-[#24d4da]/5
-              transition-all duration-300
-              active:scale-[0.99]
-            "
-          >
-            Conoce más
-          </button>
+      {/* Info Content - Espaciado Mejorado */}
+      <div className="flex flex-col flex-1 px-4 py-6 sm:px-5">
+        <div className="mb-4">
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#24d4da] mb-1.5 block">
+            {modelo.etiqueta}
+          </span>
+          <h3 className="text-xl font-black text-slate-900 tracking-tight leading-tight group-hover:text-[#168387] transition-colors">
+            {modelo.nombre}
+          </h3>
         </div>
 
-        {/* hint en hover (muy discreto) */}
-        <div className="mt-4 flex items-center justify-between text-[11px] text-slate-600">
-          <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-            Tip: compara 2+ modelos
-          </span>
-          {isSelected && (
-            <span className="text-[BRAND_TEXT] font-bold">
-              Seleccionado ✓
+        <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 mb-8 opacity-80">
+          {modelo.descripcion}
+        </p>
+
+        {/* Footer Acciones - Limpio y Equilibrado */}
+        <div className="mt-auto flex items-center justify-between border-t border-slate-50 pt-6">
+          <div>
+            <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-1">Inversión desde</span>
+            <span className="text-xl font-black text-slate-900 leading-none">
+              {formatMXN(modelo.precio)}
             </span>
-          )}
+          </div>
+
+          <div className="flex gap-2">
+             <button
+                onClick={() => navigate(modelo.rutaInfo)}
+                className="h-10 w-10 rounded-2xl flex items-center justify-center border border-slate-100 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all"
+                title="Saber más"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => navigate(configurePath)}
+                className="h-10 px-6 rounded-2xl bg-slate-900 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-[#168387] hover:shadow-xl hover:shadow-[#168387]/20 transition-all active:scale-95"
+              >
+                Configurar
+              </button>
+          </div>
         </div>
       </div>
     </article>
@@ -418,34 +357,158 @@ const IniciaNegocio = () => {
         keywords="negocio de agua, franquicia purificadora, vending de agua, darmax, ingresos pasivos"
         localBizData={true}
       />
+      {/* SECCIÓN DE ROI - Contraste de Formas con Fondo de Marca Suave */}
+      <section id="ROI" className="relative py-24 bg-[#F0FDFD] overflow-hidden border-y border-cyan-100/50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
+            
+            {/* Tarjeta ROI - El Cuadrado Compacto con Color de Marca y Alta Presencia */}
+            <div className="relative group w-full md:w-[300px] aspect-square flex-shrink-0">
+              <div className="absolute -inset-4 bg-[#168387]/20 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
+              <div className="relative p-10 rounded-[3rem] bg-[#168387] border border-[#168387] shadow-2xl flex flex-col h-full items-center text-center justify-center transition-all duration-500 hover:-translate-y-1.5">
+                <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-white mb-6 shadow-inner">
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-black text-white tracking-tight mb-4">ROI Superior</h3>
+                <p className="text-white/90 text-sm leading-relaxed font-medium">
+                  Recupera tu inversión en <span className="text-cyan-300 font-bold">menos de 12 meses</span> con alta demanda.
+                </p>
+                <div className="mt-6 pt-6 border-t border-white/10 w-full">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-cyan-300">Rentabilidad</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Tarjeta Automatización - El Rectángulo Largo y Delgado */}
+            <div className="relative group w-full md:flex-1 max-w-[720px]">
+              <div className="absolute -inset-4 bg-[#168387]/5 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
+              <div className="relative p-10 rounded-[3rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/30 flex flex-col sm:flex-row h-full items-start sm:items-center gap-10 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl">
+                <div className="shrink-0 w-16 h-16 rounded-[1.5rem] bg-[#168387]/10 flex items-center justify-center text-[#168387] shadow-sm">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-4">Automatización Total 24/7</h3>
+                  <p className="text-slate-500 text-sm leading-relaxed max-w-lg">
+                    Olvídate de empleados y horarios. Tus unidades operan de manera <span className="text-[#168387] font-bold">totalmente autónoma</span>, procesando pagos y entregando producto purificado sin intervención humana.
+                  </p>
+                  <div className="mt-6 flex items-center gap-3">
+                    <span className="h-px w-8 bg-[#24d4da]"></span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#24d4da]">Tecnología Autónoma</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
 
       {/* SECCIÓN DE MODELOS */}
-      <section id="catalogo" className="py-24 bg-[#Fbfbfd]">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-slate-200 pb-8">
-            <div>
-                <h2 className="text-3xl font-bold text-slate-900">Elige tu modelo de negocio</h2>
-                <p className="text-slate-500 mt-2">Emprende a tus posibilidades con darmax.</p>
+      <section id="catalogo" className="min-h-screen flex items-center py-24 bg-[#Fbfbfd]">
+        <div className="max-w-7xl mx-auto px-4 w-full">
+          
+          {/* Header de la sección */}
+          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+            <div className="max-w-4xl">
+                <span className="text-[#24d4da] font-black tracking-[0.3em] text-[10px] uppercase mb-4 block">
+                  Ecosistemas de Rentabilidad
+                </span>
+                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-4">
+                  Configura tu <span className="text-[#168387]">modelo de negocio</span>
+                </h2>
+                <p className="text-slate-500 text-lg font-medium leading-relaxed">
+                  Explora diferentes ecosistemas diseñados para maximizar tu inversión, desde equipos individuales de alta precisión hasta estaciones integrales con operatividad 24/7. 
+                  <span className="text-[#168387] block mt-2 font-bold text-sm uppercase tracking-wider">
+                    Pulsa el botón "+" en cada tarjeta para comparar sus beneficios y encontrar tu solución ideal.
+                  </span>
+                </p>
             </div>
+            
             {selected.length > 0 && (
-                <div className="mt-4 md:mt-0 px-4 py-2 bg-[#24d4da]/10 text-[BRAND_TEXT] rounded-lg font-medium text-sm animate-fade-in">
-                    {selected.length} equipos seleccionados para comparar
+                <div className="px-6 py-3 bg-[#24d4da]/10 border border-[#24d4da]/20 text-[#168387] rounded-2xl font-bold text-sm animate-fade-in shadow-sm backdrop-blur-sm whitespace-nowrap">
+                    {selected.length} {selected.length === 1 ? 'equipo seleccionado' : 'equipos seleccionados'}
                 </div>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" >
-            {modelos.map((modelo) => (
-              <TarjetaModelo
-                key={modelo.id}
-                modelo={modelo}
-                navigate={navigate}
-                selected={selected}
-                onToggleSelect={toggleSelect}
-              />
-            ))}
+          {/* SUBSECCIÓN: EQUIPOS INDIVIDUALES */}
+          <div className="mb-16 pt-4 border-t border-slate-100">
+            <div className="flex items-center gap-4 mb-8">
+              <h3 className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] whitespace-nowrap">Equipos Individuales</h3>
+              <div className="h-px w-full bg-slate-200" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {modelos.filter(m => !BUNDLE_IDS.has(m.id)).map((modelo) => (
+                <TarjetaModelo
+                  key={modelo.id}
+                  modelo={modelo}
+                  navigate={navigate}
+                  selected={selected}
+                  onToggleSelect={toggleSelect}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* SUBSECCIÓN: PAQUETES INTEGRALES */}
+          <div className="mb-24">
+            <div className="flex items-center gap-4 mb-8">
+              <h3 className="text-sm font-black text-[#168387] uppercase tracking-[0.2em] whitespace-nowrap">Paquetes de Negocio</h3>
+              <div className="h-px w-full bg-[#168387]/20" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {modelos.filter(m => BUNDLE_IDS.has(m.id)).map((modelo) => (
+                <TarjetaModelo
+                  key={modelo.id}
+                  modelo={modelo}
+                  navigate={navigate}
+                  selected={selected}
+                  onToggleSelect={toggleSelect}
+                />
+              ))}
+            </div>
           </div>
         </div>
+      </section>
+
+      
+      <section id="ciclo">
+        {/* LÍNEA DE TIEMPO DEL CICLO (Movida debajo de las tarjetas) */}
+          <div className="w-full max-w-5xl mx-auto relative px-4 py-24 border-t border-slate-100 min-h-[60vh] flex flex-col justify-center">
+            <div className="text-center mb-20">
+              <h3 className="text-3xl font-black text-slate-900 tracking-tight">El Ciclo de la Rentabilidad</h3>
+              <p className="text-slate-500 text-base mt-3 max-w-2xl mx-auto leading-relaxed">Un proceso diseñado estratégicamente para transformar tu inversión en un activo de éxito paso a paso.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 relative z-10">
+              {[
+                { step: "01", title: "Selección", desc: "Elige tu ecosistema base", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" },
+                { step: "02", title: "Configuración", desc: "Personaliza a tu medida", icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.756 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.756 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" },
+                { step: "03", title: "Comparación", desc: "Valida beneficios", icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+                { step: "04", title: "Operación", desc: "Ingresos en automático", icon: "M13 10V3L4 14h7v7l9-11h-7z" }
+              ].map((item, i) => (
+                <div key={i} className="flex flex-col items-center group relative">
+                  {i < 3 && (
+                    <div className="hidden md:block absolute top-10 left-[calc(50%+2.5rem)] w-[calc(100%-5rem)] z-0">
+                      <div className="h-px border-t-2 border-dashed border-slate-200"></div>
+                    </div>
+                  )}
+                  <div className="w-20 h-20 rounded-[2rem] bg-white border border-slate-100 shadow-sm flex items-center justify-center mb-6 transition-all duration-500 group-hover:border-[#168387]/50 group-hover:bg-[#168387]/5 relative z-10">
+                    <span className="absolute -top-2 -right-2 text-[10px] font-black bg-[#168387] text-white px-2 py-0.5 rounded-full shadow-md">{item.step}</span>
+                    <svg className="w-8 h-8 text-[#168387] transition-transform duration-500 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d={item.icon} />
+                    </svg>
+                  </div>
+                  <h4 className="text-slate-900 font-black text-base tracking-tight mb-2">{item.title}</h4>
+                  <p className="text-slate-400 text-xs font-medium leading-relaxed max-w-[140px] mx-auto">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
       </section>
 
      {/* SECCIÓN INTERACTIVA 3D */}
@@ -533,35 +596,7 @@ const IniciaNegocio = () => {
         </div>
       </section>
 
-      {/* CTA FINAL (Clean) */}
-      {/* BARRA COMPARATIVA FLOTANTE (Glassmorphism Puro) */}
-      <div className={`fixed bottom-8 left-0 right-0 flex justify-center z-50 pointer-events-none transition-all duration-500 ${selected.length > 0 ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"}`}>
-         <div className="pointer-events-auto flex items-center gap-6 px-8 py-4 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl shadow-black/50 text-white">
-            <div className="flex flex-col">
-                <span className="text-[10px] uppercase tracking-wider text-slate-600 font-bold">Comparando</span>
-                <span className="font-bold text-lg leading-none">{selected.length} <span className="text-slate-500 text-sm font-normal">Modelos</span></span>
-            </div>
-
-            <div className="h-8 w-px bg-white/20" />
-
-            <button
-              onClick={() => setCompareOpen(true)}
-              className="px-6 py-2 rounded-full font-bold text-slate-900 transition-transform hover:scale-105 active:scale-95"
-              style={{ backgroundColor: BRAND_COLOR }}
-              disabled={selected.length < 2}
-            >
-               Ver Tabla
-            </button>
-            
-            <button
-              onClick={() => setSelected([])}
-              className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-red-500/20 hover:text-red-400 transition-colors text-slate-600"
-            >
-              ✕
-            </button>
-         </div>
-      </div>
-
+      {/* CTA FINAL (Clean) ... rest of file */}
       {/* MODAL COMPARAR */}
       <CompareModal
         open={compareOpen}
@@ -584,12 +619,12 @@ function CompareModal({ open, onClose, models = [], navigate }) {
   const rows = [
     { label: "Tipo de negocio", key: "etiqueta" },
     { label: "Descripción", key: "descripcion" },
-    { label: "Precio", key: "__precio" },
+    { label: "Inversión desde", key: "__precio" },
   ];
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Backdrop */}
+      {/* Backdrop ... rest of Modal */}
       <div
         className="absolute inset-0 bg-slate-950/70 backdrop-blur-md"
         onClick={onClose}
@@ -624,8 +659,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
             >
               <path
                 strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
+                strokeLinejoin="round" strokeWidth={2}
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
@@ -655,7 +689,8 @@ function CompareModal({ open, onClose, models = [], navigate }) {
                           </p>
                         </div>
 
-                        <span className="text-[BRAND_TEXT] font-extrabold text-sm">
+                        <span className="text-[BRAND_TEXT] font-extrabold text-sm text-right">
+                          <span className="block text-[8px] uppercase opacity-60">Desde</span>
                           {formatMXN(m.precio)}
                         </span>
                       </div>
@@ -727,9 +762,12 @@ function CompareModal({ open, onClose, models = [], navigate }) {
                           <p className="text-center text-slate-500 font-semibold text-sm mt-1">
                             {m.etiqueta}
                           </p>
-                          <p className="text-center text-[BRAND_TEXT] font-extrabold text-xl mt-2">
-                            {formatMXN(m.precio)}
-                          </p>
+                          <div className="text-center mt-2">
+                             <span className="block text-[8px] font-bold text-[#168387] uppercase tracking-wider">Desde</span>
+                             <p className="text-[BRAND_TEXT] font-extrabold text-xl leading-none">
+                               {formatMXN(m.precio)}
+                             </p>
+                          </div>
                         </div>
                       </th>
                     ))}
@@ -746,7 +784,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
                       {models.map((m) => (
                         <td key={m.id + row.key} className="p-6 align-top">
                           {row.key === "__precio"
-                            ? formatMXN(m.precio)
+                            ? <span className="font-bold">Desde {formatMXN(m.precio)}</span>
                             : m[row.key]}
                         </td>
                       ))}
