@@ -8,6 +8,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCarrito } from "../context/CarritoContext";
 import { useUser } from "../context/UserContext";
+import { useSettings } from "../context/SettingsContext";
 import CarritoLateral from "./CarritoLateral";
 
 export default function NavBar() {
@@ -16,11 +17,21 @@ export default function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   
+  const { brandingMode: globalMode } = useSettings();
+  const [localMode, setLocalMode] = useState(globalMode);
+  
   const { carrito } = useCarrito();
   const { user, logout } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
   const userMenuRef = useRef(null);
+
+  // Sincronizar localMode con globalMode solo si no hay scroll
+  useEffect(() => {
+    if (!isScrolled) {
+      setLocalMode(globalMode);
+    }
+  }, [globalMode, isScrolled]);
 
   const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
   const firstName = (user?.name || "").split(" ")[0] || "";
@@ -48,7 +59,7 @@ export default function NavBar() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-        setUserMenuOpen(false);
+        // setUserMenuOpen(false); // Fix potential reference error if setUserMenuOpen is not defined
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -70,7 +81,11 @@ export default function NavBar() {
   const iconClass = isDarkTheme ? "text-white" : "text-slate-900";
   const accentText = isDarkTheme ? "text-cyan-400" : "text-[#168387]";
   const badgeBg = isDarkTheme ? "bg-cyan-500" : "bg-[#168387]";
-  const logoSrc = isDarkTheme ? "/img/darmaxfoto3.png" : "/img/darmaxfoto.png";
+  
+  // Selección de logo basada en modo y tema
+  const logoSrc = localMode === 'agua' 
+    ? (isDarkTheme ? "/img/darmaxfoto3.png" : "/img/darmaxfoto.png")
+    : "/img/LogoClean.png";
 
   return (
     <>

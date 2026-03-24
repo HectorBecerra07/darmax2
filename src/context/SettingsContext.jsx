@@ -10,6 +10,7 @@ export const useSettings = () => {
 export const SettingsProvider = ({ children }) => {
   const [isChatbotActive, setIsChatbotActive] = useState(false);
   const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+  const [brandingMode, setBrandingMode] = useState('agua'); // 'agua' o 'clean'
 
   const fetchChatbotStatus = async () => {
     setIsLoadingSettings(true);
@@ -44,7 +45,13 @@ export const SettingsProvider = ({ children }) => {
   }, []);
 
   return (
-    <SettingsContext.Provider value={{ isChatbotActive, isLoadingSettings, fetchChatbotStatus }}>
+    <SettingsContext.Provider value={{ 
+      isChatbotActive, 
+      isLoadingSettings, 
+      fetchChatbotStatus,
+      brandingMode,
+      setBrandingMode
+    }}>
       {children}
     </SettingsContext.Provider>
   );
