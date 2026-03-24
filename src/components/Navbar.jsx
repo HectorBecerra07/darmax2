@@ -77,11 +77,25 @@ export default function NavBar() {
   ];
 
   const isHome = location.pathname === "/";
+  const isClean = localMode === 'clean';
+
+  // Clases dinámicas basadas en Tema (Oscuro/Claro) y Modo (Agua/Clean)
   const textClass = isDarkTheme ? "text-white" : "text-slate-900";
   const iconClass = isDarkTheme ? "text-white" : "text-slate-900";
-  const accentText = isDarkTheme ? "text-cyan-400" : "text-[#168387]";
-  const badgeBg = isDarkTheme ? "bg-cyan-500" : "bg-[#168387]";
   
+  // Acento de color (Rosa para Clean, Cyan/Teal para Agua)
+  const accentText = isClean 
+    ? (isDarkTheme ? "text-pink-400" : "text-pink-600")
+    : (isDarkTheme ? "text-cyan-400" : "text-[#168387]");
+
+  const badgeBg = isClean 
+    ? "bg-pink-500" 
+    : (isDarkTheme ? "bg-cyan-500" : "bg-[#168387]");
+
+  const activeLinkBg = isClean
+    ? "bg-pink-500/10"
+    : "bg-[#168387]/10";
+
   // Selección de logo basada en modo y tema
   const logoSrc = localMode === 'agua' 
     ? (isDarkTheme ? "/img/darmaxfoto3.png" : "/img/darmaxfoto.png")
@@ -97,7 +111,7 @@ export default function NavBar() {
             relative overflow-hidden transition-all duration-700 cubic-bezier(0.22, 1, 0.36, 1)
             w-[94%] md:w-[90%] lg:w-[85%] max-w-6xl rounded-b-[2rem] flex items-center
             ${isScrolled 
-              ? `h-[70px] shadow-2xl ${isDarkTheme ? 'bg-slate-900/60' : 'bg-white/40'} border-x border-b border-white/10 backdrop-blur-2xl` 
+              ? `h-[70px] shadow-2xl ${isDarkTheme ? 'bg-slate-900/60' : 'bg-white/40'} border-x border-b ${isClean ? 'border-pink-500/20' : 'border-white/10'} backdrop-blur-2xl` 
               : 'h-20 bg-transparent border-x border-b border-transparent shadow-none'
             }
           `}
@@ -130,7 +144,7 @@ export default function NavBar() {
                     key={link.href}
                     to={link.href}
                     className={`px-4 py-2 rounded-full font-bold transition-all duration-1000 text-[11px] tracking-widest whitespace-nowrap ${
-                      isActive ? `bg-[#168387]/10 ${accentText}` : `hover:bg-white/5 opacity-80 hover:opacity-100`
+                      isActive ? `${activeLinkBg} ${accentText}` : `hover:bg-white/5 opacity-80 hover:opacity-100`
                     }`}
                   >
                     <span className={isActive ? accentText : ""}>{link.text}</span>
