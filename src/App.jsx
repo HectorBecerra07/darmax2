@@ -9,9 +9,9 @@ import Layout from "./layouts/Layout";
 import ScrollToTop from "./components/ScrollToTop";
 
 // Cargando componentes de forma perezosa (Lazy Loading) para optimizar SEO/Performance
-const LandingPage = lazy(() => import("./components/LandingPage"));
+const LandingPage = lazy(() => import("./pages/LandingPage"));
 const Nosotros = lazy(() => import("./pages/Nosotros"));
-const IniciaNegocio = lazy(() => import("./pages/IniciaNegocio"));
+
 const ProyectosEmpresariales = lazy(() => import("./pages/ProyectosEmpresariales"));
 const Productos = lazy(() => import("./pages/Productos"));
 const ProductView = lazy(() => import("./pages/ProductView"));
@@ -84,6 +84,8 @@ import { Toaster } from "react-hot-toast"; // Importar Toaster
 import WhatsAppButton from "./components/WhatsAppButton";
 import ChatbotWidget from "./components/ChatbotWidget";
 import { SettingsProvider, useSettings } from "./context/SettingsContext"; // Importar SettingsProvider y useSettings
+
+const Contacto = lazy(() => import("./pages/Contacto"));
 
 function AppContent() {
   const location = useLocation();
@@ -161,14 +163,7 @@ function AppContent() {
                         </PageWrapper>
                       }
                     />
-                    <Route
-                      path="/inicia-tu-negocio"
-                      element={
-                        <PageWrapper>
-                          <IniciaNegocio />
-                        </PageWrapper>
-                      }
-                    />
+
                     <Route
                       path="/vending-info"
                       element={
@@ -366,6 +361,14 @@ function AppContent() {
                       element={
                         <PageWrapper>
                           <PurificadoresCaseros />
+                        </PageWrapper>
+                      }
+                    />
+                    <Route
+                      path="/contacto"
+                      element={
+                        <PageWrapper>
+                          <Contacto />
                         </PageWrapper>
                       }
                     />

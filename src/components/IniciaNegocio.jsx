@@ -565,17 +565,17 @@ const IniciaNegocio = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="text-center max-w-3xl mx-auto mb-16"
+            className="text-left max-w-4xl mb-16"
           >
-            <span className="inline-flex items-center rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-1.5 text-sm font-medium text-cyan-300 backdrop-blur-md">
+            <span className="text-[#24d4da] font-black tracking-[0.3em] text-[10px] uppercase mb-4 block">
               Rendimiento y automatización
             </span>
 
-            <h2 className="mt-6 text-4xl md:text-5xl font-black tracking-tight text-white">
-              Una inversión que trabaja por ti
+            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-tight mb-4">
+              Una inversión que <span className="text-[#168387]">trabaja por ti</span>
             </h2>
 
-            <p className="mt-5 text-base md:text-lg text-slate-300 leading-relaxed">
+            <p className="text-slate-300 text-lg font-medium leading-relaxed max-w-3xl">
               Maximiza ingresos, reduce operación manual y obtén un modelo de
               negocio más inteligente, continuo y rentable.
             </p>
@@ -703,7 +703,7 @@ const IniciaNegocio = () => {
                 Ecosistemas de Rentabilidad
               </span>
               <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-4">
-                Configura tu <span className="text-[#168387]">modelo de negocio</span>
+                Configura tu <span className="text-[#168387]">modelo de negocio Darmax</span>
               </h2>
               <p className="text-slate-500 text-lg font-medium leading-relaxed">
                 Explora diferentes ecosistemas diseñados para maximizar tu
@@ -886,51 +886,54 @@ const IniciaNegocio = () => {
         {...fadeInUp}
         className="relative bg-white border-t border-slate-100 py-24"
       >
-        <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-12">
-          <div className="w-full text-center relative z-10">
-            <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
-              Experiencia Inmersiva
-            </span>
+        <div className="max-w-7xl mx-auto px-4 flex flex-col gap-16">
+          
+          {/* Header Inmersivo - ARMONIZADO */}
+          <div className="w-full flex flex-col md:flex-row justify-between items-end gap-8 relative z-10">
+            <div className="max-w-4xl text-left">
+              <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
+                Experiencia Inmersiva
+              </span>
 
-            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
-              Conoce tu próxima <br /> máquina de éxito
-            </h2>
+              <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-4">
+                Conoce tu próxima <span className="text-[#168387]">máquina de éxito</span>
+              </h2>
 
-            <p className="mt-6 text-slate-600 text-lg leading-relaxed max-w-2xl mx-auto">
-              Interactúa con el modelo 3D de alta precisión. Arrastra para
-              rotar, explora los componentes y visualiza la calidad industrial
-              de la Vending Touch antes de adquirirla.
-            </p>
+              <p className="text-slate-500 text-lg font-medium leading-relaxed max-w-3xl">
+                Interactúa con el modelo 3D de alta precisión. Arrastra para
+                rotar, explora los componentes y visualiza la calidad industrial
+                de la Vending Touch antes de adquirirla.
+              </p>
+            </div>
 
-            <div className="mt-10 flex justify-center">
-              <div className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700">
-                <div className="w-10 h-10 rounded-full bg-[#24d4da]/10 flex items-center justify-center text-[#24d4da]">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"
-                    />
-                  </svg>
-                </div>
+            {/* Badge 360 Estilo Switch */}
+            <div className="flex items-center gap-4 px-6 py-3 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700 shrink-0 shadow-sm shadow-slate-100/50">
+              <div className="w-10 h-10 rounded-full bg-[#24d4da]/10 flex items-center justify-center text-[#24d4da]">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"
+                  />
+                </svg>
+              </div>
 
-                <div className="text-left">
-                  <p className="text-sm font-bold">Rotación 360°</p>
-                  <p className="text-xs text-slate-500">Explora cada ángulo</p>
-                </div>
+              <div className="text-left">
+                <p className="text-[11px] font-black uppercase tracking-widest text-slate-900">Rotación 360°</p>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Explora cada ángulo</p>
               </div>
             </div>
           </div>
 
           <div className="w-full flex justify-center relative z-20">
-            <div className="w-full max-w-4xl rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-              <div className="relative h-[420px] md:h-[520px] lg:h-[600px] flex items-center justify-center">
+            <div className="w-full max-w-5xl rounded-[3rem] border border-slate-200 bg-white shadow-xl shadow-slate-100 overflow-hidden">
+              <div className="relative h-[420px] md:h-[520px] lg:h-[650px] flex items-center justify-center bg-gradient-to-b from-white to-slate-50/50">
                 <div className="scale-90 md:scale-100 transform-gpu">
                   <VendingPrecise3D />
                 </div>
@@ -941,18 +944,6 @@ const IniciaNegocio = () => {
       </motion.section>
 
       <VentajasSection />
-
-      <section className="py-24 bg-[#fbfbfd]">
-        <div className="max-w-7xl mx-auto px-4">
-          <SectionTitle
-            title="Agenda una reunión con un asesor experto"
-            subtitle="Asesoría Personalizada quieres saber como iniciar tu negocio"
-          />
-          <motion.div {...fadeInUp} className="mt-12 flex justify-center">
-            <Calendar />
-          </motion.div>
-        </div>
-      </section>
 
       <CompareModal
         open={compareOpen}

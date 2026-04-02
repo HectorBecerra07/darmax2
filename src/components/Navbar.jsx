@@ -74,6 +74,7 @@ export default function NavBar() {
     { href: "/", text: "INICIA TU NEGOCIO", scrollTarget: "inicioRef" },
     { href: "/nosotros", text: "NOSOTROS" },
     { href: "/proyectos-empresariales", text: "PROYECTOS" },
+    { href: "/contacto", text: "CONTACTO" },
   ];
 
   const isHome = location.pathname === "/";
