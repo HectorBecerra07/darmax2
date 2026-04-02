@@ -22,22 +22,22 @@ export default function Contacto() {
         description="Ponte en contacto con los expertos de Darmax. Agenda una reunión personalizada para iniciar tu negocio de agua purificada."
       />
       
-      <main className="min-h-screen bg-[#fbfbfd] pt-32 pb-24">
+      <main className="min-h-screen bg-[#fbfbfd] pt-24">
         {/* SECCIÓN HEADER & CALENDARIO (UNIFICADO) */}
-        <section className="max-w-7xl mx-auto px-4">
+        <section className="max-w-7xl mx-auto px-4 pb-24">
           <motion.div 
             {...fadeInUp}
-            className="w-full mb-12 flex flex-col md:flex-row justify-between items-end gap-10"
+            className="w-full mb-10 flex flex-col md:flex-row justify-between items-end gap-10"
           >
             <div className="max-w-4xl text-left">
-              <span className="text-[#24d4da] font-black tracking-[0.4em] text-[11px] uppercase mb-5 block">
+              <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
                 Atención Personalizada
               </span>
-              <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight mb-6">
+              <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-4">
                 Agenda una reunión con un <span className="text-[#168387]">asesor experto</span>
               </h1>
-              <p className="text-slate-500 text-xl font-medium leading-relaxed max-w-3xl">
-                ¿Tienes dudas sobre cómo iniciar? Selecciona el horario que mejor te convenga y recibe una asesoría gratuita para diseñar tu modelo de negocio ideal.
+              <p className="text-slate-500 text-lg font-medium leading-relaxed max-w-3xl">
+                ¿Tienes dudas sobre cómo iniciar? Selecciona el horario que mejor te convenga y recibe una asesoría gratuita.
               </p>
             </div>
           </motion.div>
@@ -47,17 +47,16 @@ export default function Contacto() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="w-full min-h-[650px] relative z-10"
+            className="w-full min-h-[600px] relative z-10"
           >
-            {/* El calendario ahora fluye sin bordes ni contenedores blancos que lo encierren */}
             <div className="w-full flex justify-center">
               <Calendar />
             </div>
           </motion.div>
         </section>
 
-        {/* SECCIÓN OTROS MEDIOS (FONDO DIFERENTE PARA SEPARAR) */}
-        <section className="mt-24 py-24 bg-slate-900 overflow-hidden relative">
+        {/* SECCIÓN OTROS MEDIOS (FONDO OSCURO FLUSH CON FOOTER) */}
+        <section className="py-24 bg-slate-900 overflow-hidden relative">
           {/* Decoración Parallax Sutil */}
           <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:32px_32px]" />
           
