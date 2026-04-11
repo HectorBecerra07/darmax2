@@ -1,581 +1,420 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion";
+import { 
+  RocketLaunchIcon, 
+  UserGroupIcon, 
+  CpuChipIcon, 
+  ChartBarIcon, 
+  CheckBadgeIcon,
+  SparklesIcon,
+  GlobeAltIcon,
+  BeakerIcon,
+  CurrencyDollarIcon
+} from "@heroicons/react/24/outline";
 
 /* =========================================
-   Motion helpers (limpio + premium)
+   Motion helpers & Master Typewriter
 ========================================= */
 const ease = [0.22, 0.61, 0.36, 1];
 
-const inView = {
-  viewport: { once: true, amount: 0.25 },
+const fadeUp = (d = 0) => ({
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.8, delay: d, ease }
+});
+
+const typewriterContainer = (delay = 0) => ({
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.03, delayChildren: delay },
+  },
+});
+
+const typewriterLetter = {
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+  hidden: {
+    opacity: 0,
+    y: 10,
+  },
 };
 
-const fade = (d = 0) => ({
-  ...inView,
-  initial: { opacity: 0 },
-  whileInView: { opacity: 1 },
-  transition: { duration: 0.7, delay: d, ease },
-});
-
-const up = (d = 0) => ({
-  ...inView,
-  initial: { opacity: 0, y: 18 },
-  whileInView: { opacity: 1, y: 0 },
-  transition: { duration: 0.75, delay: d, ease },
-});
-
-const scale = (d = 0) => ({
-  ...inView,
-  initial: { opacity: 0, scale: 0.98 },
-  whileInView: { opacity: 1, scale: 1 },
-  transition: { duration: 0.7, delay: d, ease: [0.16, 1, 0.3, 1] },
-});
-
 /* =========================================
-   Data
-========================================= */
-const STATS = [
-  { k: "24/7", v: "Soporte y acompañamiento real" },
-  { k: "+300", v: "Equipos instalados y operando" },
-  { k: "MX", v: "Cobertura nacional" },
-  { k: "+5", v: "Años impulsando emprendedores" },
-];
-
-const VALORES = [
-  {
-    img: "/img/valor/DISCIPLINA.png",
-    t: "Disciplina",
-    d: "Orden, método y ejecución impecable para resultados consistentes.",
-  },
-  {
-    img: "/img/valor/CONSTANCIA.png",
-    t: "Constancia",
-    d: "Mejora diaria: evolución continua para estar siempre a la vanguardia.",
-  },
-  {
-    img: "/img/valor/RESPONSABILIDAD.png",
-    t: "Responsabilidad",
-    d: "Compromiso real con clientes, equipo y el entorno.",
-  },
-  {
-    img: "/img/valor/INTEGRIDAD.png",
-    t: "Integridad",
-    d: "Honestidad para construir relaciones duraderas y transparentes.",
-  },
-  {
-    img: "/img/valor/LIDERAZGO.png",
-    t: "Liderazgo",
-    d: "Inspirar con visión, innovación y ejemplo.",
-  },
-  {
-    img: "/img/valor/COMPROMISO.png",
-    t: "Compromiso",
-    d: "Atención y soluciones que aportan valor real y medible.",
-  },
-];
-
-const TIMELINE = [
-  {
-    year: "2019",
-    title: "Nace Darmax",
-    desc: "Iniciamos con una purificadora y la convicción de que el agua puede ser un negocio accesible y escalable.",
-  },
-  {
-    year: "2021",
-    title: "Primera máquina vending",
-    desc: "Integramos automatización para operar 24/7 y facilitar el emprendimiento con mínima fricción.",
-  },
-  {
-    year: "2023",
-    title: "Crecimiento nacional",
-    desc: "Fortalecimos logística y soporte técnico para llegar a más estados con servicio confiable.",
-  },
-  {
-    year: "2025",
-    title: "Innovación continua",
-    desc: "Mejoramos modelos, diseño y operación para que el negocio sea más rentable y simple de administrar.",
-  },
-];
-
-/* =========================================
-   UI
+   Componentes UI
 ========================================= */
 const Container = ({ children, className = "" }) => (
-  <div className={["max-w-7xl mx-auto px-5 sm:px-6", className].join(" ")}>
+  <div className={["max-w-7xl mx-auto px-5 sm:px-10", className].join(" ")}>
     {children}
   </div>
 );
 
-const Pill = ({ children }) => (
-  <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-4 py-2 text-[11px] font-extrabold tracking-[0.22em] uppercase text-slate-700 backdrop-blur">
-    <span
-      aria-hidden="true"
-      className="h-2 w-2 rounded-full bg-[#24d4da] shadow-[0_0_18px_rgba(36,212,218,0.7)]"
-    />
-    {children}
-  </span>
-);
+// Nuevo componente de Contador para el diseño de Authority
+const Counter = ({ value, suffix = "", duration = 2 }) => {
+  const [count, setCount] = useState(0);
+  const ref = React.useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.5 });
 
-const H2 = ({ title, desc, align = "center" }) => (
-  <div className={align === "center" ? "text-center" : ""}>
-    <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-950">
-      {title}
-    </h2>
-    {desc ? (
-      <p
-        className={[
-          "mt-3 text-sm md:text-base leading-relaxed text-slate-600",
-          align === "center" ? "max-w-2xl mx-auto" : "max-w-xl",
-        ].join(" ")}
-      >
-        {desc}
-      </p>
-    ) : null}
-  </div>
-);
+  useEffect(() => {
+    if (isInView) {
+      let start = 0;
+      const end = parseInt(value);
+      const increment = end / (duration * 60);
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= end) {
+          setCount(end);
+          clearInterval(timer);
+        } else {
+          setCount(Math.floor(start));
+        }
+      }, 1000 / 60);
+      return () => clearInterval(timer);
+    }
+  }, [isInView, value, duration]);
 
-const PrimaryButton = ({ href, children }) => (
-  <a
-    href={href}
-    className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-7 py-3 text-sm font-extrabold text-white shadow-sm hover:shadow-md transition active:scale-[0.99]"
+  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+};
+
+const MetricCard = ({ title, value, suffix, icon: Icon, delay = 0 }) => (
+  <motion.div 
+    {...fadeUp(delay)}
+    className="relative p-8 rounded-[2.5rem] bg-white border border-teal-100 shadow-xl shadow-teal-900/5 group overflow-hidden"
   >
-    {children}
-    <span className="text-lg group-hover:translate-x-0.5 transition-transform">
-      →
-    </span>
-  </a>
-);
-
-const GhostButton = ({ href, children }) => (
-  <a
-    href={href}
-    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-3 text-sm font-extrabold text-slate-900 hover:bg-slate-50 transition active:scale-[0.99]"
-  >
-    {children}
-  </a>
-);
-
-const StatCard = ({ k, v, i }) => (
-  <motion.div
-    {...scale(0.05 * i)}
-    className="rounded-3xl border border-slate-200 bg-white/80 backdrop-blur px-5 py-4 shadow-sm hover:shadow-md transition"
-  >
-    <div className="text-2xl font-extrabold text-slate-950 leading-none">
-      {k}
-    </div>
-    <div className="mt-2 text-[12px] font-semibold text-slate-600">{v}</div>
-  </motion.div>
-);
-
-const SoftCard = ({ children, className = "" }) => (
-  <div
-    className={[
-      "rounded-[28px] border border-slate-200 bg-white shadow-[0_16px_60px_rgba(15,23,42,0.06)]",
-      className,
-    ].join(" ")}
-  >
-    {children}
-  </div>
-);
-
-const ValueCard = ({ img, t, d, i }) => (
-  <motion.div
-    {...up(0.06 * i)}
-    className="group rounded-[28px] border border-slate-200 bg-white shadow-[0_16px_60px_rgba(15,23,42,0.06)] hover:shadow-[0_26px_90px_rgba(15,23,42,0.10)] transition overflow-hidden"
-  >
-    <div className="relative p-7">
-      <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-[#24d4da]/12 blur-3xl opacity-0 group-hover:opacity-100 transition" />
-      <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-slate-950/6 blur-3xl opacity-0 group-hover:opacity-100 transition" />
-
-      <div className="relative">
-        <div className="mx-auto grid h-20 w-20 place-items-center rounded-3xl border border-slate-200 bg-slate-50">
-          <img
-            src={img}
-            alt={t}
-            className="h-12 w-12 object-contain group-hover:scale-110 transition-transform"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-
-        <h4 className="mt-5 text-center text-lg font-extrabold tracking-tight text-slate-950">
-          {t}
-        </h4>
-        <p className="mt-2 text-center text-sm leading-relaxed text-slate-600">
-          {d}
-        </p>
-
-        <div className="mt-6 flex justify-center">
-          <div className="h-1 w-16 rounded-full bg-gradient-to-r from-[#24d4da] to-slate-950/80 opacity-60 group-hover:opacity-100 transition" />
-        </div>
+    {/* Efecto de Pulso sutil al fondo */}
+    <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-teal-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
+    
+    <div className="relative z-10 flex flex-col items-center text-center">
+      <div className="w-16 h-16 rounded-2xl bg-teal-600 text-white flex items-center justify-center mb-6 shadow-lg shadow-teal-600/20 group-hover:rotate-12 transition-transform">
+        <Icon className="w-8 h-8" />
       </div>
+      <div className="text-4xl md:text-5xl font-black text-teal-900 tracking-tighter mb-2">
+        <Counter value={value} suffix={suffix} />
+      </div>
+      <p className="text-teal-700/60 font-bold uppercase tracking-widest text-[10px]">{title}</p>
     </div>
   </motion.div>
 );
 
-const TimelineRow = ({ year, title, desc, i }) => (
-  <motion.div {...up(0.05 * i)} className="relative grid md:grid-cols-12 gap-5">
-    <div className="md:col-span-3 flex md:justify-end">
-      <div className="inline-flex items-center gap-3">
-        <span
-          aria-hidden="true"
-          className="h-2.5 w-2.5 rounded-full bg-[#24d4da] shadow-[0_0_18px_rgba(36,212,218,0.7)]"
-        />
-        <span className="text-sm font-extrabold text-slate-800">{year}</span>
-      </div>
-    </div>
-
-    <div className="hidden md:block md:col-span-1 relative" aria-hidden="true">
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 h-full w-px bg-gradient-to-b from-slate-200 via-slate-200 to-transparent" />
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 h-3.5 w-3.5 rounded-full bg-[#24d4da] ring-4 ring-white" />
-    </div>
-
-    <div className="md:col-span-8">
-      <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition hover:-translate-y-0.5">
-        <div className="flex items-start justify-between gap-4">
-          <h3 className="text-base md:text-lg font-extrabold text-slate-950">
-            {title}
-          </h3>
-          <span className="hidden sm:inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-extrabold text-slate-600">
-            Hito
-          </span>
-        </div>
-        <p className="mt-2 text-sm md:text-[15px] leading-relaxed text-slate-600">
-          {desc}
-        </p>
-      </div>
-    </div>
+const GlassCard = ({ title, desc, icon: Icon, delay = 0 }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.7, delay, ease }}
+    whileHover={{ y: -10, transition: { duration: 0.3 } }}
+    className="p-8 rounded-[2.5rem] bg-white/20 border border-white/40 backdrop-blur-md hover:bg-white/30 transition-all group shadow-xl shadow-cyan-950/5"
+  >
+    <motion.div 
+      animate={{ y: [0, -5, 0] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay }}
+      className="w-14 h-14 rounded-2xl bg-white text-[#168387] flex items-center justify-center mb-6 shadow-lg"
+    >
+      <Icon className="w-8 h-8" />
+    </motion.div>
+    <h3 className="text-xl font-black mb-3 text-white">{title}</h3>
+    <p className="text-white text-sm leading-relaxed font-medium">{desc}</p>
   </motion.div>
 );
 
-/* =========================================
-   Página Nosotros (REDISEÑO TOTAL)
-========================================= */
+const AnimatedText = ({ text, className, delay = 0 }) => {
+  const words = text.split(" ");
+  return (
+    <motion.span
+      variants={typewriterContainer(delay)}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      className={className}
+    >
+      {words.map((word, wordIndex) => (
+        <span key={wordIndex} className="inline-block whitespace-nowrap mr-[0.25em]">
+          {Array.from(word).map((letter, letterIndex) => (
+            <motion.span
+              key={letterIndex}
+              variants={typewriterLetter}
+              className="inline-block"
+            >
+              {letter}
+            </motion.span>
+          ))}
+        </span>
+      ))}
+    </motion.span>
+  );
+};
+
 export default function Nosotros() {
+  const { scrollYProgress } = useScroll();
+  
+  const yHero = useTransform(scrollYProgress, [0, 0.2], [0, -50]);
+  const opacityHero = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const scaleImage = useTransform(scrollYProgress, [0, 0.3], [1, 1.05]);
+
   return (
     <>
       <Helmet>
-        <title>Nosotros | Darmax Purificadoras y Máquinas Vending</title>
-        <meta
-          name="description"
-          content="Conoce la historia de Darmax: un proyecto mexicano que impulsa el emprendimiento mediante purificadoras, vending y tecnología accesible."
-        />
-        <link rel="canonical" href="https://tudominio.com/nosotros" />
-        <meta property="og:title" content="Nosotros | Darmax" />
-        <meta
-          property="og:description"
-          content="Darmax nació con la misión de ofrecer oportunidades de negocio y tecnología accesible. Conoce nuestra historia, misión y visión."
-        />
-        <meta property="og:image" content="https://tudominio.com/img/og-image.png" />
-        <meta property="og:url" content="https://tudominio.com/nosotros" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
+        <title>Nosotros | Darmax Agua - Más que máquinas, construimos negocios</title>
+        <meta name="description" content="En Darmax Agua no vendemos solo purificadoras. Creamos modelos de negocio rentables y escalables con tecnología vending 24/7." />
       </Helmet>
 
-      <main className="min-h-screen bg-white text-slate-800 selection:bg-[#24d4da] selection:text-white">
-        {/* Fondo global (limpio + premium) */}
-        <div className="pointer-events-none fixed inset-0 -z-10">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(36,212,218,0.13),transparent_60%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(15,23,42,0.06),transparent_55%)]" />
-          <div className="absolute inset-0 opacity-[0.35] bg-[radial-gradient(circle_at_1px_1px,rgba(15,23,42,0.10)_1px,transparent_0)] [background-size:24px_24px]" />
-        </div>
+      <main className="min-h-screen bg-white text-slate-900 selection:bg-[#24d4da] selection:text-white overflow-x-hidden">
+        
+        {/* HERO */}
+        <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden bg-gradient-to-b from-cyan-50/50 to-white">
+          <div className="absolute inset-0 -z-10">
+            <motion.div 
+              animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+              transition={{ duration: 10, repeat: Infinity }}
+              className="absolute -top-40 -right-40 w-[60rem] h-[60rem] bg-cyan-200/20 blur-[150px] rounded-full" 
+            />
+          </div>
 
-        {/* ======================
-            HERO (nuevo, limpio)
-        ====================== */}
-        <section className="pt-24 sm:pt-32 pb-16 sm:pb-20">
           <Container>
-            <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-              {/* Copy */}
-              <motion.div {...up(0)} className="lg:col-span-6">
-                <Pill>Hecho en México</Pill>
-
-                <h1 className="mt-5 text-4xl md:text-5xl lg:text-[3.4rem] leading-[1.03] font-extrabold tracking-tight text-slate-950">
-                  Creamos oportunidades
-                  <span className="block">
-                    con tecnología <span className="text-[#007377]">24/7</span>.
-                  </span>
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <motion.div style={{ y: yHero, opacity: opacityHero }} className="text-left z-10">
+                <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-[0.95] text-slate-950">
+                  <AnimatedText 
+                    text="En Darmax Agua no comenzamos como una empresa..." 
+                    className="block mb-2" 
+                    delay={0.2}
+                  />
+                  <motion.span 
+                    animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-[#168387] via-[#24d4da] to-[#168387] bg-[length:200%_auto] inline-block"
+                  >
+                    <AnimatedText 
+                      text="comenzamos como una inquietud." 
+                      delay={1.8}
+                    />
+                  </motion.span>
                 </h1>
-
-                <p className="mt-5 text-sm md:text-base leading-relaxed text-slate-600 max-w-xl">
-                  Unimos diseño, ingeniería y soporte real para que tu negocio con
-                  purificadoras y máquinas vending sea simple, rentable y escalable.
+                
+                <p className="mt-8 text-lg md:text-xl text-slate-500 font-medium leading-relaxed max-w-xl">
+                  <AnimatedText 
+                    text="¿Por qué emprender en el negocio del agua tenía que ser complicado, caro o limitado?" 
+                    delay={3.2}
+                  />
                 </p>
+                
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 5.2, duration: 0.8 }}
+                  className="mt-10 flex flex-wrap gap-4"
+                >
+                  <motion.a 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    href="/contacto" 
+                    className="px-8 py-4 bg-[#24d4da] text-slate-950 font-black rounded-2xl hover:scale-105 transition-all shadow-lg shadow-cyan-500/20"
+                  >
+                    INICIA HOY
+                  </motion.a>
+                  <div className="flex items-center gap-3 text-[#168387] font-bold tracking-widest text-[10px] uppercase">
+                    <motion.span 
+                      initial={{ width: 0 }}
+                      whileInView={{ width: 32 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 5.5, duration: 0.8 }}
+                      className="h-px bg-[#24d4da]" 
+                    />
+                    Nuestra Filosofía
+                  </div>
+                </motion.div>
+              </motion.div>
 
-                <motion.div {...up(0.12)} className="mt-7 flex flex-wrap gap-3">
-                  <PrimaryButton href="#historia">Conócenos</PrimaryButton>
-                  <GhostButton href="/proyectos-empresariales">Ver proyectos</GhostButton>
+              {/* Fan-out Cards */}
+              <div className="relative h-[450px] md:h-[550px] flex items-center justify-center lg:justify-end pr-0 lg:pr-10">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8, x: 0, rotate: 0 }}
+                  whileInView={{ opacity: 1, scale: 0.9, x: -120, y: 20, rotate: -15 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.6, duration: 1, ease }}
+                  className="absolute z-10 w-44 md:w-56 aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white transition-transform hover:z-40 hover:scale-105 duration-300"
+                >
+                  <img src="/img/vending/atlantistouchvending.jpg" className="w-full h-full object-cover" alt="Atlantis" />
                 </motion.div>
 
-                <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {STATS.map((s, i) => (
-                    <StatCard key={s.k} {...s} i={i} />
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8, x: 0, rotate: 0 }}
+                  whileInView={{ opacity: 1, scale: 0.9, x: 120, y: 20, rotate: 15 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.8, duration: 1, ease }}
+                  className="absolute z-10 w-44 md:w-56 aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white transition-transform hover:z-40 hover:scale-105 duration-300"
+                >
+                  <img src="/img/vending/vending.png" className="w-full h-full object-cover" alt="Vending" />
+                </motion.div>
+
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.5, y: 50 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3, duration: 0.8, ease }}
+                  className="absolute z-30 w-52 md:w-64 aspect-[3/4] rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border-4 border-white transition-transform hover:scale-105 duration-300"
+                >
+                  <img src="/img/vending/TOUCHAGUA.png" className="w-full h-full object-cover" alt="Touch Agua" />
+                </motion.div>
+
+                <div className="absolute inset-0 bg-cyan-100/40 blur-[120px] -z-10 rounded-full scale-150" />
+              </div>
+            </div>
+          </Container>
+        </section>
+
+        {/* MÉTTRICAS DE IMPACTO (NUEVA SECCIÓN DE AUTORIDAD) */}
+        <section className="py-24 bg-teal-50/30 overflow-hidden">
+          <Container>
+            <div className="grid md:grid-cols-3 gap-8">
+              <MetricCard title="Equipos Instalados" value="350" suffix="+" icon={CheckBadgeIcon} delay={0.1} />
+              <MetricCard title="Negocios Rentables" value="280" suffix="+" icon={ChartBarIcon} delay={0.2} />
+              <MetricCard title="Litros Purificados" value="10" suffix="M+" icon={BeakerIcon} delay={0.3} />
+            </div>
+          </Container>
+        </section>
+
+        {/* SECCIÓN IMAGEN CENTRAL */}
+        <section className="pb-20 bg-white overflow-hidden pt-20">
+          <Container>
+            <motion.div style={{ scale: scaleImage }} className="relative group">
+              <div className="rounded-[3.5rem] overflow-hidden shadow-[0_30px_70px_-15px_rgba(0,0,0,0.1)] border-[8px] border-white">
+                <img 
+                  src="/img/Historia2.jpg" 
+                  alt="Aliado Darmax" 
+                  className="w-full h-[450px] md:h-[550px] object-cover transition-transform duration-1000 group-hover:scale-105" 
+                />
+              </div>
+              <motion.div 
+                {...fadeUp(0.3)}
+                className="absolute -bottom-6 -right-4 md:right-16 bg-gradient-to-br from-[#168387] to-[#24d4da] text-white p-8 rounded-[2.5rem] shadow-2xl max-w-xs border border-white/20 z-20"
+              >
+                <p className="text-xl font-black leading-tight">
+                  “Mientras otros venden equipos, nosotros construimos negocios.”
+                </p>
+              </motion.div>
+            </motion.div>
+          </Container>
+        </section>
+
+        {/* LO QUE HACEMOS DIFERENTE */}
+        <section className="py-24 bg-white relative">
+          <Container>
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div className="space-y-10">
+                <motion.div {...fadeUp(0)}>
+                  <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 leading-none">Lo que hacemos diferente</h2>
+                  <p className="mt-6 text-lg text-slate-600 leading-relaxed font-medium">
+                    No vendemos solo máquinas. <strong>Diseñamos sistemas de rentabilidad</strong> que permiten a cualquier persona ser dueña de su tiempo y su inversión.
+                  </p>
+                </motion.div>
+
+                <div className="grid gap-6">
+                  {[
+                    { t: "Personalización Real", d: "Tú eliges cómo construir tu negocio según tu zona.", icon: SparklesIcon },
+                    { t: "Enfoque en Rentabilidad", d: "Herramientas para entender cuánto ganas, no solo cuánto inviertes.", icon: ChartBarIcon },
+                    { t: "Tecnología 24/7", d: "Modelos automatizados adaptados al mercado actual.", icon: CpuChipIcon }
+                  ].map((item, i) => (
+                    <motion.div 
+                      key={i} 
+                      {...fadeUp(0.1 * i)}
+                      className="flex items-start gap-6 p-6 rounded-[2.5rem] bg-cyan-50/50 border border-cyan-100/50 hover:border-[#24d4da] transition-all group"
+                    >
+                      <motion.div 
+                        whileHover={{ rotate: 15 }}
+                        className="w-14 h-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-[#168387] shrink-0"
+                      >
+                        <item.icon className="w-7 h-7" />
+                      </motion.div>
+                      <div>
+                        <h4 className="font-black text-slate-900 text-lg">{item.t}</h4>
+                        <p className="text-slate-500 leading-relaxed mt-1 font-medium">{item.d}</p>
+                      </div>
+                    </motion.div>
                   ))}
                 </div>
+              </div>
 
-                <motion.div
-                  {...fade(0.16)}
-                  className="mt-8 flex flex-wrap items-center gap-2 text-[12px] text-slate-600"
-                >
-                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold">
-                    ✔ Asesoría
-                  </span>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold">
-                    ✔ Instalación
-                  </span>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold">
-                    ✔ Soporte
-                  </span>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold">
-                    ✔ Capacitación
-                  </span>
-                </motion.div>
-              </motion.div>
-
-              {/* Visual */}
-              <motion.div {...scale(0.08)} className="lg:col-span-6">
-                <SoftCard className="overflow-hidden h-full">
-                  <div className="relative h-[360px] md:h-[430px] lg:h-full">
-                    <img
-                      src="/img/Historia2.jpg"
-                      alt="Darmax purificadoras y vending"
-                      className="absolute inset-0 h-full w-full object-cover"
-                      loading="eager"
-                      fetchPriority="high"
-                      decoding="async"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-slate-950/45 via-transparent to-transparent" />
-
-                    {/* Tarjetitas flotantes */}
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur px-4 py-3 text-white">
-                          <div className="text-sm font-extrabold">Modelo 24/7</div>
-                          <div className="mt-1 text-[12px] text-white/75">
-                            Operación automatizada
-                          </div>
-                        </div>
-                        <div className="rounded-2xl border border-white/20 bg-white/10 backdrop-blur px-4 py-3 text-white">
-                          <div className="text-sm font-extrabold">Soporte real</div>
-                          <div className="mt-1 text-[12px] text-white/75">
-                            Acompañamiento cercano
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </SoftCard>
+              {/* Logo Halo */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1.2, ease }}
+                className="hidden lg:flex relative items-center justify-center"
+              >
+                <div className="absolute w-[400px] h-[400px] bg-cyan-100/60 blur-[100px] rounded-full animate-pulse" />
+                <div className="relative z-10 p-10">
+                  <motion.img 
+                    animate={{ y: [0, -15, 0] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                    src="/img/darmaxfoto.png" 
+                    className="w-full max-w-sm drop-shadow-[0_20px_40px_rgba(0,0,0,0.1)]" 
+                    alt="Darmax Logo" 
+                  />
+                </div>
               </motion.div>
             </div>
           </Container>
         </section>
 
-        {/* ======================
-            STORY / PROPÓSITO (nuevo)
-        ====================== */}
-        <section id="historia" className="py-16 sm:py-20">
+        {/* POR QUÉ DARMAX */}
+        <section className="py-24 bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] text-white relative overflow-hidden">
+          <Container className="relative z-10">
+            <motion.div {...fadeUp(0)} className="text-center mb-16">
+              <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white">¿Por qué Darmax y no otros?</h2>
+              <p className="mt-6 text-cyan-50 max-w-2xl mx-auto text-xl font-medium leading-relaxed">
+                Decidimos no competir igual… decidimos hacerlo mejor, con un enfoque 100% humano y tecnológico.
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <GlassCard title="Modelo Híbrido" desc="Mostrador + vending + limpieza: maximizamos tu alcance comercial y fuentes de ingreso." icon={GlobeAltIcon} delay={0.2} />
+              <GlassCard title="Control de Inversión" desc="Negocios inteligentes y escalables donde tú tienes el control real sobre cada peso ganado." icon={CheckBadgeIcon} delay={0.4} />
+              <GlassCard title="Visión Escalable" desc="Diseñamos sistemas que crecen conforme tus metas se expanden. El agua es tu oportunidad." icon={RocketLaunchIcon} delay={0.6} />
+            </div>
+          </Container>
+        </section>
+
+        {/* CTA FINAL */}
+        <section className="py-24 bg-white">
           <Container>
-            <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-              <motion.div {...up(0)} className="lg:col-span-5">
-                <Pill>Nuestra historia</Pill>
-                <h2 className="mt-5 text-3xl md:text-4xl font-extrabold tracking-tight text-slate-950">
-                  El origen de Darmax
-                </h2>
-                <p className="mt-3 text-sm md:text-base leading-relaxed text-slate-600">
-                  Una idea simple: convertir el agua y la automatización en oportunidades
-                  reales para emprender con un modelo claro y rentable.
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="bg-slate-950 rounded-[4rem] p-12 md:p-20 text-center text-white relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,163,168,0.3)]"
+            >
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#168387]/40 via-transparent to-cyan-400/20" />
+              <div className="relative z-10 max-w-4xl mx-auto">
+                <motion.h2 {...fadeUp(0.1)} className="text-4xl md:text-6xl font-black tracking-tighter mb-8">🤝 Más que clientes, aliados</motion.h2>
+                <p className="text-xl md:text-2xl text-cyan-50 font-medium leading-relaxed mb-12">
+                  No buscamos venderte una máquina. Buscamos ayudarte a construir un negocio que crezca contigo. <br />
+                  <span className="font-black text-[#24d4da] mt-4 block uppercase tracking-widest text-lg">Porque cuando tu negocio crece, nosotros también.</span>
                 </p>
-
-                <div className="mt-7 space-y-4 text-slate-700">
-                  <p className="text-sm md:text-base leading-relaxed">
-                    Darmax nació con un sueño claro: transformar la manera en que
-                    las personas acceden al agua y a productos esenciales,
-                    convirtiéndolos en oportunidades reales de negocio.
-                  </p>
-                  <p className="text-sm md:text-base leading-relaxed">
-                    Detrás de este proyecto está <strong>Max</strong>, un joven emprendedor
-                    que comenzó vendiendo purificadores caseros y suministros para purificadoras,
-                    hasta descubrir el potencial de las máquinas vending de agua purificada.
-                  </p>
-                </div>
-              </motion.div>
-
-              <motion.div {...scale(0.08)} className="lg:col-span-7">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <SoftCard className="p-7">
-                    <div className="text-[11px] font-extrabold tracking-[0.22em] uppercase text-slate-500">
-                      Misión
-                    </div>
-                    <div className="mt-3 text-lg font-extrabold text-slate-950">
-                      Ayudarte a crecer con un negocio simple.
-                    </div>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                      Te acompañamos desde la elección del equipo hasta la puesta en marcha,
-                      con soporte y capacitación.
-                    </p>
-                  </SoftCard>
-
-                  <SoftCard className="p-7">
-                    <div className="text-[11px] font-extrabold tracking-[0.22em] uppercase text-slate-500">
-                      Visión
-                    </div>
-                    <div className="mt-3 text-lg font-extrabold text-slate-950">
-                      Tecnología accesible para emprender 24/7.
-                    </div>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                      Diseñamos soluciones robustas, estéticas y automatizadas para mejorar rentabilidad
-                      y facilitar operación.
-                    </p>
-                  </SoftCard>
-
-                  <SoftCard className="p-7 sm:col-span-2">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                      <div>
-                        <div className="text-[11px] font-extrabold tracking-[0.22em] uppercase text-slate-500">
-                          Nuestra promesa
-                        </div>
-                        <div className="mt-2 text-lg font-extrabold text-slate-950">
-                          Equipos + acompañamiento = resultados
-                        </div>
-                        <p className="mt-2 text-sm leading-relaxed text-slate-600 max-w-2xl">
-                          No vendemos “solo máquinas”. Creamos un sistema completo: instalación, soporte,
-                          y una ruta clara para operar y escalar.
-                        </p>
-                      </div>
-
-                      <div className="flex gap-2 flex-wrap">
-                        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-semibold text-slate-600">
-                          ✔ Estructura
-                        </span>
-                        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-semibold text-slate-600">
-                          ✔ Soporte
-                        </span>
-                        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-semibold text-slate-600">
-                          ✔ Escalabilidad
-                        </span>
-                      </div>
-                    </div>
-                  </SoftCard>
-                </div>
-              </motion.div>
-            </div>
-
-            <motion.p
-              {...up(0.18)}
-              className="max-w-3xl mx-auto mt-10 text-center text-sm md:text-base leading-relaxed text-slate-600"
-            >
-              Creemos que con las herramientas correctas, una sola idea puede cambiar una vida,
-              y una vida puede transformar una comunidad.
-            </motion.p>
-          </Container>
-        </section>
-
-        {/* ======================
-            TIMELINE (limpio)
-        ====================== */}
-        <section className="py-16 sm:py-20">
-          <Container>
-            <div className="text-center">
-              <Pill>Nuestro camino</Pill>
-              <H2
-                title="Evolución del negocio"
-                desc="Aprendizaje, mejora e innovación constante para crear mejores soluciones."
-              />
-            </div>
-
-            <div className="mt-12 space-y-6">
-              {TIMELINE.map((t, i) => (
-                <TimelineRow key={t.year} {...t} i={i} />
-              ))}
-            </div>
-          </Container>
-        </section>
-
-        {/* ======================
-            VALUES (premium grid)
-        ====================== */}
-        <section className="py-16 sm:py-20">
-          <Container>
-            <div className="text-center">
-              <Pill>Nuestra cultura</Pill>
-              <H2
-                title="Valores que nos definen"
-                desc="Cómo trabajamos, cómo servimos y cómo construimos confianza."
-              />
-            </div>
-
-            <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {VALORES.map((v, i) => (
-                <ValueCard key={v.t} {...v} i={i} />
-              ))}
-            </div>
-          </Container>
-        </section>
-
-        {/* ======================
-            CTA FINAL (premium, minimal)
-        ====================== */}
-        <section className="pb-16 sm:pb-20">
-          <Container>
-            <motion.div
-              {...scale(0)}
-              className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-slate-950 text-white shadow-[0_20px_70px_rgba(15,23,42,0.20)]"
-            >
-              <div className="absolute -top-28 -right-28 h-80 w-80 rounded-full bg-[#24d4da]/20 blur-3xl" />
-              <div className="absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.18)_1px,transparent_0)] [background-size:22px_22px]" />
-
-              <div className="relative p-7 md:p-12 flex flex-col md:flex-row items-start md:items-center gap-8">
-                <div className="flex-1">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-extrabold tracking-[0.22em] uppercase">
-                    <span
-                      aria-hidden="true"
-                      className="h-2 w-2 rounded-full bg-[#24d4da] shadow-[0_0_18px_rgba(36,212,218,0.75)]"
-                    />
-                    Emprende con Darmax
-                  </div>
-
-                  <h3 className="mt-5 text-2xl md:text-3xl font-extrabold tracking-tight">
-                    ¿Listo para construir algo grande?
-                  </h3>
-                  <p className="mt-3 text-sm md:text-base text-white/75 max-w-xl leading-relaxed">
-                    Te acompañamos desde la idea hasta la puesta en marcha, paso a paso,
-                    con un plan aterrizado a tus objetivos.
-                  </p>
-
-                  <div className="mt-5 flex flex-wrap gap-2 text-[12px]">
-                    <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 font-semibold text-white/85">
-                      ✔ Asesoría
-                    </span>
-                    <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 font-semibold text-white/85">
-                      ✔ Instalación
-                    </span>
-                    <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 font-semibold text-white/85">
-                      ✔ Soporte
-                    </span>
-                    <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 font-semibold text-white/85">
-                      ✔ Capacitación
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <a
-                    href="/contacto"
-                    className="inline-flex items-center justify-center rounded-2xl bg-white px-7 py-3 text-sm font-extrabold text-slate-950 hover:bg-slate-100 transition active:scale-[0.99]"
+                <div className="flex flex-wrap justify-center gap-6">
+                  <motion.a 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    href="/contacto" 
+                    className="px-10 py-5 bg-[#24d4da] text-slate-950 font-black rounded-2xl hover:scale-105 transition-all text-lg shadow-xl shadow-cyan-500/20"
                   >
-                    Contáctanos
-                  </a>
-
-                  <a
-                    href="https://wa.me/525519655369?text=Hola%20Darmax,%20quiero%20informaci%C3%B3n%20sobre%20sus%20soluciones%20de%20purificadoras%20y%20vending."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white/10 px-7 py-3 text-sm font-extrabold text-white hover:bg-white/15 transition active:scale-[0.99]"
+                    INICIA TU PROYECTO
+                  </motion.a>
+                  <motion.a 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    href="https://wa.me/525519655369" 
+                    className="px-10 py-5 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-black rounded-2xl hover:bg-white/20 transition-all text-lg"
                   >
-                    Cotizar por WhatsApp
-                  </a>
+                    HABLAR CON UN ASESOR
+                  </motion.a>
                 </div>
               </div>
             </motion.div>
