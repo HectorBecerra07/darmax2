@@ -1,5 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
+import { motion, useInView, animate } from "framer-motion";
 import IniciaNegocio from "../components/IniciaNegocio";
 import HeroBannerSlide from "../components/HeroBannerSlide";
 import { 
@@ -11,8 +12,61 @@ import {
   HomeIcon,
   GlobeAltIcon,
   WrenchScrewdriverIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  CheckBadgeIcon,
+  ChartBarIcon,
+  RocketLaunchIcon
 } from "@heroicons/react/24/outline";
+
+/* =========================================
+   ANIMATION & SEO HELPERS
+========================================= */
+const fadeUp = (d = 0) => ({
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.8, delay: d, ease: [0.22, 0.61, 0.36, 1] }
+});
+
+const Counter = ({ value, suffix = "", duration = 2 }) => {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false, amount: 0.5 });
+
+  useEffect(() => {
+    let controls;
+    if (isInView) {
+      controls = animate(0, parseInt(value), {
+        duration: duration,
+        ease: "easeOut",
+        onUpdate: (latest) => setCount(Math.floor(latest)),
+      });
+    } else {
+      setCount(0);
+    }
+    return () => controls?.stop();
+  }, [isInView, value, duration]);
+
+  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+};
+
+const MetricCard = ({ title, value, suffix, icon: Icon, delay = 0 }) => (
+  <motion.div 
+    {...fadeUp(delay)}
+    className="relative p-8 rounded-[2.5rem] bg-white border border-cyan-100 shadow-xl shadow-cyan-900/5 group overflow-hidden"
+  >
+    <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-cyan-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
+    <div className="relative z-10 flex flex-col items-center text-center">
+      <div className="w-16 h-16 rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-6 shadow-lg shadow-cyan-600/20 group-hover:rotate-12 transition-transform">
+        <Icon className="w-8 h-8" />
+      </div>
+      <div className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-2">
+        <Counter value={value} suffix={suffix} />
+      </div>
+      <p className="text-[#168387] font-bold uppercase tracking-widest text-[10px]">{title}</p>
+    </div>
+  </motion.div>
+);
 
 /* =========================================================
    CALCULADORA: UTILIDADES
@@ -92,6 +146,19 @@ const CompactSlider = ({ value, min, max, onChange, color, label }) => {
 /* =========================================================
    CALCULADORA: PANEL DE RESULTADOS
 ========================================================= */
+/* =========================================================
+   CALCULADORA: PANEL DE RESULTADOS
+========================= */
+const GarrafonBranding = () => (
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+    <path d="M38 10C38 8.34315 39.3431 7 41 7H59C60.6569 7 62 8.34315 62 10V18H38V10Z" fill="white" fillOpacity="0.2" />
+    <path d="M25 35C25 25.6112 32.6112 18 42 18H58C67.3888 18 75 25.6112 75 35V85C75 90.5228 70.5228 95 65 95H35C29.4772 95 25 90.5228 25 85V35Z" fill="white" fillOpacity="0.08" stroke="white" strokeWidth="1.5" strokeOpacity="0.2" />
+    <path d="M35 45H65" stroke="white" strokeWidth="1.5" strokeOpacity="0.1" strokeLinecap="round" />
+    <path d="M35 55H65" stroke="white" strokeWidth="1.5" strokeOpacity="0.1" strokeLinecap="round" />
+    <path d="M35 65H65" stroke="white" strokeWidth="1.5" strokeOpacity="0.1" strokeLinecap="round" />
+  </svg>
+);
+
 function DashboardResults({ data }) {
   const Card = ({ title, amount, sub }) => (
     <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
@@ -103,11 +170,11 @@ function DashboardResults({ data }) {
 
   return (
     <div className="h-full bg-[#0f172a] p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/10 blur-[100px] -mr-40 -mt-40"></div>
+      <div className="absolute top-0 right-0 w-80 h-80 blur-[100px] -mr-40 -mt-40" style={{ backgroundColor: `${CALC_BRAND.accent}15` }}></div>
       
       <div className="relative z-10 space-y-8">
         <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-inner border border-cyan-500/20">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center shadow-inner border" style={{ backgroundColor: `${CALC_BRAND.accent}20`, color: CALC_BRAND.accent, borderColor: `${CALC_BRAND.accent}20` }}>
             <ArrowTrendingUpIcon className="w-6 h-6" />
           </div>
           <div>
@@ -122,12 +189,32 @@ function DashboardResults({ data }) {
           <Card title="Gastos Fijos" amount={data.gastosFijos} sub="Operación" />
           <Card title="Costo x Unidad" amount={data.costoUnitario} sub="Promedio" />
           
-          <div className="col-span-2 mt-2 p-8 rounded-[2.5rem] bg-gradient-to-br from-cyan-500 to-blue-600 shadow-2xl shadow-cyan-500/20 border border-white/10 text-center">
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/80 mb-2">Utilidad Mensual Neta</p>
-            <p className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-none">{formatCurrency(data.utilidadMensual)}</p>
-            <div className="flex justify-between items-center mt-6 pt-6 border-t border-white/20">
-              <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Utilidad Anual Est.</span>
-              <span className="text-2xl font-black text-white leading-none">{formatCurrency(data.utilidadAnual)}</span>
+          {/* CONTENEDOR GARRAFON PNG VERTICAL MAXIMIZADO Y COMPACTO */}
+          <div className="col-span-2 mt-2 relative flex items-center justify-center min-h-[480px] group">
+            {/* IMAGEN DEL GARRAFON VERTICAL - MAS GRANDE */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <img 
+                src="/img/garrafoncol.png" 
+                className="w-auto h-full max-h-[480px] transition-all duration-1000 group-hover:scale-105 group-hover:rotate-1 drop-shadow-2xl" 
+                alt="Contenedor de utilidad"
+              />
+            </div>
+            
+            {/* CONTENIDO DE DATOS COMPACTO Y CENTRADO - ELEVADO LEVEMENTE */}
+            <div className="relative z-10 w-full max-w-[220px] flex flex-col items-center justify-center text-center gap-1 py-4 -translate-y-8">
+              <div className="mb-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80 drop-shadow-sm">Utilidad Mensual Neta</p>
+                <p className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none drop-shadow-md">
+                  {formatCurrency(data.utilidadMensual)}
+                </p>
+              </div>
+              
+              <div className="mt-2">
+                <p className="text-[9px] font-black text-white/70 uppercase tracking-widest drop-shadow-sm">Utilidad Anual Estimada</p>
+                <p className="text-2xl md:text-3xl font-black text-white/90 leading-none drop-shadow-md">
+                  {formatCurrency(data.utilidadAnual)}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -135,7 +222,7 @@ function DashboardResults({ data }) {
 
       <div className="relative z-10 mt-8 flex items-center justify-between">
         <div className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">
-          Margen Neto: <span className="text-cyan-400 font-black ml-1">
+          Margen Neto: <span className="font-black ml-1" style={{ color: CALC_BRAND.accent }}>
             {data.ingresosBrutos > 0 ? Math.round((data.utilidadMensual / data.ingresosBrutos) * 100) : 0}%
           </span>
         </div>
@@ -252,12 +339,43 @@ export default function LandingPage() {
     <>
       <Helmet>
         <title>Darmax | Emprende tu Negocio de Agua Purificada</title>
-        <meta name="description" content="Inicia tu emprendimiento con purificadoras, máquinas vending de agua y productos de limpieza con tecnología Darmax." />
+        <meta name="description" content="Inicia tu emprendimiento con purificadoras, máquinas vending de agua y productos de limpieza con tecnología Darmax. Más de 350 equipos instalados." />
+        <meta name="keywords" content="vending de agua, purificadoras de agua, negocio rentable, emprendimiento mexico, darmax agua" />
+        <meta property="og:title" content="Darmax | Emprende tu Negocio de Agua Purificada" />
+        <meta property="og:description" content="No solo vendemos equipos, construimos negocios rentables con tecnología vending 24/7." />
+        <meta property="og:type" content="website" />
+        
+        {/* Datos Estructurados para Google */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BusinessFunction",
+            "name": "Darmax Agua",
+            "description": "Proveedor de modelos de negocio de agua purificada y vending 24/7",
+            "areaServed": "MX",
+            "offers": {
+              "@type": "Offer",
+              "category": "Industrial Equipment",
+              "description": "Purificadoras y máquinas vending para emprendimiento"
+            }
+          })}
+        </script>
       </Helmet>
 
       <main className="min-h-screen bg-white selection:bg-[#24d4da] selection:text-white">
         {/* HERO SECTION */}
         <HeroBannerSlide />
+
+        {/* SECCIÓN DE AUTORIDAD (NUEVA) */}
+        <section className="py-16 bg-slate-50/50 border-y border-slate-100">
+          <div className="max-w-7xl mx-auto px-5 sm:px-10">
+            <div className="grid md:grid-cols-3 gap-8">
+              <MetricCard title="Equipos Instalados" value="350" suffix="+" icon={CheckBadgeIcon} delay={0.1} />
+              <MetricCard title="Negocios Rentables" value="280" suffix="+" icon={ChartBarIcon} delay={0.2} />
+              <MetricCard title="Litros Purificados" value="10" suffix="M+" icon={RocketLaunchIcon} delay={0.3} />
+            </div>
+          </div>
+        </section>
 
         {/* CATÁLOGO Y ROI */}
         <div ref={inicioRef} className="scroll-mt-1">
@@ -268,17 +386,21 @@ export default function LandingPage() {
         <section id="calculadora-negocio" ref={calculadoraRef} className="min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-sans overflow-hidden py-24">
           
           <div className="max-w-7xl mx-auto px-4 w-full flex flex-col">
-            {/* Header Calculadora - ARMONIZADO CON CATALOGO */}
-            <div className="w-full mb-12 flex flex-col md:flex-row justify-between items-end gap-6">
+            {/* Header Calculadora - HISTORIA DE ÉXITO MATEMÁTICO */}
+            <motion.div 
+              {...fadeUp(0)}
+              className="w-full mb-12 flex flex-col md:flex-row justify-between items-end gap-6"
+            >
               <div className="max-w-3xl text-left">
-                <span className="text-[#24d4da] font-bold tracking-widest text-xs uppercase mb-3 block">
-                  Inteligencia Financiera
+                <span className="font-bold tracking-widest text-xs uppercase mb-3 block" style={{ color: CALC_BRAND.accent }}>
+                  El mapa de tu libertad
                 </span>
                 <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-4">
-                  Calculadora de <span className="text-[#168387]">rentabilidad real</span>
+                  Tu éxito no es suerte, <br />
+                  es <span style={{ color: CALC_BRAND.accentDark }}>matemática pura.</span>
                 </h2>
                 <p className="text-slate-500 text-lg font-medium leading-relaxed">
-                  Proyecta tus utilidades considerando costos de pipa, insumos y mermas operativas.
+                  Elimina la incertidumbre. Visualiza el retorno de tu inversión con datos reales del mercado mexicano.
                 </p>
               </div>
 
@@ -297,27 +419,30 @@ export default function LandingPage() {
                   LIMPIEZA
                 </button>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 flex flex-col h-full lg:max-h-[650px] min-h-0">
+            <motion.div 
+              {...fadeUp(0.2)}
+              className="w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 flex flex-col h-full lg:max-h-[650px] min-h-0"
+            >
               <div className="flex-1 min-h-0">
                 <AguaView isActive={tipoCalc === "agua"} />
                 {tipoCalc === "limpieza" && (
                   <div className="h-full flex items-center justify-center p-10 text-center animate-fade-in bg-slate-50/20">
                     <div className="space-y-6">
-                      <div className="w-20 h-20 bg-fuchsia-50 text-fuchsia-400 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-sm border border-fuchsia-100">✨</div>
+                      <div className="w-20 h-20 bg-amber-50 text-amber-400 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-sm border border-amber-100">✨</div>
                       <div>
                         <h3 className="text-slate-900 font-black text-2xl tracking-tight">Vending Limpieza</h3>
-                        <p className="text-slate-400 text-sm max-w-[250px] mx-auto mt-2 leading-relaxed">Módulo en calibración de costos variables e insumos químicos.</p>
+                        <p className="text-slate-400 text-sm max-w-[250px] mx-auto mt-2 leading-relaxed">Módulo de alta demanda en calibración de costos variables e insumos químicos.</p>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
 
             <div className="mt-8 flex items-center gap-3 text-[10px] text-slate-400 font-black uppercase tracking-[0.3em] opacity-70 shrink-0">
-              <InformationCircleIcon className="w-4 h-4 text-[#168387]" />
+              <InformationCircleIcon className="w-4 h-4" style={{ color: CALC_BRAND.accentDark }} />
               <span>Valores sugeridos basados en el mercado mexicano actual</span>
             </div>
           </div>

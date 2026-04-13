@@ -3,107 +3,102 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
 const VendingPrecise3D = () => {
-  // ✅ Más frontal al inicio
   const [rotation, setRotation] = useState({ x: -10, y: -12 });
-
-  // ✅ Toggle burbujas
+  const [isDragging, setIsDragging] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
 
-  // =========================
-  // DRAG + INERCIA
-  // =========================
-  const isDraggingRef = useRef(false);
+  const modelRef = useRef(null);
+  const rotationRef = useRef({ x: -10, y: -12 });
   const lastRef = useRef({ x: 0, y: 0 });
   const velRef = useRef({ vx: 0, vy: 0 });
   const inertiaRafRef = useRef(null);
+  const frameRafRef = useRef(null);
+
+  const updateModelTransform = () => {
+    if (modelRef.current) {
+      modelRef.current.style.transform = `rotateX(${rotationRef.current.x}deg) rotateY(${rotationRef.current.y}deg)`;
+    }
+  };
 
   const stopInertia = () => {
-    if (inertiaRafRef.current) {
-      cancelAnimationFrame(inertiaRafRef.current);
-      inertiaRafRef.current = null;
-    }
+    if (inertiaRafRef.current) cancelAnimationFrame(inertiaRafRef.current);
+    inertiaRafRef.current = null;
   };
 
   const startInertia = () => {
     stopInertia();
-
-    const friction = 0.92;
-    const minSpeed = 0.03;
+    const friction = 0.95;
+    const minSpeed = 0.01;
 
     const tick = () => {
-      const { vx, vy } = velRef.current;
-
-      setRotation((r) => {
-        const nextY = r.y + vx;
-        const nextX = clamp(r.x - vy, -85, 85);
-        return { x: nextX, y: nextY };
-      });
+      rotationRef.current.y += velRef.current.vx;
+      rotationRef.current.x = clamp(rotationRef.current.x - velRef.current.vy, -85, 85);
+      
+      updateModelTransform();
 
       velRef.current.vx *= friction;
       velRef.current.vy *= friction;
 
       if (Math.abs(velRef.current.vx) < minSpeed && Math.abs(velRef.current.vy) < minSpeed) {
-        velRef.current = { vx: 0, vy: 0 };
+        setRotation({ ...rotationRef.current });
         inertiaRafRef.current = null;
         return;
       }
-
       inertiaRafRef.current = requestAnimationFrame(tick);
     };
-
     inertiaRafRef.current = requestAnimationFrame(tick);
   };
 
-  // ✅ Si el usuario toca UI (botón/burbuja), NO iniciar drag ni capturar pointer
-  const isUIElement = (target) => {
-    if (!(target instanceof Element)) return false;
-    return Boolean(target.closest('[data-ui="true"]'));
-  };
-
   const onPointerDown = (e) => {
-    if (isUIElement(e.target)) return; // <- clave para que el botón funcione
+    if (Boolean(e.target.closest('[data-ui="true"]'))) return;
 
-    e.currentTarget.setPointerCapture?.(e.pointerId);
-    isDraggingRef.current = true;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDragging(true);
     lastRef.current = { x: e.clientX, y: e.clientY };
-
     stopInertia();
     velRef.current = { vx: 0, vy: 0 };
   };
 
   const onPointerMove = (e) => {
-    if (!isDraggingRef.current) return;
+    if (!isDragging) return;
 
     const dx = e.clientX - lastRef.current.x;
     const dy = e.clientY - lastRef.current.y;
     lastRef.current = { x: e.clientX, y: e.clientY };
 
-    const s = 0.22;
+    const s = 0.25;
+    rotationRef.current.y += dx * s;
+    rotationRef.current.x = clamp(rotationRef.current.x - dy * s, -85, 85);
 
-    setRotation((r) => {
-      const nextY = r.y + dx * s;
-      const nextX = clamp(r.x - dy * s, -85, 85);
-      return { x: nextX, y: nextY };
-    });
+    velRef.current.vx = velRef.current.vx * 0.7 + dx * s * 0.3;
+    velRef.current.vy = velRef.current.vy * 0.7 + dy * s * 0.3;
 
-    velRef.current.vx = velRef.current.vx * 0.65 + dx * s * 0.35;
-    velRef.current.vy = velRef.current.vy * 0.65 + dy * s * 0.35;
+    if (!frameRafRef.current) {
+      frameRafRef.current = requestAnimationFrame(() => {
+        updateModelTransform();
+        frameRafRef.current = null;
+      });
+    }
   };
 
   const endDrag = (e) => {
-    try {
-      e.currentTarget.releasePointerCapture?.(e.pointerId);
-    } catch {}
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
+    if (!isDragging) return;
+    setIsDragging(false);
+    
+    // Sincronizar estado final con React
+    setRotation({ ...rotationRef.current });
 
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-
-    const { vx, vy } = velRef.current;
-    if (Math.abs(vx) > 0.2 || Math.abs(vy) > 0.2) startInertia();
+    if (Math.abs(velRef.current.vx) > 0.1 || Math.abs(velRef.current.vy) > 0.1) {
+      startInertia();
+    }
   };
 
   useEffect(() => {
-    return () => stopInertia();
+    return () => {
+      stopInertia();
+      if (frameRafRef.current) cancelAnimationFrame(frameRafRef.current);
+    };
   }, []);
 
   // =========================
@@ -204,45 +199,45 @@ const VendingPrecise3D = () => {
   const TEX_LR = 90;
   const TEX_TB = 0;
 
-  // Callouts
+  // Callouts optimizados para no ser tapados
   const CALLOUTS = [
     {
       id: "agua",
       title: "Módulo Agua",
-      body: "Área principal para recibir el garrafón y despacho.",
+      body: "Despacho automático de garrafón.",
       side: "left",
-      bubble: { x: -10, y: 45 },
+      bubble: { x: 5, y: 45 },
       to: { x: 30, y: 45 },
     },
     {
       id: "monedas",
       title: "Monedero",
-      body: "Inserción y validación de monedas.",
+      body: "Validación multimoneda.",
       side: "right",
-      bubble: { x: 110, y: 5 },
+      bubble: { x: 95, y: 15 },
       to: { x: 82, y: 18 },
     },
     {
       id: "pantalla",
       title: "Pantalla Touch",
-      body: "Selección de tipo de agua y flujo guiado.",
+      body: "Interfaz táctil guiada.",
       side: "right",
-      bubble: { x: 125, y: 45 },
+      bubble: { x: 105, y: 45 },
       to: { x: 75, y: 38 },
     },
     {
       id: "tapas",
       title: "Dispensador Tapas",
-      body: "Entrega de tapas por marca o tipo.",
+      body: "Entrega automática de tapas.",
       side: "right",
-      bubble: { x: 110, y: 85 },
+      bubble: { x: 95, y: 80 },
       to: { x: 75, y: 82 },
     },
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center font-sans py-12">
-      <div className="relative" style={{ width: totalS + 450, maxWidth: "100%" }}>
+    <div className="flex flex-col items-center justify-center font-sans py-4">
+      <div className="relative" style={{ width: totalS + 200, maxWidth: "100%" }}>
         <div
           className="relative mx-auto"
           style={{
@@ -250,7 +245,7 @@ const VendingPrecise3D = () => {
             height: totalS,
             perspective: "2500px",
             touchAction: "none",
-            cursor: isDraggingRef.current ? "grabbing" : "grab",
+            cursor: isDragging ? "grabbing" : "grab",
           }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -267,11 +262,11 @@ const VendingPrecise3D = () => {
                 ev.stopPropagation();
                 setShowCallouts((v) => !v);
               }}
-              className="absolute right-3 top-3 z-[60] rounded-full px-3 py-2 text-[11px] font-semibold
-                        bg-white/70 backdrop-blur border border-slate-200 text-slate-900 hover:bg-white/90 shadow-sm"
+              className="absolute left-0 -top-12 z-[60] rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest
+                        bg-white border border-slate-200 text-slate-900 hover:bg-[#168387] hover:text-white hover:border-[#168387] transition-all shadow-sm"
               style={{ pointerEvents: "auto" }}
             >
-              {showCallouts ? "Ocultar info" : "Mostrar info"}
+              {showCallouts ? "Ocultar especificaciones" : "Ver especificaciones"}
             </button>
           </div>
 
@@ -280,8 +275,9 @@ const VendingPrecise3D = () => {
             style={{
               transformStyle: "preserve-3d",
               transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-              transition: isDraggingRef.current ? "none" : "transform 50ms linear",
+              transition: isDragging ? "none" : "transform 50ms linear",
             }}
+            ref={modelRef}
           >
             {/* PANEL FRONTAL */}
             <div className="absolute w-full h-full" style={{ transformStyle: "preserve-3d" }}>
