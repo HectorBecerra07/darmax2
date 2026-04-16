@@ -22,29 +22,27 @@ import {
    ANIMATION & SEO HELPERS
 ========================================= */
 const fadeUp = (d = 0) => ({
-  initial: { opacity: 0, y: 30 },
+  initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.8, delay: d, ease: [0.22, 0.61, 0.36, 1] }
+  viewport: { once: true, amount: 0.1 },
+  transition: { duration: 0.6, delay: d, ease: "easeOut" }
 });
 
 const Counter = ({ value, suffix = "", duration = 2 }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.5 });
+  const isInView = useInView(ref, { once: true, amount: 0.1 });
 
   useEffect(() => {
-    let controls;
     if (isInView) {
-      controls = animate(0, parseInt(value), {
+      const numericValue = parseInt(value.toString().replace(/[^0-9]/g, ""));
+      const controls = animate(0, numericValue, {
         duration: duration,
         ease: "easeOut",
         onUpdate: (latest) => setCount(Math.floor(latest)),
       });
-    } else {
-      setCount(0);
+      return () => controls.stop();
     }
-    return () => controls?.stop();
   }, [isInView, value, duration]);
 
   return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
@@ -53,17 +51,17 @@ const Counter = ({ value, suffix = "", duration = 2 }) => {
 const MetricCard = ({ title, value, suffix, icon: Icon, delay = 0 }) => (
   <motion.div 
     {...fadeUp(delay)}
-    className="relative p-8 rounded-[2.5rem] bg-white border border-cyan-100 shadow-xl shadow-cyan-900/5 group overflow-hidden"
+    className="relative p-6 sm:p-8 rounded-[2.5rem] bg-white border border-cyan-100 shadow-xl shadow-cyan-900/5 group overflow-hidden"
   >
     <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-cyan-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
     <div className="relative z-10 flex flex-col items-center text-center">
-      <div className="w-16 h-16 rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-6 shadow-lg shadow-cyan-600/20 group-hover:rotate-12 transition-transform">
-        <Icon className="w-8 h-8" />
+      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-4 sm:mb-6 shadow-lg shadow-cyan-600/20 group-hover:rotate-12 transition-transform">
+        <Icon className="w-7 h-7 sm:w-8 sm:h-8" />
       </div>
-      <div className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-2">
+      <div className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-2">
         <Counter value={value} suffix={suffix} />
       </div>
-      <p className="text-[#168387] font-bold uppercase tracking-widest text-[10px]">{title}</p>
+      <p className="text-[#168387] font-bold uppercase tracking-widest text-[9px] sm:text-[10px]">{title}</p>
     </div>
   </motion.div>
 );
@@ -97,14 +95,14 @@ const CompactInput = ({ label, value, setValue, color, suffix = "", prefix = "$"
   return (
     <div className="group w-full">
       <div className="flex items-center justify-between mb-1">
-        <label className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-slate-400 group-focus-within:text-slate-600 transition-colors">
+        <label className="flex items-center gap-1.5 text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-slate-400 group-focus-within:text-slate-600 transition-colors">
           {Icon && <Icon className="w-3 h-3" />}
           {label}
         </label>
         {help && (
           <div className="relative group/help">
             <InformationCircleIcon className="w-3.5 h-3.5 text-slate-300 cursor-help hover:text-cyan-500 transition-colors" />
-            <div className="absolute bottom-full right-0 mb-2 w-56 p-3 bg-slate-900 text-white text-[10px] rounded-xl opacity-0 pointer-events-none group-hover/help:opacity-100 transition-all z-50 shadow-xl leading-relaxed border border-white/10">
+            <div className="absolute bottom-full right-0 mb-2 w-48 sm:w-56 p-3 bg-slate-900 text-white text-[10px] rounded-xl opacity-0 pointer-events-none group-hover/help:opacity-100 transition-all z-50 shadow-xl leading-relaxed border border-white/10">
               {help}
             </div>
           </div>
@@ -120,7 +118,7 @@ const CompactInput = ({ label, value, setValue, color, suffix = "", prefix = "$"
           className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-7 pr-10 text-slate-900 font-bold transition-all outline-none focus:bg-white focus:ring-2 focus:ring-opacity-20 text-sm"
           style={{ "--tw-ring-color": color }}
         />
-        {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[9px] font-black">{suffix}</span>}
+        {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] sm:text-[9px] font-black">{suffix}</span>}
       </div>
     </div>
   );
@@ -131,8 +129,8 @@ const CompactSlider = ({ value, min, max, onChange, color, label }) => {
   return (
     <div className="w-full">
       <div className="flex justify-between items-end mb-2">
-         <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</span>
-         <span className="text-2xl font-black text-slate-800">${value}</span>
+         <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</span>
+         <span className="text-xl sm:text-2xl font-black text-slate-800">${value}</span>
       </div>
       <div className="relative w-full h-1.5 bg-slate-100 rounded-full">
         <div className="absolute h-full rounded-full" style={{ width: `${percentage}%`, backgroundColor: color }} />
@@ -161,57 +159,57 @@ const GarrafonBranding = () => (
 
 function DashboardResults({ data }) {
   const Card = ({ title, amount, sub }) => (
-    <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
-      <p className="text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">{title}</p>
-      <p className="text-xl font-black text-white tracking-tight">{formatCurrency(amount)}</p>
-      {sub && <p className="text-[9px] text-white/20 uppercase font-bold mt-1 tracking-wider">{sub}</p>}
+    <div className="p-3 sm:p-4 rounded-2xl bg-white/5 border border-white/5">
+      <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">{title}</p>
+      <p className="text-lg sm:text-xl font-black text-white tracking-tight">{formatCurrency(amount)}</p>
+      {sub && <p className="text-[8px] sm:text-[9px] text-white/20 uppercase font-bold mt-1 tracking-wider">{sub}</p>}
     </div>
   );
 
   return (
-    <div className="h-full bg-[#0f172a] p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden">
+    <div className="h-full bg-[#0f172a] p-6 sm:p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden">
       <div className="absolute top-0 right-0 w-80 h-80 blur-[100px] -mr-40 -mt-40" style={{ backgroundColor: `${CALC_BRAND.accent}15` }}></div>
       
-      <div className="relative z-10 space-y-8">
+      <div className="relative z-10 space-y-6 sm:space-y-8">
         <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center shadow-inner border" style={{ backgroundColor: `${CALC_BRAND.accent}20`, color: CALC_BRAND.accent, borderColor: `${CALC_BRAND.accent}20` }}>
-            <ArrowTrendingUpIcon className="w-6 h-6" />
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shadow-inner border" style={{ backgroundColor: `${CALC_BRAND.accent}20`, color: CALC_BRAND.accent, borderColor: `${CALC_BRAND.accent}20` }}>
+            <ArrowTrendingUpIcon className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h3 className="text-white font-black text-lg tracking-tight leading-none mb-1">Utilidad Proyectada</h3>
-            <p className="text-white/30 text-[9px] uppercase tracking-widest font-black">Análisis de Retorno Mensual</p>
+            <h3 className="text-white font-black text-base sm:text-lg tracking-tight leading-none mb-1">Utilidad Proyectada</h3>
+            <p className="text-white/30 text-[8px] sm:text-[9px] uppercase tracking-widest font-black">Análisis de Retorno Mensual</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <Card title="Ingreso Bruto" amount={data.ingresosBrutos} sub={`${data.ventasMes} vtas/mes`} />
           <Card title="Producción" amount={data.costosProduccion} sub="Insumos" />
           <Card title="Gastos Fijos" amount={data.gastosFijos} sub="Operación" />
           <Card title="Costo x Unidad" amount={data.costoUnitario} sub="Promedio" />
           
           {/* CONTENEDOR GARRAFON PNG VERTICAL MAXIMIZADO Y COMPACTO */}
-          <div className="col-span-2 mt-2 relative flex items-center justify-center min-h-[480px] group">
+          <div className="col-span-2 mt-2 relative flex items-center justify-center min-h-[350px] sm:min-h-[480px] group">
             {/* IMAGEN DEL GARRAFON VERTICAL - MAS GRANDE */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <img 
                 src="/img/garrafoncol.png" 
-                className="w-auto h-full max-h-[480px] transition-all duration-1000 group-hover:scale-105 group-hover:rotate-1 drop-shadow-2xl" 
+                className="w-auto h-full max-h-[350px] sm:max-h-[480px] transition-all duration-1000 group-hover:scale-105 group-hover:rotate-1 drop-shadow-2xl" 
                 alt="Contenedor de utilidad"
               />
             </div>
             
             {/* CONTENIDO DE DATOS COMPACTO Y CENTRADO - ELEVADO LEVEMENTE */}
-            <div className="relative z-10 w-full max-w-[220px] flex flex-col items-center justify-center text-center gap-1 py-4 -translate-y-8">
-              <div className="mb-2">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80 drop-shadow-sm">Utilidad Mensual Neta</p>
-                <p className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none drop-shadow-md">
+            <div className="relative z-10 w-full max-w-[180px] sm:max-w-[220px] flex flex-col items-center justify-center text-center gap-1 py-4 -translate-y-6 sm:-translate-y-8">
+              <div className="mb-1 sm:mb-2">
+                <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-white/80 drop-shadow-sm">Utilidad Mensual Neta</p>
+                <p className="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tighter leading-none drop-shadow-md">
                   {formatCurrency(data.utilidadMensual)}
                 </p>
               </div>
               
-              <div className="mt-2">
-                <p className="text-[9px] font-black text-white/70 uppercase tracking-widest drop-shadow-sm">Utilidad Anual Estimada</p>
-                <p className="text-2xl md:text-3xl font-black text-white/90 leading-none drop-shadow-md">
+              <div className="mt-1 sm:mt-2">
+                <p className="text-[8px] sm:text-[9px] font-black text-white/70 uppercase tracking-widest drop-shadow-sm">Utilidad Anual Estimada</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-black text-white/90 leading-none drop-shadow-md">
                   {formatCurrency(data.utilidadAnual)}
                 </p>
               </div>
@@ -220,8 +218,8 @@ function DashboardResults({ data }) {
         </div>
       </div>
 
-      <div className="relative z-10 mt-8 flex items-center justify-between">
-        <div className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">
+      <div className="relative z-10 mt-6 sm:mt-8 flex items-center justify-between">
+        <div className="text-[8px] sm:text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">
           Margen Neto: <span className="font-black ml-1" style={{ color: CALC_BRAND.accent }}>
             {data.ingresosBrutos > 0 ? Math.round((data.utilidadMensual / data.ingresosBrutos) * 100) : 0}%
           </span>
@@ -270,28 +268,28 @@ function AguaView({ isActive }) {
   return (
     <div className="flex flex-col lg:flex-row h-full">
       {/* SECCIÓN CONFIGURACIÓN (IZQUIERDA) */}
-      <div className="w-full lg:w-[62%] p-8 lg:p-12 space-y-8 overflow-y-auto custom-scrollbar-thin bg-white">
+      <div className="w-full lg:w-[62%] p-6 sm:p-8 lg:p-12 space-y-6 sm:space-y-8 overflow-y-auto custom-scrollbar-thin bg-white">
         
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           <CompactSlider label="Precio de Venta Sugerido" value={precioVenta} min={10} max={60} onChange={(e) => setPrecioVenta(Number(e.target.value))} color={CALC_BRAND.accent} />
           
-          <div className="grid grid-cols-2 gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-100 shadow-inner">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-inner">
             <CompactInput label="Ventas / Día" value={ventasDia} setValue={setVentasDia} color={CALC_BRAND.accent} prefix="#" icon={CurrencyDollarIcon} help="Promedio de garrafones vendidos cada 24h." />
             <CompactInput label="Días de Operación" value={diasOp} setValue={setDiasOp} color={CALC_BRAND.accent} prefix="#" icon={GlobeAltIcon} help="Vending: 30 días. Mostrador: 22-26 días considerando descansos semanales." />
           </div>
 
-          <div className="space-y-5">
-            <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.25em] border-b border-slate-100 pb-2 flex items-center gap-2">
+          <div className="space-y-4 sm:space-y-5">
+            <p className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-[0.25em] border-b border-slate-200 pb-2 flex items-center gap-2">
                 <CircleStackIcon className="w-4 h-4" /> Producción e Insumos
             </p>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <CompactInput label="Costo Pipa (10k L)" value={costoPipa} setValue={setCostoPipa} color={CALC_BRAND.accent} icon={CircleStackIcon} help="Recomendación: Pipa acero inoxidable con agua de pozo certificado ($2,700 promedio)." />
               <CompactInput label="Millar de Tapas" value={costoTapa} setValue={setCostoTapa} color={CALC_BRAND.accent} icon={BeakerIcon} help="Insumo por garrafón: Tapa con liner de garantía ($370 el millar)." />
             </div>
             
-            <div className="p-5 rounded-2xl bg-cyan-50/30 border border-cyan-100 space-y-3">
+            <div className="p-4 sm:p-5 rounded-2xl bg-cyan-50/30 border border-cyan-200/50 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase text-cyan-700 tracking-widest">Sistema de Ósmosis Inversa</span>
+                <span className="text-[9px] sm:text-[10px] font-black uppercase text-cyan-700 tracking-widest">Sistema de Ósmosis Inversa</span>
                 <button 
                   onClick={() => setOsmosis(!osmosis)} 
                   className={`w-9 h-5 rounded-full transition-all duration-300 ${osmosis ? 'bg-cyan-500 shadow-sm' : 'bg-slate-300'} relative cursor-pointer`}
@@ -299,17 +297,17 @@ function AguaView({ isActive }) {
                   <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 shadow-md ${osmosis ? 'left-5' : 'left-1'}`} />
                 </button>
               </div>
-              <p className="text-[10px] text-cyan-800/50 leading-relaxed font-medium">
+              <p className="text-[9px] sm:text-[10px] text-cyan-800/50 leading-relaxed font-medium">
                 *Este proceso garantiza la máxima calidad, considerando un 25% de merma técnica por rechazo de sales y lavado de membranas.
               </p>
             </div>
           </div>
 
-          <div className="space-y-5">
-            <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.25em] border-b border-slate-100 pb-2 flex items-center gap-2">
+          <div className="space-y-4 sm:space-y-5">
+            <p className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-[0.25em] border-b border-slate-200 pb-2 flex items-center gap-2">
                 <HomeIcon className="w-4 h-4" /> Gastos Operativos Mensuales
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               <CompactInput label="Renta" value={renta} setValue={setRenta} color={CALC_BRAND.accent} icon={HomeIcon} />
               <CompactInput label="Luz" value={luz} setValue={setLuz} color={CALC_BRAND.accent} icon={LightBulbIcon} />
               <CompactInput label="Internet" value={internet} setValue={setInternet} color={CALC_BRAND.accent} icon={GlobeAltIcon} />
@@ -367,9 +365,9 @@ export default function LandingPage() {
         <HeroBannerSlide />
 
         {/* SECCIÓN DE AUTORIDAD (NUEVA) */}
-        <section className="py-16 bg-slate-50/50 border-y border-slate-100">
-          <div className="max-w-7xl mx-auto px-5 sm:px-10">
-            <div className="grid md:grid-cols-3 gap-8">
+        <section className="py-12 sm:py-16 bg-slate-50/50 border-y border-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
               <MetricCard title="Equipos Instalados" value="350" suffix="+" icon={CheckBadgeIcon} delay={0.1} />
               <MetricCard title="Negocios Rentables" value="280" suffix="+" icon={ChartBarIcon} delay={0.2} />
               <MetricCard title="Litros Purificados" value="10" suffix="M+" icon={RocketLaunchIcon} delay={0.3} />
@@ -383,38 +381,38 @@ export default function LandingPage() {
         </div>
 
         {/* CALCULADORA INTEGRADA */}
-        <section id="calculadora-negocio" ref={calculadoraRef} className="min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-sans overflow-hidden py-24">
+        <section id="calculadora-negocio" ref={calculadoraRef} className="min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-sans overflow-hidden py-12 sm:py-24">
           
           <div className="max-w-7xl mx-auto px-4 w-full flex flex-col">
             {/* Header Calculadora - HISTORIA DE ÉXITO MATEMÁTICO */}
             <motion.div 
               {...fadeUp(0)}
-              className="w-full mb-12 flex flex-col md:flex-row justify-between items-end gap-6"
+              className="w-full mb-8 sm:mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6"
             >
               <div className="max-w-3xl text-left">
-                <span className="font-bold tracking-widest text-xs uppercase mb-3 block" style={{ color: CALC_BRAND.accent }}>
+                <span className="font-bold tracking-widest text-[10px] sm:text-xs uppercase mb-2 sm:mb-3 block" style={{ color: CALC_BRAND.accent }}>
                   El mapa de tu libertad
                 </span>
-                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-4">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-3 sm:mb-4">
                   Tu éxito no es suerte, <br />
                   es <span style={{ color: CALC_BRAND.accentDark }}>matemática pura.</span>
                 </h2>
-                <p className="text-slate-500 text-lg font-medium leading-relaxed">
+                <p className="text-slate-500 text-base sm:text-lg font-medium leading-relaxed">
                   Elimina la incertidumbre. Visualiza el retorno de tu inversión con datos reales del mercado mexicano.
                 </p>
               </div>
 
               {/* Switch de modo discreto */}
-              <div className="bg-slate-200/50 p-1.5 rounded-xl flex shadow-inner border border-slate-200 shrink-0">
+              <div className="bg-slate-200/50 p-1 rounded-xl flex shadow-inner border border-slate-200 shrink-0">
                 <button 
                   onClick={() => setTipoCalc("agua")}
-                  className={`px-5 py-2 text-[10px] font-black rounded-lg transition-all ${tipoCalc === "agua" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`px-4 sm:px-5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black rounded-lg transition-all ${tipoCalc === "agua" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                   AGUA
                 </button>
                 <button 
                   onClick={() => setTipoCalc("limpieza")}
-                  className={`px-5 py-2 text-[10px] font-black rounded-lg transition-all ${tipoCalc === "limpieza" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`px-4 sm:px-5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black rounded-lg transition-all ${tipoCalc === "limpieza" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                   LIMPIEZA
                 </button>
@@ -423,16 +421,16 @@ export default function LandingPage() {
 
             <motion.div 
               {...fadeUp(0.2)}
-              className="w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 flex flex-col h-full lg:max-h-[650px] min-h-0"
+              className="w-full bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-xl shadow-slate-900/5 overflow-hidden border border-slate-200 flex flex-col h-full lg:max-h-[650px] min-h-0"
             >
               <div className="flex-1 min-h-0">
                 <AguaView isActive={tipoCalc === "agua"} />
                 {tipoCalc === "limpieza" && (
-                  <div className="h-full flex items-center justify-center p-10 text-center animate-fade-in bg-slate-50/20">
-                    <div className="space-y-6">
-                      <div className="w-20 h-20 bg-amber-50 text-amber-400 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-sm border border-amber-100">✨</div>
+                  <div className="h-full flex items-center justify-center p-8 sm:p-10 text-center animate-fade-in bg-slate-50/20">
+                    <div className="space-y-4 sm:space-y-6">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-amber-50 text-amber-400 rounded-3xl flex items-center justify-center mx-auto text-2xl sm:text-3xl shadow-sm border border-amber-100">✨</div>
                       <div>
-                        <h3 className="text-slate-900 font-black text-2xl tracking-tight">Vending Limpieza</h3>
+                        <h3 className="text-slate-900 font-black text-xl sm:text-2xl tracking-tight">Vending Limpieza</h3>
                         <p className="text-slate-400 text-sm max-w-[250px] mx-auto mt-2 leading-relaxed">Módulo de alta demanda en calibración de costos variables e insumos químicos.</p>
                       </div>
                     </div>
@@ -441,8 +439,8 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            <div className="mt-8 flex items-center gap-3 text-[10px] text-slate-400 font-black uppercase tracking-[0.3em] opacity-70 shrink-0">
-              <InformationCircleIcon className="w-4 h-4" style={{ color: CALC_BRAND.accentDark }} />
+            <div className="mt-6 sm:mt-8 flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-70 shrink-0">
+              <InformationCircleIcon className="w-4 h-4 shrink-0" style={{ color: CALC_BRAND.accentDark }} />
               <span>Valores sugeridos basados en el mercado mexicano actual</span>
             </div>
           </div>

@@ -139,7 +139,7 @@ export default function HeroBannerSlide() {
                       transition={{ duration: 0.8 }}
                       src={mode === 'agua' ? "/img/darmaxfoto.png" : "/img/LogoClean.png"} 
                       alt={mode === 'agua' ? "Darmax Agua" : "Darmax Clean"}
-                      className="w-[130px] sm:w-[160px] md:w-[220px] lg:w-[380px] h-auto object-contain drop-shadow-2xl" 
+                      className="w-[110px] sm:w-[160px] md:w-[220px] lg:w-[380px] h-auto object-contain drop-shadow-2xl" 
                     />
                   </AnimatePresence>
                 </div>
@@ -156,14 +156,14 @@ export default function HeroBannerSlide() {
                       exit={{ opacity: 0, x: -50 }}
                       transition={{ duration: 0.8 }}
                     >
-                      <h1 className="max-w-[260px] sm:max-w-none text-[32px] leading-[1] sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter uppercase mb-4 sm:mb-6 text-slate-900 drop-shadow-sm">
+                      <h1 className="max-w-[280px] sm:max-w-none text-[28px] sm:text-[32px] leading-[1.1] md:text-5xl lg:text-7xl font-black tracking-tighter uppercase mb-3 sm:mb-6 text-slate-900 drop-shadow-sm">
                         {mode === 'agua' ? (
                           <>Emprende Tu<br /><span style={{ color: '#168387' }}>Negocio</span></>
                         ) : (
                           <>Emprende Con<br /><span className="text-pink-500"> Productos De Limpieza</span></>
                         )}
                       </h1>
-                      <p className="max-w-[240px] sm:max-w-sm md:max-w-md text-slate-800 text-[14px] sm:text-base md:text-lg font-bold mb-8 sm:mb-12">
+                      <p className="max-w-[240px] sm:max-w-sm md:max-w-md text-slate-800 text-[13px] sm:text-base md:text-lg font-bold mb-6 sm:mb-12">
                         {mode === 'agua' 
                           ? "Inicia tu emprendimiento con purificadoras, máquinas vending de agua y productos de limpieza."
                           : "Automatiza la venta de productos de limpieza con nuestra tecnología Vending Clean."}
@@ -173,14 +173,14 @@ export default function HeroBannerSlide() {
                   
                   <button
                     onClick={handleCTA}
-                    className="relative z-30 inline-flex items-center justify-center text-white font-extrabold py-4 px-10 sm:py-4 sm:px-14 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 text-[13px] sm:text-base uppercase tracking-widest shadow-xl animate-btn-pulse"
+                    className="relative z-30 inline-flex items-center justify-center text-white font-extrabold py-3.5 px-8 sm:py-4 sm:px-14 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 text-[12px] sm:text-base uppercase tracking-widest shadow-xl animate-btn-pulse"
                     style={{ 
                       backgroundColor: mode === 'agua' ? '#168387' : '#e11d48', 
                       boxShadow: mode === 'agua' ? '0 10px 25px rgba(22, 131, 135, 0.4)' : '0 10px 25px rgba(225, 29, 72, 0.4)'
                     }}
                   >
                     <span>CONFIGURA TU {mode === 'agua' ? 'NEGOCIO' : 'NEGOCIO'}</span>
-                    <svg className="ml-3 w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="ml-2 sm:ml-3 w-4 h-4 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </button>
@@ -210,7 +210,7 @@ export default function HeroBannerSlide() {
 
       {/* CUADROS INFERIORES */}
       <motion.div style={{ opacity: boxesOpacity, scale: boxesScale }} className="absolute bottom-6 left-0 right-0 z-30 flex justify-center px-4">
-        <div className="w-full max-w-5xl bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl border border-white overflow-hidden grid grid-cols-3 divide-x divide-slate-100">
+        <div className="w-full max-w-5xl bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl border border-white overflow-hidden grid grid-cols-3 divide-x divide-slate-200">
           <div className="px-2 py-4 sm:px-6 sm:py-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 transition-colors hover:bg-slate-50/50">
             <ClockIcon className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-1000 ${mode === 'agua' ? 'text-[#168387]' : 'text-pink-500'}`} />
             <p className="font-black text-slate-900 text-[9px] sm:text-[11px] uppercase">Beneficios 24/7</p>

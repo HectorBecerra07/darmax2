@@ -393,7 +393,7 @@ export default function Nosotros() {
             >
               <div className="absolute inset-0 bg-gradient-to-tr from-[#168387]/40 via-transparent to-cyan-400/20" />
               <div className="relative z-10 max-w-4xl mx-auto">
-                <motion.h2 {...fadeUp(0.1)} className="text-4xl md:text-6xl font-black tracking-tighter mb-8">🤝 Más que clientes, aliados</motion.h2>
+                <motion.h2 {...fadeUp(0.1)} className="text-4xl md:text-6xl font-black tracking-tighter mb-8">Más que clientes, aliados</motion.h2>
                 <p className="text-xl md:text-2xl text-cyan-50 font-medium leading-relaxed mb-12">
                   No buscamos venderte una máquina. Buscamos ayudarte a construir un negocio que crezca contigo. <br />
                   <span className="font-black text-[#24d4da] mt-4 block uppercase tracking-widest text-lg">Porque cuando tu negocio crece, nosotros también.</span>
