@@ -1,112 +1,105 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDownIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 
-// Reemplazar la importación de Prisma con una constante local
 const VendingTypeEnum = {
   TRADICIONAL: 'TRADICIONAL',
   TOUCH: 'TOUCH',
   NONE: 'NONE',
 };
 
-// const TOUCH_UPGRADE_PRICE = 10000; // Ya no es necesario, se gestiona como Extra
-const BRAND_BLUE = "#5188C9";
-const BRAND_TEAL = "#03A4A4";
-
-// const TOUCH_MODEL_IDS = new Set([ ... ]); // Ya no es necesario
-
-// const caracteristicasPorModelo = { ... }; // Ya no es necesario
-
 export default function Step2ModelDetails({ modelo, vendingType, onNext, onBack }) {
-  // const [isTouch, setIsTouch] = useState(false); // Ya no es necesario
+  const [openSection, setOpenSection] = useState(0);
 
-  const descripcionModelo = modelo?.description || ""; // Ahora viene del modelo
-  const precioBase = Number(modelo?.basePrice ?? 0); // Ahora viene del modelo
+  const precioBase = Number(modelo?.basePrice ?? 0);
+  const caracteristicas = modelo?.features || [];
 
-  // La lógica de "Touch Upgrade" se moverá a extras, así que esto se simplifica
-  // const isTouchModel = TOUCH_MODEL_IDS.has(modelo?.id) || /touch/i.test(modelo?.id || "");
-  // const allowTouchUpgrade = vendingType === "Tradicional" && !isTouchModel;
-
-  // let touchIncrement = 0; // Ya no es necesario
-  // const precioFinal = precioBase + touchIncrement; // Ahora es solo el precio base del modelo
-  const caracteristicas = modelo?.features || []; // Ahora viene del modelo
+  const groupSize = Math.ceil(caracteristicas.length / 2);
+  const groups = [
+    { title: "Especificaciones Técnicas", items: caracteristicas.slice(0, groupSize) },
+    { title: "Sistemas Incluidos", items: caracteristicas.slice(groupSize) }
+  ];
 
   return (
-    <section className="w-full">
-      <div className="bg-white/95 border border-gray-100 rounded-2xl shadow-xl p-6 md:p-8">
-        {/* Encabezado */}
-        <header className="mb-4 md:mb-6">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900">
+    <section className="w-full pb-20 sm:pb-0">
+      <div className="bg-white border border-slate-100 rounded-xl shadow-2xl shadow-slate-200/50 p-5 sm:p-8 space-y-6">
+        
+        <header className="space-y-1">
+          <div className="flex items-center justify-between gap-4">
+            <h3 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tighter">
               {modelo?.name ?? "—"}
             </h3>
-
-            {modelo?.vendingType && modelo.vendingType !== VendingTypeEnum.NONE && (
-              <span
-                className="hidden sm:inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold text-white"
-                style={{ background: BRAND_BLUE }}
-              >
-                {modelo.vendingType}
-              </span>
-            )}
-          </div>
-
-          {descripcionModelo && (
-            <p className="mt-1 text-gray-700 italic leading-relaxed break-words">
-              {descripcionModelo}
-            </p>
-          )}
-        </header>
-
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-5" />
-
-        {/* Lista de características */}
-        {caracteristicas.length > 0 && (
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-gray-800">
-            {caracteristicas.map((c, i) => (
-                <li key={i} className="flex items-start gap-2">
-                <svg
-                    className="mt-[2px] w-5 h-5 shrink-0"
-                    viewBox="0 0 20 20"
-                    fill={BRAND_TEAL}
-                    aria-hidden="true"
-                >
-                    <path d="M16.707 5.293a1 1 0 0 1 0 1.414l-7.25 7.25a1 1 0 0 1-1.414 0l-3-3A1 1 0 1 1 6.293 9.293l2.293 2.293 6.543-6.543a1 1 0 0 1 1.414 0z" />
-                </svg>
-                <span className="text-sm leading-relaxed">{c}</span>
-                </li>
-            ))}
-            </ul>
-        )}
-        
-        {/* Conversión a Touch (ya no aplica aquí, se gestiona como extra en Step3) */}
-        {/* {allowTouchUpgrade && ( ... )} */}
-
-        {/* Precio */}
-        <div className="mt-6">
-          <div className="h-1.5 w-16 rounded-full" style={{ background: BRAND_TEAL }} />
-          <p className="mt-3 text-lg md:text-xl font-semibold text-gray-700">
-            Precio Base:{" "}
-            <span className="text-2xl md:text-3xl font-extrabold text-gray-900">
-              ${precioBase.toLocaleString()} MXN
+            <span className="px-3 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
+              {vendingType}
             </span>
+          </div>
+          <p className="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
+            {modelo?.description}
           </p>
-          {/* {!!touchIncrement && ( ... )} */}
+        </header>
+        {/* Acordeones Micro-Atomic */}
+        <div className="space-y-0 border-t border-slate-100">
+          {groups.map((group, idx) => (
+            <div key={idx} className="border-b border-slate-50">
+              <button
+                onClick={() => setOpenSection(openSection === idx ? null : idx)}
+                className="w-full flex justify-between items-center py-1 group hover:bg-slate-50/20 transition-colors px-0.5"
+              >
+                <span className="text-[7px] sm:text-[8px] font-black text-slate-400 uppercase tracking-[0.1em] group-hover:text-slate-600 transition-colors">
+                  {group.title}
+                </span>
+                <ChevronDownIcon 
+                  className={`w-2 h-2 text-slate-300 transition-transform duration-300 ${openSection === idx ? 'rotate-180 text-[#168387]' : ''}`} 
+                />
+              </button>
+              
+              <AnimatePresence>
+                {openSection === idx && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <ul className="pb-1 pt-0 px-0.5 grid grid-cols-1 gap-0.5">
+                      {group.items.map((item, i) => (
+                        <li key={i} className="flex items-center gap-1 text-slate-400">
+                          <div className="w-0.5 h-0.5 rounded-full bg-slate-300 shrink-0" />
+                          <span className="text-[8px] sm:text-[10px] font-medium leading-none truncate">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
         </div>
 
-        {/* Botones */}
-        <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4">
+        <div className="pt-4 border-t border-slate-50 flex items-end justify-between">
+          <div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">
+              Inversión Inicial
+            </span>
+            <p className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tighter leading-none">
+              ${precioBase.toLocaleString()}
+              <span className="text-xs sm:text-sm ml-1 text-slate-400 font-bold uppercase tracking-normal">MXN</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-2">
           <button
             onClick={onBack}
-            className="inline-flex justify-center items-center rounded-xl border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-800 hover:bg-gray-50 active:scale-[0.99] transition"
+            className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition"
           >
-            ← Regresar
+            Atrás
           </button>
-
           <button
-            onClick={() => onNext()} // Ya no pasamos touchIncrement
-            className="inline-flex justify-center items-center rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-md hover:shadow-lg active:scale-[0.99] transition"
-            style={{ background: BRAND_BLUE }}
+            onClick={onNext}
+            className="flex-[2] px-4 py-3 rounded-xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#24d4da] transition-all shadow-lg shadow-slate-900/10"
           >
-            Siguiente: Personaliza tu equipo →
+            Siguiente
           </button>
         </div>
       </div>

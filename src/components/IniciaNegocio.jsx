@@ -132,7 +132,7 @@ const getConfigurePath = (modeloId) =>
 const modelos = [
   {
     id: "Vending",
-    nombre: "Vending Touch",
+    nombre: "Máquina Vending",
     etiqueta: "Máquina Vending",
     imagen: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/1touch_heazvd.png",
     precio: 54950,

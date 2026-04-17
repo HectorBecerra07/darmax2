@@ -1,7 +1,7 @@
 // WizardGeneral.jsx
-import { useParams } from "react-router-dom";
-import { useMemo, useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Step0SelectVendingType from "../components/Step0SelectVendingType";
 import Step1SelectModel from "../components/Step1SelectModel";
 import Step2ModelDetails from "../components/Step2ModelDetails";
@@ -13,7 +13,6 @@ import toast from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Reemplazar la importación de Prisma con una constante local
 const VendingTypeEnum = {
   TRADICIONAL: 'TRADICIONAL',
   TOUCH: 'TOUCH',
@@ -22,7 +21,13 @@ const VendingTypeEnum = {
 
 export default function WizardGeneral() {
   const { id } = useParams();
-  const [step, setStep] = useState(id === "Vending" ? 0 : 1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const wizardRef = useRef(null);
+
+  // Sincronizar paso con URL
+  const step = parseInt(searchParams.get("s")) || (id === "Vending" ? 0 : 1);
+  
   const [vendingType, setVendingType] = useState(id !== "Vending" ? VendingTypeEnum.NONE : null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [extrasPrice, setExtrasPrice] = useState(0);
@@ -31,7 +36,7 @@ export default function WizardGeneral() {
   const [allModels, setAllModels] = useState([]);
   const [loadingModels, setLoadingModels] = useState(true);
 
-  // Fetch all models from the API
+  // Fetch all models
   useEffect(() => {
     const fetchAllModels = async () => {
       try {
@@ -49,108 +54,73 @@ export default function WizardGeneral() {
     fetchAllModels();
   }, []);
 
-  const nextStep = () => setStep((prev) => prev + 1);
-  const prevStep = () => setStep((prev) => Math.max(0, prev - 1));
+  // Efecto para manejar el scroll al cambiar de paso
+  useEffect(() => {
+    if (wizardRef.current && !loadingModels) {
+      const yOffset = -100; // Offset para el Navbar
+      const element = wizardRef.current;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  }, [step, loadingModels]);
+
+  const setStep = (newStep) => {
+    setSearchParams({ s: newStep });
+  };
+
+  const nextStep = () => setStep(step + 1);
+  const prevStep = () => setStep(Math.max(0, step - 1));
 
   const breadcrumbSteps = useMemo(() => {
     const dynamicSteps = [];
     if (id === "Vending") {
       dynamicSteps.push(
-        { label: "Tipo de Vending" }, // Wizard Step 0
-        { label: "Seleccionar Modelo" }, // Wizard Step 1
-        { label: "Detalles del Modelo" }, // Wizard Step 2
-        { label: "Extras Opcionales" }, // Wizard Step 3
-        { label: "Resumen" } // Wizard Step 4
+        { label: "Tipo" },
+        { label: "Modelo" },
+        { label: "Detalles" },
+        { label: "Extras" },
+        { label: "Resumen" }
       );
-    } else { // Purificadora or Vending-Limpieza
+    } else {
       dynamicSteps.push(
-        { label: "Seleccionar Modelo" }, // Wizard Step 1
-        { label: "Detalles del Modelo" }, // Wizard Step 2
-        { label: "Extras Opcionales" }, // Wizard Step 3
-        { label: "Resumen" } // Wizard Step 4
+        { label: "Modelo" },
+        { label: "Detalles" },
+        { label: "Extras" },
+        { label: "Resumen" }
       );
     }
-
-    const finalBreadcrumbSteps = [
-      { label: "Inicio", path: "/" },
-    ];
-
-    finalBreadcrumbSteps.push(...dynamicSteps);
-    return finalBreadcrumbSteps;
+    return [{ label: "Inicio", path: "/#catalogo" }, ...dynamicSteps];
   }, [id]);
 
   const actualBreadcrumbStepIndex = useMemo(() => {
-    let baseBreadcrumbCount = 1; // "Inicio"
+    const baseBreadcrumbCount = 1;
     const adjustedStep = (id === "Vending") ? step : (step - 1);
     return baseBreadcrumbCount + adjustedStep;
   }, [id, step]);
 
-  // Modelos filtrados dinámicamente desde la DB
   const modelos = useMemo(() => {
     if (loadingModels) return [];
+    let filteredByCategory = allModels;
     
-    let filteredByCategory = [];
-    if (id === "Purificadora") {
-      filteredByCategory = allModels.filter(m => m.slug.includes("Neptuno"));
-    } else if (id === "Vending") {
-      // Mostrar solo vending de agua (Atlantis)
-      filteredByCategory = allModels.filter(m => m.slug.includes("Atlantis"));
-    } else if (id === "Vending-Limpieza") {
-      // Mostrar solo vending de limpieza
-      filteredByCategory = allModels.filter(m => m.slug === "Vending5" || m.slug === "Vending8");
-    } else if (id === "Duo-Emprendedor") {
-      filteredByCategory = allModels.filter(m => m.slug.includes("duo-emprendedor"));
-    } else if (id === "Tridente") {
-      filteredByCategory = allModels.filter(m => m.slug.includes("tridente"));
-    } else if (id === "Megalodon") {
-      filteredByCategory = allModels.filter(m => m.slug.includes("megalodon"));
-    } else {
-        filteredByCategory = allModels;
-    }
+    if (id === "Purificadora") filteredByCategory = allModels.filter(m => m.slug.includes("Neptuno"));
+    else if (id === "Vending") filteredByCategory = allModels.filter(m => m.slug.includes("Atlantis"));
+    else if (id === "Vending-Limpieza") filteredByCategory = allModels.filter(m => m.slug === "Vending5" || m.slug === "Vending8");
+    else if (id === "Duo-Emprendedor") filteredByCategory = allModels.filter(m => m.slug.includes("duo-emprendedor"));
+    else if (id === "Tridente") filteredByCategory = allModels.filter(m => m.slug.includes("tridente"));
+    else if (id === "Megalodon") filteredByCategory = allModels.filter(m => m.slug.includes("megalodon"));
 
-    // El filtro de tipo de Vending solo aplica a la categoría "Vending"
     if (id === "Vending" && vendingType) {
       return filteredByCategory.filter(m => m.vendingType === vendingType);
     }
     return filteredByCategory;
   }, [id, vendingType, allModels, loadingModels]);
 
-  // Imágenes para el carrusel de Step 1
   const landingImages = useMemo(() => {
     if (loadingModels) return [];
-    
-    let images = [];
-    if (id === "Purificadora") {
-      images = allModels.filter(m => m.slug.includes("Neptuno"))
-                       .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
-    } else if (id === "Vending-Limpieza") {
-      images = allModels.filter(m => m.slug.includes("Vending") && m.slug.includes("Limpieza"))
-                       .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
-    } else if (id === "Duo-Emprendedor") {
-      images = allModels.filter(m => m.slug.includes("duo-emprendedor"))
-                        .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
-    } else if (id === "Tridente") {
-      images = allModels.filter(m => m.slug.includes("tridente"))
-                        .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
-    } else if (id === "Megalodon") {
-      images = allModels.filter(m => m.slug.includes("megalodon"))
-                        .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
-    } else if (id === "Vending") {
-        if (vendingType === VendingTypeEnum.TRADICIONAL) {
-            images = allModels.filter(m => m.vendingType === VendingTypeEnum.TRADICIONAL)
-                              .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
-        } else if (vendingType === VendingTypeEnum.TOUCH) {
-            images = allModels.filter(m => m.vendingType === VendingTypeEnum.TOUCH)
-                              .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
-        } else { // antes de elegir tipo, mezcla de Vending tradicional y touch
-             images = allModels.filter(m => m.vendingType === VendingTypeEnum.TRADICIONAL || m.vendingType === VendingTypeEnum.TOUCH)
-                               .flatMap(m => m.images.filter(img => img.context === 'CAROUSEL').map(img => img.url));
-        }
-    }
-    return [...new Set(images)]; // Eliminar duplicados
-  }, [id, vendingType, allModels, loadingModels]);
+    let images = modelos.flatMap(m => m.images.filter(img => img.context === 'CAROUSEL' && img.url).map(img => img.url));
+    return [...new Set(images.filter(url => url && url.trim() !== ""))];
+  }, [modelos, loadingModels]);
 
-  // Tipos de vending disponibles dinámicamente
   const availableVendingTypes = useMemo(() => {
     if (loadingModels) return [];
     const types = new Set();
@@ -162,111 +132,140 @@ export default function WizardGeneral() {
     return Array.from(types);
   }, [allModels, loadingModels]);
 
-  // Función para obtener la imagen representativa de un tipo de vending
-  const getVendingTypeImage = useMemo(() => (type) => {
-    if (loadingModels) return "";
-    // Busca la primera imagen de carrusel de un modelo de ese tipo
-    const modelWithImage = allModels.find(m => m.vendingType === type && m.images.some(img => img.context === 'CAROUSEL'));
-    return modelWithImage?.images.find(img => img.context === 'CAROUSEL')?.url || "/img/placeholder.png"; // Fallback placeholder
-  }, [allModels, loadingModels]);
+  const getVendingTypeImage = (type) => {
+    const model = allModels.find(m => m.vendingType === type && m.images.some(img => img.context === 'CAROUSEL'));
+    return model?.images.find(img => img.context === 'CAROUSEL')?.url || "/img/placeholder.png";
+  };
 
   if (loadingModels) {
-    return <div className="text-center p-8 text-lg text-gray-700">Cargando modelos...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
+  const stepVariants = {
+    initial: { opacity: 0, x: 20 },
+    animate: { 
+      opacity: 1, 
+      x: 0,
+      transitionEnd: { x: "none" } // Elimina el transform al terminar para no romper el sticky
+    },
+    exit: { opacity: 0, x: -20 },
+  };
+
   return (
-    <>
-      <div className="max-w-7xl mx-auto pt-20 px-6 py-4">
-        <Breadcrumbs
-          steps={breadcrumbSteps}
-          currentStepIndex={actualBreadcrumbStepIndex}
-          onStepClick={(index) => {
-            let baseBreadcrumbCount = 1;
-            const newStep = index - baseBreadcrumbCount;
-            setStep((id === "Vending") ? newStep : (newStep + 1));
-          }}
-        />
+    <div ref={wizardRef} className="bg-slate-50 min-h-screen">
+      {/* Breadcrumbs Container más pequeño */}
+      <div className="max-w-7xl mx-auto pt-20 px-4 sm:px-6">
+        <div className={`bg-white/50 backdrop-blur-sm rounded-xl border border-slate-100 p-2 sm:p-3 transition-all duration-500 ${
+          (step === 0 || step === 3) ? 'mb-2 sm:mb-4' : 'mb-12 sm:mb-24'
+        }`}>
+          <Breadcrumbs
+            steps={breadcrumbSteps}
+            currentStepIndex={actualBreadcrumbStepIndex}
+            onStepClick={(index) => {
+              const baseBreadcrumbCount = 1;
+              const newStep = index - baseBreadcrumbCount;
+              setStep((id === "Vending") ? newStep : (newStep + 1));
+            }}
+          />
+        </div>
       </div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.6 }}
-        className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 gap-20 items-center"
-      >
-        {id === "Vending" && step === 0 && (
-          <div className="col-span-2">
-            <Step0SelectVendingType
-              onSelect={(type) => {
-                setVendingType(type);
-                setSelectedModel(null);
-                setStep(1);
-              }}
-              availableVendingTypes={availableVendingTypes}
-              getVendingTypeImage={getVendingTypeImage}
-            />
-          </div>
-        )}
 
-        {step === 1 && (
-          <>
-            <div className="space-y-10">
-              <CarouselImages images={landingImages} />
-            </div>
-            <div>
-              <Step1SelectModel
-                modelos={modelos}
-                vendingType={vendingType}
-                onSelect={setSelectedModel}
-                onNext={nextStep}
-              />
-            </div>
-          </>
-        )}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${id}-${step}`}
+            variants={stepVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start"
+          >
+            {id === "Vending" && step === 0 && (
+              <div className="col-span-1 lg:col-span-2">
+                <Step0SelectVendingType
+                  onSelect={(type) => {
+                    setVendingType(type);
+                    setSelectedModel(null);
+                    nextStep();
+                  }}
+                  availableVendingTypes={availableVendingTypes}
+                  getVendingTypeImage={getVendingTypeImage}
+                />
+              </div>
+            )}
 
-        {step === 2 && selectedModel && (
-          <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-            <CarouselImages
-              images={selectedModel.images.filter(img => img.context === 'CAROUSEL').map(img => img.url)}
-            />
-            <div>
-              <Step2ModelDetails
-                modelo={selectedModel}
-                vendingType={vendingType}
-                onNext={() => { nextStep(); }}
-                onBack={prevStep}
-              />
-            </div>
-          </div>
-        )}
+            {step === 1 && (
+              <>
+                <div className="w-full lg:sticky lg:top-28">
+                  <CarouselImages images={landingImages} />
+                </div>
+                <div className="w-full">
+                  <Step1SelectModel
+                    modelos={modelos}
+                    vendingType={vendingType}
+                    onSelect={setSelectedModel}
+                    onNext={nextStep}
+                  />
+                </div>
+              </>
+            )}
 
-        {step === 3 && selectedModel && (
-          <div className="col-span-2">
-            <Step3ExtrasConfigurator
-              selectedModelId={selectedModel.slug}
-              onSelect={(summary) => {
-                setSummaryData(summary);
-                const totalExtras = summary.selectedExtras.reduce(
-                  (acc, curr) => acc + (curr.priceOverride ?? curr.extra.basePrice),
-                  0
-                );
-                setExtrasPrice(totalExtras);
-              }}
-              onNext={nextStep}
-              onBack={prevStep}
-            />
-          </div>
-        )}
+            {step === 2 && selectedModel && (
+              <>
+                <div className="w-full lg:sticky lg:top-28">
+                  <CarouselImages
+                    images={selectedModel.images
+                      .filter(img => img.context === 'CAROUSEL' && img.url)
+                      .map(img => img.url)
+                      .filter(url => url && url.trim() !== "")
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <Step2ModelDetails
+                    modelo={selectedModel}
+                    vendingType={vendingType}
+                    onNext={nextStep}
+                    onBack={prevStep}
+                  />
+                </div>
+              </>
+            )}
 
-        {step === 4 && summaryData && (
-          <div className="col-span-2">
-            <Step4Summary
-              summaryData={summaryData}
-              onBack={prevStep}
-            />
-          </div>
-        )}
-      </motion.div>
-    </>
+            {step === 3 && selectedModel && (
+              <div className="col-span-1 lg:col-span-2">
+                <Step3ExtrasConfigurator
+                  selectedModelId={selectedModel.slug}
+                  onSelect={(summary) => {
+                    setSummaryData(summary);
+                    const totalExtras = summary.selectedExtras.reduce(
+                      (acc, curr) => acc + (curr.priceOverride ?? curr.extra.basePrice),
+                      0
+                    );
+                    setExtrasPrice(totalExtras);
+                  }}
+                  onNext={nextStep}
+                  onBack={prevStep}
+                />
+              </div>
+            )}
+
+            {step === 4 && summaryData && (
+              <div className="col-span-1 lg:col-span-2">
+                <Step4Summary
+                  summaryData={summaryData}
+                  onBack={prevStep}
+                />
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </main>
+    </div>
   );
 }

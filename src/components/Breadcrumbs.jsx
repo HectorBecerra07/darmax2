@@ -12,10 +12,6 @@ import { useNavigate } from 'react-router-dom';
 export default function Breadcrumbs({ steps, currentStepIndex, onStepClick }) {
   const navigate = useNavigate();
 
-  /**
-   * Maneja el clic en un enlace de breadcrumb.
-   * Navega a la ruta especificada o llama a onStepClick para cambiar el paso del asistente.
-   */
   const handleLinkClick = (event, path, index) => {
     event.preventDefault();
     if (path) {
@@ -26,34 +22,36 @@ export default function Breadcrumbs({ steps, currentStepIndex, onStepClick }) {
   };
 
   return (
-    <div role="presentation">
-      <MuiBreadcrumbs aria-label="breadcrumb">
+    <div role="presentation" className="flex items-center w-full overflow-x-auto no-scrollbar scroll-smooth">
+      <MuiBreadcrumbs 
+        aria-label="breadcrumb"
+        separator={<span className="text-slate-300 mx-0.5 text-[7px] sm:text-[10px]">/</span>}
+        className="flex-nowrap whitespace-nowrap min-w-max px-0.5"
+      >
         {steps.map((step, index) => {
-          // No renderizar pasos futuros
-          if (index > currentStepIndex) {
-            return null;
-          }
+          if (index > currentStepIndex) return null;
 
           const isLast = index === currentStepIndex;
 
           if (isLast) {
-            // El último paso (actual) se muestra como texto sin enlace y en negrita
             return (
-              <Typography key={step.label} color="text.primary" fontWeight="bold">
+              <Typography 
+                key={step.label} 
+                className="text-[#168387] font-black text-[7px] sm:text-[10px] tracking-[0.05em] sm:tracking-[0.2em] uppercase"
+              >
                 {step.label}
               </Typography>
             );
           }
 
-          // Los pasos anteriores se muestran como enlaces clicables y en negrita
           return (
             <Link
               key={step.label}
-              underline="hover"
+              underline="none"
               color="inherit"
               href={step.path || "#"}
               onClick={(e) => handleLinkClick(e, step.path, index)}
-              style={{ cursor: 'pointer', fontWeight: 'bold' }}
+              className="text-slate-400 hover:text-slate-900 font-black text-[7px] sm:text-[10px] tracking-[0.05em] sm:tracking-[0.2em] uppercase transition-colors"
             >
               {step.label}
             </Link>

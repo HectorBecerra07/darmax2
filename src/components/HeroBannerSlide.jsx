@@ -98,7 +98,15 @@ export default function HeroBannerSlide() {
             style={{ y: videoY, scale: isExiting ? 2.5 : 1.1 }}
             className="absolute inset-0 z-0 bg-white flex items-center justify-center overflow-hidden"
           >
-            <div className="absolute inset-0 animate-clean-bg blur-[100px] opacity-60 scale-150" />
+            {/* Imagen de fondo base con textura de gotas */}
+            <img 
+              src="https://res.cloudinary.com/defkuaytw/image/upload/v1776407496/fondo_gotas_jrtijk.png" 
+              alt="Fondo Gotas" 
+              className="absolute inset-0 w-full h-full object-cover opacity-60"
+            />
+            {/* Colores animados superpuestos con mezcla suave */}
+            <div className="absolute inset-0 animate-clean-bg blur-[80px] opacity-40 scale-150 mix-blend-multiply" />
+            <div className="absolute inset-0 animate-clean-bg blur-[120px] opacity-30 scale-125" />
           </motion.div>
         )}
       </AnimatePresence>

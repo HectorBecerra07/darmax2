@@ -85,9 +85,9 @@ export default function NavBar() {
     ? "bg-pink-500/10"
     : "bg-[#168387]/10";
 
-  const logoSrc = localMode === 'agua' 
-    ? (isDarkTheme ? "/img/darmaxfoto3.png" : "/img/darmaxfoto.png")
-    : "/img/LogoClean.png";
+  const logoSrc = isDarkTheme 
+    ? "/img/logos/logoblanco.png" 
+    : "/img/logos/logonegro.png";
 
   const isHome = location.pathname === "/";
 
@@ -116,7 +116,7 @@ export default function NavBar() {
                 }
               `}
             >
-              <img src={logoSrc} alt="Logo Darmax" className="h-9 md:h-10 w-auto object-contain" />
+              <img src={logoSrc} alt="Logo Darmax" className="h-11 md:h-12 w-auto object-contain" />
             </Link>
           </div>
 
@@ -140,7 +140,7 @@ export default function NavBar() {
 
           {/* Acciones */}
           <div className={`hidden nav:flex items-center gap-6 transition-colors duration-500 ${iconClass}`}>
-            <button onClick={() => setShowCart(true)} className="relative transition-transform hover:scale-110 active:scale-90">
+            <button onClick={() => setShowCart(true)} className="hidden relative transition-transform hover:scale-110 active:scale-90">
               <ShoppingBagIcon className="w-5 h-5 sm:w-6 sm:h-6" />
               {totalItems > 0 && (
                 <span className={`absolute -top-1 -right-1 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full ${badgeBg} shadow-sm`}>
@@ -148,12 +148,14 @@ export default function NavBar() {
                 </span>
               )}
             </button>
-            <UserIcon className="w-5 h-5 sm:w-6 sm:h-6 transition-transform hover:scale-110 active:scale-90 cursor-pointer" />
+            <Link to={user ? "/perfil" : "/login"}>
+              <UserIcon className="w-5 h-5 sm:w-6 sm:h-6 transition-transform hover:scale-110 active:scale-90 cursor-pointer" />
+            </Link>
           </div>
 
           {/* Menú móvil trigger */}
           <div className={`flex items-center justify-end nav:hidden gap-x-5 transition-colors duration-500 ${iconClass}`}>
-            <button onClick={() => setShowCart(true)} className="relative">
+            <button onClick={() => setShowCart(true)} className="hidden relative">
               <ShoppingBagIcon className="w-6 h-6" />
               {totalItems > 0 && (
                 <span className={`absolute -top-1.5 -right-1.5 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full ${badgeBg}`}>
@@ -161,6 +163,9 @@ export default function NavBar() {
                 </span>
               )}
             </button>
+            <Link to={user ? "/perfil" : "/login"}>
+              <UserIcon className="w-6 h-6 transition-transform active:scale-90 cursor-pointer" />
+            </Link>
             <button onClick={() => setNavOpen(!navOpen)} className="p-1">
               {navOpen ? <XMarkIcon className="w-7 h-7" /> : <Bars3Icon className="w-7 h-7" />}
             </button>
@@ -171,7 +176,7 @@ export default function NavBar() {
       {/* Menú Lateral Móvil */}
       <div className={`fixed top-0 right-0 h-full w-full max-w-xs bg-slate-950 z-[60] transform transition-transform duration-500 ease-in-out shadow-2xl ${navOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex justify-between items-center px-6 h-20 border-b border-white/5">
-          <img src="/img/darmaxfoto3.png" alt="Logo Darmax" className="h-8 w-auto object-contain" />
+          <img src="/img/logos/logoblanco.png" alt="Logo Darmax" className="h-10 w-auto object-contain" />
           <button onClick={() => setNavOpen(false)} className="text-white hover:rotate-90 transition-transform duration-300">
             <XMarkIcon className="w-8 h-8" />
           </button>

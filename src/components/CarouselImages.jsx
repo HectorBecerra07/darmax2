@@ -24,7 +24,7 @@ export default function CarouselImages({ images }) {
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="relative w-full max-w-5xl h-[300px] sm:h-[400px] md:h-[550px] overflow-hidden rounded-3xl shadow-2xl border mx-auto group">
+    <div className="relative w-full max-w-3xl h-[220px] sm:h-[300px] md:h-[400px] overflow-hidden rounded-2xl shadow-2xl border-2 border-[#24d4da]/20 mx-auto group bg-white">
       <AnimatePresence mode="wait">
         <motion.img
           key={currentIndex}
@@ -34,45 +34,36 @@ export default function CarouselImages({ images }) {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.7, ease: "easeInOut" }}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain bg-slate-50/30"
         />
       </AnimatePresence>
 
-      {/* Botón Izquierda */}
+      {/* Botón Izquierda Translúcido */}
       <button
         onClick={handlePrev}
-        className="absolute top-1/2 left-1 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 rounded-full shadow-lg transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+        className="absolute top-1/2 left-3 transform -translate-y-1/2 bg-cyan-500/10 backdrop-blur-md hover:bg-cyan-500 text-cyan-600 hover:text-white p-2 rounded-xl border border-cyan-500/20 shadow-lg transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
       >
-        <ChevronLeft size={24} />
+        <ChevronLeft size={20} />
       </button>
 
-      {/* Botón Derecha */}
+      {/* Botón Derecha Translúcido */}
       <button
         onClick={handleNext}
-        className="absolute top-1/2 right-1 transform -translate-y-1/2 bg-white/70 hover:bg-white text-black p-2 rounded-full shadow-lg transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+        className="absolute top-1/2 right-3 transform -translate-y-1/2 bg-cyan-500/10 backdrop-blur-md hover:bg-cyan-500 text-cyan-600 hover:text-white p-2 rounded-xl border border-cyan-500/20 shadow-lg transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
       >
-        <ChevronRight size={24} />
+        <ChevronRight size={20} />
       </button>
 
-      {/* Dots con barra de progreso */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+      {/* Dots con estilo branding */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2.5">
         {images.map((_, index) => (
           <div
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`relative w-3 h-3 rounded-full cursor-pointer transition-all ${
-              index === currentIndex ? "bg-[#24d4da]" : "bg-gray-300"
+            className={`h-1.5 rounded-full cursor-pointer transition-all duration-500 ${
+              index === currentIndex ? "bg-cyan-500 w-6 shadow-[0_0_10px_rgba(36,212,218,0.5)]" : "bg-slate-200 w-1.5 hover:bg-slate-300"
             }`}
-          >
-            {index === currentIndex && (
-              <motion.div
-                className="absolute inset-0 bg-[#24d4da]/40 rounded-full"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.4 }}
-              />
-            )}
-          </div>
+          />
         ))}
       </div>
     </div>
