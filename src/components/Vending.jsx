@@ -6,6 +6,13 @@ const VendingPrecise3D = () => {
   const [rotation, setRotation] = useState({ x: -10, y: -12 });
   const [isDragging, setIsDragging] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const modelRef = useRef(null);
   const rotationRef = useRef({ x: -10, y: -12 });
@@ -13,6 +20,30 @@ const VendingPrecise3D = () => {
   const velRef = useRef({ vx: 0, vy: 0 });
   const inertiaRafRef = useRef(null);
   const frameRafRef = useRef(null);
+
+  // Determinar escala dinámica
+  const isMobile = windowWidth < 640;
+  const isTablet = windowWidth >= 640 && windowWidth < 1024;
+  const sc = isMobile ? 2.2 : isTablet ? 3.5 : 4;
+  
+  const totalS = 80.5 * sc;
+  const fThick = 2 * sc;
+
+  const waterW = 32 * sc;
+  const waterH = 60 * sc;
+  const waterD = 31.5 * sc - fThick;
+
+  const coinW = 37.5 * sc;
+  const coinH = 45.5 * sc;
+  const coinD = 28 * sc - fThick;
+
+  const tapasW = 20.5 * sc;
+  const tapasH = 26.5 * sc;
+  const tapasD = 15 * sc - fThick;
+
+  const gap = 3 * sc;
+  const totalBlocksW = waterW + gap + coinW;
+  const startX = (totalS - totalBlocksW) / 2;
 
   const updateModelTransform = () => {
     if (modelRef.current) {
@@ -104,26 +135,6 @@ const VendingPrecise3D = () => {
   // =========================
   // MODELO
   // =========================
-  const sc = 4;
-  const totalS = 80.5 * sc;
-  const fThick = 2 * sc;
-
-  const waterW = 32 * sc;
-  const waterH = 60 * sc;
-  const waterD = 31.5 * sc - fThick;
-
-  const coinW = 37.5 * sc;
-  const coinH = 45.5 * sc;
-  const coinD = 28 * sc - fThick;
-
-  const tapasW = 20.5 * sc;
-  const tapasH = 26.5 * sc;
-  const tapasD = 15 * sc - fThick;
-
-  const gap = 3 * sc;
-  const totalBlocksW = waterW + gap + coinW;
-  const startX = (totalS - totalBlocksW) / 2;
-
   const zFix = 0.35;
 
   const METAL_TEX_URL = "/img/textures/metal_brushed.png";
@@ -236,8 +247,8 @@ const VendingPrecise3D = () => {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center font-sans py-4">
-      <div className="relative" style={{ width: totalS + 200, maxWidth: "100%" }}>
+    <div className="flex flex-col items-center justify-center font-sans py-4 w-full">
+      <div className="relative mx-auto" style={{ width: isMobile ? totalS + 20 : totalS + 200, maxWidth: "100%" }}>
         <div
           className="relative mx-auto"
           style={{
@@ -359,9 +370,9 @@ const VendingPrecise3D = () => {
             </div>
           </div>
 
-          {/* CALLOUTS (Solo visibles en md+) */}
-          {showCallouts && (
-            <div className="hidden md:block">
+          {/* CALLOUTS (Solo visibles en tablet/escritorio) */}
+          {showCallouts && !isMobile && (
+            <div className="block">
               <svg className="absolute inset-0 pointer-events-none z-[40]" viewBox="0 0 100 100" preserveAspectRatio="none">
                 {CALLOUTS.map((c) => (
                   <g key={c.id}>

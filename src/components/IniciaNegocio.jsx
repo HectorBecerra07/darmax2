@@ -133,70 +133,58 @@ const modelos = [
   {
     id: "Vending",
     nombre: "Máquina Vending",
-    etiqueta: "Máquina Vending",
     imagen: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/1touch_heazvd.png",
     precio: 54950,
     descripcion:
       "Automatización total 24/7. Genera ingresos pasivos con tecnología de despacho automático y cero personal.",
     rutaInfo: "/vending-info",
-    badge: "Más popular",
   },
   {
     id: "Purificadora",
     nombre: "Mostrador Darmax",
-    etiqueta: "Purificadora",
     imagen: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/2mostrador_iajzgl.png",
     precio: 52950,
     descripcion:
       "El punto de entrada perfecto. Capacidad industrial de 600 garrafones, diseño compacto para locales comerciales.",
     rutaInfo: "/purificadora-info",
-    badge: "Más rentable",
   },
   {
     id: "Vending-Limpieza",
     nombre: "Vending Limpieza",
-    etiqueta: "Vending Limpieza",
     imagen: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/3productos_dcha1t.png",
     precio: 34950,
     descripcion:
       "Diversifica tu portafolio. Despacho automático de productos de limpieza a granel de alta demanda.",
     rutaInfo: "/vending-limpieza-info",
-    badge: "Economía inteligente",
   },
   {
     id: "Duo-Emprendedor",
     nombre: "Paquete Dúo Emprendedor",
-    etiqueta: "Paquete 2 en 1",
     imagen:
       "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/4emprendedor_lxuzyt.png",
     precio: 89900,
     descripcion:
       "Paquete integral que combina la venta de agua purificada con productos de limpieza a granel, maximizando tu oferta y rentabilidad en un solo espacio.",
     rutaInfo: "/duo-emprendedor-info",
-    badge: "Doble Ganancia",
   },
   {
     id: "Tridente",
     nombre: "Paquete Tridente",
-    etiqueta: "Paquete Triple Modelo",
     imagen:
       "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/puri3_sr1yoc.png",
     precio: 107900,
     descripcion:
       "Paquete completo de alto impacto que integra agua purificada, productos de limpieza y otros artículos esenciales en una solución llave en mano.",
     rutaInfo: "/tridente-info",
-    badge: "Versatilidad Extrema",
   },
   {
     id: "Megalodon",
     nombre: "Paquete Megalodon",
-    etiqueta: "Paquete Mega Vending",
     imagen: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/6megalodon_wd13q6.png",
     precio: 117900,
     descripcion:
       "Nuestro paquete más avanzado y de mayor capacidad. La estación de vending definitiva para ubicaciones de alto tráfico.",
     rutaInfo: "/megalodon-info",
-    badge: "Líder del Mercado",
   },
 ];
 
@@ -264,13 +252,16 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       )}
 
       {/* IMAGEN Y CONTROL */}
-      <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-slate-50/50 border border-slate-50 mb-4 sm:mb-6 isolate">
+      <div 
+        onClick={() => navigate(configurePath)}
+        className="relative aspect-[4/3] overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-slate-50/50 border border-slate-50 mb-3 sm:mb-5 isolate cursor-pointer group/img"
+      >
         {!errorImagen ? (
           <motion.img
             src={modelo.imagen}
             alt={modelo.nombre}
             loading="lazy"
-            className="h-full w-full object-contain p-4 sm:p-6 transition-transform duration-1000 group-hover:scale-110 will-change-transform"
+            className="h-full w-full object-contain p-4 sm:p-6 transition-transform duration-1000 group-hover/img:scale-110 will-change-transform"
             style={{ transform: "translateZ(0)" }}
             onError={() => setErrorImagen(true)}
           />
@@ -280,7 +271,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-700 pointer-events-none" />
         
         <button
           onClick={(e) => {
@@ -291,7 +282,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
             "absolute top-3 sm:top-4 right-3 sm:right-4 h-8 w-8 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500 backdrop-blur-xl border z-30",
             isSelected
               ? "bg-[#24d4da] border-[#24d4da] text-white shadow-xl shadow-cyan-500/40 rotate-90"
-              : "bg-white/80 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover:scale-100",
+              : "bg-white/80 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover/img:scale-100",
           ].join(" ")}
         >
           <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -302,25 +293,14 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
 
       {/* CONTENIDO DE NEGOCIO */}
       <div className="flex flex-col flex-1 px-1 sm:px-2">
-        <div className="mb-3 sm:mb-4">
-          <div className="flex items-center gap-2 mb-1 sm:mb-2">
-            <span className="px-1.5 py-0.5 rounded-md bg-slate-100 text-[7px] sm:text-[8px] font-black text-slate-500 uppercase tracking-widest">
-              {modelo.etiqueta}
-            </span>
-            {modelo.badge && (
-              <span className="text-[7px] sm:text-[8px] font-black text-cyan-500 uppercase tracking-widest flex items-center gap-1">
-                <div className="w-1 h-1 rounded-full bg-cyan-500 animate-pulse" />
-                {modelo.badge}
-              </span>
-            )}
-          </div>
+        <div className="mb-2 sm:mb-3">
           <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tighter leading-tight group-hover:text-[#168387] transition-colors duration-500">
             {modelo.nombre}
           </h3>
         </div>
 
         {/* BUSINESS SPECS (NUEVA CAPA DE VALOR) */}
-        <div className="grid grid-cols-3 gap-1 sm:gap-2 mb-4 sm:mb-6">
+        <div className="grid grid-cols-3 gap-1 sm:gap-2 mb-3 sm:mb-5">
           {[
             { label: "Autonomía", val: "24/7", icon: CpuChipIcon },
             { label: "Demanda", val: "Alta", icon: ArrowTrendingUpIcon },
@@ -334,31 +314,30 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
           ))}
         </div>
 
-        <p className="text-xs sm:text-sm text-slate-500 leading-relaxed line-clamp-2 mb-6 sm:mb-8 opacity-75 font-medium">
+        <p className="text-xs sm:text-sm text-slate-500 leading-relaxed line-clamp-2 mb-4 sm:mb-6 opacity-75 font-medium">
           {modelo.descripcion}
         </p>
 
         {/* FOOTER DE CONVERSIÓN */}
-        <div className="mt-auto pt-4 sm:pt-6 border-t border-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="relative group/price">
-            <span className="block text-[7px] sm:text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5 sm:mb-1">Inversión Inicial</span>
-            <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tighter group-hover/price:text-[#168387] transition-colors">
+        <div className="mt-auto pt-3 sm:pt-5 border-t border-slate-50">
+          <div className="relative group/price mb-3 sm:mb-5">
+            <span className="block text-[7px] sm:text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5 sm:mb-1">Inversión Inicial desde</span>
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter group-hover/price:text-[#168387] transition-colors">
               {formatMXN(modelo.precio)}
             </span>
           </div>
 
-          <div className="flex gap-2 w-full sm:w-auto">
+          <div className="flex gap-2 w-full">
             <button
               onClick={() => navigate(modelo.rutaInfo)}
-              className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl flex items-center justify-center border border-slate-100 text-slate-400 hover:bg-[#168387] hover:text-white hover:border-[#168387] transition-all duration-500 group/info"
-              title="Análisis de Negocio"
+              className="flex-1 h-10 sm:h-12 px-4 rounded-xl sm:rounded-2xl border border-slate-100 text-slate-400 text-[8px] sm:text-[9px] font-black uppercase tracking-widest hover:bg-[#168387] hover:text-white hover:border-[#168387] transition-all duration-500"
             >
-              <InformationCircleIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+              Conoce más
             </button>
 
             <button
               onClick={() => navigate(configurePath)}
-              className="flex-1 sm:flex-none h-10 sm:h-12 px-4 sm:px-8 rounded-xl sm:rounded-2xl bg-slate-900 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#168387] hover:shadow-[0_15px_30px_-5px_rgba(22,131,135,0.4)] transition-all duration-500 active:scale-95"
+              className="flex-[2] h-10 sm:h-12 px-4 sm:px-8 rounded-xl sm:rounded-2xl bg-slate-900 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#168387] hover:shadow-[0_15px_30px_-5px_rgba(22,131,135,0.4)] transition-all duration-500 active:scale-95"
             >
               Configurar
             </button>
@@ -855,21 +834,21 @@ const IniciaNegocio = () => {
           <div className="grid lg:grid-cols-12 gap-12 sm:gap-16 items-center">
             
             {/* TEXTO NARRATIVO (IZQUIERDA) */}
-            <div className="lg:col-span-5 space-y-8 sm:space-y-12 relative z-10">
+            <div className="lg:col-span-5 space-y-6 sm:space-y-12 relative z-10">
               <div>
                 <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-[9px] sm:text-[10px] uppercase mb-3 sm:mb-4 block">
                   Ingeniería de Precisión
                 </span>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-4 sm:mb-6">
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-4 sm:mb-6 break-words">
                   La anatomía de <br />
                   <span className="text-[#168387]">tu éxito</span>
                 </h2>
-                <p className="text-slate-500 text-base sm:text-lg font-medium leading-relaxed">
+                <p className="text-slate-500 text-sm sm:text-lg font-medium leading-relaxed max-w-sm">
                   No es solo una máquina, es una pieza de ingeniería diseñada para operar sin descanso.
                 </p>
               </div>
 
-              <div className="space-y-6 sm:space-y-8">
+              <div className="space-y-5 sm:space-y-8">
                 {[
                   { 
                     t: "Diseño Industrial", 
@@ -892,12 +871,12 @@ const IniciaNegocio = () => {
                     {...fadeUp(0.1 * i)}
                     className="flex gap-4 sm:gap-6 group"
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-[#168387] group-hover:text-white transition-all duration-500 shadow-sm">
-                      <item.icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-[#168387] group-hover:text-white transition-all duration-500 shadow-sm">
+                      <item.icon className="w-4 h-4 sm:w-6 sm:h-6" />
                     </div>
                     <div>
-                      <h4 className="font-black text-slate-900 text-sm sm:text-base mb-1">{item.t}</h4>
-                      <p className="text-slate-400 text-xs sm:text-sm leading-relaxed font-medium">{item.d}</p>
+                      <h4 className="font-black text-slate-900 text-xs sm:text-base mb-0.5 sm:mb-1">{item.t}</h4>
+                      <p className="text-slate-400 text-[11px] sm:text-sm leading-relaxed font-medium">{item.d}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -905,22 +884,20 @@ const IniciaNegocio = () => {
             </div>
 
             {/* MODELO 3D (DERECHA) */}
-            <div className="lg:col-span-7 relative">
-              <div className="relative rounded-[2.5rem] sm:rounded-[4rem] bg-slate-50 border border-slate-100 p-4 md:p-8 shadow-inner group">
+            <div className="lg:col-span-7 relative w-full overflow-visible">
+              <div className="relative rounded-[2rem] sm:rounded-[4rem] bg-slate-50 border border-slate-100 p-2 sm:p-8 shadow-inner group">
                 <div className="absolute top-4 sm:top-8 right-4 sm:right-8 z-20">
-                  <div className="flex items-center gap-2 sm:gap-3 px-3 py-1.5 sm:px-4 sm:py-2 bg-white rounded-xl border border-slate-200 shadow-sm">
-                    <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
-                    <span className="text-[8px] sm:text-[10px] font-black text-slate-900 uppercase tracking-widest">360° Interactiva</span>
+                  <div className="flex items-center gap-2 sm:gap-3 px-2 py-1 sm:px-4 sm:py-2 bg-white rounded-lg sm:rounded-xl border border-slate-200 shadow-sm">
+                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
+                    <span className="text-[7px] sm:text-[10px] font-black text-slate-900 uppercase tracking-widest">360° Interactiva</span>
                   </div>
                 </div>
 
-                <div className="h-[300px] sm:h-[400px] md:h-[550px] flex items-center justify-center overflow-hidden">
-                  <div className="scale-[0.7] sm:scale-100 transition-none">
-                    <VendingPrecise3D />
-                  </div>
+                <div className="h-[300px] sm:h-[450px] md:h-[550px] flex items-center justify-center overflow-visible">
+                  <VendingPrecise3D />
                 </div>
 
-                <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap">
+                <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-[7px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap">
                   Arrastra para explorar
                 </div>
               </div>

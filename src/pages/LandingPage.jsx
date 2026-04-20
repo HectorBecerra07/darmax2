@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { motion, useInView, animate } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import IniciaNegocio from "../components/IniciaNegocio";
 import HeroBannerSlide from "../components/HeroBannerSlide";
 import { 
@@ -18,8 +20,10 @@ import {
   RocketLaunchIcon
 } from "@heroicons/react/24/outline";
 
+gsap.registerPlugin(ScrollTrigger);
+
 /* =========================================
-   ANIMATION & SEO HELPERS
+   ANIMATION & PREMIUM HELPERS
 ========================================= */
 const fadeUp = (d = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -28,29 +32,37 @@ const fadeUp = (d = 0) => ({
   transition: { duration: 0.6, delay: d, ease: "easeOut" }
 });
 
-const Counter = ({ value, suffix = "", duration = 2 }) => {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.1 });
+const GSAPCounter = ({ value, suffix = "" }) => {
+  const el = useRef();
+  const numericValue = parseInt(value.toString().replace(/[^0-9]/g, ""));
 
-  useEffect(() => {
-    if (isInView) {
-      const numericValue = parseInt(value.toString().replace(/[^0-9]/g, ""));
-      const controls = animate(0, numericValue, {
-        duration: duration,
-        ease: "easeOut",
-        onUpdate: (latest) => setCount(Math.floor(latest)),
-      });
-      return () => controls.stop();
-    }
-  }, [isInView, value, duration]);
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(el.current, 
+        { innerText: 0 }, 
+        { 
+          innerText: numericValue, 
+          duration: 2.5, 
+          snap: { innerText: 1 },
+          scrollTrigger: {
+            trigger: el.current,
+            start: "top 90%",
+          },
+          ease: "expo.out",
+          onUpdate: function() {
+            el.current.innerText = Math.floor(this.targets()[0].innerText).toLocaleString() + suffix;
+          }
+        }
+      );
+    });
+    return () => ctx.revert();
+  }, [numericValue, suffix]);
 
-  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+  return <span ref={el}>0{suffix}</span>;
 };
 
 const MetricCard = ({ title, value, suffix, icon: Icon, delay = 0 }) => (
-  <motion.div 
-    {...fadeUp(delay)}
+  <div 
     className="relative p-6 sm:p-8 rounded-[2.5rem] bg-white border border-cyan-100 shadow-xl shadow-cyan-900/5 group overflow-hidden"
   >
     <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-cyan-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
@@ -59,11 +71,11 @@ const MetricCard = ({ title, value, suffix, icon: Icon, delay = 0 }) => (
         <Icon className="w-7 h-7 sm:w-8 sm:h-8" />
       </div>
       <div className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-2">
-        <Counter value={value} suffix={suffix} />
+        <GSAPCounter value={value} suffix={suffix} />
       </div>
       <p className="text-[#168387] font-bold uppercase tracking-widest text-[9px] sm:text-[10px]">{title}</p>
     </div>
-  </motion.div>
+  </div>
 );
 
 /* =========================================================
@@ -158,60 +170,107 @@ const GarrafonBranding = () => (
 );
 
 function DashboardResults({ data }) {
-  const Card = ({ title, amount, sub }) => (
-    <div className="p-3 sm:p-4 rounded-2xl bg-white/5 border border-white/5">
-      <p className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-white/30 mb-1">{title}</p>
-      <p className="text-lg sm:text-xl font-black text-white tracking-tight">{formatCurrency(amount)}</p>
-      {sub && <p className="text-[8px] sm:text-[9px] text-white/20 uppercase font-bold mt-1 tracking-wider">{sub}</p>}
-    </div>
-  );
+  const Card = ({ title, amount, sub }) => {
+    const el = useRef();
+    const count = useRef({ value: 0 });
+    
+    useLayoutEffect(() => {
+      const targetValue = isNaN(amount) ? 0 : amount;
+      gsap.to(count.current, {
+        value: targetValue,
+        duration: 1.5,
+        ease: "power2.out",
+        onUpdate: () => {
+          if (el.current) {
+            el.current.innerText = formatCurrency(Math.floor(count.current.value));
+          }
+        }
+      });
+    }, [amount]);
+
+    return (
+      <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm group hover:bg-white/10 transition-colors duration-500">
+        <p className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest text-white/30 mb-0.5 sm:mb-1 group-hover:text-cyan-400/50 transition-colors">{title}</p>
+        <p className="text-base sm:text-xl font-black text-white tracking-tight leading-none">
+          <span ref={el}>{formatCurrency(amount || 0)}</span>
+        </p>
+        {sub && <p className="text-[7px] sm:text-[9px] text-white/20 uppercase font-bold mt-0.5 sm:mt-1 tracking-wider">{sub}</p>}
+      </div>
+    );
+  };
 
   return (
-    <div className="h-full bg-[#0f172a] p-6 sm:p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-80 h-80 blur-[100px] -mr-40 -mt-40" style={{ backgroundColor: `${CALC_BRAND.accent}15` }}></div>
+    <div className="h-full bg-[#0f172a] px-4 py-6 sm:p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden">
+      {/* Luces de fondo dinámicas */}
+      <div className="absolute top-0 right-0 w-80 h-80 blur-[100px] -mr-40 -mt-40 animate-pulse" style={{ backgroundColor: `${CALC_BRAND.accent}15` }}></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 blur-[100px] -ml-32 -mb-32" style={{ backgroundColor: `${CALC_BRAND.accent}10` }}></div>
       
-      <div className="relative z-10 space-y-6 sm:space-y-8">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shadow-inner border" style={{ backgroundColor: `${CALC_BRAND.accent}20`, color: CALC_BRAND.accent, borderColor: `${CALC_BRAND.accent}20` }}>
-            <ArrowTrendingUpIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+      <div className="relative z-10 space-y-4 sm:space-y-8">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center shadow-inner border transition-transform duration-500 hover:rotate-12" style={{ backgroundColor: `${CALC_BRAND.accent}20`, color: CALC_BRAND.accent, borderColor: `${CALC_BRAND.accent}20` }}>
+            <ArrowTrendingUpIcon className="w-4 h-4 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h3 className="text-white font-black text-base sm:text-lg tracking-tight leading-none mb-1">Utilidad Proyectada</h3>
-            <p className="text-white/30 text-[8px] sm:text-[9px] uppercase tracking-widest font-black">Análisis de Retorno Mensual</p>
+            <h3 className="text-white font-black text-sm sm:text-lg tracking-tight leading-none mb-0.5 sm:mb-1">Utilidad Proyectada</h3>
+            <p className="text-white/30 text-[7px] sm:text-[9px] uppercase tracking-widest font-black">Análisis de Retorno Mensual</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4">
           <Card title="Ingreso Bruto" amount={data.ingresosBrutos} sub={`${data.ventasMes} vtas/mes`} />
           <Card title="Producción" amount={data.costosProduccion} sub="Insumos" />
           <Card title="Gastos Fijos" amount={data.gastosFijos} sub="Operación" />
           <Card title="Costo x Unidad" amount={data.costoUnitario} sub="Promedio" />
           
-          {/* CONTENEDOR GARRAFON PNG VERTICAL MAXIMIZADO Y COMPACTO */}
-          <div className="col-span-2 mt-2 relative flex items-center justify-center min-h-[350px] sm:min-h-[480px] group">
-            {/* IMAGEN DEL GARRAFON VERTICAL - MAS GRANDE */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <img 
-                src="/img/garrafoncol.png" 
-                className="w-auto h-full max-h-[350px] sm:max-h-[480px] transition-all duration-1000 group-hover:scale-105 group-hover:rotate-1 drop-shadow-2xl" 
-                alt="Contenedor de utilidad"
-              />
+          {/* CONTENEDOR GARRAFON TÉCNICO (SOLID COLOR) */}
+          <div className="col-span-2 mt-1 sm:mt-2 relative flex items-center justify-center min-h-[280px] sm:min-h-[480px] group">
+            {/* SVG GARRAFON TÉCNICO */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-0 sm:p-8">
+              <svg 
+                viewBox="0 0 200 300" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="w-auto h-full max-h-[300px] sm:max-h-[420px] transition-all duration-1000 group-hover:scale-110 drop-shadow-[0_0_30px_rgba(36,212,218,0.2)] scale-[1.1] sm:scale-100"
+              >
+                {/* Cuerpo del Garrafón - Forma con Hendiduras Industriales (Planos + Micro-curvas) */}
+                <path 
+                  d="M85 30 H115 V50 C160 50 195 60 195 90 v 40 q -5 0 -5 3 v 14 q 0 3 5 3 v 20 q -5 0 -5 3 v 14 q 0 3 5 3 v 20 q -5 0 -5 3 v 14 q 0 3 5 3 v 45 C195 286 186 295 175 295 H25 C14 295 5 286 5 275 v -45 q 5 0 5 -3 v -14 q 0 -3 -5 -3 v -20 q 5 0 5 -3 v -14 q 0 -3 -5 -3 v -20 q 5 0 5 -3 v -14 q 0 -3 -5 -3 v -40 C5 60 40 50 85 50 V30 Z" 
+                  fill="url(#garrafonGradient)"
+                  stroke="#24d4da"
+                  strokeWidth="2"
+                  strokeOpacity="0.3"
+                />
+                {/* Boquilla (Tapa) */}
+                <rect x="85" y="10" width="30" height="20" rx="3" fill="#24d4da" fillOpacity="0.2" stroke="#24d4da" strokeWidth="2" strokeOpacity="0.5" />
+                
+                {/* Líneas de detalle técnicas ajustadas al nuevo ancho */}
+                <line x1="20" y1="140" x2="180" y2="140" stroke="#24d4da" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4 4" />
+                <line x1="20" y1="180" x2="180" y2="180" stroke="#24d4da" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4 4" />
+                <line x1="20" y1="220" x2="180" y2="220" stroke="#24d4da" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4 4" />
+
+                <defs>
+                  <linearGradient id="garrafonGradient" x1="100" y1="30" x2="100" y2="290" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#24d4da" stopOpacity="0.15" />
+                    <stop offset="1" stopColor="#24d4da" stopOpacity="0.05" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
             
-            {/* CONTENIDO DE DATOS COMPACTO Y CENTRADO - ELEVADO LEVEMENTE */}
-            <div className="relative z-10 w-full max-w-[180px] sm:max-w-[220px] flex flex-col items-center justify-center text-center gap-1 py-4 -translate-y-6 sm:-translate-y-8">
+            {/* CONTENIDO DE DATOS COMPACTO Y CENTRADO */}
+            <div className="relative z-10 w-full max-w-[180px] sm:max-w-[220px] flex flex-col items-center justify-center text-center gap-1 py-4 -translate-y-4 sm:-translate-y-6">
               <div className="mb-1 sm:mb-2">
                 <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-white/80 drop-shadow-sm">Utilidad Mensual Neta</p>
-                <p className="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tighter leading-none drop-shadow-md">
-                  {formatCurrency(data.utilidadMensual)}
-                </p>
+                <div className="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tighter leading-none drop-shadow-md">
+                  <GSAPCurrencyCounter value={data.utilidadMensual} />
+                </div>
               </div>
               
               <div className="mt-1 sm:mt-2">
                 <p className="text-[8px] sm:text-[9px] font-black text-white/70 uppercase tracking-widest drop-shadow-sm">Utilidad Anual Estimada</p>
-                <p className="text-xl sm:text-2xl md:text-3xl font-black text-white/90 leading-none drop-shadow-md">
-                  {formatCurrency(data.utilidadAnual)}
-                </p>
+                <div className="text-xl sm:text-2xl md:text-3xl font-black text-white/90 leading-none drop-shadow-md">
+                  <GSAPCurrencyCounter value={data.utilidadAnual} />
+                </div>
               </div>
             </div>
           </div>
@@ -229,25 +288,48 @@ function DashboardResults({ data }) {
   );
 }
 
+const GSAPCurrencyCounter = ({ value }) => {
+  const el = useRef();
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.to(el.current, {
+        innerText: value,
+        duration: 2,
+        snap: { innerText: 1 },
+        ease: "expo.out",
+        onUpdate: function() {
+          el.current.innerText = formatCurrency(Math.floor(this.targets()[0].innerText));
+        }
+      });
+    });
+    return () => ctx.revert();
+  }, [value]);
+  return <span ref={el}>$0</span>;
+};
+
 /* =========================================================
    CALCULADORA: VISTA DE AGUA
 ========================================================= */
 function AguaView({ isActive }) {
-  const [precioVenta, setPrecioVenta] = useState(20);
+  const [precioVenta, setPrecioVenta] = useState(25);
   const [ventasDia, setVentasDia] = useState("30");
-  const [diasOp, setDiasOp] = useState("30");
+  const [diasOp, setDiasOp] = useState("28");
   const [costoPipa, setCostoPipa] = useState("2700");
-  const [costoTapa, setCostoTapa] = useState("370");
+  const [costoTapa, setCostoTapa] = useState("365");
   const [renta, setRenta] = useState("5000");
   const [luz, setLuz] = useState("500");
   const [internet, setInternet] = useState("500");
-  const [otros, setOtros] = useState("400");
+  const [otros, setOtros] = useState("0");
   const [osmosis, setOsmosis] = useState(true);
 
   const safe = (v) => (v === "" ? 0 : Number(v));
   const nVentasMes = safe(ventasDia) * safe(diasOp);
-  const costoH2O = (21 * (osmosis ? 1.25 : 1)) * (safe(costoPipa) / 10000);
-  const costsProd = (costoH2O + (safe(costoTapa) / 1000)) * nVentasMes;
+  
+  // Lógica de costos unitarios
+  const costoH2OUnitario = (21 * (osmosis ? 1.25 : 1)) * (safe(costoPipa) / 10000);
+  const costoTapaUnitario = safe(costoTapa) / 1000; // Costo por pieza (tapa + liner)
+  
+  const costsProd = (costoH2OUnitario + costoTapaUnitario) * nVentasMes;
   const costsFijos = safe(renta) + safe(luz) + safe(internet) + safe(otros);
   const ingresos = nVentasMes * precioVenta;
   const utilidad = ingresos - (costsProd + costsFijos);
@@ -268,44 +350,44 @@ function AguaView({ isActive }) {
   return (
     <div className="flex flex-col lg:flex-row h-full">
       {/* SECCIÓN CONFIGURACIÓN (IZQUIERDA) */}
-      <div className="w-full lg:w-[62%] p-6 sm:p-8 lg:p-12 space-y-6 sm:space-y-8 overflow-y-auto custom-scrollbar-thin bg-white">
+      <div className="w-full lg:w-[62%] p-4 sm:p-8 lg:p-12 space-y-5 sm:space-y-8 overflow-y-auto custom-scrollbar-thin bg-white">
         
         <div className="space-y-6 sm:space-y-8">
           <CompactSlider label="Precio de Venta Sugerido" value={precioVenta} min={10} max={60} onChange={(e) => setPrecioVenta(Number(e.target.value))} color={CALC_BRAND.accent} />
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-inner">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 bg-slate-50 p-3 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-200 shadow-inner">
             <CompactInput label="Ventas / Día" value={ventasDia} setValue={setVentasDia} color={CALC_BRAND.accent} prefix="#" icon={CurrencyDollarIcon} help="Promedio de garrafones vendidos cada 24h." />
             <CompactInput label="Días de Operación" value={diasOp} setValue={setDiasOp} color={CALC_BRAND.accent} prefix="#" icon={GlobeAltIcon} help="Vending: 30 días. Mostrador: 22-26 días considerando descansos semanales." />
           </div>
 
           <div className="space-y-4 sm:space-y-5">
-            <p className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-[0.25em] border-b border-slate-200 pb-2 flex items-center gap-2">
-                <CircleStackIcon className="w-4 h-4" /> Producción e Insumos
+            <p className="text-[8px] sm:text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] sm:tracking-[0.25em] border-b border-slate-200 pb-2 flex items-center gap-2">
+                <CircleStackIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Producción e Insumos
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <CompactInput label="Costo Pipa (10k L)" value={costoPipa} setValue={setCostoPipa} color={CALC_BRAND.accent} icon={CircleStackIcon} help="Recomendación: Pipa acero inoxidable con agua de pozo certificado ($2,700 promedio)." />
               <CompactInput label="Millar de Tapas" value={costoTapa} setValue={setCostoTapa} color={CALC_BRAND.accent} icon={BeakerIcon} help="Insumo por garrafón: Tapa con liner de garantía ($370 el millar)." />
             </div>
             
-            <div className="p-4 sm:p-5 rounded-2xl bg-cyan-50/30 border border-cyan-200/50 space-y-3">
+            <div className="p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-cyan-50/30 border border-cyan-200/50 space-y-2 sm:space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[9px] sm:text-[10px] font-black uppercase text-cyan-700 tracking-widest">Sistema de Ósmosis Inversa</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase text-cyan-700 tracking-widest">Sistema de Ósmosis Inversa</span>
                 <button 
                   onClick={() => setOsmosis(!osmosis)} 
-                  className={`w-9 h-5 rounded-full transition-all duration-300 ${osmosis ? 'bg-cyan-500 shadow-sm' : 'bg-slate-300'} relative cursor-pointer`}
+                  className={`w-8 h-4 sm:w-9 sm:h-5 rounded-full transition-colors duration-300 ${osmosis ? 'bg-cyan-500 shadow-sm' : 'bg-slate-300'} relative cursor-pointer`}
                 >
-                  <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 shadow-md ${osmosis ? 'left-5' : 'left-1'}`} />
+                  <div className={`absolute top-0.5 sm:top-1 left-0.5 sm:left-1 w-3 h-3 bg-white rounded-full transition-transform duration-300 shadow-md ${osmosis ? 'translate-x-4 sm:translate-x-4' : 'translate-x-0'}`} />
                 </button>
               </div>
-              <p className="text-[9px] sm:text-[10px] text-cyan-800/50 leading-relaxed font-medium">
+              <p className="text-[8px] sm:text-[10px] text-cyan-800/50 leading-relaxed font-medium">
                 *Este proceso garantiza la máxima calidad, considerando un 25% de merma técnica por rechazo de sales y lavado de membranas.
               </p>
             </div>
           </div>
 
           <div className="space-y-4 sm:space-y-5">
-            <p className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-[0.25em] border-b border-slate-200 pb-2 flex items-center gap-2">
-                <HomeIcon className="w-4 h-4" /> Gastos Operativos Mensuales
+            <p className="text-[8px] sm:text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] sm:tracking-[0.25em] border-b border-slate-200 pb-2 flex items-center gap-2">
+                <HomeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Gastos Operativos Mensuales
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               <CompactInput label="Renta" value={renta} setValue={setRenta} color={CALC_BRAND.accent} icon={HomeIcon} />
@@ -364,7 +446,7 @@ export default function LandingPage() {
         {/* HERO SECTION */}
         <HeroBannerSlide />
 
-        {/* SECCIÓN DE AUTORIDAD (NUEVA) */}
+        {/* SECCIÓN DE AUTORIDAD */}
         <section className="py-12 sm:py-16 bg-slate-50/50 border-y border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-10">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
