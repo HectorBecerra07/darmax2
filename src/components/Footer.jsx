@@ -170,7 +170,7 @@ const Footer = () => {
 
           {/* Google reCAPTCHA Disclaimer */}
           <div className="mt-6 pt-4 border-t border-white/5">
-             <p className="text-[10px] text-gray-500 leading-tight">
+             <p className="text-xs text-gray-500 leading-tight">
               Este sitio está protegido por reCAPTCHA y se aplican la 
               <a href="https://policies.google.com/privacy" className="text-sky-600 hover:underline mx-1" target="_blank" rel="noreferrer">Política de privacidad</a> 
               y los 

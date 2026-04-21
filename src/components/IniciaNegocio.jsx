@@ -198,7 +198,7 @@ const SectionTitle = ({ subtitle, title, align = "center" }) => (
     className={`mb-12 ${align === "center" ? "text-center" : "text-left"}`}
   >
     <span
-      className="font-bold tracking-widest text-xs uppercase mb-3 block"
+      className="font-bold tracking-widest text-sm uppercase mb-3 block"
       style={{ color: BRAND_COLOR }}
     >
       {subtitle}
@@ -231,22 +231,45 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
   const isBundle = BUNDLE_IDS.has(modelo.id);
   const configurePath = getConfigurePath(modelo.id);
 
+  // Determinar el distintivo de nivel
+  const getLevelBadge = () => {
+    let label = "";
+    let bgColor = "bg-slate-900"; // Default
+    
+    if (modelo.id === "Vending" || modelo.id === "Vending-Limpieza") {
+      label = "Esencial";
+      bgColor = "bg-slate-800";
+    } else if (modelo.id === "Purificadora") {
+      label = "Escalable";
+      bgColor = "bg-[#168387]";
+    }
+
+    if (!label) return null;
+
+    return (
+      <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-1.5 ${bgColor} text-white text-xs font-black uppercase tracking-[0.2em] rounded-full shadow-lg whitespace-nowrap`}>
+        {label}
+      </div>
+    );
+  };
+
   return (
     <motion.article
       variants={fadeInUp}
       className={[
-        "group relative flex flex-col h-full rounded-[2.5rem] sm:rounded-[3rem] bg-white p-3 sm:p-4",
+        "group relative flex flex-col h-full rounded-[2rem] sm:rounded-[2.5rem] bg-white p-4 sm:p-4",
         "transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]",
-        "hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] hover:-translate-y-3",
+        "hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] hover:-translate-y-2",
+        "lg:max-w-[360px] lg:mx-auto",
         isBundle 
           ? "border-2 border-cyan-200/60 bg-gradient-to-b from-white to-cyan-50/30 shadow-lg shadow-cyan-900/5 hover:border-cyan-300" 
           : "border border-slate-200 shadow-sm hover:border-slate-300",
         isSelected ? "ring-2 ring-[#24d4da]" : "",
       ].join(" ")}
     >
-      {/* BADGE DE ESCALA (Solo para Bundles) */}
-      {isBundle && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-3 sm:px-4 py-1 bg-[#168387] text-white text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg whitespace-nowrap">
+      {/* BADGE DE NIVEL */}
+      {!isBundle ? getLevelBadge() : (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-1 bg-[#168387] text-white text-xs font-black uppercase tracking-[0.2em] rounded-full shadow-lg whitespace-nowrap">
           Ecosistema Premium
         </div>
       )}
@@ -254,24 +277,23 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       {/* IMAGEN Y CONTROL */}
       <div 
         onClick={() => navigate(configurePath)}
-        className="relative aspect-[4/3] overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-slate-50/50 border border-slate-50 mb-3 sm:mb-5 isolate cursor-pointer group/img"
+        className="relative aspect-video overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50 isolate cursor-pointer group/img mb-3 sm:mb-4 transition-all duration-500 hover:shadow-inner"
       >
         {!errorImagen ? (
           <motion.img
             src={modelo.imagen}
             alt={modelo.nombre}
             loading="lazy"
-            className="h-full w-full object-contain p-4 sm:p-6 transition-transform duration-1000 group-hover/img:scale-110 will-change-transform"
-            style={{ transform: "translateZ(0)" }}
+            className="h-full w-full object-contain p-1 sm:p-2 transition-transform duration-1000 group-hover/img:scale-110"
             onError={() => setErrorImagen(true)}
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-slate-300 text-xs sm:text-sm">
-            Imagen de negocio
+          <div className="flex h-full items-center justify-center text-slate-300 text-sm font-bold uppercase">
+            Vista previa
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-700 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-700 pointer-events-none" />
         
         <button
           onClick={(e) => {
@@ -279,7 +301,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
             onToggleSelect(modelo.id);
           }}
           className={[
-            "absolute top-3 sm:top-4 right-3 sm:right-4 h-8 w-8 sm:h-10 sm:w-10 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500 backdrop-blur-xl border z-30",
+            "absolute top-2 sm:top-3 right-2 sm:right-3 h-8 w-8 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 backdrop-blur-xl border z-30",
             isSelected
               ? "bg-[#24d4da] border-[#24d4da] text-white shadow-xl shadow-cyan-500/40 rotate-90"
               : "bg-white/80 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover/img:scale-100",
@@ -292,54 +314,54 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       </div>
 
       {/* CONTENIDO DE NEGOCIO */}
-      <div className="flex flex-col flex-1 px-1 sm:px-2">
-        <div className="mb-2 sm:mb-3">
-          <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tighter leading-tight group-hover:text-[#168387] transition-colors duration-500">
+      <div className="flex flex-col flex-grow text-center">
+        <div className="mb-1.5 sm:mb-2">
+          <h3 className="text-xl sm:text-lg lg:text-xl font-black text-slate-900 tracking-tight leading-tight group-hover:text-[#168387] transition-colors duration-500 uppercase">
             {modelo.nombre}
           </h3>
         </div>
 
-        {/* BUSINESS SPECS (NUEVA CAPA DE VALOR) */}
-        <div className="grid grid-cols-3 gap-1 sm:gap-2 mb-3 sm:mb-5">
+        {/* BUSINESS SPECS */}
+        <div className="grid grid-cols-3 gap-2 mb-3 sm:mb-4">
           {[
             { label: "Autonomía", val: "24/7", icon: CpuChipIcon },
             { label: "Demanda", val: "Alta", icon: ArrowTrendingUpIcon },
             { label: "ROI Est.", val: "12m", icon: CurrencyDollarIcon }
           ].map((spec, i) => (
-            <div key={i} className="p-1 sm:p-2 rounded-xl sm:rounded-2xl bg-slate-50/50 border border-slate-100/50 flex flex-col items-center text-center group/spec hover:bg-white hover:shadow-sm transition-all min-w-0">
-              <spec.icon className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-slate-400 group-hover/spec:text-[#168387] transition-colors shrink-0" />
-              <span className="text-[6px] sm:text-[7px] font-black text-slate-400 uppercase tracking-tighter mt-1 truncate w-full">{spec.label}</span>
-              <span className="text-[8px] sm:text-[10px] font-bold text-slate-700 truncate w-full">{spec.val}</span>
+            <div key={i} className="p-1.5 sm:p-2 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center group/spec hover:bg-white hover:shadow-sm transition-all min-w-0">
+              <spec.icon className="w-3.5 h-3.5 text-slate-400 group-hover/spec:text-[#168387] transition-colors mb-0.5" />
+              <span className="text-[7px] sm:text-xs font-black text-slate-400 uppercase tracking-wider truncate w-full">{spec.label}</span>
+              <span className="text-[10px] sm:text-xs font-bold text-slate-800 truncate w-full">{spec.val}</span>
             </div>
           ))}
         </div>
 
-        <p className="text-xs sm:text-sm text-slate-500 leading-relaxed line-clamp-2 mb-4 sm:mb-6 opacity-75 font-medium">
+        <p className="text-sm text-slate-500 leading-relaxed mb-3 sm:mb-4 font-medium line-clamp-2 px-1">
           {modelo.descripcion}
         </p>
 
         {/* FOOTER DE CONVERSIÓN */}
-        <div className="mt-auto pt-3 sm:pt-5 border-t border-slate-50">
-          <div className="relative group/price mb-3 sm:mb-5">
-            <span className="block text-[7px] sm:text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] mb-0.5 sm:mb-1">Inversión Inicial desde</span>
-            <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tighter group-hover/price:text-[#168387] transition-colors">
+        <div className="mt-auto pt-3 sm:pt-4 border-t border-slate-100">
+          <div className="relative group/price mb-3 sm:mb-4">
+            <span className="block text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest mb-0.5">Inversión desde</span>
+            <span className="text-2xl sm:text-xl lg:text-2xl font-black text-slate-900 tracking-tighter group-hover/price:text-[#168387] transition-colors">
               {formatMXN(modelo.precio)}
             </span>
           </div>
 
-          <div className="flex gap-2 w-full">
+          <div className="flex flex-col gap-2 w-full">
             <button
-              onClick={() => navigate(modelo.rutaInfo)}
-              className="flex-1 h-10 sm:h-12 px-4 rounded-xl sm:rounded-2xl border border-slate-100 text-slate-400 text-[8px] sm:text-[9px] font-black uppercase tracking-widest hover:bg-[#168387] hover:text-white hover:border-[#168387] transition-all duration-500"
+              onClick={() => navigate(configurePath)}
+              className="w-full h-10 px-6 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-black uppercase tracking-widest hover:bg-[#168387] shadow-lg shadow-slate-900/10 transition-all duration-300 active:scale-[0.98]"
             >
-              Conoce más
+              Configurar
             </button>
 
             <button
-              onClick={() => navigate(configurePath)}
-              className="flex-[2] h-10 sm:h-12 px-4 sm:px-8 rounded-xl sm:rounded-2xl bg-slate-900 text-white text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#168387] hover:shadow-[0_15px_30px_-5px_rgba(22,131,135,0.4)] transition-all duration-500 active:scale-95"
+              onClick={() => navigate(modelo.rutaInfo)}
+              className="w-full h-10 px-6 rounded-xl border border-slate-200 text-slate-900 text-xs sm:text-sm font-black uppercase tracking-widest hover:border-[#168387] hover:text-[#168387] transition-all duration-300 active:scale-[0.98]"
             >
-              Configurar
+              Conoce más
             </button>
           </div>
         </div>
@@ -389,7 +411,7 @@ function VentajasSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div {...fadeUp(0)} className="max-w-3xl mb-12 sm:mb-24">
-          <span className="font-black tracking-[0.2em] sm:tracking-[0.3em] text-[9px] sm:text-[10px] uppercase mb-3 sm:mb-4 block text-cyan-100 opacity-80">
+          <span className="font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block text-cyan-100 opacity-80">
             El Ecosistema Darmax
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tighter leading-tight">
@@ -423,7 +445,7 @@ function VentajasSection() {
               
               <div className="mt-6 sm:mt-8 flex items-center gap-2">
                 <div className="h-px w-6 sm:w-8 bg-white/40 group-hover:w-12 transition-all duration-500" />
-                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-cyan-100/60">Pilar 0{i+1}</span>
+                <span className="text-xs font-black uppercase tracking-widest text-cyan-100/60">Pilar 0{i+1}</span>
               </div>
             </motion.div>
           ))}
@@ -514,7 +536,7 @@ const IniciaNegocio = () => {
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="text-center mb-12 sm:mb-16"
           >
-            <span className="text-cyan-100 font-black tracking-[0.2em] sm:tracking-[0.3em] text-[9px] sm:text-[10px] uppercase mb-3 sm:mb-4 block opacity-80">
+            <span className="text-cyan-100 font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block opacity-80">
               Tu camino al éxito
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tighter leading-tight">
@@ -537,8 +559,8 @@ const IniciaNegocio = () => {
                   <Counter value="1" prefix="0" />
                 </span>
               </motion.div>
-              <h3 className="text-lg sm:text-xl font-black text-white mb-2 sm:mb-3 tracking-tight">La Visión</h3>
-              <p className="text-cyan-50 text-xs sm:text-sm font-medium leading-relaxed">
+              <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4 tracking-tight">La Visión</h3>
+              <p className="text-cyan-50 text-base sm:text-lg font-medium leading-relaxed">
                 Transformas tu capital inicial en un activo inteligente que no descansa.
               </p>
             </motion.div>
@@ -557,8 +579,8 @@ const IniciaNegocio = () => {
                   <Counter value="2" prefix="0" />
                 </span>
               </motion.div>
-              <h3 className="text-lg sm:text-xl font-black text-white mb-2 sm:mb-3 tracking-tight">La Operación</h3>
-              <p className="text-cyan-50 text-xs sm:text-sm font-medium leading-relaxed">
+              <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4 tracking-tight">La Operación</h3>
+              <p className="text-cyan-50 text-base sm:text-lg font-medium leading-relaxed">
                 Tecnología 24/7 trabajando para ti mientras disfrutas de lo que importa.
               </p>
             </motion.div>
@@ -577,8 +599,8 @@ const IniciaNegocio = () => {
                   <Counter value="3" prefix="0" />
                 </span>
               </motion.div>
-              <h3 className="text-lg sm:text-xl font-black text-white mb-2 sm:mb-3 tracking-tight">El Resultado</h3>
-              <p className="text-cyan-50 text-xs sm:text-sm font-medium leading-relaxed">
+              <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4 tracking-tight">El Resultado</h3>
+              <p className="text-cyan-50 text-base sm:text-lg font-medium leading-relaxed">
                 Recuperas tu inversión y escalas tu negocio a nuevos niveles.
               </p>
             </motion.div>
@@ -604,37 +626,33 @@ const IniciaNegocio = () => {
           {/* NARRATIVA DE ENTRADA */}
           <motion.div
             {...fadeUp(0)}
-            className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 sm:mb-20 gap-6 sm:gap-8"
+            className="flex flex-col items-center text-center mb-12 sm:mb-20 gap-6 sm:gap-8 mx-auto"
           >
-            <div className="max-w-3xl">
-              <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-[9px] sm:text-[10px] uppercase mb-3 sm:mb-4 block">
+            <div className="max-w-4xl flex flex-col items-center">
+              <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
                 Diseña tu futuro
               </span>
               <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight mb-4 sm:mb-6">
                 Elige la escala de tu <br />
                 <span className="text-[#168387]">próximo éxito</span>
               </h2>
-              <div className="flex flex-wrap gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <p className="text-slate-400 text-sm sm:text-lg font-medium leading-relaxed mb-6 sm:mb-10">
+                Desde unidades autónomas hasta modelos híbridos. <span className="text-[#168387] font-bold">Todo diseñado para crecer contigo.</span>
+              </p>
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-4 sm:mt-6">
                 <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-white rounded-xl border border-slate-100 shadow-sm">
                   <div className="w-2 h-2 rounded-full bg-slate-300" />
-                  <span className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest">Esencial</span>
+                  <span className="text-xs font-black text-slate-500 uppercase tracking-widest">Esencial</span>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#168387]/5 rounded-xl border border-[#168387]/10 shadow-sm">
                   <div className="w-2 h-2 rounded-full bg-[#168387]" />
-                  <span className="text-[9px] sm:text-[10px] font-black text-[#168387] uppercase tracking-widest">Escalable</span>
+                  <span className="text-xs font-black text-[#168387] uppercase tracking-widest">Escalable</span>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-cyan-500/5 rounded-xl border border-cyan-500/10 shadow-sm">
                   <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
-                  <span className="text-[9px] sm:text-[10px] font-black text-cyan-500 uppercase tracking-widest">Ecosistema</span>
+                  <span className="text-xs font-black text-cyan-500 uppercase tracking-widest">Ecosistema</span>
                 </div>
               </div>
-            </div>
-            
-            <div className="hidden lg:block max-w-xs text-right">
-              <p className="text-slate-400 text-sm font-medium leading-relaxed">
-                Desde unidades autónomas hasta modelos híbridos. <br />
-                <span className="text-[#168387] font-bold">Todo diseñado para crecer contigo.</span>
-              </p>
             </div>
           </motion.div>
 
@@ -649,20 +667,20 @@ const IniciaNegocio = () => {
                 <p className="text-xs sm:text-sm font-black text-slate-900">
                   {selected.length} modelo{selected.length > 1 ? "s" : ""} seleccionado{selected.length > 1 ? "s" : ""}
                 </p>
-                <p className="text-[10px] sm:text-xs text-slate-500">Comparativa técnica lista para visualizar.</p>
+                <p className="text-xs text-slate-500">Comparativa técnica lista para visualizar.</p>
               </div>
 
               <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => setSelected([])}
-                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 text-slate-600 text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition"
+                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 text-slate-600 text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition"
                 >
                   Limpiar
                 </button>
 
                 <button
                   onClick={() => setCompareOpen(true)}
-                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-white text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-lg shadow-[#168387]/20 hover:shadow-[#168387]/40 transition"
+                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-white text-xs font-black uppercase tracking-widest shadow-lg shadow-[#168387]/20 hover:shadow-[#168387]/40 transition"
                   style={{ backgroundColor: BRAND_DARK }}
                 >
                   Comparar
@@ -678,7 +696,7 @@ const IniciaNegocio = () => {
           >
             <div className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12">
               <div className="shrink-0">
-                <span className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em]">Nivel 01</span>
+                <span className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em]">Nivel 01</span>
                 <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">Individuales</h3>
               </div>
               <div className="h-px w-full bg-slate-200" />
@@ -706,7 +724,7 @@ const IniciaNegocio = () => {
           >
             <div className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12">
               <div className="shrink-0">
-                <span className="text-[9px] sm:text-[10px] font-black text-[#168387] uppercase tracking-[0.2em] sm:tracking-[0.3em]">Nivel 02</span>
+                <span className="text-xs font-black text-[#168387] uppercase tracking-[0.2em] sm:tracking-[0.3em]">Nivel 02</span>
                 <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">Paquetes de Negocio</h3>
               </div>
               <div className="h-px w-full bg-[#168387]/20" />
@@ -739,7 +757,7 @@ const IniciaNegocio = () => {
       {...fadeUp(0)}
       className="text-center mb-16 sm:mb-24"
     >
-      <span className="text-cyan-100 font-black tracking-[0.2em] sm:tracking-[0.3em] text-[9px] sm:text-[10px] uppercase mb-3 sm:mb-4 block opacity-80">
+      <span className="text-cyan-100 font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block opacity-80">
         Resultados Reales
       </span>
       <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tighter leading-tight">
@@ -800,7 +818,7 @@ const IniciaNegocio = () => {
                   <StarIcon key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
                 ))}
               </div>
-              <p className="text-[9px] sm:text-[10px] font-bold text-cyan-200 uppercase tracking-widest opacity-80">
+              <p className="text-xs font-bold text-cyan-200 uppercase tracking-widest opacity-80">
                 {testimonio.role}
               </p>
             </div>
@@ -813,7 +831,7 @@ const IniciaNegocio = () => {
           <div className="mt-auto pt-6 sm:pt-8 border-t border-white/10 relative z-10">
             <div className="flex items-center gap-3">
               <testimonio.Icon className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-300" />
-              <span className="text-[9px] sm:text-[11px] font-black text-cyan-100 uppercase tracking-[0.1em] sm:tracking-[0.15em] opacity-70">
+              <span className="text-xs font-black text-cyan-100 uppercase tracking-[0.1em] sm:tracking-[0.15em] opacity-70">
                 {testimonio.badge}
               </span>
             </div>
@@ -836,10 +854,10 @@ const IniciaNegocio = () => {
             {/* TEXTO NARRATIVO (IZQUIERDA) */}
             <div className="lg:col-span-5 space-y-6 sm:space-y-12 relative z-10">
               <div>
-                <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-[9px] sm:text-[10px] uppercase mb-3 sm:mb-4 block">
+                <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
                   Ingeniería de Precisión
                 </span>
-                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-4 sm:mb-6 break-words">
+                <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight mb-4 sm:mb-6 break-words">
                   La anatomía de <br />
                   <span className="text-[#168387]">tu éxito</span>
                 </h2>
@@ -875,8 +893,8 @@ const IniciaNegocio = () => {
                       <item.icon className="w-4 h-4 sm:w-6 sm:h-6" />
                     </div>
                     <div>
-                      <h4 className="font-black text-slate-900 text-xs sm:text-base mb-0.5 sm:mb-1">{item.t}</h4>
-                      <p className="text-slate-400 text-[11px] sm:text-sm leading-relaxed font-medium">{item.d}</p>
+                      <h4 className="font-black text-slate-900 text-base sm:text-xl mb-1 sm:mb-2">{item.t}</h4>
+                      <p className="text-slate-400 text-sm sm:text-base leading-relaxed font-medium">{item.d}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -889,7 +907,7 @@ const IniciaNegocio = () => {
                 <div className="absolute top-4 sm:top-8 right-4 sm:right-8 z-20">
                   <div className="flex items-center gap-2 sm:gap-3 px-2 py-1 sm:px-4 sm:py-2 bg-white rounded-lg sm:rounded-xl border border-slate-200 shadow-sm">
                     <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
-                    <span className="text-[7px] sm:text-[10px] font-black text-slate-900 uppercase tracking-widest">360° Interactiva</span>
+                    <span className="text-xs font-black text-slate-900 uppercase tracking-widest">360° Interactiva</span>
                   </div>
                 </div>
 
@@ -897,7 +915,7 @@ const IniciaNegocio = () => {
                   <VendingPrecise3D />
                 </div>
 
-                <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-[7px] sm:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap">
+                <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-xs font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap">
                   Arrastra para explorar
                 </div>
               </div>
@@ -941,7 +959,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
         <div className="flex items-center justify-between px-5 sm:px-8 py-4 sm:py-6 border-b border-slate-200 bg-white sticky top-0 z-20">
           <div>
             <p
-              className="text-[10px] uppercase tracking-[0.28em] font-extrabold"
+              className="text-xs uppercase tracking-[0.28em] font-extrabold"
               style={{ color: BRAND_TEXT }}
             >
               Comparativa
@@ -999,7 +1017,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
                           className="font-extrabold text-sm text-right"
                           style={{ color: BRAND_TEXT }}
                         >
-                          <span className="block text-[8px] uppercase opacity-60">
+                          <span className="block text-xs uppercase opacity-60">
                             Desde
                           </span>
                           {formatMXN(m.precio)}
@@ -1074,7 +1092,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
                             {m.etiqueta}
                           </p>
                           <div className="text-center mt-2">
-                            <span className="block text-[8px] font-bold text-[#168387] uppercase tracking-wider">
+                            <span className="block text-xs font-bold text-[#168387] uppercase tracking-wider">
                               Desde
                             </span>
                             <p
@@ -1150,7 +1168,7 @@ function CompareModal({ open, onClose, models = [], navigate }) {
 function Spec({ label, value }) {
   return (
     <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-      <p className="text-[11px] uppercase tracking-widest font-extrabold text-slate-500">
+      <p className="text-xs uppercase tracking-widest font-extrabold text-slate-500">
         {label}
       </p>
       <p className="mt-2 text-sm text-slate-800 leading-relaxed">{value}</p>

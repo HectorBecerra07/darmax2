@@ -7,6 +7,27 @@ import {
   CalendarDaysIcon
 } from "@heroicons/react/24/outline";
 
+const Typewriter = ({ text, delay = 0.03, className }) => {
+  return (
+    <motion.span className={className}>
+      {text.split("").map((char, index) => (
+        <motion.span
+          key={index}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            duration: 0.1,
+            delay: index * delay,
+            ease: "easeIn"
+          }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </motion.span>
+  );
+};
+
 export default function HeroBannerSlide() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
@@ -98,13 +119,11 @@ export default function HeroBannerSlide() {
             style={{ y: videoY, scale: isExiting ? 2.5 : 1.1 }}
             className="absolute inset-0 z-0 bg-white flex items-center justify-center overflow-hidden"
           >
-            {/* Imagen de fondo base con textura de gotas */}
             <img 
               src="https://res.cloudinary.com/defkuaytw/image/upload/v1776407496/fondo_gotas_jrtijk.png" 
               alt="Fondo Gotas" 
               className="absolute inset-0 w-full h-full object-cover opacity-60"
             />
-            {/* Colores animados superpuestos con mezcla suave */}
             <div className="absolute inset-0 animate-clean-bg blur-[80px] opacity-40 scale-150 mix-blend-multiply" />
             <div className="absolute inset-0 animate-clean-bg blur-[120px] opacity-30 scale-125" />
           </motion.div>
@@ -113,17 +132,13 @@ export default function HeroBannerSlide() {
 
       {/* ESCENA DE PARALLAX (Mouse Move) */}
       <div ref={sceneRef} className="absolute inset-0 z-10 pointer-events-auto">
-        
-        {/* Capas Decorativas */}
         <div data-depth="0.2" className="absolute inset-0 pointer-events-none">
           <div className={`absolute top-[10%] -left-[10%] w-[120%] h-[80%] blur-[120px] transition-colors duration-1000 ${mode === 'agua' ? 'bg-[#168387]/10 animate-water-flow' : 'bg-yellow-400/20'}`} />
         </div>
-        
         <div data-depth="0.4" className="absolute inset-0 pointer-events-none">
           <div className={`absolute -bottom-[20%] -right-[10%] w-[100%] h-[60%] rounded-[40%_60%_70%_30%/40%_50%_60%_40%] blur-[100px] transition-colors duration-1000 ${mode === 'agua' ? 'bg-[#168387]/10 animate-water-drift' : 'bg-pink-400/20'}`} />
         </div>
 
-        {/* LOGO Y TEXTO */}
         <div data-depth="0.1" className="absolute inset-0 pointer-events-none">
            <motion.div 
               animate={{ 
@@ -135,7 +150,6 @@ export default function HeroBannerSlide() {
               transition={{ duration: 0.7, ease: [0.45, 0, 0.55, 1] }}
               className="w-full h-full max-w-7xl mx-auto px-6 sm:px-16 flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12 sm:gap-14 pb-[5vh] transform-gpu"
            >
-              {/* Columna Logo */}
               <div className="w-full lg:w-1/2 flex justify-center lg:justify-start">
                 <div className={`transition-all duration-700 ease-in-out ${isScrolled ? 'opacity-0 scale-50 -translate-y-20' : 'opacity-100 scale-100 translate-y-0'}`}>
                   <AnimatePresence mode="wait">
@@ -147,13 +161,12 @@ export default function HeroBannerSlide() {
                       transition={{ duration: 0.8 }}
                       src={mode === 'agua' ? "/img/darmaxfoto.png" : "/img/LogoClean.png"} 
                       alt={mode === 'agua' ? "Darmax Agua" : "Darmax Clean"}
-                      className="w-[110px] sm:w-[160px] md:w-[220px] lg:w-[380px] h-auto object-contain drop-shadow-2xl" 
+                      className="w-[160px] sm:w-[240px] md:w-[300px] lg:w-[480px] h-auto object-contain drop-shadow-2xl" 
                     />
                   </AnimatePresence>
                 </div>
               </div>
 
-              {/* Columna Texto */}
               <div className="w-full lg:w-1/2 pointer-events-auto">
                 <motion.div style={{ y: textY, opacity: textOpacity }} className="text-center lg:text-left flex flex-col items-center lg:items-start">
                   <AnimatePresence mode="wait">
@@ -164,17 +177,23 @@ export default function HeroBannerSlide() {
                       exit={{ opacity: 0, x: -50 }}
                       transition={{ duration: 0.8 }}
                     >
-                      <h1 className="max-w-[280px] sm:max-w-none text-[28px] sm:text-[32px] leading-[1.1] md:text-5xl lg:text-7xl font-black tracking-tighter uppercase mb-3 sm:mb-6 text-slate-900 drop-shadow-sm">
+                      <h1 className="max-w-[320px] sm:max-w-none text-[34px] sm:text-[42px] leading-[1.1] md:text-5xl lg:text-7xl font-black tracking-tighter uppercase mb-3 sm:mb-6 text-slate-900 drop-shadow-sm">
                         {mode === 'agua' ? (
-                          <>Emprende Tu<br /><span style={{ color: '#168387' }}>Negocio</span></>
+                          <>
+                            <Typewriter text="Emprende Tu" /><br />
+                            <Typewriter text="Negocio" className="text-[#168387]" />
+                          </>
                         ) : (
-                          <>Emprende Con<br /><span className="text-pink-500"> Productos De Limpieza</span></>
+                          <>
+                            <Typewriter text="Emprende Con" /><br />
+                            <Typewriter text="Productos De Limpieza" className="text-pink-500" />
+                          </>
                         )}
                       </h1>
-                      <p className="max-w-[240px] sm:max-w-sm md:max-w-md text-slate-800 text-[13px] sm:text-base md:text-lg font-bold mb-6 sm:mb-12">
+                      <p className="max-w-[280px] sm:max-w-sm md:max-w-md text-slate-800 text-[16px] sm:text-lg md:text-xl font-bold mb-6 sm:mb-12 leading-relaxed">
                         {mode === 'agua' 
-                          ? "Inicia tu emprendimiento con purificadoras, máquinas vending de agua y productos de limpieza."
-                          : "Automatiza la venta de productos de limpieza con nuestra tecnología Vending Clean."}
+                          ? <Typewriter text="Inicia tu emprendimiento con purificadoras, máquinas vending de agua y productos de limpieza." />
+                          : <Typewriter text="Automatiza la venta de productos de limpieza con nuestra tecnología Vending Clean." />}
                       </p>
                     </motion.div>
                   </AnimatePresence>
@@ -221,17 +240,17 @@ export default function HeroBannerSlide() {
         <div className="w-full max-w-5xl bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl border border-white overflow-hidden grid grid-cols-3 divide-x divide-slate-200">
           <div className="px-2 py-4 sm:px-6 sm:py-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 transition-colors hover:bg-slate-50/50">
             <ClockIcon className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-1000 ${mode === 'agua' ? 'text-[#168387]' : 'text-pink-500'}`} />
-            <p className="font-black text-slate-900 text-[9px] sm:text-[11px] uppercase">Beneficios 24/7</p>
+            <p className="font-black text-slate-900 text-xs uppercase">Beneficios 24/7</p>
           </div>
           <button onClick={() => document.getElementById('agenda-llamada')?.scrollIntoView({ behavior: 'smooth' })} className="px-2 py-4 sm:px-6 sm:py-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 transition-colors hover:bg-slate-50/50">
             <CalendarDaysIcon className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-1000 ${mode === 'agua' ? 'text-[#168387]' : 'text-pink-500'}`} />
-            <p className="font-black text-slate-900 text-[9px] sm:text-[11px] uppercase">Agenda Llamada</p>
+            <p className="font-black text-slate-900 text-xs uppercase">Agenda Llamada</p>
           </button>
           <a href="https://wa.me/525519655369" target="_blank" rel="noopener noreferrer" className="px-2 py-4 sm:px-6 sm:py-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 transition-colors hover:bg-slate-50/50">
             <svg className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-1000 ${mode === 'agua' ? 'text-[#168387]' : 'text-pink-500'}`} fill="currentColor" viewBox="0 0 24 24">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.131.57-.074 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.87 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.87 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
             </svg>
-            <p className="font-black text-slate-900 text-[9px] sm:text-[11px] uppercase">WhatsApp</p>
+            <p className="font-black text-slate-900 text-xs uppercase">WhatsApp</p>
           </a>
         </div>
       </motion.div>

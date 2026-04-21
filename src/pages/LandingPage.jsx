@@ -73,7 +73,7 @@ const MetricCard = ({ title, value, suffix, icon: Icon, delay = 0 }) => (
       <div className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-2">
         <GSAPCounter value={value} suffix={suffix} />
       </div>
-      <p className="text-[#168387] font-bold uppercase tracking-widest text-[9px] sm:text-[10px]">{title}</p>
+      <p className="text-[#168387] font-bold uppercase tracking-widest text-xs sm:text-sm">{title}</p>
     </div>
   </div>
 );
@@ -107,14 +107,14 @@ const CompactInput = ({ label, value, setValue, color, suffix = "", prefix = "$"
   return (
     <div className="group w-full">
       <div className="flex items-center justify-between mb-1">
-        <label className="flex items-center gap-1.5 text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-slate-400 group-focus-within:text-slate-600 transition-colors">
-          {Icon && <Icon className="w-3 h-3" />}
+        <label className="flex items-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 group-focus-within:text-slate-600 transition-colors">
+          {Icon && <Icon className="w-3.5 h-3.5" />}
           {label}
         </label>
         {help && (
           <div className="relative group/help">
-            <InformationCircleIcon className="w-3.5 h-3.5 text-slate-300 cursor-help hover:text-cyan-500 transition-colors" />
-            <div className="absolute bottom-full right-0 mb-2 w-48 sm:w-56 p-3 bg-slate-900 text-white text-[10px] rounded-xl opacity-0 pointer-events-none group-hover/help:opacity-100 transition-all z-50 shadow-xl leading-relaxed border border-white/10">
+            <InformationCircleIcon className="w-4 h-4 text-slate-300 cursor-help hover:text-cyan-500 transition-colors" />
+            <div className="absolute bottom-full right-0 mb-2 w-52 sm:w-56 p-3 bg-slate-900 text-white text-[10px] rounded-xl opacity-0 pointer-events-none group-hover/help:opacity-100 transition-all z-50 shadow-xl leading-relaxed border border-white/10">
               {help}
             </div>
           </div>
@@ -130,7 +130,7 @@ const CompactInput = ({ label, value, setValue, color, suffix = "", prefix = "$"
           className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-7 pr-10 text-slate-900 font-bold transition-all outline-none focus:bg-white focus:ring-2 focus:ring-opacity-20 text-sm"
           style={{ "--tw-ring-color": color }}
         />
-        {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[8px] sm:text-[9px] font-black">{suffix}</span>}
+        {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] font-black">{suffix}</span>}
       </div>
     </div>
   );
@@ -140,8 +140,8 @@ const CompactSlider = ({ value, min, max, onChange, color, label }) => {
   const percentage = ((value - min) / (max - min)) * 100;
   return (
     <div className="w-full">
-      <div className="flex justify-between items-end mb-2">
-         <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</span>
+      <div className="flex justify-between items-end mb-1.5">
+         <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400">{label}</span>
          <span className="text-xl sm:text-2xl font-black text-slate-800">${value}</span>
       </div>
       <div className="relative w-full h-1.5 bg-slate-100 rounded-full">
@@ -156,19 +156,6 @@ const CompactSlider = ({ value, min, max, onChange, color, label }) => {
 /* =========================================================
    CALCULADORA: PANEL DE RESULTADOS
 ========================================================= */
-/* =========================================================
-   CALCULADORA: PANEL DE RESULTADOS
-========================= */
-const GarrafonBranding = () => (
-  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-    <path d="M38 10C38 8.34315 39.3431 7 41 7H59C60.6569 7 62 8.34315 62 10V18H38V10Z" fill="white" fillOpacity="0.2" />
-    <path d="M25 35C25 25.6112 32.6112 18 42 18H58C67.3888 18 75 25.6112 75 35V85C75 90.5228 70.5228 95 65 95H35C29.4772 95 25 90.5228 25 85V35Z" fill="white" fillOpacity="0.08" stroke="white" strokeWidth="1.5" strokeOpacity="0.2" />
-    <path d="M35 45H65" stroke="white" strokeWidth="1.5" strokeOpacity="0.1" strokeLinecap="round" />
-    <path d="M35 55H65" stroke="white" strokeWidth="1.5" strokeOpacity="0.1" strokeLinecap="round" />
-    <path d="M35 65H65" stroke="white" strokeWidth="1.5" strokeOpacity="0.1" strokeLinecap="round" />
-  </svg>
-);
-
 function DashboardResults({ data }) {
   const Card = ({ title, amount, sub }) => {
     const el = useRef();
@@ -189,65 +176,57 @@ function DashboardResults({ data }) {
     }, [amount]);
 
     return (
-      <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm group hover:bg-white/10 transition-colors duration-500">
-        <p className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest text-white/30 mb-0.5 sm:mb-1 group-hover:text-cyan-400/50 transition-colors">{title}</p>
-        <p className="text-base sm:text-xl font-black text-white tracking-tight leading-none">
+      <div className="p-3 sm:p-3.5 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm group hover:bg-white/10 transition-colors duration-500">
+        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/30 mb-1 group-hover:text-cyan-400/50 transition-colors">{title}</p>
+        <p className="text-base sm:text-lg font-black text-white tracking-tight leading-none">
           <span ref={el}>{formatCurrency(amount || 0)}</span>
         </p>
-        {sub && <p className="text-[7px] sm:text-[9px] text-white/20 uppercase font-bold mt-0.5 sm:mt-1 tracking-wider">{sub}</p>}
+        {sub && <p className="text-[8px] text-white/20 uppercase font-bold mt-0.5 tracking-wider">{sub}</p>}
       </div>
     );
   };
 
   return (
-    <div className="h-full bg-[#0f172a] px-4 py-6 sm:p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden">
+    <div className="h-full bg-[#0f172a] px-5 py-6 sm:p-6 lg:p-8 flex flex-col justify-between relative overflow-hidden">
       {/* Luces de fondo dinámicas */}
-      <div className="absolute top-0 right-0 w-80 h-80 blur-[100px] -mr-40 -mt-40 animate-pulse" style={{ backgroundColor: `${CALC_BRAND.accent}15` }}></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 blur-[100px] -ml-32 -mb-32" style={{ backgroundColor: `${CALC_BRAND.accent}10` }}></div>
+      <div className="absolute top-0 right-0 w-80 h-80 blur-[100px] -mr-40 -mt-40 animate-pulse pointer-events-none" style={{ backgroundColor: `${CALC_BRAND.accent}15` }}></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 blur-[100px] -ml-32 -mb-32 pointer-events-none" style={{ backgroundColor: `${CALC_BRAND.accent}10` }}></div>
       
-      <div className="relative z-10 space-y-4 sm:space-y-8">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center shadow-inner border transition-transform duration-500 hover:rotate-12" style={{ backgroundColor: `${CALC_BRAND.accent}20`, color: CALC_BRAND.accent, borderColor: `${CALC_BRAND.accent}20` }}>
-            <ArrowTrendingUpIcon className="w-4 h-4 sm:w-6 sm:h-6" />
+      <div className="relative z-10 space-y-4 sm:space-y-5">
+        <div className="flex items-center gap-4">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shadow-inner border transition-transform duration-500 hover:rotate-12" style={{ backgroundColor: `${CALC_BRAND.accent}20`, color: CALC_BRAND.accent, borderColor: `${CALC_BRAND.accent}20` }}>
+            <ArrowTrendingUpIcon className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h3 className="text-white font-black text-sm sm:text-lg tracking-tight leading-none mb-0.5 sm:mb-1">Utilidad Proyectada</h3>
-            <p className="text-white/30 text-[7px] sm:text-[9px] uppercase tracking-widest font-black">Análisis de Retorno Mensual</p>
+            <h3 className="text-white font-black text-base sm:text-lg tracking-tight leading-none mb-1">Utilidad Proyectada</h3>
+            <p className="text-white/30 text-[9px] sm:text-[10px] uppercase tracking-widest font-black">Análisis de Retorno Mensual</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 sm:gap-4">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
           <Card title="Ingreso Bruto" amount={data.ingresosBrutos} sub={`${data.ventasMes} vtas/mes`} />
           <Card title="Producción" amount={data.costosProduccion} sub="Insumos" />
           <Card title="Gastos Fijos" amount={data.gastosFijos} sub="Operación" />
           <Card title="Costo x Unidad" amount={data.costoUnitario} sub="Promedio" />
           
-          {/* CONTENEDOR GARRAFON TÉCNICO (SOLID COLOR) */}
-          <div className="col-span-2 mt-1 sm:mt-2 relative flex items-center justify-center min-h-[280px] sm:min-h-[480px] group">
+          {/* CONTENEDOR GARRAFON TÉCNICO */}
+          <div className="col-span-2 mt-2 sm:mt-4 relative flex items-center justify-center min-h-[220px] sm:min-h-[320px] group overflow-hidden">
             {/* SVG GARRAFON TÉCNICO */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-0 sm:p-8">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-2 sm:p-4">
               <svg 
                 viewBox="0 0 200 300" 
                 fill="none" 
                 xmlns="http://www.w3.org/2000/svg" 
-                className="w-auto h-full max-h-[300px] sm:max-h-[420px] transition-all duration-1000 group-hover:scale-110 drop-shadow-[0_0_30px_rgba(36,212,218,0.2)] scale-[1.1] sm:scale-100"
+                className="w-auto h-full max-h-[360px] sm:max-h-[400px] transition-all duration-1000 drop-shadow-[0_0_50px_rgba(36,212,218,0.3)] scale-[1.8] sm:scale-[1.2] translate-y-[20%] sm:translate-y-[15%]"
               >
-                {/* Cuerpo del Garrafón - Forma con Hendiduras Industriales (Planos + Micro-curvas) */}
                 <path 
                   d="M85 30 H115 V50 C160 50 195 60 195 90 v 40 q -5 0 -5 3 v 14 q 0 3 5 3 v 20 q -5 0 -5 3 v 14 q 0 3 5 3 v 20 q -5 0 -5 3 v 14 q 0 3 5 3 v 45 C195 286 186 295 175 295 H25 C14 295 5 286 5 275 v -45 q 5 0 5 -3 v -14 q 0 -3 -5 -3 v -20 q 5 0 5 -3 v -14 q 0 -3 -5 -3 v -20 q 5 0 5 -3 v -14 q 0 -3 -5 -3 v -40 C5 60 40 50 85 50 V30 Z" 
                   fill="url(#garrafonGradient)"
                   stroke="#24d4da"
                   strokeWidth="2"
-                  strokeOpacity="0.3"
+                  strokeOpacity="0.4"
                 />
-                {/* Boquilla (Tapa) */}
-                <rect x="85" y="10" width="30" height="20" rx="3" fill="#24d4da" fillOpacity="0.2" stroke="#24d4da" strokeWidth="2" strokeOpacity="0.5" />
-                
-                {/* Líneas de detalle técnicas ajustadas al nuevo ancho */}
-                <line x1="20" y1="140" x2="180" y2="140" stroke="#24d4da" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4 4" />
-                <line x1="20" y1="180" x2="180" y2="180" stroke="#24d4da" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4 4" />
-                <line x1="20" y1="220" x2="180" y2="220" stroke="#24d4da" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4 4" />
-
+                <rect x="85" y="10" width="30" height="20" rx="3" fill="#24d4da" fillOpacity="0.2" stroke="#24d4da" strokeWidth="2" strokeOpacity="0.6" />
                 <defs>
                   <linearGradient id="garrafonGradient" x1="100" y1="30" x2="100" y2="290" gradientUnits="userSpaceOnUse">
                     <stop stopColor="#24d4da" stopOpacity="0.15" />
@@ -257,18 +236,18 @@ function DashboardResults({ data }) {
               </svg>
             </div>
             
-            {/* CONTENIDO DE DATOS COMPACTO Y CENTRADO */}
-            <div className="relative z-10 w-full max-w-[180px] sm:max-w-[220px] flex flex-col items-center justify-center text-center gap-1 py-4 -translate-y-4 sm:-translate-y-6">
-              <div className="mb-1 sm:mb-2">
-                <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-white/80 drop-shadow-sm">Utilidad Mensual Neta</p>
-                <div className="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tighter leading-none drop-shadow-md">
+            {/* CONTENIDO DE DATOS */}
+            <div className="relative z-10 w-full flex flex-col items-center justify-center text-center gap-1 sm:gap-2 translate-y-2 sm:translate-y-4">
+              <div className="mb-2 sm:mb-2">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-white/70 drop-shadow-sm">Utilidad Mensual Neta</p>
+                <div className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter leading-none drop-shadow-md">
                   <GSAPCurrencyCounter value={data.utilidadMensual} />
                 </div>
               </div>
               
-              <div className="mt-1 sm:mt-2">
-                <p className="text-[8px] sm:text-[9px] font-black text-white/70 uppercase tracking-widest drop-shadow-sm">Utilidad Anual Estimada</p>
-                <div className="text-xl sm:text-2xl md:text-3xl font-black text-white/90 leading-none drop-shadow-md">
+              <div>
+                <p className="text-[8px] sm:text-[9px] font-black text-white/60 uppercase tracking-widest drop-shadow-sm">Utilidad Anual Estimada</p>
+                <div className="text-lg sm:text-2xl md:text-2xl font-black text-white/80 leading-none drop-shadow-md">
                   <GSAPCurrencyCounter value={data.utilidadAnual} />
                 </div>
               </div>
@@ -277,9 +256,9 @@ function DashboardResults({ data }) {
         </div>
       </div>
 
-      <div className="relative z-10 mt-6 sm:mt-8 flex items-center justify-between">
-        <div className="text-[8px] sm:text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">
-          Margen Neto: <span className="font-black ml-1" style={{ color: CALC_BRAND.accent }}>
+      <div className="relative z-10 mt-6 flex items-center justify-between border-t border-white/5 pt-4">
+        <div className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">
+          Margen Neto: <span className="font-black ml-1.5" style={{ color: CALC_BRAND.accent }}>
             {data.ingresosBrutos > 0 ? Math.round((data.utilidadMensual / data.ingresosBrutos) * 100) : 0}%
           </span>
         </div>
@@ -350,44 +329,44 @@ function AguaView({ isActive }) {
   return (
     <div className="flex flex-col lg:flex-row h-full">
       {/* SECCIÓN CONFIGURACIÓN (IZQUIERDA) */}
-      <div className="w-full lg:w-[62%] p-4 sm:p-8 lg:p-12 space-y-5 sm:space-y-8 overflow-y-auto custom-scrollbar-thin bg-white">
+      <div className="w-full lg:w-[62%] p-5 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 overflow-y-auto custom-scrollbar-thin bg-white">
         
         <div className="space-y-6 sm:space-y-8">
           <CompactSlider label="Precio de Venta Sugerido" value={precioVenta} min={10} max={60} onChange={(e) => setPrecioVenta(Number(e.target.value))} color={CALC_BRAND.accent} />
           
-          <div className="grid grid-cols-2 gap-3 sm:gap-6 bg-slate-50 p-3 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-200 shadow-inner">
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200 shadow-inner">
             <CompactInput label="Ventas / Día" value={ventasDia} setValue={setVentasDia} color={CALC_BRAND.accent} prefix="#" icon={CurrencyDollarIcon} help="Promedio de garrafones vendidos cada 24h." />
             <CompactInput label="Días de Operación" value={diasOp} setValue={setDiasOp} color={CALC_BRAND.accent} prefix="#" icon={GlobeAltIcon} help="Vending: 30 días. Mostrador: 22-26 días considerando descansos semanales." />
           </div>
 
           <div className="space-y-4 sm:space-y-5">
-            <p className="text-[8px] sm:text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] sm:tracking-[0.25em] border-b border-slate-200 pb-2 flex items-center gap-2">
-                <CircleStackIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Producción e Insumos
+            <p className="text-xs sm:text-sm font-black uppercase text-slate-400 tracking-[0.2em] border-b border-slate-200 pb-2 flex items-center gap-2">
+                <CircleStackIcon className="w-4 h-4 sm:w-5 sm:h-5" /> Producción e Insumos
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
               <CompactInput label="Costo Pipa (10k L)" value={costoPipa} setValue={setCostoPipa} color={CALC_BRAND.accent} icon={CircleStackIcon} help="Recomendación: Pipa acero inoxidable con agua de pozo certificado ($2,700 promedio)." />
               <CompactInput label="Millar de Tapas" value={costoTapa} setValue={setCostoTapa} color={CALC_BRAND.accent} icon={BeakerIcon} help="Insumo por garrafón: Tapa con liner de garantía ($370 el millar)." />
             </div>
             
-            <div className="p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-cyan-50/30 border border-cyan-200/50 space-y-2 sm:space-y-3">
+            <div className="p-4 sm:p-4 rounded-xl bg-cyan-50/30 border border-cyan-200/50 space-y-1.5 sm:space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[8px] sm:text-[10px] font-black uppercase text-cyan-700 tracking-widest">Sistema de Ósmosis Inversa</span>
+                <span className="text-xs sm:text-sm font-black uppercase text-cyan-700 tracking-widest">Sistema de Ósmosis Inversa</span>
                 <button 
                   onClick={() => setOsmosis(!osmosis)} 
-                  className={`w-8 h-4 sm:w-9 sm:h-5 rounded-full transition-colors duration-300 ${osmosis ? 'bg-cyan-500 shadow-sm' : 'bg-slate-300'} relative cursor-pointer`}
+                  className={`w-9 h-5 sm:w-10 sm:h-5.5 rounded-full transition-colors duration-300 ${osmosis ? 'bg-cyan-500 shadow-sm' : 'bg-slate-300'} relative cursor-pointer`}
                 >
-                  <div className={`absolute top-0.5 sm:top-1 left-0.5 sm:left-1 w-3 h-3 bg-white rounded-full transition-transform duration-300 shadow-md ${osmosis ? 'translate-x-4 sm:translate-x-4' : 'translate-x-0'}`} />
+                  <div className={`absolute top-0.5 sm:top-0.75 left-0.5 sm:left-0.75 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-md ${osmosis ? 'translate-x-4 sm:translate-x-4.5' : 'translate-x-0'}`} />
                 </button>
               </div>
-              <p className="text-[8px] sm:text-[10px] text-cyan-800/50 leading-relaxed font-medium">
+              <p className="text-[11px] sm:text-xs text-cyan-800/60 leading-relaxed font-medium">
                 *Este proceso garantiza la máxima calidad, considerando un 25% de merma técnica por rechazo de sales y lavado de membranas.
               </p>
             </div>
           </div>
 
           <div className="space-y-4 sm:space-y-5">
-            <p className="text-[8px] sm:text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] sm:tracking-[0.25em] border-b border-slate-200 pb-2 flex items-center gap-2">
-                <HomeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Gastos Operativos Mensuales
+            <p className="text-xs sm:text-sm font-black uppercase text-slate-400 tracking-[0.2em] border-b border-slate-200 pb-2 flex items-center gap-2">
+                <HomeIcon className="w-4 h-4 sm:w-5 sm:h-5" /> Gastos Operativos Mensuales
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               <CompactInput label="Renta" value={renta} setValue={setRenta} color={CALC_BRAND.accent} icon={HomeIcon} />
@@ -400,7 +379,7 @@ function AguaView({ isActive }) {
       </div>
 
       {/* SECCIÓN RESULTADOS (DERECHA) */}
-      <div className="w-full lg:w-[38%] border-t lg:border-t-0 lg:border-l border-slate-100">
+      <div className="w-full lg:w-[38%] border-t lg:border-t-0 lg:border-l border-slate-100 bg-white">
         <DashboardResults data={results} />
       </div>
     </div>
@@ -463,19 +442,16 @@ export default function LandingPage() {
         </div>
 
         {/* CALCULADORA INTEGRADA */}
-        <section id="calculadora-negocio" ref={calculadoraRef} className="min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-sans overflow-hidden py-12 sm:py-24">
+        <section id="calculadora-negocio" ref={calculadoraRef} className="min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-sans overflow-hidden py-12 sm:py-16">
           
-          <div className="max-w-7xl mx-auto px-4 w-full flex flex-col">
+          <div className="max-w-[1440px] mx-auto px-0 sm:px-6 w-full flex flex-col">
             {/* Header Calculadora - HISTORIA DE ÉXITO MATEMÁTICO */}
             <motion.div 
               {...fadeUp(0)}
-              className="w-full mb-8 sm:mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6"
+              className="w-full mb-6 sm:mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 px-6 sm:px-0"
             >
               <div className="max-w-3xl text-left">
-                <span className="font-bold tracking-widest text-[10px] sm:text-xs uppercase mb-2 sm:mb-3 block" style={{ color: CALC_BRAND.accent }}>
-                  El mapa de tu libertad
-                </span>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-tight mb-3 sm:mb-4">
+                <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight mb-2 sm:mb-4">
                   Tu éxito no es suerte, <br />
                   es <span style={{ color: CALC_BRAND.accentDark }}>matemática pura.</span>
                 </h2>
@@ -485,16 +461,16 @@ export default function LandingPage() {
               </div>
 
               {/* Switch de modo discreto */}
-              <div className="bg-slate-200/50 p-1 rounded-xl flex shadow-inner border border-slate-200 shrink-0">
+              <div className="bg-slate-200/50 p-1 rounded-xl flex shadow-inner border border-slate-200 shrink-0 mx-6 sm:mx-0">
                 <button 
                   onClick={() => setTipoCalc("agua")}
-                  className={`px-4 sm:px-5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black rounded-lg transition-all ${tipoCalc === "agua" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`px-5 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-black rounded-lg transition-all ${tipoCalc === "agua" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                   AGUA
                 </button>
                 <button 
                   onClick={() => setTipoCalc("limpieza")}
-                  className={`px-4 sm:px-5 py-1.5 sm:py-2 text-[9px] sm:text-[10px] font-black rounded-lg transition-all ${tipoCalc === "limpieza" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`px-5 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-black rounded-lg transition-all ${tipoCalc === "limpieza" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                   LIMPIEZA
                 </button>
@@ -503,17 +479,17 @@ export default function LandingPage() {
 
             <motion.div 
               {...fadeUp(0.2)}
-              className="w-full bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-xl shadow-slate-900/5 overflow-hidden border border-slate-200 flex flex-col h-full lg:max-h-[650px] min-h-0"
+              className="w-full bg-white rounded-none sm:rounded-[3rem] shadow-2xl shadow-slate-900/10 overflow-hidden border-y sm:border border-slate-200 flex flex-col lg:h-[620px] min-h-0"
             >
               <div className="flex-1 min-h-0">
                 <AguaView isActive={tipoCalc === "agua"} />
                 {tipoCalc === "limpieza" && (
-                  <div className="h-full flex items-center justify-center p-8 sm:p-10 text-center animate-fade-in bg-slate-50/20">
-                    <div className="space-y-4 sm:space-y-6">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-amber-50 text-amber-400 rounded-3xl flex items-center justify-center mx-auto text-2xl sm:text-3xl shadow-sm border border-amber-100">✨</div>
+                  <div className="h-full flex items-center justify-center p-8 sm:p-12 text-center animate-fade-in bg-slate-50/20">
+                    <div className="space-y-6 sm:space-y-8">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-amber-50 text-amber-400 rounded-[2.5rem] flex items-center justify-center mx-auto text-3xl sm:text-4xl shadow-sm border border-amber-100">✨</div>
                       <div>
-                        <h3 className="text-slate-900 font-black text-xl sm:text-2xl tracking-tight">Vending Limpieza</h3>
-                        <p className="text-slate-400 text-sm max-w-[250px] mx-auto mt-2 leading-relaxed">Módulo de alta demanda en calibración de costos variables e insumos químicos.</p>
+                        <h3 className="text-slate-900 font-black text-2xl sm:text-3xl tracking-tight">Vending Limpieza</h3>
+                        <p className="text-slate-400 text-base sm:text-lg max-w-[300px] mx-auto mt-3 leading-relaxed">Módulo de alta demanda en calibración de costos variables e insumos químicos.</p>
                       </div>
                     </div>
                   </div>
@@ -521,8 +497,8 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            <div className="mt-6 sm:mt-8 flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-70 shrink-0">
-              <InformationCircleIcon className="w-4 h-4 shrink-0" style={{ color: CALC_BRAND.accentDark }} />
+            <div className="mt-6 sm:mt-8 flex items-center gap-3 text-xs sm:text-sm text-slate-400 font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-70 shrink-0 px-6 sm:px-0">
+              <InformationCircleIcon className="w-5 h-5 shrink-0" style={{ color: CALC_BRAND.accentDark }} />
               <span>Valores sugeridos basados en el mercado mexicano actual</span>
             </div>
           </div>
@@ -533,8 +509,7 @@ export default function LandingPage() {
         .custom-scrollbar-thin::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar-thin::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         @media (max-width: 1024px) {
-          #calculadora-negocio { height: auto; padding: 60px 16px; overflow: visible; }
-          .max-w-7xl { max-height: none; }
+          #calculadora-negocio { height: auto; padding: 60px 0; overflow: visible; }
         }
       `}</style>
     </>
