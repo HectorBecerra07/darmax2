@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import {
   ShoppingBagIcon,
   Bars3Icon,
@@ -6,6 +6,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import gsap from "gsap";
 import { useCarrito } from "../context/CarritoContext";
 import { useUser } from "../context/UserContext";
 import { useSettings } from "../context/SettingsContext";
@@ -24,7 +25,26 @@ export default function NavBar() {
   const { user, logout } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
-  const userMenuRef = useRef(null);
+  const navRef = useRef(null);
+  const linksRef = useRef([]);
+
+  // Animación de entrada GSAP optimizada
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(".nav-link-item", 
+        { y: -10, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: "back.out(1.7)",
+          clearProps: "all" // Limpia los estilos de GSAP al terminar para evitar conflictos
+        }
+      );
+    });
+    return () => ctx.revert();
+  }, [location.pathname]); // Se dispara al cambiar de ruta para asegurar visibilidad
 
   useEffect(() => {
     if (!isScrolled) {
@@ -67,23 +87,20 @@ export default function NavBar() {
 
   const isClean = localMode === 'clean';
 
-  // Estilos dinámicos premium
+  // Estilos dinámicos premium con Glassmorphism
+  const bgClass = isDarkTheme 
+    ? "bg-slate-950/80 backdrop-blur-xl border-white/5" 
+    : "bg-white/80 backdrop-blur-xl border-cyan-500/10";
+  
   const textClass = isDarkTheme ? "text-white" : "text-slate-900";
-  const iconClass = isDarkTheme ? "text-white" : "text-slate-900";
-  const bgClass = isDarkTheme ? "bg-slate-950" : "bg-white";
-  const borderClass = isDarkTheme ? "border-white/10" : "border-[#24d4da]/20";
   
   const accentText = isClean 
     ? (isDarkTheme ? "text-pink-400" : "text-pink-600")
     : (isDarkTheme ? "text-cyan-400" : "text-[#168387]");
 
-  const badgeBg = isClean 
-    ? "bg-pink-500" 
-    : (isDarkTheme ? "bg-cyan-500" : "bg-[#168387]");
-
   const activeLinkBg = isClean
     ? "bg-pink-500/10"
-    : "bg-[#168387]/10";
+    : "bg-cyan-500/10";
 
   const logoSrc = isDarkTheme 
     ? "/img/logos/logoblanco.png" 
@@ -94,16 +111,17 @@ export default function NavBar() {
   return (
     <>
       <nav
+        ref={navRef}
         className={`
           fixed top-0 left-0 right-0 z-50 w-full flex items-center h-[72px]
-          transition-all duration-500 border-b-[1.5px]
-          ${bgClass} ${borderClass}
-          ${isScrolled ? 'shadow-[0_4px_30px_rgba(0,0,0,0.05)]' : ''}
+          transition-all duration-700 border-b
+          ${bgClass}
+          ${isScrolled ? 'shadow-[0_8px_32px_rgba(0,0,0,0.08)]' : ''}
         `}
       >
         <div className="w-full max-w-7xl mx-auto flex items-center justify-between h-full px-6 lg:px-10">
           
-          {/* Logo con Animación de entrada recuperada */}
+          {/* Logo con Animación refinada */}
           <div className="shrink-0 flex items-center">
             <Link 
               to="/" 
@@ -112,83 +130,87 @@ export default function NavBar() {
                 transition-all duration-1000 cubic-bezier(0.22, 1, 0.36, 1)
                 ${isScrolled || !isHome
                   ? 'opacity-100 scale-100 blur-0' 
-                  : 'opacity-0 scale-90 blur-md pointer-events-none'
+                  : 'opacity-0 scale-95 blur-md pointer-events-none'
                 }
               `}
             >
-              <img src={logoSrc} alt="Logo Darmax" className="h-11 md:h-12 w-auto object-contain" />
+              <img src={logoSrc} alt="Logo Darmax" className="h-10 md:h-11 w-auto object-contain hover:brightness-110 transition-all" />
             </Link>
           </div>
 
-          {/* Menú Desktop */}
-          <div className={`hidden nav:flex items-center justify-center gap-2 flex-1 px-8 transition-colors duration-500 ${textClass}`}>
-            {navLinks.map((link) => {
+          {/* Menú Desktop con GSAP Stagger */}
+          <div className={`hidden nav:flex items-center justify-center gap-2 flex-1 px-8 ${textClass}`}>
+            {navLinks.map((link, idx) => {
               const isActive = link.href === "/" ? location.pathname === "/" : location.pathname.startsWith(link.href);
               return (
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={`px-4 py-2 rounded-xl font-black transition-all duration-300 text-[10px] tracking-[0.15em] uppercase whitespace-nowrap ${
-                    isActive ? `${activeLinkBg} ${accentText}` : `hover:bg-slate-100/50 opacity-70 hover:opacity-100`
+                  className={`nav-link-item px-5 py-2 rounded-full font-black transition-all duration-500 text-[10px] tracking-[0.2em] uppercase whitespace-nowrap relative group ${
+                    isActive ? `${activeLinkBg} ${accentText}` : `hover:opacity-100 opacity-60`
                   }`}
                 >
                   {link.text}
+                  {/* Indicador de hover minimalista */}
+                  {!isActive && (
+                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-cyan-500 transition-all duration-500 group-hover:w-1/2 opacity-50" />
+                  )}
                 </Link>
               );
             })}
           </div>
 
           {/* Acciones */}
-          <div className={`hidden nav:flex items-center gap-6 transition-colors duration-500 ${iconClass}`}>
-            <button onClick={() => setShowCart(true)} className="hidden relative transition-transform hover:scale-110 active:scale-90">
-              <ShoppingBagIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className={`hidden nav:flex items-center gap-6 ${textClass}`}>
+            {/* Carrito oculto por petición del usuario */}
+            <button 
+              onClick={() => setShowCart(true)} 
+              className="hidden relative group"
+            >
+              <ShoppingBagIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
               {totalItems > 0 && (
-                <span className={`absolute -top-1 -right-1 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full ${badgeBg} shadow-sm`}>
+                <span className="absolute -top-1 -right-1 bg-cyan-500 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-lg border border-white/20">
                   {totalItems}
                 </span>
               )}
             </button>
-            <Link to={user ? "/perfil" : "/login"}>
-              <UserIcon className="w-5 h-5 sm:w-6 sm:h-6 transition-transform hover:scale-110 active:scale-90 cursor-pointer" />
+            <Link to={user ? "/perfil" : "/login"} className="group">
+              <UserIcon className="w-5 h-5 transition-all group-hover:scale-110 group-hover:text-cyan-500 cursor-pointer" />
             </Link>
           </div>
 
           {/* Menú móvil trigger */}
-          <div className={`flex items-center justify-end nav:hidden gap-x-5 transition-colors duration-500 ${iconClass}`}>
+          <div className={`flex items-center justify-end nav:hidden gap-x-5 ${textClass}`}>
+             {/* Carrito oculto en móvil también */}
             <button onClick={() => setShowCart(true)} className="hidden relative">
               <ShoppingBagIcon className="w-6 h-6" />
-              {totalItems > 0 && (
-                <span className={`absolute -top-1.5 -right-1.5 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full ${badgeBg}`}>
-                  {totalItems}
-                </span>
-              )}
             </button>
             <Link to={user ? "/perfil" : "/login"}>
-              <UserIcon className="w-6 h-6 transition-transform active:scale-90 cursor-pointer" />
+              <UserIcon className="w-6 h-6 active:scale-90" />
             </Link>
-            <button onClick={() => setNavOpen(!navOpen)} className="p-1">
+            <button onClick={() => setNavOpen(!navOpen)} className="p-1 hover:text-cyan-500 transition-colors">
               {navOpen ? <XMarkIcon className="w-7 h-7" /> : <Bars3Icon className="w-7 h-7" />}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Menú Lateral Móvil */}
-      <div className={`fixed top-0 right-0 h-full w-full max-w-xs bg-slate-950 z-[60] transform transition-transform duration-500 ease-in-out shadow-2xl ${navOpen ? "translate-x-0" : "translate-x-full"}`}>
-        <div className="flex justify-between items-center px-6 h-20 border-b border-white/5">
-          <img src="/img/logos/logoblanco.png" alt="Logo Darmax" className="h-10 w-auto object-contain" />
-          <button onClick={() => setNavOpen(false)} className="text-white hover:rotate-90 transition-transform duration-300">
+      {/* Menú Lateral Móvil con estética Glass Dark */}
+      <div className={`fixed top-0 right-0 h-full w-full max-w-xs bg-slate-950/95 backdrop-blur-2xl z-[60] transform transition-transform duration-700 ease-in-out shadow-2xl border-l border-white/5 ${navOpen ? "translate-x-0" : "translate-x-full"}`}>
+        <div className="flex justify-between items-center px-8 h-20 border-b border-white/5">
+          <img src="/img/logos/logoblanco.png" alt="Logo Darmax" className="h-9 w-auto object-contain" />
+          <button onClick={() => setNavOpen(false)} className="text-white/50 hover:text-white hover:rotate-90 transition-all duration-500">
             <XMarkIcon className="w-8 h-8" />
           </button>
         </div>
-        <nav className="flex flex-col p-6 space-y-1">
+        <nav className="flex flex-col p-8 space-y-2">
           {navLinks.map((link) => {
             const isActive = link.href === "/" ? location.pathname === "/" : location.pathname.startsWith(link.href);
             return (
               <Link 
                 key={link.href} 
                 to={link.href} 
-                className={`px-5 py-4 rounded-2xl font-black text-xs tracking-widest transition-all duration-200 uppercase ${isActive ? "bg-white/10 text-white shadow-inner" : "text-slate-400 hover:bg-white/5 hover:text-white"}`} 
+                className={`px-6 py-4 rounded-2xl font-black text-[11px] tracking-[0.2em] transition-all duration-300 uppercase ${isActive ? "bg-cyan-500/10 text-cyan-400" : "text-slate-400 hover:text-white hover:bg-white/5"}`} 
                 onClick={() => setNavOpen(false)}
               >
                 {link.text}
