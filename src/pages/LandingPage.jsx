@@ -397,25 +397,58 @@ export default function LandingPage() {
   return (
     <>
       <Helmet>
-        <title>Darmax | Emprende tu Negocio de Agua Purificada</title>
-        <meta name="description" content="Inicia tu emprendimiento con purificadoras, máquinas vending de agua y productos de limpieza con tecnología Darmax. Más de 350 equipos instalados." />
-        <meta name="keywords" content="vending de agua, purificadoras de agua, negocio rentable, emprendimiento mexico, darmax agua" />
-        <meta property="og:title" content="Darmax | Emprende tu Negocio de Agua Purificada" />
-        <meta property="og:description" content="No solo vendemos equipos, construimos negocios rentables con tecnología vending 24/7." />
-        <meta property="og:type" content="website" />
+        <title>Darmax Agua | Purificadoras, Vending y Ósmosis Inversa</title>
+        <meta name="description" content="Inicia tu negocio 24/7 con purificadoras de agua, máquinas vending y sistemas de ósmosis inversa. Expertos en agua alcalina y vending de productos de limpieza en México." />
+        <meta name="keywords" content="purificadora, agua purificada, vending de agua purificada, negocio 24/7, vending productos de limpieza, osmosis inversa, agua alcalina, vending, inicia tu negocio, darmax agua" />
         
-        {/* Datos Estructurados para Google */}
+        {/* Open Graph para redes sociales */}
+        <meta property="og:title" content="Darmax Agua | Líderes en Purificadoras y Vending 24/7" />
+        <meta property="og:description" content="Emprende un negocio rentable de agua purificada y productos de limpieza con tecnología de vanguardia." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://darmaxagua.com.mx/" />
+        
+        {/* Datos Estructurados (JSON-LD) optimizados */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "BusinessFunction",
+            "@type": "LocalBusiness",
             "name": "Darmax Agua",
-            "description": "Proveedor de modelos de negocio de agua purificada y vending 24/7",
+            "description": "Expertos en plantas purificadoras de agua, máquinas vending 24/7 y sistemas de ósmosis inversa para negocios rentables.",
+            "url": "https://darmaxagua.com.mx/",
+            "telephone": "+525519655369",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Nezahualcóyotl",
+              "addressRegion": "Estado de México",
+              "addressCountry": "MX"
+            },
             "areaServed": "MX",
-            "offers": {
-              "@type": "Offer",
-              "category": "Industrial Equipment",
-              "description": "Purificadoras y máquinas vending para emprendimiento"
+            "hasOfferCatalog": {
+              "@type": "OfferCatalog",
+              "name": "Catálogo de Negocios",
+              "itemListElement": [
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Plantas Purificadoras de Agua"
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Máquinas Vending 24/7"
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Sistemas de Ósmosis Inversa y Agua Alcalina"
+                  }
+                }
+              ]
             }
           })}
         </script>
