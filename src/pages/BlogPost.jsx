@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { getEmbedUrl } from "../utils/videoUtils";
 import { 
   CalendarIcon, 
   UserIcon, 
@@ -153,7 +154,12 @@ export default function BlogPost() {
             prose-p:text-slate-600 prose-p:leading-relaxed
             prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
             prose-strong:text-slate-900 prose-strong:font-black
-            prose-a:text-cyan-600 prose-a:font-black prose-a:no-underline hover:prose-a:underline"
+            prose-a:text-cyan-600 prose-a:font-black prose-a:no-underline hover:prose-a:underline
+            /* Forzar clases dinámicas para highlights */
+            [&_.border-l-4]:border-l-4 [&_.border-cyan-500]:border-cyan-500 
+            [&_.pl-6]:pl-6 [&_.my-8]:my-8 [&_.italic]:italic [&_.text-xl]:text-xl 
+            [&_.md\:text-2xl]:md:text-2xl [&_.font-medium]:font-medium 
+            [&_.text-slate-700]:text-slate-700 [&_.leading-relaxed]:leading-relaxed"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
@@ -161,7 +167,7 @@ export default function BlogPost() {
         {post.videoUrl && !post.content.includes(post.videoUrl) && (
             <div className="mt-12 rounded-[2rem] overflow-hidden shadow-xl ring-1 ring-slate-100 aspect-video">
                 <iframe 
-                    src={post.videoUrl.includes('instagram.com') ? `${post.videoUrl}/embed` : post.videoUrl} 
+                    src={getEmbedUrl(post.videoUrl)} 
                     className="w-full h-full border-0"
                     allowFullScreen
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
