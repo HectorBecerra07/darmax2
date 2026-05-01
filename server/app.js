@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-
 import adminRoutes from "./routes/admin.js";
 import productRoutes from "./routes/productos.js";
 import categoryRoutes from "./routes/categorias.js";
@@ -16,6 +15,7 @@ import intentRoutes from "./routes/intents.js";
 import configurationRoutes from "./routes/configuration.js";
 import zoomRoutes from "./routes/zoom.js"; // ✅ ya importado correctamente
 import postalCodeRoutes from "./routes/postalcode.js";
+import blogRoutes from "./routes/blog.js";
 
 const app = express();
 app.disable("x-powered-by");
@@ -24,6 +24,7 @@ const allowedOrigins = [
   "https://darmaxagua.com.mx",
   "https://darmax2.vercel.app",
   "http://localhost:5173",
+  "http://localhost:5174",
   "https://ventas-darmax-gestion.vercel.app"
 ];
 
@@ -62,6 +63,7 @@ app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/intents", intentRoutes);
 app.use("/api/configuration", configurationRoutes);
 app.use("/api/zoom", zoomRoutes); // ✅ CORRECTO
+app.use("/api/blog", blogRoutes);
 app.use("/api/orders", ordersRouter);
 
 app.get("/", (req, res) => {

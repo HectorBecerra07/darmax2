@@ -341,7 +341,9 @@ model BlogPost {
   updatedAt DateTime @updatedAt
   title     String
   slug      String   @unique
+  excerpt   String?  // Resumen corto para las tarjetas del feed
   content   String   @db.Text
+  blocks    Json?    // Estructura original del editor de bloques
   image     String?  // Imagen de portada
   videoUrl  String?  // Opcional, para incrustar videos
   category  String   @default("Articulo") // Articulo, Video, Curiosidad

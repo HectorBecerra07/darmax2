@@ -86,6 +86,8 @@ import ChatbotWidget from "./components/ChatbotWidget";
 import { SettingsProvider, useSettings } from "./context/SettingsContext"; // Importar SettingsProvider y useSettings
 
 const Contacto = lazy(() => import("./pages/Contacto"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
 
 function AppContent() {
   const location = useLocation();
@@ -369,6 +371,22 @@ function AppContent() {
                       element={
                         <PageWrapper>
                           <Contacto />
+                        </PageWrapper>
+                      }
+                    />
+                    <Route
+                      path="/blog"
+                      element={
+                        <PageWrapper>
+                          <Blog />
+                        </PageWrapper>
+                      }
+                    />
+                    <Route
+                      path="/blog/:slug"
+                      element={
+                        <PageWrapper>
+                          <BlogPost />
                         </PageWrapper>
                       }
                     />
