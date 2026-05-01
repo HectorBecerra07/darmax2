@@ -155,11 +155,12 @@ export default function BlogPost() {
             prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
             prose-strong:text-slate-900 prose-strong:font-black
             prose-a:text-cyan-600 prose-a:font-black prose-a:no-underline hover:prose-a:underline
-            /* Forzar clases dinámicas para highlights */
-            [&_.border-l-4]:border-l-4 [&_.border-cyan-500]:border-cyan-500 
-            [&_.pl-6]:pl-6 [&_.my-8]:my-8 [&_.italic]:italic [&_.text-xl]:text-xl 
+            /* Forzar clases dinámicas para highlights avanzados */
+            [&_.border-l-8]:border-l-8 [&_.border-l-4]:border-l-4 [&_.border-cyan-500]:border-cyan-500 
+            [&_.pl-6]:pl-6 [&_.py-4]:py-4 [&_.my-8]:my-8 [&_.italic]:italic [&_.text-xl]:text-xl 
             [&_.md\:text-2xl]:md:text-2xl [&_.font-medium]:font-medium 
-            [&_.text-slate-700]:text-slate-700 [&_.leading-relaxed]:leading-relaxed"
+            [&_.text-slate-700]:text-slate-700 [&_.leading-relaxed]:leading-relaxed
+            [&_.bg-slate-50]:bg-slate-50 [&_.rounded-r-2xl]:rounded-r-2xl [&_.shadow-sm]:shadow-sm"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
