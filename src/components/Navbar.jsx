@@ -82,6 +82,7 @@ export default function NavBar() {
     { href: "/", text: "INICIA TU NEGOCIO" },
     { href: "/nosotros", text: "NOSOTROS" },
     { href: "/proyectos-empresariales", text: "PROYECTOS" },
+    { href: "/blog", text: "BLOG" },
     { href: "/contacto", text: "CONTACTO" },
   ];
 
