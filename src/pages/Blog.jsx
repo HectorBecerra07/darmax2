@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { 
   CalendarIcon, 
   UserIcon, 
@@ -13,6 +14,8 @@ import {
 export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [subscribing, setSubscribing] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -29,6 +32,34 @@ export default function Blog() {
     };
     fetchPosts();
   }, []);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setSubscribing(true);
+    try {
+        // Simulamos una petición o conectamos a un endpoint si existiera
+        // Para este ejemplo usaremos un delay y feedback visual
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        Swal.fire({
+            title: '¡Suscripción Exitosa!',
+            text: 'Pronto recibirás nuestras guías exclusivas en tu correo.',
+            icon: 'success',
+            confirmButtonColor: '#06b6d4',
+            customClass: {
+                popup: 'rounded-[2rem]',
+                confirmButton: 'rounded-xl font-black uppercase text-xs tracking-widest px-8 py-4'
+            }
+        });
+        setEmail("");
+    } catch (error) {
+        Swal.fire('Error', 'No pudimos procesar tu suscripción.', 'error');
+    } finally {
+        setSubscribing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 pt-32 pb-20">
@@ -82,62 +113,75 @@ export default function Blog() {
             </div>
         ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-            {posts.map((post, idx) => (
-                <motion.article 
-                key={post.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="group bg-white rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-xl shadow-slate-900/5 hover:shadow-cyan-900/10 transition-all duration-500 flex flex-col h-full"
-                >
-                <Link to={`/blog/${post.slug}`} className="block relative h-64 overflow-hidden">
-                    <img 
-                    src={post.image || '/img/placeholder-blog.jpg'} 
-                    alt={post.title} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 bg-white/90 backdrop-blur-md text-slate-900 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">
-                        {post.category}
-                    </span>
-                    </div>
-                </Link>
+            {posts.map((post, idx) => {
+                const isReversedMobile = idx % 2 === 1; // Alternancia simple para móvil (fila)
+                const isReversedDesktop = idx % 3 === 1; // El patrón de 3 para escritorio (columna)
                 
-                <div className="p-8 flex-1 flex flex-col">
-                    <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">
-                    <span className="flex items-center gap-1.5">
-                        <CalendarIcon className="w-3.5 h-3.5" />
-                        {new Date(post.createdAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <UserIcon className="w-3.5 h-3.5" />
-                        {post.author}
-                    </span>
-                    </div>
-                    
-                    <h2 className="text-xl font-black text-slate-900 leading-tight mb-4 group-hover:text-[#168387] transition-colors">
-                    <Link to={`/blog/${post.slug}`}>
-                        {post.title}
-                    </Link>
-                    </h2>
-                    
-                    <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-3">
-                    {post.excerpt}
-                    </p>
-                    
-                    <div className="mt-auto">
-                        <Link 
-                        to={`/blog/${post.slug}`}
-                        className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-[#168387] group/link"
-                        >
-                        Leer Artículo
-                        <ArrowRightIcon className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
+                return (
+                    <motion.article 
+                    key={post.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="group bg-white rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-xl shadow-slate-900/5 hover:shadow-cyan-900/10 transition-all duration-500 flex flex-col h-full"
+                    >
+                    {/* Contenedor Adaptativo: Horizontal en móvil, Vertical en Desktop */}
+                    <div className={`flex h-full 
+                        ${isReversedMobile ? 'flex-row-reverse' : 'flex-row'} 
+                        md:flex-col 
+                        ${isReversedDesktop ? 'lg:flex-col-reverse' : 'lg:flex-col'}`}
+                    >
+                        <Link to={`/blog/${post.slug}`} className="block relative w-2/5 md:w-full h-auto md:h-64 overflow-hidden shrink-0">
+                            <img 
+                            src={post.image || '/img/placeholder-blog.jpg'} 
+                            alt={post.title} 
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                            <div className="absolute top-2 left-2 sm:top-4 sm:left-4">
+                            <span className="px-2 py-0.5 sm:px-3 sm:py-1 bg-white/90 backdrop-blur-md text-slate-900 text-[8px] sm:text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">
+                                {post.category}
+                            </span>
+                            </div>
                         </Link>
+                        
+                        <div className="p-4 sm:p-6 md:p-8 flex-1 flex flex-col justify-center md:justify-start">
+                            <div className="flex items-center gap-2 sm:gap-4 text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 sm:mb-4">
+                            <span className="flex items-center gap-1.5">
+                                <CalendarIcon className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">{new Date(post.createdAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                                <span className="inline sm:hidden">{new Date(post.createdAt).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit' })}</span>
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                                <UserIcon className="w-3.5 h-3.5" />
+                                {post.author.split(' ')[0]}
+                            </span>
+                            </div>
+                            
+                            <h2 className="text-sm sm:text-lg md:text-xl font-black text-slate-900 leading-tight mb-2 sm:mb-4 group-hover:text-[#168387] transition-colors line-clamp-2">
+                            <Link to={`/blog/${post.slug}`}>
+                                {post.title}
+                            </Link>
+                            </h2>
+                            
+                            <p className="text-slate-500 text-[10px] sm:text-xs md:text-sm leading-relaxed mb-3 sm:mb-6 line-clamp-2 md:line-clamp-3 font-medium hidden xs:block">
+                            {post.excerpt}
+                            </p>
+                            
+                            <div className="mt-auto">
+                                <Link 
+                                to={`/blog/${post.slug}`}
+                                className="inline-flex items-center gap-2 text-[8px] sm:text-xs font-black uppercase tracking-[0.2em] text-[#168387] group/link"
+                                >
+                                Leer <span className="hidden sm:inline">Artículo</span>
+                                <ArrowRightIcon className="w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover/link:translate-x-1" />
+                                </Link>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                </motion.article>
-            ))}
+                    </motion.article>
+                );
+            })}
             </div>
         )}
 
@@ -151,16 +195,23 @@ export default function Blog() {
           <div className="relative z-10">
             <h3 className="text-2xl sm:text-4xl font-black text-white mb-4">¿Quieres recibir guías exclusivas?</h3>
             <p className="text-slate-400 mb-8 max-w-xl mx-auto">Únete a nuestra comunidad de emprendedores y recibe consejos prácticos directamente en tu correo.</p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input 
                 type="email" 
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Tu correo electrónico"
                 className="flex-1 px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white outline-none focus:border-cyan-500 transition-colors font-medium"
               />
-              <button className="px-8 py-4 bg-cyan-500 text-slate-900 font-black uppercase text-xs tracking-widest rounded-2xl hover:bg-cyan-400 transition-all active:scale-95">
-                Suscribirme
+              <button 
+                type="submit"
+                disabled={subscribing}
+                className={`px-8 py-4 bg-cyan-500 text-slate-900 font-black uppercase text-xs tracking-widest rounded-2xl hover:bg-cyan-400 transition-all active:scale-95 ${subscribing ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {subscribing ? 'Suscribiendo...' : 'Suscribirme'}
               </button>
-            </div>
+            </form>
           </div>
         </motion.div>
       </div>

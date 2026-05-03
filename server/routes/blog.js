@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
 
 // POST new article
 router.post("/", async (req, res) => {
-  const { title, content, excerpt, blocks, image, videoUrl, category, published, author } = req.body;
+  const { title, content, excerpt, blocks, image, videoUrl, category, tags, published, author } = req.body;
   if (!title || !content) {
     return res.status(400).json({ error: "Title and content are required" });
   }
@@ -61,6 +61,7 @@ router.post("/", async (req, res) => {
         image,
         videoUrl,
         category: category || "Articulo",
+        tags: tags || ["Darmax"],
         published: published !== undefined ? published : true,
         author: author || "Darmax"
       }

@@ -109,7 +109,7 @@ export default function BlogPost() {
         {post.image && <meta property="og:image" content={post.image} />}
       </Helmet>
 
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-5xl mx-auto px-6">
         {/* Navegación */}
         <Link 
           to="/blog" 
@@ -152,15 +152,39 @@ export default function BlogPost() {
           className="prose prose-slate prose-lg max-w-none 
             prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-slate-900
             prose-p:text-slate-600 prose-p:leading-relaxed
-            prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
+            prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-8
             prose-strong:text-slate-900 prose-strong:font-black
             prose-a:text-cyan-600 prose-a:font-black prose-a:no-underline hover:prose-a:underline
-            /* Forzar clases dinámicas para highlights avanzados */
+            /* Forzar clases dinámicas para highlights avanzados, videos y espaciados */
             [&_.border-l-8]:border-l-8 [&_.border-l-4]:border-l-4 [&_.border-cyan-500]:border-cyan-500 
-            [&_.pl-6]:pl-6 [&_.py-4]:py-4 [&_.my-8]:my-8 [&_.italic]:italic [&_.text-xl]:text-xl 
-            [&_.md\:text-2xl]:md:text-2xl [&_.font-medium]:font-medium 
-            [&_.text-slate-700]:text-slate-700 [&_.leading-relaxed]:leading-relaxed
-            [&_.bg-slate-50]:bg-slate-50 [&_.rounded-r-2xl]:rounded-r-2xl [&_.shadow-sm]:shadow-sm"
+            [&_.border-4]:border-4 [&_.border-white]:border-white
+            [&_.pl-6]:pl-6 [&_.pl-10]:pl-10 [&_.pr-10]:pr-10 [&_.p-10]:p-10
+            [&_.py-6]:py-6 [&_.py-10]:py-10 [&_.py-12]:py-12 [&_.py-4]:py-4 
+            [&_.pb-8]:pb-8 [&_.pb-10]:pb-10 [&_.pb-12]:pb-12 [&_.pb-14]:pb-14
+            [&_.my-10]:my-10 [&_.my-8]:my-8 [&_.my-12]:my-12 [&_.my-14]:my-14 [&_.my-16]:my-16 [&_.my-20]:my-20
+            [&_.mt-12]:mt-12 [&_.mt-14]:mt-14 [&_.mt-16]:mt-16 [&_.mt-20]:mt-20
+            [&_.mb-16]:mb-16 [&_.mb-20]:mb-20 [&_.mb-10]:mb-10 [&_.mb-8]:mb-8 [&_.mb-6]:mb-6 [&_.mb-14]:mb-14
+            [&_.italic]:italic [&_.text-xl]:text-xl [&_.text-lg]:text-lg [&_.text-2xl]:text-2xl
+            [&_.md\:text-2xl]:md:text-2xl [&_.md\:text-xl]:md:text-xl 
+            [&_.font-medium]:font-medium [&_.font-bold]:font-bold [&_.text-slate-700]:text-slate-700 
+            [&_.leading-relaxed]:leading-relaxed [&_.bg-slate-50]:bg-slate-50 [&_.bg-cyan-50]:bg-cyan-50
+            [&_.rounded-2xl]:rounded-2xl [&_.rounded-r-2xl]:rounded-r-2xl [&_.rounded-3xl]:rounded-3xl [&_.rounded-\[2\.5rem\]]:rounded-[2.5rem] [&_.rounded-\[2rem\]]:rounded-[2rem] [&_.rounded-\[3rem\]]:rounded-[3rem]
+            [&_.shadow-sm]:shadow-sm [&_.shadow-2xl]:shadow-2xl [&_.shadow-inner]:shadow-inner
+            /* Clases para video lateral y central */
+            [&_.float-right]:float-right [&_.float-left]:float-left 
+            [&_.ml-8]:ml-8 [&_.ml-10]:ml-10 [&_.ml-12]:ml-12 [&_.mr-8]:mr-8 [&_.mr-12]:mr-12 [&_.mx-4]:mx-4 
+            [&_.lg\:-ml-12]:lg:-ml-12 [&_.lg\:-mr-12]:lg:-mr-12 [&_.lg\:-mt-40]:lg:-mt-40 [&_.z-10]:z-10 [&_.relative]:relative
+            [&_.w-full]:w-full [&_.w-\[320px\]]:w-[320px] [&_.sm\:w-\[360px\]]:sm:w-[360px] [&_.md\:w-1\/2]:md:w-1/2 [&_.md\:w-\[380px\]]:md:w-[380px] [&_.md\:w-\[320px\]]:md:w-[320px]
+            [&_.aspect-video]:aspect-video [&_.aspect-\[9\/16\]]:aspect-[9/16] [&_.aspect-\[4\/3\]]:aspect-[4/3]
+            /* Clases para el bloque de Comparativa / Columnas */
+            [&_.grid]:grid [&_.grid-cols-1]:grid-cols-1 [&_.md\:grid-cols-2]:md:grid-cols-2 [&_.md\:grid-cols-3]:md:grid-cols-3 [&_.md\:grid-cols-4]:md:grid-cols-4
+            [&_.gap-6]:gap-6 [&_.md\:gap-8]:md:gap-8 [&_.border-t-8]:border-t-8 [&_.bg-slate-50\/50]:bg-slate-50/50 [&_.hover\:scale-\[1\.02\]]:hover:scale-[1.02] [&_.transition-transform]:transition-transform
+            /* Colores dinámicos para columnas y tips */
+            [&_.bg-cyan-50\/50]:bg-cyan-50/50 [&_.text-cyan-950]:text-cyan-950 [&_.text-cyan-900]:text-cyan-900 [&_.prose-strong\:text-cyan-950_strong]:text-cyan-950
+            [&_.bg-teal-50\/50]:bg-teal-50/50 [&_.text-teal-950]:text-teal-950 [&_.text-teal-900]:text-teal-900 [&_.prose-strong\:text-teal-950_strong]:text-teal-950
+            [&_.bg-indigo-50\/50]:bg-indigo-50/50 [&_.text-indigo-950]:text-indigo-950 [&_.text-indigo-900]:text-indigo-900 [&_.prose-strong\:text-indigo-950_strong]:text-indigo-950
+            [&_.bg-rose-50\/50]:bg-rose-50/50 [&_.text-rose-950]:text-rose-950 [&_.text-rose-900]:text-rose-900 [&_.prose-strong\:text-rose-950_strong]:text-rose-950
+            [&_.bg-amber-50\/50]:bg-amber-50/50 [&_.text-amber-950]:text-amber-950 [&_.text-amber-900]:text-amber-900 [&_.prose-strong\:text-amber-950_strong]:text-amber-950"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
@@ -181,9 +205,10 @@ export default function BlogPost() {
           <div className="flex items-center gap-2">
             <TagIcon className="w-5 h-5 text-slate-300" />
             <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Etiquetas:</span>
-            <div className="flex gap-2">
-              <span className="text-[10px] font-black text-slate-900 px-2 py-1 bg-slate-100 rounded-md">#{post.category}</span>
-              <span className="text-[10px] font-black text-slate-900 px-2 py-1 bg-slate-100 rounded-md">#Darmax</span>
+            <div className="flex flex-wrap gap-2">
+              {(post.tags && post.tags.length > 0 ? post.tags : [post.category, "Darmax"]).map((tag, tIdx) => (
+                <span key={tIdx} className="text-[10px] font-black text-slate-900 px-2 py-1 bg-slate-100 rounded-md">#{tag}</span>
+              ))}
             </div>
           </div>
           

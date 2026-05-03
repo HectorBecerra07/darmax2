@@ -25,23 +25,23 @@ const allowedOrigins = [
   "https://darmax2.vercel.app",
   "http://localhost:5173",
   "http://localhost:5174",
+  "http://localhost:3000",
   "https://ventas-darmax-gestion.vercel.app"
 ];
 
 app.use(
   cors({
-    origin(origin, callback) {
+    origin: function (origin, callback) {
+      // permitir peticiones sin origen (como apps móviles o curl)
       if (!origin) return callback(null, true);
-      if (!allowedOrigins.includes(origin)) {
-        return callback(
-          new Error(
-            "The CORS policy for this site does not allow access from the specified Origin."
-          ),
-          false
-        );
+      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
       }
-      return callback(null, true);
     },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true
   })
 );
 
