@@ -410,10 +410,6 @@ const VendingPrecise3D = () => {
             </div>
           )}
         </div>
-
-        <div className="mt-6 text-xs text-slate-500 text-center">
-          Arrastra para rotar (mouse o touch). Suelta para ver la inercia.
-        </div>
       </div>
     </div>
   );

@@ -21,6 +21,7 @@ import {
   HandThumbUpIcon,
   FingerPrintIcon
 } from "@heroicons/react/24/outline";
+import { Handshake } from "lucide-react";
 
 /* =========================================
    Data Constants
@@ -80,7 +81,7 @@ const VALORES = [
     color: "from-[#168387] to-teal-700"
   },
   {
-    icon: HandThumbUpIcon,
+    icon: Handshake,
     t: "Compromiso",
     d: "Atención y soluciones que aportan valor real y medible.",
     color: "from-[#ccff00] to-lime-600"
@@ -236,7 +237,7 @@ export default function Nosotros() {
       <main className="min-h-screen bg-white text-slate-900 selection:bg-[#24d4da] selection:text-white overflow-x-hidden italic">
         
         {/* SECTION 1: HERO */}
-        <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden bg-white">
+        <section className="relative pt-24 pb-20 lg:pt-20 lg:pb-32 overflow-hidden bg-white">
           <div className="absolute inset-0 z-0">
             <img 
               src="https://res.cloudinary.com/defkuaytw/image/upload/v1776407496/fondo_gotas_jrtijk.png" 
@@ -248,37 +249,41 @@ export default function Nosotros() {
           </div>
 
           <Container className="relative z-10">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              <motion.div style={{ y: yHero, opacity: opacityHero }} className="text-left">
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-[0.95] text-slate-950">
-                  <AnimatedText text="En Darmax Agua no comenzamos como una empresa..." className="block mb-2" delay={0.2} />
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+              <motion.div style={{ y: yHero, opacity: opacityHero }} className="text-left lg:pr-8">
+                <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-[1.1] text-slate-950">
+                  <AnimatedText text="Darmax Agua comenzó con una idea clara" className="block mb-2" delay={0.2} />
                   <motion.span 
                     animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
                     transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-[#168387] via-[#24d4da] to-[#168387] bg-[length:200%_auto] inline-block"
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-[#168387] via-[#24d4da] to-[#168387] bg-[length:200%_auto] inline"
                   >
-                    <AnimatedText text="comenzamos como una inquietud." delay={1.8} />
+                    <AnimatedText text="Reinventar la manera de emprender en el negocio del agua." delay={1.8} />
                   </motion.span>
                 </h1>
                 
-                <p className="mt-8 text-lg md:text-xl text-slate-500 font-medium leading-relaxed max-w-xl">
-                  <AnimatedText text="¿Por qué emprender en el negocio del agua tenía que ser complicado, caro o limitado?" delay={3.2} />
+                <p className="mt-8 text-lg md:text-xl text-slate-500 font-medium leading-relaxed max-w-2xl">
+                  <AnimatedText text="Porque emprender en el negocio del agua merece ser más simple, inteligente y alcanzable." delay={3.2} />
                 </p>
                 
-                <motion.div {...fadeUp(5.2)} className="mt-10 flex flex-wrap gap-4">
-                  <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="/contacto" className="px-8 py-4 bg-[#24d4da] text-slate-950 font-black rounded-2xl shadow-lg shadow-cyan-500/20">INICIA HOY</motion.a>
-                  <div className="flex items-center gap-3 text-[#168387] font-bold tracking-widest text-[10px] uppercase">
-                    <motion.span initial={{ width: 0 }} whileInView={{ width: 32 }} transition={{ delay: 5.5, duration: 0.8 }} className="h-px bg-[#24d4da]" />
-                    Nuestra Filosofía
-                  </div>
+                <motion.div {...fadeUp(5.2)} className="mt-10">
+                  <motion.a 
+                    whileHover={{ scale: 1.05 }} 
+                    whileTap={{ scale: 0.95 }} 
+                    href="#historia" 
+                    className="inline-flex items-center gap-4 px-8 py-4 bg-white border-2 border-[#24d4da] text-[#168387] font-black rounded-2xl shadow-xl shadow-cyan-500/10 group transition-all"
+                  >
+                    <span className="h-px w-8 bg-[#24d4da] group-hover:w-12 transition-all" />
+                    NUESTRA FILOSOFÍA
+                  </motion.a>
                 </motion.div>
               </motion.div>
 
-              <div className="relative h-[450px] md:h-[550px] flex items-center justify-center lg:justify-end">
+              <div className="relative h-[450px] md:h-[550px] flex items-center justify-center lg:justify-center">
                 {[
-                  { img: "/img/vending/atlantistouchvending.jpg", x: -120, r: -15, delay: 0.6 },
-                  { img: "/img/vending/vending.png", x: 120, r: 15, delay: 0.8 },
-                  { img: "/img/vending/TOUCHAGUA.png", x: 0, r: 0, delay: 0.3, z: 30, s: 1 }
+                  { img: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/2mostrador_iajzgl.png", x: -120, r: -15, delay: 0.6 },
+                  { img: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/6megalodon_wd13q6.png", x: 120, r: 15, delay: 0.8 },
+                  { img: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/1touch_heazvd.png", x: 0, r: 0, delay: 0.3, z: 30, s: 1 }
                 ].map((card, i) => (
                   <motion.div 
                     key={i}
@@ -286,9 +291,9 @@ export default function Nosotros() {
                     whileInView={{ opacity: 1, scale: card.s || 0.9, x: card.x, y: card.x !== 0 ? 20 : 0, rotate: card.r }}
                     viewport={{ once: true }}
                     transition={{ delay: card.delay, duration: 1, ease }}
-                    className={`absolute ${card.z ? "z-30 w-52 md:w-64" : "z-10 w-44 md:w-56"} aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white`}
+                    className={`absolute ${card.z ? "z-30 w-52 md:w-64" : "z-10 w-44 md:w-56"} aspect-[3/4] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white bg-slate-50`}
                   >
-                    <img src={card.img} className="w-full h-full object-cover" alt="Darmax Vending" />
+                    <img src={card.img} className="w-full h-full object-contain p-4" alt="Darmax Vending" />
                   </motion.div>
                 ))}
                 <div className="absolute inset-0 bg-cyan-100/40 blur-[120px] -z-10 rounded-full scale-150" />
@@ -352,7 +357,7 @@ export default function Nosotros() {
                       <SparklesIcon className="w-6 h-6 text-[#24d4da]" /> Nuestra promesa
                     </h4>
                     <p className="text-cyan-50/90 font-medium text-lg leading-snug">
-                      No vendemos “solo máquinas”. Creamos un sistema completo: instalación, soporte y una ruta clara para operar y escalar.
+                      Convertimos una inversión en un negocio listo para crecer.
                     </p>
                   </div>
                 </motion.div>
@@ -362,57 +367,77 @@ export default function Nosotros() {
         </section>
 
         {/* SECTION 4: LO QUE HACEMOS DIFERENTE */}
-        <section className="py-24 bg-white relative overflow-hidden">
+        <section className="py-20 sm:py-32 bg-white relative overflow-hidden">
           <Container>
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              <div className="space-y-10">
-                <motion.div {...fadeUp(0)}>
-                  <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950 leading-none">Lo que hacemos diferente</h2>
-                  <p className="mt-6 text-lg text-slate-600 leading-relaxed font-medium">
-                    No vendemos solo máquinas. <strong>Diseñamos sistemas de rentabilidad</strong> que permiten a cualquier persona ser dueña de su tiempo y su inversión.
-                  </p>
-                </motion.div>
+            <motion.div
+              {...fadeUp(0)}
+              className="text-center mb-16 sm:mb-24"
+            >
+              <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
+                Nuestro valor diferencial
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-950 tracking-tighter leading-tight">
+                Lo que hacemos <span className="underline decoration-[#24d4da]/30 underline-offset-[8px] sm:underline-offset-[12px] decoration-2">diferente</span>
+              </h2>
+              <p className="mt-6 text-slate-500 text-lg sm:text-xl font-medium leading-relaxed max-w-3xl mx-auto">
+                Creamos oportunidades reales para que más personas <strong className="text-slate-900">construyan un negocio propio y rentable.</strong>
+              </p>
+            </motion.div>
 
-                <div className="grid gap-6">
-                  {[
-                    { t: "Personalización Real", d: "Tú eliges cómo construir tu negocio según tu zona.", icon: SparklesIcon },
-                    { t: "Enfoque en Rentabilidad", d: "Herramientas para entender cuánto ganas, no solo cuánto inviertes.", icon: ChartBarIcon },
-                    { t: "Tecnología 24/7", d: "Modelos automatizados adaptados al mercado actual.", icon: CpuChipIcon }
-                  ].map((item, i) => (
-                    <motion.div 
-                      key={i} 
-                      {...fadeUp(0.1 * i)}
-                      className="flex items-start gap-6 p-6 rounded-[2.5rem] bg-cyan-50/30 border border-cyan-100/50 hover:border-[#24d4da] transition-all group shadow-sm"
-                    >
-                      <motion.div 
-                        whileHover={{ rotate: 15 }}
-                        className="w-14 h-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-[#168387] shrink-0"
-                      >
-                        <item.icon className="w-7 h-7" />
-                      </motion.div>
-                      <div>
-                        <h4 className="font-black text-slate-900 text-lg">{item.t}</h4>
-                        <p className="text-slate-500 leading-relaxed mt-1 font-medium">{item.d}</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-              
+            <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* COLUMNA IZQUIERDA: LOGO */}
               <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                className="hidden lg:flex relative items-center justify-center"
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="lg:col-span-5 relative flex items-center justify-center order-2 lg:order-1"
               >
-                <div className="absolute w-[400px] h-[400px] bg-cyan-100/60 blur-[100px] rounded-full animate-pulse" />
+                <div className="absolute w-[300px] h-[300px] bg-cyan-100/40 blur-[100px] rounded-full animate-pulse" />
                 <motion.img 
                   animate={{ y: [0, -15, 0] }}
                   transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                   src="/img/darmaxfoto.png" 
-                  className="relative z-10 w-full max-w-sm drop-shadow-2xl" 
+                  className="relative z-10 w-full max-w-[280px] sm:max-w-sm drop-shadow-2xl" 
                   alt="Darmax Diferencia" 
                 />
               </motion.div>
+
+              {/* COLUMNA DERECHA: LOS PUNTOS (TARJETAS) */}
+              <div className="lg:col-span-7 space-y-6 order-1 lg:order-2">
+                {[
+                  { t: "Personalización Real", d: "Tú eliges cómo construir tu negocio según tu zona y objetivos.", icon: SparklesIcon, step: "01" },
+                  { t: "Enfoque en Rentabilidad", d: "Herramientas para entender cuánto ganas, no solo cuánto inviertes.", icon: ChartBarIcon, step: "02" },
+                  { t: "Tecnología 24/7", d: "Modelos automatizados adaptados al mercado actual.", icon: CpuChipIcon, step: "03" }
+                ].map((item, i) => (
+                  <motion.div 
+                    key={i} 
+                    {...fadeUp(0.1 * i)}
+                    whileHover={{ x: 15 }}
+                    className="group relative overflow-hidden flex items-start gap-5 p-6 sm:p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(13,90,94,0.2)] cursor-default"
+                  >
+                    {/* Capa de fondo para el hover (Gradiente Premium) */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    
+                    <motion.div 
+                      className="relative z-10 w-14 h-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-[#168387] group-hover:bg-white/10 group-hover:text-white transition-all duration-500 shrink-0 group-hover:rotate-12"
+                    >
+                      <item.icon className="w-7 h-7" />
+                    </motion.div>
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-[10px] font-black text-[#24d4da] group-hover:text-cyan-300 uppercase tracking-[0.2em]">{item.step}</span>
+                        <h4 className="font-black text-slate-900 group-hover:text-white text-lg sm:text-xl transition-colors duration-500">{item.t}</h4>
+                      </div>
+                      <p className="text-slate-500 group-hover:text-cyan-50 text-sm sm:text-base leading-relaxed font-medium transition-colors duration-500">{item.d}</p>
+                    </div>
+
+                    <div className="absolute top-6 right-8 text-slate-200 group-hover:text-white/5 font-black text-5xl transition-colors duration-700 select-none">
+                      {item.step}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </Container>
         </section>
@@ -421,15 +446,20 @@ export default function Nosotros() {
         <section className="py-24 bg-slate-50 overflow-hidden relative">
           <Container>
             <div className="grid lg:grid-cols-12 gap-16 items-start">
-              <div className="lg:col-span-5 relative">
-                <motion.div style={{ scale: scaleImage }} className="relative group w-full">
+              <div className="lg:col-span-5 relative flex justify-center lg:block">
+                <motion.div style={{ scale: scaleImage }} className="relative group w-full max-w-sm lg:max-w-none">
                   <div className="relative aspect-[4/5] rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)] border-[12px] border-white bg-slate-950">
                     <img src="https://res.cloudinary.com/defkuaytw/image/upload/v1776662291/ChatGPT_Image_19_abr_2026_07_16_41_p.m._wx55yy.png" alt="Darmax Noche" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent pointer-events-none" />
                   </div>
-                  <motion.div {...fadeUp(0.4)} className="absolute -bottom-10 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:-right-8 bg-white/10 backdrop-blur-xl text-white p-8 rounded-[2.5rem] shadow-2xl w-[90%] md:w-auto md:max-w-xs z-20 border border-white/20">
-                    <p className="text-xl md:text-2xl font-black leading-tight italic text-center md:text-left drop-shadow-md">“Mientras otros venden equipos, nosotros construimos negocios.”</p>
-                    <div className="mt-4 w-12 h-1.5 bg-[#24d4da] rounded-full mx-auto md:mx-0 shadow-[0_0_10px_#24d4da]" />
+                  <motion.div 
+                    {...fadeUp(0.4)} 
+                    className="absolute -bottom-12 left-0 right-0 mx-auto w-[92%] sm:w-[80%] lg:w-auto lg:max-w-xs lg:left-auto lg:-right-8 lg:translate-x-0 bg-white/10 backdrop-blur-xl text-white p-8 rounded-[2.5rem] shadow-2xl z-20 border border-white/20"
+                  >
+                    <p className="text-xl lg:text-2xl font-black leading-tight italic text-center lg:text-left drop-shadow-md">
+                      “Mientras otros venden equipos, nosotros construimos negocios.”
+                    </p>
+                    <div className="mt-4 w-12 h-1.5 bg-[#24d4da] rounded-full mx-auto lg:mx-0 shadow-[0_0_10px_#24d4da]" />
                   </motion.div>
                 </motion.div>
               </div>
@@ -466,7 +496,7 @@ export default function Nosotros() {
             <motion.div {...fadeUp(0)} className="text-center mb-16">
               <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white">¿Por qué Darmax es tu mejor opción?</h2>
               <p className="mt-6 text-cyan-50 max-w-2xl mx-auto text-xl font-medium leading-relaxed">
-                Decidimos no competir igual… decidimos hacerlo mejor, con un enfoque 100% humano y tecnológico.
+                Impulsamos emprendedores con tecnología inteligente y acompañamiento real.
               </p>
             </motion.div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -478,32 +508,54 @@ export default function Nosotros() {
         </section>
 
         {/* SECTION 7: VALORES (CARDS MEJORADAS) */}
-        <section className="py-32 bg-white relative">
+        <section className="py-20 sm:py-32 bg-white relative overflow-hidden">
           <Container>
-            <div className="grid lg:grid-cols-2 gap-16 items-end mb-24">
-              <motion.div {...fadeUp(0)}>
-                <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-950 leading-none">Lo que nos mueve</h2>
-                <p className="mt-6 text-xl text-slate-600 font-medium italic">Nuestros valores no están en la pared, están en cada equipo que instalamos.</p>
-              </motion.div>
-            </div>
+            <motion.div
+              {...fadeUp(0)}
+              className="text-center mb-16 sm:mb-24"
+            >
+              <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
+                Nuestra esencia
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight">
+                Lo que nos <span className="underline decoration-[#24d4da]/30 underline-offset-[8px] sm:underline-offset-[12px] decoration-2">mueve</span>
+              </h2>
+              <p className="mt-6 text-slate-500 max-w-2xl mx-auto text-lg sm:text-xl font-medium italic">
+                Nuestros valores se reflejan en cada proyecto, cada instalación y cada negocio que ayudamos a crecer.
+              </p>
+            </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {VALORES.map((v, i) => (
                 <motion.div 
                   key={i}
                   {...fadeUp(0.1 * i)}
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  className="p-7 rounded-[2.5rem] bg-white border border-slate-100 shadow-[0_15px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_30px_60px_rgba(36,212,218,0.12)] hover:border-[#24d4da]/30 transition-all duration-500 group relative overflow-hidden"
+                  whileHover={{ y: -12, scale: 1.02 }}
+                  className="group relative overflow-hidden p-8 rounded-[2.5rem] sm:rounded-[3.5rem] bg-white border border-slate-100 flex flex-col transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(13,90,94,0.3)] shadow-xl shadow-slate-900/5 cursor-default"
                 >
-                  {/* Decoración de fondo de tarjeta */}
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700 opacity-40" />
+                  {/* Capa de fondo para el hover (Gradiente de Anatomía 3D) */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   
+                  {/* Textura sutil en hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:20px_20px] transition-opacity duration-700" />
+
                   <div className="relative z-10">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${v.color} text-white flex items-center justify-center mb-5 shadow-md group-hover:rotate-12 transition-transform duration-500`}>
-                      <v.icon className="w-6 h-6 stroke-[1.5]" />
+                    <div className={`w-14 h-14 rounded-2xl bg-slate-50 group-hover:bg-white/10 text-[#168387] group-hover:text-white flex items-center justify-center mb-6 shadow-sm group-hover:rotate-12 transition-all duration-500`}>
+                      <v.icon className="w-8 h-8 stroke-[1.5]" />
                     </div>
-                    <h4 className="text-xl font-black text-slate-950 mb-2 tracking-tight">{v.t}</h4>
-                    <p className="text-slate-500 font-medium text-sm leading-relaxed">{v.d}</p>
+                    
+                    <h4 className="text-2xl font-black text-slate-950 group-hover:text-white mb-3 tracking-tight transition-colors duration-500">
+                      {v.t}
+                    </h4>
+                    
+                    <p className="text-slate-500 group-hover:text-cyan-50 font-medium text-sm leading-relaxed transition-colors duration-500">
+                      {v.d}
+                    </p>
+                    
+                    <div className="mt-8 flex items-center gap-2">
+                      <div className="h-px w-8 bg-slate-200 group-hover:bg-white/20 group-hover:w-12 transition-all duration-500" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-cyan-300 transition-colors duration-500">Valor {i+1}</span>
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -524,7 +576,7 @@ export default function Nosotros() {
               <div className="relative z-10 max-w-4xl mx-auto">
                 <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 drop-shadow-sm">Más que clientes, aliados</h2>
                 <p className="text-xl md:text-2xl text-cyan-50 font-medium leading-relaxed mb-12">
-                  No buscamos venderte una máquina. Buscamos ayudarte a construir un negocio que crezca contigo. <br />
+                  Acompañamos a cada emprendedor en la construcción de un negocio pensado para crecer.<br />
                   <span className="font-black text-white mt-4 block uppercase tracking-widest text-lg bg-white/10 py-2 rounded-full border border-white/10 backdrop-blur-sm">Porque cuando tu negocio crece, nosotros también.</span>
                 </p>
                 <div className="flex flex-wrap justify-center gap-6">

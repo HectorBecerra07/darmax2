@@ -78,9 +78,14 @@ router.put("/", async (req, res) => {
   if (!id) return res.status(400).json({ error: "Missing ID" });
 
   try {
+    const { tags, ...rest } = req.body;
+    
     const updatedPost = await prisma.blogPost.update({
       where: { id },
-      data: req.body
+      data: {
+        ...rest,
+        ...(tags && { tags: Array.isArray(tags) ? tags : [tags] })
+      }
     });
     res.json(updatedPost);
   } catch (error) {

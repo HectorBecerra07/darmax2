@@ -485,11 +485,11 @@ export default function LandingPage() {
             >
               <div className="max-w-3xl text-left">
                 <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight mb-2 sm:mb-4">
-                  Tu éxito no es suerte, <br />
+                  Tu éxito, <br />
                   es <span style={{ color: CALC_BRAND.accentDark }}>matemática pura.</span>
                 </h2>
                 <p className="text-slate-500 text-base sm:text-lg font-medium leading-relaxed">
-                  Elimina la incertidumbre. Visualiza el retorno de tu inversión con datos reales del mercado mexicano.
+                  Descubre el potencial real de tu inversión, las mejores decisiones comienzan con datos reales.
                 </p>
               </div>
 

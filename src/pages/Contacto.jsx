@@ -55,15 +55,15 @@ export default function Contacto() {
           </motion.div>
         </section>
 
-        {/* SECCIÓN OTROS MEDIOS (FONDO OSCURO FLUSH CON FOOTER) */}
-        <section className="py-24 bg-slate-900 overflow-hidden relative">
+        {/* SECCIÓN OTROS MEDIOS (FONDO TURQUESA PREMIUM) */}
+        <section className="py-24 bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] overflow-hidden relative shadow-[inset_0_20px_50px_rgba(0,0,0,0.05)]">
           {/* Decoración Parallax Sutil */}
-          <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:32px_32px]" />
+          <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:32px_32px]" />
           
           <div className="max-w-7xl mx-auto px-4 relative z-10">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-black text-white tracking-tight">Otras formas de contactarnos</h2>
-              <p className="text-slate-400 mt-4 font-medium uppercase tracking-widest text-xs">Atención inmediata y personalizada</p>
+              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Otras formas de contactarnos</h2>
+              <p className="text-cyan-50 mt-4 font-medium uppercase tracking-widest text-xs opacity-80">Atención inmediata y personalizada</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -78,13 +78,13 @@ export default function Contacto() {
                     key={idx}
                     href={item.link}
                     whileHover={{ y: -8, scale: 1.02 }}
-                    className="p-10 bg-white/5 border border-white/10 rounded-[2.5rem] backdrop-blur-xl hover:bg-white/10 transition-all group flex flex-col items-center text-center"
+                    className="p-10 bg-white/10 border border-white/20 rounded-[2.5rem] backdrop-blur-xl hover:bg-white/20 transition-all group flex flex-col items-center text-center"
                   >
-                    <div className="w-14 h-14 rounded-2xl bg-[#168387]/20 flex items-center justify-center text-[#24d4da] mb-6 shadow-inner border border-white/5">
+                    <div className="w-14 h-14 rounded-2xl bg-white text-[#168387] flex items-center justify-center mb-6 shadow-lg group-hover:rotate-12 transition-transform">
                       <Icon className="w-7 h-7" />
                     </div>
-                    <p className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em] mb-3 group-hover:text-white transition-colors">{item.label}</p>
-                    <p className="text-xl font-black text-white tracking-tight leading-none">{item.value}</p>
+                    <p className="text-[10px] font-black uppercase text-cyan-100/60 tracking-[0.2em] mb-3 transition-colors">{item.label}</p>
+                    <p className="text-xl font-black text-white tracking-tight leading-tight">{item.value}</p>
                   </motion.a>
                 );
               })}

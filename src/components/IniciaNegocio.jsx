@@ -270,7 +270,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       {/* BADGE DE NIVEL */}
       {!isBundle ? getLevelBadge() : (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-1 bg-[#168387] text-white text-xs font-black uppercase tracking-[0.2em] rounded-full shadow-lg whitespace-nowrap">
-          Ecosistema Premium
+          {modelo.id === "Duo-Emprendedor" ? "Escalable" : "Ecosistema Premium"}
         </div>
       )}
 
@@ -606,12 +606,12 @@ const IniciaNegocio = () => {
             </motion.div>
           </div>
 
-          <div className="mt-12 sm:mt-16 text-center">
+          <div className="mt-12 sm:mt-20 text-center">
             <motion.div 
               {...fadeUp(0.4)}
-              className="inline-flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-white/10 border border-white/20 text-cyan-50 text-xs sm:text-sm font-bold backdrop-blur-sm"
+              className="inline-flex items-center gap-3 sm:gap-6 p-4 sm:p-8 rounded-3xl sm:rounded-[3rem] bg-white/20 border border-white/40 text-white text-lg sm:text-3xl font-black backdrop-blur-xl shadow-[0_15px_40px_rgba(0,0,0,0.15)]"
             >
-              <div className="w-2 h-2 rounded-full animate-pulse bg-white" />
+              <div className="w-3 h-3 sm:w-5 sm:h-5 rounded-full animate-pulse bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
               ROI Proyectado: 12 meses para el retorno total de inversión
             </motion.div>
           </div>
@@ -747,126 +747,33 @@ const IniciaNegocio = () => {
         </div>
       </section>
 
-      {/* HISTORIAS DE ÉXITO (TESTIMONIOS) */}
-<section id="testimonios" className="relative py-20 sm:py-32 overflow-hidden bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] text-white">
-  {/* Fondo con textura sutil */}
-  <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:20px_20px]" />
-  
-  <div className="max-w-7xl mx-auto px-4 w-full relative z-10">
-    <motion.div
-      {...fadeUp(0)}
-      className="text-center mb-16 sm:mb-24"
-    >
-      <span className="text-cyan-100 font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block opacity-80">
-        Resultados Reales
-      </span>
-      <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tighter leading-tight">
-        Más que clientes, <br />
-        <span className="text-white/90">historias de <span className="underline decoration-white/30 underline-offset-[8px] sm:underline-offset-[12px] decoration-2">éxito</span></span>
-      </h2>
-    </motion.div>
-
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-      {[
-        { 
-          initials: "GA", 
-          name: "Gerardo Adrian Chávez", 
-          role: "Emprendedor Darmax", 
-          text: "\"Un aliado fundamental para dar el primer paso. Su tecnología me dio la confianza necesaria para iniciar mi propio camino en el negocio del agua.\"",
-          badge: "Negocio en Operación",
-          Icon: CheckBadgeIcon,
-          delay: 0.1
-        },
-        { 
-          initials: "SG", 
-          name: "Salvador Guerrero", 
-          role: "Inversionista Escalable", 
-          text: "\"Empecé con una sola Vending, pero los resultados fueron tan claros que pronto escalamos a un modelo híbrido con mostrador. La mejor decisión de inversión.\"",
-          badge: "Crecimiento Multi-Unidad",
-          Icon: ArrowTrendingUpIcon,
-          delay: 0.2
-        },
-        { 
-          initials: "PM", 
-          name: "Purificadora Maitreya", 
-          role: "Proyecto Especial", 
-          text: "\"Necesitábamos una solución única y personalizada para nuestra marca. Darmax diseñó una Vending especial que se adapta perfectamente a nuestra identidad.\"",
-          badge: "Diseño a la Medida",
-          Icon: WrenchScrewdriverIcon,
-          delay: 0.3
-        }
-      ].map((testimonio, i) => (
-        <motion.div
-          key={i}
-          {...fadeUp(testimonio.delay)}
-          whileHover={{ y: -12, scale: 1.02 }}
-          className="relative overflow-hidden p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3.5rem] bg-white/10 border border-white/30 backdrop-blur-xl flex flex-col group transition-all duration-700 hover:bg-white/20 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.3)] shadow-2xl shadow-cyan-950/10"
-        >
-          {/* Brillo dinámico en hover */}
-          <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 blur-3xl -mr-20 -mt-20 opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-
-          <div className="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8 relative z-10">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white text-[#168387] flex items-center justify-center text-lg sm:text-xl font-black shadow-xl group-hover:rotate-6 transition-transform duration-500">
-              {testimonio.initials}
-            </div>
-            <div>
-              <h4 className="font-black text-white text-base sm:text-lg leading-tight">
-                {testimonio.name}
-              </h4>
-              <div className="flex gap-0.5 my-1 sm:my-1.5">
-                {[...Array(5)].map((_, i) => (
-                  <StarIcon key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
-                ))}
-              </div>
-              <p className="text-xs font-bold text-cyan-200 uppercase tracking-widest opacity-80">
-                {testimonio.role}
-              </p>
-            </div>
-          </div>
-
-          <p className="text-white text-sm sm:text-base leading-relaxed font-medium italic mb-6 sm:mb-10 opacity-90 relative z-10">
-            {testimonio.text}
-          </p>
-
-          <div className="mt-auto pt-6 sm:pt-8 border-t border-white/10 relative z-10">
-            <div className="flex items-center gap-3">
-              <testimonio.Icon className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-300" />
-              <span className="text-xs font-black text-cyan-100 uppercase tracking-[0.1em] sm:tracking-[0.15em] opacity-70">
-                {testimonio.badge}
-              </span>
-            </div>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  </div>
-</section>
-
       {/* SECCIÓN 3D: ANATOMÍA DEL ÉXITO */}
       <motion.section
         id="experiencia-3d"
         {...fadeUp(0)}
-        className="relative bg-white border-t border-slate-100 py-16 sm:py-24 overflow-hidden"
+        className="relative bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] py-20 sm:py-32 overflow-hidden text-white"
       >
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-12 gap-12 sm:gap-16 items-center">
+        {/* Fondo con textura sutil */}
+        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:20px_20px]" />
+
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             
             {/* TEXTO NARRATIVO (IZQUIERDA) */}
-            <div className="lg:col-span-5 space-y-6 sm:space-y-12 relative z-10">
+            <div className="lg:col-span-6 space-y-6 sm:space-y-10 relative z-10 lg:pr-12">
               <div>
-                <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
+                <span className="text-cyan-100 font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block opacity-80">
                   Ingeniería de Precisión
                 </span>
-                <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight mb-4 sm:mb-6 break-words">
-                  La anatomía de <br />
-                  <span className="text-[#168387]">tu éxito</span>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter leading-tight mb-4 sm:mb-6">
+                  La nueva generación de purificación inteligente
                 </h2>
-                <p className="text-slate-500 text-sm sm:text-lg font-medium leading-relaxed max-w-sm">
-                  No es solo una máquina, es una pieza de ingeniería diseñada para operar sin descanso.
+                <p className="text-cyan-50/80 text-sm sm:text-lg font-medium leading-relaxed max-w-md">
+                  Cada detalle pensado para impulsar un negocio que nunca se detiene.
                 </p>
               </div>
 
-              <div className="space-y-5 sm:space-y-8">
+              <div className="space-y-5 sm:space-y-6">
                 {[
                   { 
                     t: "Diseño Industrial", 
@@ -889,12 +796,12 @@ const IniciaNegocio = () => {
                     {...fadeUp(0.1 * i)}
                     className="flex gap-4 sm:gap-6 group"
                   >
-                    <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-[#168387] group-hover:text-white transition-all duration-500 shadow-sm">
+                    <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl bg-white/10 text-cyan-300 flex items-center justify-center group-hover:bg-white group-hover:text-[#168387] transition-all duration-500 shadow-sm">
                       <item.icon className="w-4 h-4 sm:w-6 sm:h-6" />
                     </div>
                     <div>
-                      <h4 className="font-black text-slate-900 text-base sm:text-xl mb-1 sm:mb-2">{item.t}</h4>
-                      <p className="text-slate-400 text-sm sm:text-base leading-relaxed font-medium">{item.d}</p>
+                      <h4 className="font-black text-white text-base sm:text-xl mb-1 sm:mb-2">{item.t}</h4>
+                      <p className="text-cyan-100/60 text-sm sm:text-base leading-relaxed font-medium">{item.d}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -902,27 +809,122 @@ const IniciaNegocio = () => {
             </div>
 
             {/* MODELO 3D (DERECHA) */}
-            <div className="lg:col-span-7 relative w-full overflow-visible">
-              <div className="relative rounded-[2rem] sm:rounded-[4rem] bg-slate-50 border border-slate-100 p-2 sm:p-8 shadow-inner group">
-                <div className="absolute top-4 sm:top-8 right-4 sm:right-8 z-20">
-                  <div className="flex items-center gap-2 sm:gap-3 px-2 py-1 sm:px-4 sm:py-2 bg-white rounded-lg sm:rounded-xl border border-slate-200 shadow-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
-                    <span className="text-xs font-black text-slate-900 uppercase tracking-widest">360° Interactiva</span>
+            <div className="lg:col-span-6 relative w-full overflow-visible">
+              <div className="relative rounded-[2rem] sm:rounded-[3rem] bg-white/5 border border-white/10 p-2 sm:p-6 shadow-2xl backdrop-blur-sm group">
+                <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-20">
+                  <div className="flex items-center gap-2 sm:gap-3 px-2 py-1 sm:px-3 sm:py-1.5 bg-white/10 rounded-lg sm:rounded-xl border border-white/20 backdrop-blur-md shadow-sm">
+                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest">360° Interactiva</span>
                   </div>
                 </div>
 
-                <div className="h-[300px] sm:h-[450px] md:h-[550px] flex items-center justify-center overflow-visible">
+                <div className="h-[280px] sm:h-[400px] md:h-[480px] flex items-center justify-center overflow-visible">
                   <VendingPrecise3D />
                 </div>
 
-                <div className="absolute bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 text-xs font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap">
-                  Arrastra para explorar
+                <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-black text-white uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap opacity-60">
+                  Arrastra para rotar e interactuar
                 </div>
               </div>
             </div>
           </div>
         </div>
       </motion.section>
+
+      {/* HISTORIAS DE ÉXITO (TESTIMONIOS) */}
+      <section id="testimonios" className="relative py-20 sm:py-32 overflow-hidden bg-white">
+        <div className="max-w-7xl mx-auto px-4 w-full relative z-10">
+          <motion.div
+            {...fadeUp(0)}
+            className="text-center mb-16 sm:mb-24"
+          >
+            <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
+              Resultados Reales
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight">
+              Más que clientes, <br />
+              <span className="text-slate-900/90">historias de <span className="underline decoration-[#24d4da]/30 underline-offset-[8px] sm:underline-offset-[12px] decoration-2">éxito</span></span>
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {[
+              { 
+                initials: "GA", 
+                name: "Gerardo Adrian Chávez", 
+                role: "Emprendedor Darmax", 
+                text: "\"Un aliado fundamental para dar el primer paso. Su tecnología me dio la confianza necesaria para iniciar mi propio camino en el negocio del agua.\"",
+                badge: "Negocio en Operación",
+                Icon: CheckBadgeIcon,
+                delay: 0.1
+              },
+              { 
+                initials: "SG", 
+                name: "Salvador Guerrero", 
+                role: "Inversionista Escalable", 
+                text: "\"Empecé con una sola Vending, pero los resultados fueron tan claros que pronto escalamos a un modelo híbrido con mostrador. La mejor decisión de inversión.\"",
+                badge: "Crecimiento Multi-Unidad",
+                Icon: ArrowTrendingUpIcon,
+                delay: 0.2
+              },
+              { 
+                initials: "PM", 
+                name: "Purificadora Maitreya", 
+                role: "Proyecto Especial", 
+                text: "\"Necesitábamos una solución única y personalizada para nuestra marca. Darmax diseñó una Vending especial que se adapta perfectamente a nuestra identidad.\"",
+                badge: "Diseño a la Medida",
+                Icon: WrenchScrewdriverIcon,
+                delay: 0.3
+              }
+            ].map((testimonio, i) => (
+              <motion.div
+                key={i}
+                {...fadeUp(testimonio.delay)}
+                whileHover={{ y: -12, scale: 1.02 }}
+                className="group relative overflow-hidden p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3.5rem] bg-white border border-slate-100 flex flex-col transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(13,90,94,0.3)] shadow-xl shadow-slate-900/5 cursor-default"
+              >
+                {/* Capa de fondo para el hover (Gradiente de Anatomía 3D) */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                
+                {/* Textura sutil en hover */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:20px_20px] transition-opacity duration-700" />
+
+                <div className="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8 relative z-10">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-slate-50 group-hover:bg-white/10 text-[#168387] group-hover:text-white flex items-center justify-center text-lg sm:text-xl font-black shadow-sm group-hover:rotate-6 transition-all duration-500">
+                    {testimonio.initials}
+                  </div>
+                  <div>
+                    <h4 className="font-black text-slate-900 group-hover:text-white text-base sm:text-lg leading-tight transition-colors duration-500">
+                      {testimonio.name}
+                    </h4>
+                    <div className="flex gap-0.5 my-1 sm:my-1.5">
+                      {[...Array(5)].map((_, i) => (
+                        <StarIcon key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)] group-hover:drop-shadow-[0_0_12px_rgba(251,191,36,0.6)] transition-all" />
+                      ))}
+                    </div>
+                    <p className="text-xs font-bold text-[#168387] group-hover:text-cyan-200 uppercase tracking-widest opacity-80 transition-colors duration-500">
+                      {testimonio.role}
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-slate-600 group-hover:text-white text-sm sm:text-base leading-relaxed font-medium italic mb-6 sm:mb-10 opacity-90 relative z-10 transition-colors duration-500">
+                  {testimonio.text}
+                </p>
+
+                <div className="mt-auto pt-6 sm:pt-8 border-t border-slate-50 group-hover:border-white/10 relative z-10 transition-colors duration-500">
+                  <div className="flex items-center gap-3">
+                    <testimonio.Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#24d4da] group-hover:text-cyan-300 transition-colors duration-500" />
+                    <span className="text-xs font-black text-slate-400 group-hover:text-cyan-100/60 uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-colors duration-500">
+                      {testimonio.badge}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <VentajasSection />
 

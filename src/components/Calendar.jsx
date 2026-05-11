@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, CalendarPlus, Loader2, Clock, Target, Timer } from "lucide-react";
 
 const Calendar = () => {
@@ -37,8 +38,18 @@ const Calendar = () => {
       try {
         const formattedDate = formatDateToYYYYMMDD(selectedDate);
         const res = await fetch(`/api/zoom/meetings?date=${formattedDate}`);
+        
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`Error ${res.status}: ${text || 'Respuesta no válida del servidor'}`);
+        }
+
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("El servidor no devolvió un JSON válido. Verifica que el backend esté corriendo.");
+        }
+
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || `Error fetching booked times: ${res.status}`);
         const times = data.map(meeting => {
           const date = new Date(meeting.startTime);
           return date.toLocaleTimeString('en-GB', { timeZone, hour: '2-digit', minute: '2-digit' });
@@ -46,7 +57,7 @@ const Calendar = () => {
         setBookedTimes(times);
       } catch (e) {
         console.error("Error fetching booked times:", e);
-        setError("Error al cargar horarios.");
+        setError("No se pudieron cargar los horarios. Asegúrate de que el servidor esté activo.");
       } finally {
         setFetchingBookedTimes(false);
       }
@@ -123,80 +134,108 @@ const Calendar = () => {
   }, [selectedDate, duration, bookedTimes]);
 
   return (
-    <div className="w-full max-w-5xl mx-auto">
-      <div className="flex flex-col lg:flex-row gap-8 lg:items-start justify-center">
+    <div className="w-full max-w-6xl mx-auto">
+      <div className="flex flex-col lg:flex-row gap-12 items-center lg:items-stretch justify-center">
         
-        {/* CALENDARIO COMPACTO */}
-        <div className="w-full lg:w-[380px] shrink-0">
-          <div className="flex items-center justify-between py-2 mb-4 px-2">
-            <button onClick={handlePrevMonth} className="p-1.5 rounded-full hover:bg-slate-100 transition-colors">
-              <ChevronLeft className="w-5 h-5 text-slate-500" />
-            </button>
-            <h2 className="text-lg font-black text-slate-800 capitalize tracking-tight">{monthYearLabel}</h2>
-            <button onClick={handleNextMonth} className="p-1.5 rounded-full hover:bg-slate-100 transition-colors">
-              <ChevronRight className="w-5 h-5 text-slate-500" />
-            </button>
+        {/* CALENDARIO PREMIUM */}
+        <div className="w-full lg:w-[420px] bg-white p-8 rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/50 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-8">
+              <button onClick={handlePrevMonth} className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-all">
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <h2 className="text-xl font-black text-slate-900 capitalize tracking-tight">{monthYearLabel}</h2>
+              <button onClick={handleNextMonth} className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-all">
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-7 gap-2 mb-4">
+              {daysOfWeek.map(day => (
+                <div key={day} className="text-center text-[10px] font-black text-[#168387] uppercase tracking-widest opacity-40">
+                  {day}
+                </div>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-7 gap-2">
+              {(() => {
+                const month = currentDate.getMonth();
+                const year = currentDate.getFullYear();
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const today = new Date();
+                const cells = [];
+                for (let i = 0; i < firstDay; i++) cells.push(<div key={`empty-${i}`} className="w-12 h-12" />);
+                for (let day = 1; day <= daysInMonth; day++) {
+                  const isSelected = selectedDate?.getDate() === day && selectedDate?.getMonth() === month && selectedDate?.getFullYear() === year;
+                  const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
+                  cells.push(
+                    <button
+                      key={day}
+                      onClick={() => handleDateClick(day)}
+                      className={`w-12 h-12 flex items-center justify-center rounded-2xl text-sm font-black transition-all relative group ${
+                        isSelected 
+                          ? "bg-gradient-to-br from-[#24d4da] to-[#168387] text-white shadow-lg shadow-[#24d4da]/40 scale-110" 
+                          : "text-slate-700 hover:bg-cyan-50 hover:text-[#168387]"
+                      }`}
+                    >
+                      {day}
+                      {isToday && !isSelected && (
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#24d4da]" />
+                      )}
+                    </button>
+                  );
+                }
+                return cells;
+              })()}
+            </div>
           </div>
-          
-          <div className="grid grid-cols-7 gap-1 mb-2">
-            {daysOfWeek.map(day => (
-              <div key={day} className="text-center text-[9px] font-black text-slate-400 uppercase tracking-tighter">
-                {day}
-              </div>
-            ))}
-          </div>
-          
-          <div className="grid grid-cols-7 gap-1">
-            {(() => {
-              const month = currentDate.getMonth();
-              const year = currentDate.getFullYear();
-              const firstDay = new Date(year, month, 1).getDay();
-              const daysInMonth = new Date(year, month + 1, 0).getDate();
-              const today = new Date();
-              const cells = [];
-              for (let i = 0; i < firstDay; i++) cells.push(<div key={`empty-${i}`} className="w-10 h-10" />);
-              for (let day = 1; day <= daysInMonth; day++) {
-                const isSelected = selectedDate?.getDate() === day && selectedDate?.getMonth() === month && selectedDate?.getFullYear() === year;
-                const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
-                cells.push(
-                  <button
-                    key={day}
-                    onClick={() => handleDateClick(day)}
-                    className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-bold transition-all ${isSelected ? "bg-[#168387] text-white shadow-md shadow-[#168387]/30 scale-110" : "text-slate-600 hover:bg-[#24d4da]/10"} ${isToday && !isSelected ? "ring-2 ring-[#24d4da] ring-offset-1" : ""}`}
-                  >
-                    {day}
-                  </button>
-                );
-              }
-              return cells;
-            })()}
+
+          <div className="mt-8 pt-6 border-t border-slate-50 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-cyan-50 flex items-center justify-center text-[#168387]">
+              <Clock className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Zona Horaria</p>
+              <p className="text-xs font-bold text-slate-700">CDMX, México (GMT-6)</p>
+            </div>
           </div>
         </div>
 
-        {/* FORMULARIO COMPACTO */}
-        <div className="flex-1 max-w-md bg-white p-6 sm:p-8 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/40">
+        {/* FORMULARIO PREMIUM */}
+        <div className="w-full lg:max-w-md bg-white p-8 sm:p-10 rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/50 relative overflow-hidden">
+          {/* Decoración fondo formulario */}
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-cyan-50/30 rounded-full blur-3xl pointer-events-none" />
+
           {meetingLink ? (
-            <div className="text-center py-6 animate-fade-in">
-              <div className="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">✓</div>
-              <h3 className="text-xl font-black text-slate-900 mb-1">¡Cita Agendada!</h3>
-              <p className="text-xs text-slate-500 mb-6 leading-relaxed">Detalles enviados a:<br/><b>{email}</b></p>
-              <a href={meetingLink} target="_blank" rel="noopener noreferrer" className="block w-full p-3.5 bg-blue-600 text-white rounded-xl font-black text-sm hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200">Entrar a Zoom</a>
-              <button onClick={() => setMeetingLink("")} className="mt-4 text-slate-400 font-bold text-xs hover:text-[#168387] uppercase tracking-widest transition-colors">Agendar otra sesión</button>
+            <div className="relative z-10 text-center py-6">
+              <motion.div 
+                initial={{ scale: 0 }} 
+                animate={{ scale: 1 }} 
+                className="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-3xl shadow-xl shadow-green-500/20"
+              >
+                ✓
+              </motion.div>
+              <h3 className="text-2xl font-black text-slate-900 mb-2">¡Todo listo!</h3>
+              <p className="text-sm text-slate-500 mb-8 leading-relaxed">Hemos reservado tu lugar.<br/>Recibirás los detalles en: <b>{email}</b></p>
+              <a href={meetingLink} target="_blank" rel="noopener noreferrer" className="block w-full p-4 bg-slate-950 text-white rounded-2xl font-black text-sm hover:bg-[#168387] transition-all shadow-xl">Entrar a Sesión Zoom</a>
+              <button onClick={() => setMeetingLink("")} className="mt-6 text-slate-400 font-bold text-xs hover:text-[#168387] uppercase tracking-widest transition-colors">Agendar otra asesoría</button>
             </div>
           ) : (
-            <div className="space-y-5">
-              <div className="flex items-center justify-between border-b border-slate-50 pb-3">
+            <div className="relative z-10 space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-0.5">Seleccionado</span>
-                  <span className="text-sm font-black text-[#168387] uppercase">{selectedLabel}</span>
+                  <span className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-1">Fecha de Sesión</span>
+                  <span className="text-lg font-black text-[#168387] uppercase tracking-tight">{selectedLabel}</span>
                 </div>
-                {fetchingBookedTimes && <Loader2 className="w-4 h-4 animate-spin text-slate-300" />}
+                {fetchingBookedTimes && <Loader2 className="w-5 h-5 animate-spin text-cyan-400" />}
               </div>
 
-              <div className="grid grid-cols-1 gap-4">
+              <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-[9px] font-black uppercase text-slate-400 tracking-widest px-1">
-                    <Target className="w-3 h-3" /> Objetivo de la sesión
+                  <label className="flex items-center gap-2 text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">
+                    <Target className="w-3.5 h-3.5" /> Tipo de asesoría
                   </label>
                   <select 
                     value={topic} 
@@ -207,27 +246,25 @@ const Calendar = () => {
                       else if (val.includes("Consulta")) setDuration(15);
                       else setDuration(30);
                     }} 
-                    className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs font-bold focus:bg-white outline-none appearance-none cursor-pointer"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-cyan-100 outline-none appearance-none cursor-pointer transition-all"
                   >
-                    <option value="Demo Virtual">🎥 Demo Virtual: Ver equipo</option>
-                    <option value="Sesión Estrategia">📊 Sesión Estrategia: Mi Plan</option>
-                    <option value="Consulta Rápida">☕ Consulta Rápida: Dudas</option>
+                    <option value="Demo Virtual">🎥 Demo Virtual: Ver equipo en vivo</option>
+                    <option value="Sesión Estrategia">📊 Sesión Estrategia: Mi Plan de Negocio</option>
+                    <option value="Consulta Rápida">☕ Consulta Rápida: Resolver dudas</option>
                   </select>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-[9px] font-black uppercase text-slate-400 tracking-widest px-1">
-                    <div className="flex items-center justify-between w-full">
-                      <span className="flex items-center gap-2"><Timer className="w-3 h-3" /> Duración</span>
-                      <span className="text-[#168387] font-black">{duration} min</span>
-                    </div>
+                <div className="space-y-3">
+                  <label className="flex items-center justify-between text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">
+                    <span className="flex items-center gap-2"><Timer className="w-3.5 h-3.5" /> Duración estimada</span>
+                    <span className="text-[#168387] font-black bg-cyan-50 px-2 py-1 rounded-lg">{duration} min</span>
                   </label>
                   <div className="flex gap-2">
                     {[15, 30, 45, 60].map(m => (
                       <button 
                         key={m} 
                         onClick={() => setDuration(m)}
-                        className={`flex-1 py-2 rounded-xl text-[10px] font-black transition-all ${duration === m ? "bg-cyan-500 text-white shadow-md shadow-cyan-200" : "bg-slate-50 text-slate-400 hover:bg-slate-100"}`}
+                        className={`flex-1 py-3 rounded-xl text-[11px] font-black transition-all ${duration === m ? "bg-[#168387] text-white shadow-lg shadow-[#168387]/20" : "bg-slate-50 text-slate-400 hover:bg-slate-100"}`}
                       >
                         {m}m
                       </button>
@@ -236,27 +273,37 @@ const Calendar = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-[9px] font-black uppercase text-slate-400 tracking-widest px-1">Horarios Disponibles</label>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black uppercase text-slate-500 tracking-widest px-1">Horarios Disponibles</label>
                 <div className="grid grid-cols-3 gap-2">
-                  {availableTimeSlots.length > 0 ? availableTimeSlots.slice(0, 6).map(slot => (
-                    <button key={slot} onClick={() => setSelectedTimeSlot(slot)} className={`py-2 rounded-xl text-xs font-black transition-all ${selectedTimeSlot === slot ? "bg-[#168387] text-white shadow-md" : "bg-slate-50 text-slate-500 hover:bg-slate-100"}`}>{slot}</button>
-                  )) : <p className="col-span-3 text-[10px] text-slate-400 text-center py-2 italic bg-slate-50 rounded-xl">Sin horarios</p>}
+                  {availableTimeSlots.length > 0 ? availableTimeSlots.slice(0, 9).map(slot => (
+                    <button key={slot} onClick={() => setSelectedTimeSlot(slot)} className={`py-3 rounded-xl text-xs font-black transition-all ${selectedTimeSlot === slot ? "bg-[#24d4da] text-slate-900 shadow-lg shadow-cyan-500/20 scale-105" : "bg-slate-50 text-slate-600 hover:bg-slate-100"}`}>{slot}</button>
+                  )) : <p className="col-span-3 text-xs text-slate-400 text-center py-4 italic bg-slate-50 rounded-2xl border border-dashed border-slate-200">No hay horarios disponibles hoy</p>}
                 </div>
               </div>
 
-              <div className="space-y-2.5 pt-2 border-t border-slate-50">
-                <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Nombre completo" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs font-bold focus:bg-white outline-none" />
-                <div className="grid grid-cols-2 gap-2">
-                  <input value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@correo.com" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs font-bold focus:bg-white outline-none" />
-                  <input value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="Teléfono" className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs font-bold focus:bg-white outline-none" />
+              <div className="space-y-3 pt-4 border-t border-slate-50">
+                <div className="relative group">
+                  <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Tu nombre" className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-cyan-100 outline-none transition-all" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Correo" className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-cyan-100 outline-none transition-all" />
+                  <input value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="WhatsApp" className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-cyan-100 outline-none transition-all" />
                 </div>
               </div>
 
-              {error && <p className="text-[9px] text-red-500 font-bold italic px-1">{error}</p>}
+              {error && (
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-[10px] text-red-500 font-bold italic px-2 bg-red-50 py-2 rounded-lg border border-red-100">
+                  ⚠️ {error}
+                </motion.p>
+              )}
 
-              <button onClick={scheduleMeeting} disabled={loading || !selectedTimeSlot} className="w-full bg-[#168387] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-lg shadow-[#168387]/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50">
-                {loading ? "Confirmando..." : "Confirmar Mi Sesión"}
+              <button 
+                onClick={scheduleMeeting} 
+                disabled={loading || !selectedTimeSlot} 
+                className="w-full bg-slate-950 text-white py-5 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl hover:bg-[#168387] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:hover:scale-100"
+              >
+                {loading ? "Procesando..." : "Agendar mi asesoría"}
               </button>
             </div>
           )}
