@@ -171,7 +171,7 @@ function SectionTitle({ eyebrow, title, highlight, light = false, align = "cente
       <h2 className={`text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter leading-tight ${titleColor}`}>
         {String(title)} {highlight && <br className="hidden sm:block" />}
         {highlight && (
-          <span className="inline-block pb-2 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-[#8fd8bc] to-[#5aa7bf]">
+          <span className="inline-block pb-2 pr-6 text-transparent bg-clip-text bg-gradient-to-r from-[#8fd8bc] to-[#5aa7bf]">
             {String(highlight)}
           </span>
         )}
@@ -219,7 +219,7 @@ export default function DuoEmprendedorInfo() {
             </span>
             <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-8">
               Tu éxito, <br />
-              potenciado <span className="inline-block pb-2 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-[#8fd8bc] to-[#73cdbd]">al doble.</span>
+              potenciado <span className="inline-block pb-2 pr-6 text-transparent bg-clip-text bg-gradient-to-r from-[#8fd8bc] to-[#73cdbd]">al doble.</span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-300 mb-12 max-w-xl leading-relaxed">
               El Dúo Emprendedor es la estación multiservicio más rentable de México. Selecciona el nivel de tecnología que mejor se adapte a tu territorio.
@@ -398,7 +398,7 @@ export default function DuoEmprendedorInfo() {
         <div className="relative z-10 max-w-4xl mx-auto px-6">
           <h2 className="text-4xl sm:text-7xl font-black text-white tracking-tighter leading-tight mb-10">
             Dúplica tus ingresos <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8fd8bc] to-[#73cdbd]">con un solo paquete.</span>
+            <span className="inline-block pb-2 pr-6 text-transparent bg-clip-text bg-gradient-to-r from-[#8fd8bc] to-[#73cdbd]">con un solo paquete.</span>
           </h2>
           <p className="text-xl text-slate-400 mb-14 max-w-2xl mx-auto leading-relaxed font-medium">
             Agua y limpieza: los negocios con mayor retorno de inversión en un solo lugar. Asegura tu éxito con Darmax.
