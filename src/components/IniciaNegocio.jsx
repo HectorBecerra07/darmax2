@@ -239,8 +239,11 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
     if (modelo.id === "Vending" || modelo.id === "Vending-Limpieza") {
       label = "Esencial";
       bgColor = "bg-slate-800";
-    } else if (modelo.id === "Purificadora") {
+    } else if (modelo.id === "Purificadora" || modelo.id === "Duo-Emprendedor") {
       label = "Escalable";
+      bgColor = "bg-[#168387]";
+    } else if (isBundle) {
+      label = "Ecosistema Premium";
       bgColor = "bg-[#168387]";
     }
 
@@ -268,11 +271,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       ].join(" ")}
     >
       {/* BADGE DE NIVEL */}
-      {!isBundle ? getLevelBadge() : (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-1 bg-[#168387] text-white text-xs font-black uppercase tracking-[0.2em] rounded-full shadow-lg whitespace-nowrap">
-          {modelo.id === "Duo-Emprendedor" ? "Escalable" : "Ecosistema Premium"}
-        </div>
-      )}
+      {getLevelBadge()}
 
       {/* IMAGEN Y CONTROL */}
       <div 

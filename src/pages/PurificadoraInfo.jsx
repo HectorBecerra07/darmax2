@@ -1,10 +1,12 @@
-import { useEffect, useRef } from "react";
-import { Helmet } from "react-helmet-async";
+import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import SEO from "../components/SEO";
 import {
   ChevronDownIcon,
   CurrencyDollarIcon,
+  BuildingStorefrontIcon,
   ClockIcon,
   WrenchScrewdriverIcon,
   ArrowTrendingUpIcon,
@@ -12,560 +14,356 @@ import {
   TruckIcon,
   AcademicCapIcon,
   ShieldCheckIcon,
-  BeakerIcon,
-  SunIcon,
+  CheckIcon,
+  XMarkIcon,
+  InformationCircleIcon,
+  SparklesIcon,
   CircleStackIcon,
-  CubeTransparentIcon,
+  CpuChipIcon,
+  WrenchIcon,
+  BeakerIcon,
 } from "@heroicons/react/24/outline";
 
+/* --- Identity & Style (Mostrador: Lavanda to Turquesa) --- */
+const BRAND = {
+  lavender: "#A5B4FC",
+  sky: "#7DD3FC",
+  aqua: "#99F6E4",
+  cyan: "#67E8F9",
+  indigoText: "#4338CA",
+};
+
+const fadeUp = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.1 },
+  transition: { duration: 0.6, ease: "easeOut" }
+};
+
 /* --- Data --- */
-const HERO_IMG = "/img/vending/mostrador.jpg";
+const purificadoraModels = [
+  {
+    id: "Neptuno",
+    name: "Mostrador Neptuno Tradicional",
+    tagline: "El Estándar de Oro",
+    price: "$52,950",
+    gradient: "from-[#A5B4FC] to-[#7DD3FC]",
+    osmosis: false,
+    image: "/img/purificadoras/MOSTRADOR%20NEPTUNO%20A-PLUS/PURI%20MAS%20ALCALINA%20PROCS.jpg",
+    specs: [
+      "Capacidad ~600 garrafones/día",
+      "Bomba Jet 1.5 HP Acero Inoxidable",
+      "Tanques de purificación 10x54 NSF",
+      "Tarja Inox 304 Grado Alimenticio",
+      "Lavado y Llenado Doble Simultáneo",
+      "Sistema UV 30 LPM + Ozono",
+      "Presurizador Automático Incluido",
+    ]
+  },
+  {
+    id: "NeptunoAPlus",
+    name: "Mostrador Neptuno + Ósmosis Inversa",
+    tagline: "Pureza Embajador",
+    price: "$80,950",
+    gradient: "from-[#7DD3FC] to-[#67E8F9]",
+    osmosis: true,
+    image: "/img/purificadoras/MOSTRADOR%20POSEIDON%20PRO/OSMOSIS%20MAS%20ALCALINA%20PROCS.jpg",
+    specs: [
+      "Capacidad ~800 garrafones/día",
+      "Sistema de Ósmosis Inversa Industrial",
+      "Bomba Multietapas de Alta Presión",
+      "Eliminación de 99% sales y sarro",
+      "Calidad de agua premium certificada",
+      "Ideal para zonas de agua pesada",
+      "Filtros de pulido extra fino",
+    ]
+  },
+];
 
 const highlights = [
   {
     icon: ArrowTrendingUpIcon,
     title: "Hasta 3,000 L/Día",
-    desc: "Capacidad de producción industrial (según configuración)",
+    desc: "Producción industrial adaptable a tu demanda.",
   },
   {
     icon: ShieldCheckIcon,
-    title: "Agua 100% Pura",
-    desc: "Filtración multi-etapas y desinfección UV + ozono",
+    title: "Grado Quirúrgico",
+    desc: "Tarjas y mesas en Acero Inoxidable 304.",
   },
   {
     icon: BeakerIcon,
-    title: "Acero Inoxidable 304",
-    desc: "Máxima higiene y grado alimenticio en la tarja",
+    title: "Pureza Certificada",
+    desc: "Componentes NSF para agua 100% segura.",
   },
   {
     icon: ClockIcon,
-    title: "Operación Continua",
-    desc: "Equipos diseñados para trabajar 24/7",
+    title: "ROI Acelerado",
+    desc: "Bajo costo operativo, máxima utilidad por litro.",
   },
 ];
 
-const features = [
+const commonComponents = [
   {
-    icon: CircleStackIcon,
-    title: "Filtración Multi-Etapas de Alta Eficiencia",
-    description:
-      "El sistema Mostrador integra lecho profundo, carbón activado y suavizador con resina catiónica certificada NSF, eliminando sedimentos, cloro, dureza, sabores y olores para obtener una base de agua perfecta.",
-    image: "/img/purificadora/filtrado.png",
+    category: "Ingeniería de Purificación",
+    items: [
+      { name: "Tanques 10x54 NSF", desc: "Material con certificación NSF para lecho profundo y carbón activado." },
+      { name: "Bomba 1.5 HP Inox", desc: "Motor industrial de alta eficiencia para flujo constante." },
+      { name: "Sistema de Desinfección", desc: "Lámpara UV de 30 LPM y Generador de Ozono por Ventury." },
+      { name: "Filtración Especializada", desc: "Resina catiónica certificada para eliminación de dureza." },
+    ]
   },
   {
-    icon: SunIcon,
-    title: "Desinfección Avanzada con UV y Ozono",
-    description:
-      "Cuenta con lámpara de luz ultravioleta de 30 LPM en acero inoxidable y generador de ozono con inyector tipo ventury, asegurando la inocuidad microbiológica del agua hasta el momento del llenado.",
-    image: "/img/purificadora/uv.png",
-  },
-  {
-    icon: CubeTransparentIcon,
-    title: "Mostrador Sanitario para Lavado y Llenado",
-    description:
-      "Incluye tarja de acero inoxidable con mesa mixta para lavado interior de un garrafón, lavado exterior para dos garrafones y llenado simultáneo de dos garrafones, todo en una sola estación compacta.",
-    image: "/img/purificadora/tanque.png",
-  },
+    category: "Módulo de Servicio",
+    items: [
+      { name: "Tarja Mostrador", desc: "Acero quirúrgico 304 con diseño ergonómico de fácil limpieza." },
+      { name: "Estación de Lavado", desc: "Lavado interior con bomba dedicada y exterior doble." },
+      { name: "Llenado Simultáneo", desc: "Doble boquilla de llenado para maximizar el tiempo de atención." },
+      { name: "Válvulas de Control", desc: "Presurizador automático para control inteligente de flujo." },
+    ]
+  }
 ];
 
-const processSteps = [
-  {
-    icon: MapPinIcon,
-    title: "1. Diseño y Consultoría",
-    desc: "Analizamos tu espacio, volumen de venta y proyecciones para recomendarte la configuración ideal de planta y mostrador.",
-  },
-  {
-    icon: TruckIcon,
-    title: "2. Instalación y Puesta en Marcha",
-    desc: "Nuestro equipo instala la línea de purificación, la tarja Mostrador, las conexiones hidráulicas y realiza pruebas de funcionamiento.",
-  },
-  {
-    icon: AcademicCapIcon,
-    title: "3. Capacitación Técnica",
-    desc: "Te capacitamos en operación, lavado de garrafones, control de calidad, bitácoras y mantenimiento preventivo.",
-  },
-  {
-    icon: WrenchScrewdriverIcon,
-    title: "4. Soporte y Consumibles",
-    desc: "Te acompañamos con soporte técnico post-venta y suministro de insumos, cartuchos, lámparas y refacciones.",
-  },
+const requirements = [
+  { title: "Local", desc: "Área sugerida de 30 m² a 40 m²." },
+  { title: "Hidráulico", desc: "Toma de agua de red y drenaje de 2\"." },
+  { title: "Eléctrico", desc: "Línea 127V independiente con tierra." },
+  { title: "Tanques", desc: "Espacio para 2 tinacos de 2,500 L." },
 ];
 
 const faqs = [
   {
-    q: "¿Qué espacio se requiere para un Mostrador Darmax?",
-    a: "Para el paquete con Mostrador y opción de vending se recomienda un local de entre 30 m² y 40 m², con buena visibilidad y flujo de personas. En función de tu proyecto ajustamos la distribución y el equipo necesario.",
+    q: "¿Qué diferencia al Mostrador Neptuno de una purificadora convencional?",
+    a: "El Mostrador Neptuno integra en una sola unidad compacta y profesional el lavado interior, exterior y el llenado doble, eliminando la necesidad de múltiples estaciones separadas y garantizando la máxima higiene con Acero Inoxidable 304.",
   },
   {
-    q: "¿Qué incluye el sistema de purificación del Mostrador?",
-    a: "Incluye bomba Jet de 1.5 hp en acero inoxidable 127 volts, presurizador automático, filtro de lecho profundo 10x54 NSF, filtro de carbón activado 10x54 NSF, filtro suavizador 10x54 NSF con tanque de salmuera y resina catiónica certificada, portacartuchos pulidor 10\" Slim NSF, lámpara UV de 30 LPM en acero inoxidable, generador de ozono y ventury de 3/4\".",
+    q: "¿Cuándo debo elegir la versión con Ósmosis Inversa?",
+    a: "Se recomienda si el agua en tu zona tiene altos niveles de sarro, sales o metales pesados. La Ósmosis Inversa garantiza un sabor ligero y purificación de nivel embotelladora premium.",
   },
   {
-    q: "¿Cómo son los pagos y cuánto tarda la entrega?",
-    a: "El esquema es 50% de anticipo y 50% restante a la entrega del equipo. Si requieres factura, se suma el IVA al costo. El tiempo de entrega es de entre 15 y 20 días naturales a partir de la firma del contrato.",
-  },
-  {
-    q: "¿Qué incluye la garantía de Darmax?",
-    a: "Nuestra garantía cubre defectos de fabricación en los componentes clave del sistema. Además, cuentas con instalación, capacitación y soporte técnico para resolver cualquier situación durante la operación.",
+    q: "¿Incluyen instalación y capacitación?",
+    a: "Sí, todos nuestros modelos incluyen la instalación técnica profesional y la capacitación completa para ti y tu personal sobre la operación y control de calidad.",
   },
 ];
 
-const galleryImages = [
-  "/img/trabajos/trabajos1.jpg",
-  "/img/trabajos/trabajos3.jpg",
-  "/img/trabajos/trabajos6.jpg",
-  "/img/trabajos/trabajos7.jpg",
-  "/img/purificadoras/purificadora-negocio.jpeg",
-  "/img/purificadoras/purificadora-comercial.jpg",
-];
+/* --- UI Components --- */
+function SectionTitle({ eyebrow, title, highlight, light = false, align = "center" }) {
+  const alignClass = align === "center" ? "text-center" : "text-left";
+  const eyebrowColor = light ? "text-blue-100" : "text-indigo-600";
+  const titleColor = light ? "text-white" : "text-slate-900";
 
-/* --- Nuevas secciones: precios, extras, requisitos --- */
+  return (
+    <div className={`mb-12 sm:mb-20 ${alignClass}`}>
+      {eyebrow && (
+        <span className={`text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] mb-4 block ${eyebrowColor}`}>
+          {String(eyebrow)}
+        </span>
+      )}
+      <h2 className={`text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter leading-tight ${titleColor}`}>
+        {String(title)} {highlight && <br className="hidden sm:block" />}
+        {highlight && (
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#A5B4FC] to-[#67E8F9]">
+            {String(highlight)}
+          </span>
+        )}
+      </h2>
+    </div>
+  );
+}
 
-const pricingCards = [
-  {
-    name: "Mostrador de Lavado y Llenado",
-    price: "$52,950 MXN",
-    badge: "Equipo principal",
-    description:
-      "Estación completa para lavado interior y exterior de garrafones y llenado doble, con sistema de purificación multi-etapas.",
-    items: [
-      "Bomba Jet de 1.5 hp en acero inoxidable 127 V",
-      "Presurizador automático",
-      "Filtros de lecho profundo, carbón activado y suavizador 10x54 NSF",
-      "Portacartuchos pulidor 10\" Slim NSF",
-      "Lámpara UV 30 LPM y generador de ozono con ventury",
-    ],
-  },
-  {
-    name: "Módulo de Ósmosis Inversa",
-    price: "+ $28,000 MXN",
-    badge: "Upgrade opcional",
-    description:
-      "Ideal para zonas con agua de alta mineralización o cuando buscas una pureza aún más exigente.",
-    items: [
-      "Equipo de ósmosis inversa para refinar la calidad del agua",
-      "Integración con la línea de purificación existente",
-      "Aumenta la percepción de valor de tu marca de agua",
-    ],
-  },
-  {
-    name: "Módulo de Agua Alcalina",
-    price: "+ $12,000 MXN",
-    badge: "Producto premium",
-    description:
-      "Ofrece una segunda línea de agua alcalina para diferenciar tu negocio y aumentar el ticket promedio.",
-    items: [
-      "Filtro alcalinizador",
-      "Pre-filtro pulidor",
-      "Lámpara UV 16 watts",
-      "Tarjeta vending para 2 tipos de agua",
-    ],
-  },
-  {
-    name: "Regalos Incluidos",
-    price: "Valor +$5,500 MXN",
-    badge: "Incluido en la compra",
-    description:
-      "Todo lo que necesitas para arrancar tu planta con el Mostrador Darmax.",
-    items: [
-      "Tinaco grado alimenticio translúcido de 2,500 litros",
-      "Materiales de instalación en PVC hidráulico Cédula 40",
-      "Instalación profesional",
-      "Capacitación en sitio al momento de la entrega",
-    ],
-  },
-];
-
-const extras = [
-  { name: "Vending tradicional", price: "+ $23,000 MXN" },
-  { name: "Vending touch", price: "+ $33,000 MXN" },
-  { name: "Trámite de aviso de funcionamiento", price: "+ $3,500 MXN" },
-  { name: "Seguro de vending", price: "+ $4,950 MXN" },
-  {
-    name: 'Toma de pipa 2" PVC Cédula 40',
-    price: "+ $5,500 MXN",
-  },
-  {
-    name: "Tinaco grado alimenticio translúcido 5,000 L",
-    price: "+ $10,500 MXN",
-  },
-  {
-    name: "Tinaco grado alimenticio translúcido 2,500 L",
-    price: "+ $5,500 MXN",
-  },
-  {
-    name: "Tinaco grado alimenticio translúcido 1,100 L",
-    price: "+ $3,300 MXN",
-  },
-  {
-    name: "Tinaco grado alimenticio translúcido 1,100 L tipo bala",
-    price: "+ $3,600 MXN",
-  },
-  { name: "Mantenimiento anual", price: "+ $8,500 MXN" },
-  { name: "Ósmosis inversa (equipo adicional)", price: "+ $28,000 MXN" },
-  { name: "Automatización de ósmosis", price: "+ $9,000 MXN" },
-  {
-    name: "Kit de insumos anuales",
-    price: "+ $6,900 MXN",
-  },
-  {
-    name: "Paquete para promoción o inauguración",
-    price: "+ $7,500 MXN",
-  },
-];
-
-const installRequirements = [
-  {
-    title: "Espacio Comercial",
-    desc: "Local de entre 30 m² y 40 m², con buena visibilidad y flujo de personas.",
-  },
-  {
-    title: "Instalación Eléctrica",
-    desc: "Conexiones de luz independientes, regulador de voltaje no break, contactos y drenaje dentro del local.",
-  },
-  {
-    title: "Almacenamiento de Agua Cruda",
-    desc: "Dos tinacos grado alimenticio translúcidos de 5,500 litros para agua cruda (según ficha técnica).",
-  },
-  {
-    title: "Muro para Vending (si agregas módulo)",
-    desc: "Levantamiento de muro con medidas 80.5 x 80.5 cm y altura de 90 cm al suelo para la máquina vending.",
-  },
-];
-
-/* --- Sub-components --- */
-const FaqItem = ({ q, a }) => (
-  <details className="group border-b border-slate-200/80 last:border-none">
-    <summary className="cursor-pointer list-none p-5 md:p-6 font-semibold text-slate-800 flex items-center justify-between hover:bg-slate-50 transition">
-      {q}
-      <div className="ml-4 text-slate-400 transition-transform duration-300 group-open:rotate-180">
-        <ChevronDownIcon className="h-5 w-5" />
-      </div>
-    </summary>
-    <div className="px-5 md:px-6 pb-6 text-slate-600 leading-relaxed">{a}</div>
-  </details>
-);
-
-const SectionTitle = ({ children, className = "" }) => (
-  <div className={`text-center mb-12`}>
-    <h2 className={`text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight ${className}`}>
-      {children}
-    </h2>
+const ComparisonTable = () => (
+  <div className="overflow-x-auto rounded-[2.5rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/50">
+    <table className="w-full text-left border-collapse min-w-[750px]">
+      <thead>
+        <tr className="bg-gradient-to-r from-[#A5B4FC] to-[#67E8F9] text-indigo-900">
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/20">Especificación Técnica</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/20">Mostrador Tradicional</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest">Mostrador Ósmosis Inversa</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-slate-100 font-medium">
+        {[
+          { label: "Sistema Purificación NSF", vals: [true, true] },
+          { label: "Ósmosis Inversa Industrial", vals: [false, true] },
+          { label: "Capacidad de Producción", vals: ["600 Garrafones", "800 Garrafones"] },
+          { label: "Bomba Multietapas OI", vals: [false, true] },
+          { label: "Despacho de Garrafones", vals: ["Simultáneo Doble", "Simultáneo Doble"] },
+          { label: "Gabinete Inox 304", vals: [true, true] },
+          { label: "Inversión Sugerida", vals: ["$52,950", "$80,950"], bold: true },
+        ].map((row, i) => (
+          <tr key={i} className="hover:bg-indigo-50/20 transition-colors">
+            <td className="p-7 text-slate-900 font-black text-sm uppercase tracking-tight">{row.label}</td>
+            {row.vals.map((v, idx) => (
+              <td key={idx} className={`p-7 text-sm ${row.bold ? "font-black text-slate-900" : "text-slate-500"}`}>
+                {typeof v === "boolean" ? (
+                  v ? <CheckIcon className="h-6 w-6 text-indigo-600" /> : <XMarkIcon className="h-6 w-6 text-slate-200" />
+                ) : String(v)}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   </div>
 );
 
-/* --- Main Component --- */
 export default function PurificadoraInfo() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const contRef = useRef(null);
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    const t = setTimeout(
-      () => contRef.current?.scrollIntoView({ behavior: "smooth" }),
-      200
-    );
-    return () => clearTimeout(t);
-  }, [location.pathname]);
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   return (
-    <div ref={contRef} className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen bg-white selection:bg-[#7DD3FC] selection:text-indigo-900 font-sans overflow-x-hidden">
       <Helmet>
-        <title>Mostrador Purificadora de Agua | Planta Darmax</title>
-        <meta
-          name="description"
-          content="Configura tu planta purificadora con Mostrador Darmax: sistema completo de filtración, tarja de acero inoxidable para lavado y llenado de garrafones, ósmosis inversa y agua alcalina opcional."
-        />
+        <title>Planta Purificadora Neptuno | Ingeniería Darmax</title>
+        <meta name="description" content="Conoce la planta purificadora con Mostrador Neptuno. Estaciones de lavado y llenado en acero inoxidable con ósmosis inversa." />
       </Helmet>
 
-      {/* ===== Hero Section ===== */}
-      <section className="relative bg-slate-900 overflow-hidden">
-        <div className="absolute inset-0">
+      <SEO 
+        title="Mostrador Neptuno - Planta Purificadora Profesional"
+        description="Ficha técnica del Mostrador Neptuno. Tecnología de purificación industrial con ósmosis inversa y tarjas inoxidables."
+      />
+
+      {/* HERO SECTION */}
+      <section className="relative min-h-[90vh] flex items-center pt-32 pb-20 bg-slate-900">
+        <div className="absolute inset-0 z-0">
           <img
-            src={HERO_IMG}
-            alt="Planta purificadora de agua Darmax Mostrador"
-            className="w-full h-full object-cover opacity-30"
+            src="/img/vending/mostrador.png"
+            alt="Mostrador Darmax Neptuno"
+            className="w-full h-full object-cover opacity-20"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#A5B4FC]/40 via-slate-900/60 to-slate-900" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#A5B4FC]/20 via-transparent to-[#67E8F9]/10" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/70 to-slate-900/95" />
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-center min-h-[85vh] text-center text-white pt-24 pb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            <span className="inline-block px-4 py-1.5 mb-4 bg-white/10 text-cyan-300 rounded-full text-sm font-semibold">
-              Mostrador de Lavado y Llenado · Planta Purificadora
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 w-full">
+          <motion.div initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={fadeUp} className="max-w-3xl">
+            <span className="inline-block px-5 py-1.5 rounded-full bg-indigo-500/10 text-[#A5B4FC] text-[10px] font-black uppercase tracking-[0.3em] mb-8 border border-indigo-500/20 backdrop-blur-sm">
+              Neptuno Series Identity
             </span>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
-              Conquista el Mercado del Agua{" "}
-              <span className="text-cyan-400">con tu Propia Planta</span>.
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-8">
+              Pureza que <br />
+              se nota <span className="inline-block pb-2 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-[#A5B4FC] to-[#67E8F9]">al instante.</span>
             </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-300 leading-relaxed">
-              Te ofrecemos la tecnología, la capacitación y el soporte para que
-              produzcas y llenes tus propios garrafones con un mostrador
-              profesional de acero inoxidable.
+            <p className="text-lg sm:text-xl text-slate-300 mb-12 max-w-xl leading-relaxed">
+              El Mostrador Neptuno redefine la eficiencia operativa con un diseño estético y componentes de grado industrial. Tu planta, tu éxito.
             </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-wrap gap-5">
               <Link
                 to="/configurar-maquina/Purificadora"
-                className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-cyan-400 shadow-lg hover:bg-cyan-300 transition-all transform hover:scale-105"
+                className="px-12 py-5 bg-gradient-to-r from-[#A5B4FC] to-[#7DD3FC] hover:shadow-indigo-500/20 text-indigo-900 font-black rounded-2xl shadow-2xl transition-all transform hover:scale-105 uppercase tracking-widest text-xs"
               >
                 Configurar mi Planta
               </Link>
-              <Link
-                to="#pricing"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document
-                    .getElementById("pricing")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="px-8 py-3 rounded-full font-semibold border-2 border-slate-600 text-slate-200 hover:bg-slate-800 hover:border-slate-800 transition"
+              <button
+                onClick={() => document.getElementById("tecnico")?.scrollIntoView({ behavior: "smooth" })}
+                className="px-12 py-5 bg-white/5 hover:bg-white/10 text-white font-black rounded-2xl border border-white/10 transition-all uppercase tracking-widest text-xs backdrop-blur-sm"
               >
-                Ver Precio y Qué Incluye
-              </Link>
+                Ver Variaciones
+              </button>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ===== Highlights Section ===== */}
-      <section className="bg-slate-800 py-12">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
-            {highlights.map((h, i) => (
+      {/* SECCIÓN MODELOS */}
+      <section id="modelos" className="py-24 sm:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Configuraciones Neptuno"
+            title="Dos niveles de"
+            highlight="purificación industrial."
+          />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {purificadoraModels.map((m, i) => (
               <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                key={m.id}
+                initial="initial"
+                whileInView="whileInView"
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="flex items-center gap-4 text-white"
+                variants={fadeUp}
+                transition={{ delay: i * 0.1 }}
+                className="group relative flex flex-col bg-white rounded-[3rem] border border-slate-100 shadow-xl shadow-indigo-900/5 overflow-hidden hover:-translate-y-2 transition-all duration-500"
               >
-                <div className="flex-shrink-0 bg-slate-700 p-3 rounded-lg">
-                  <h.icon className="h-7 w-7 text-cyan-400" />
-                </div>
-                <div>
-                  <p className="font-bold text-lg">{h.title}</p>
-                  <p className="text-sm text-slate-400">{h.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Pricing & What's Included ===== */}
-      <section
-        id="pricing"
-        className="py-20 md:py-28 bg-gradient-to-b from-slate-50 via-white to-slate-50"
-      >
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Inversión y Paquetes Disponibles</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
-            {pricingCards.map((card, i) => (
-              <motion.div
-                key={card.name}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.6, delay: i * 0.08 }}
-                className={`relative rounded-3xl p-7 md:p-8 bg-white shadow-lg border ${
-                  i === 0
-                    ? "border-cyan-200 shadow-cyan-100"
-                    : "border-slate-200/80"
-                }`}
-              >
-                {card.badge && (
-                  <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide mb-4 ${
-                      i === 3
-                        ? "bg-green-100 text-green-700"
-                        : "bg-cyan-100 text-cyan-700"
-                    }`}
-                  >
-                    {card.badge}
-                  </span>
-                )}
-                <h3 className="text-xl font-bold text-slate-900">
-                  {card.name}
-                </h3>
-                <p className="mt-2 text-2xl font-extrabold text-slate-900">
-                  {card.price}
-                </p>
-                <p className="mt-3 text-sm text-slate-600">
-                  {card.description}
-                </p>
-                <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                  {card.items.map((item) => (
-                    <li key={item} className="flex gap-2">
-                      <span className="mt-[6px] h-1.5 w-1.5 rounded-full bg-cyan-500" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-8 max-w-3xl mx-auto text-center text-sm text-slate-500">
-            <p>
-              Forma de pago: <strong>50% de anticipo</strong> y{" "}
-              <strong>50% restante a la entrega</strong> del equipo. Si
-              requieres factura, se aplica <strong>Costo + IVA</strong>.
-            </p>
-            <p className="mt-2">
-              Tiempo de entrega estimado: entre{" "}
-              <strong>15 y 20 días naturales</strong> a partir de la firma del
-              contrato.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Technical Components Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Componentes de la Planta y Mostrador</SectionTitle>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
-            {/* Purificación */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6 }}
-              className="lg:col-span-2 rounded-3xl bg-slate-50 border border-slate-200/80 p-7 md:p-8"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="p-2 rounded-full bg-cyan-100 text-cyan-700">
-                  <ShieldCheckIcon className="h-6 w-6" />
-                </span>
-                <h3 className="text-xl font-bold text-slate-900">
-                  Sistema de Purificación Multi-Etapas
-                </h3>
-              </div>
-              <p className="text-sm text-slate-600 mb-4">
-                Basado en equipos certificados NSF para ofrecer agua de alta
-                calidad lista para envasar.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm text-slate-700">
-                <ul className="space-y-2">
-                  <li>• Bomba de 1.5 hp Jet en acero inoxidable 127 volts.</li>
-                  <li>• Presurizador automático.</li>
-                  <li>
-                    • Filtro de lecho profundo: tanque 10x54 NSF con gravas,
-                    arenas sílicas y zeolita.
-                  </li>
-                  <li>
-                    • Filtro de carbón activado: tanque 10x54 NSF con carbón
-                    activado certificado.
-                  </li>
-                  <li>
-                    • Filtro suavizador: tanque 10x54 NSF con válvula manual de
-                    5 pasos y resina catiónica certificada (con tanque de
-                    salmuera).
-                  </li>
-                </ul>
-                <ul className="space-y-2">
-                  <li>• Portacartuchos pulidor 10\" Slim certificado NSF.</li>
-                  <li>
-                    • Lámpara de rayos ultravioleta de 30 LPM con balastro en
-                    acero inoxidable.
-                  </li>
-                  <li>• Generador de ozono.</li>
-                  <li>• Inyector tipo ventury de 3/4\".</li>
-                  <li>
-                    • Tinaco grado alimenticio de 2,500 litros incluido como
-                    regalo.
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-
-            {/* Tarja Mostrador */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="rounded-3xl bg-slate-900 text-slate-50 p-7 md:p-8 relative overflow-hidden"
-            >
-              <div className="absolute -top-8 -right-10 h-32 w-32 rounded-full bg-cyan-500/30 blur-2xl" />
-              <div className="relative">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="p-2 rounded-full bg-slate-800 text-cyan-300">
-                    <BeakerIcon className="h-6 w-6" />
-                  </span>
-                  <h3 className="text-xl font-bold">
-                    Características del Mostrador y Tarja
-                  </h3>
-                </div>
-                <ul className="space-y-2 text-sm text-slate-200/90">
-                  <li>
-                    • Mesa mixta para lavado interior de un garrafón, lavado
-                    exterior para dos garrafones y llenado de dos garrafones.
-                  </li>
-                  <li>• Tarja de acero inoxidable grado alimenticio.</li>
-                  <li>
-                    • Charola de lavado interior fija para un solo garrafón.
-                  </li>
-                  <li>• Tubería en PVC Cédula 40.</li>
-                  <li>• Bomba de 1/2 hp dedicada al sistema de lavados.</li>
-                  <li>
-                    • Dimensiones aproximadas del módulo: 170 cm de frente x 160
-                    cm de alto x 50 cm de fondo.
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Key Features Section ===== */}
-      <section id="features" className="py-20 md:py-28 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Tecnología Superior para Agua Perfecta
-            </h2>
-            <p className="mt-4 text-lg text-slate-600">
-              Cada etapa del proceso está diseñada para cumplir con los más
-              altos estándares de calidad y pureza.
-            </p>
-          </div>
-
-          <div className="space-y-16">
-            {features.map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.6 }}
-                className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${
-                  i % 2 !== 0 ? "md:flex-row-reverse" : ""
-                }`}
-              >
-                <div className="md:w-1/2">
-                  <div className="inline-flex items-center gap-3 mb-4">
-                    <span className="p-2 bg-cyan-100 rounded-full">
-                      <feature.icon className="h-6 w-6 text-cyan-700" />
-                    </span>
-                    <h3 className="text-2xl font-bold">{feature.title}</h3>
+                <div className={`h-2 bg-gradient-to-r ${m.gradient}`} />
+                <div className="p-10 flex flex-col h-full">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-2">{m.tagline}</span>
+                  <h3 className="text-3xl font-black text-slate-900 leading-tight mb-6">{m.name}</h3>
+                  
+                  <div className="aspect-video mb-10 bg-[#F1F5F9] rounded-[2.5rem] overflow-hidden flex items-center justify-center group-hover:bg-[#E0F2FE] transition-colors duration-500">
+                    <img src={m.image} alt={m.name} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
                   </div>
-                  <p className="text-slate-600 leading-relaxed text-base">
-                    {feature.description}
-                  </p>
+
+                  <div className="mt-auto space-y-6">
+                    <ul className="grid grid-cols-1 gap-3">
+                       {m.specs.map((s, idx) => (
+                         <li key={idx} className="flex items-start gap-3 text-xs font-bold text-slate-500 uppercase tracking-tight">
+                           <CheckIcon className="h-4 w-4 text-indigo-400 mt-0.5 shrink-0" />
+                           <span>{String(s)}</span>
+                         </li>
+                       ))}
+                    </ul>
+                    <div className="pt-8 border-t border-slate-50">
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inversión Desde</span>
+                        <span className="text-2xl font-black text-slate-900">{m.price}</span>
+                      </div>
+                      <Link
+                        to="/configurar-maquina/Purificadora"
+                        className="block w-full py-4 text-center bg-gradient-to-r from-[#A5B4FC] to-[#7DD3FC] text-indigo-900 font-black rounded-2xl hover:shadow-lg transition-all text-[10px] uppercase tracking-widest"
+                      >
+                        Seleccionar Modelo
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-                <div className="md:w-1/2">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
-                    className="w-full h-auto rounded-2xl shadow-xl object-cover"
-                  />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN TABLA COMPARATIVA */}
+      <section className="py-24 sm:py-32 bg-[#F5F7FF]">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Transparencia Técnica"
+            title="Diferencias que"
+            highlight="impulsan tu éxito."
+          />
+          <ComparisonTable />
+        </div>
+      </section>
+
+      {/* SECCIÓN COMPONENTES TÉCNICOS */}
+      <section id="tecnico" className="py-24 sm:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Ingeniería Darmax"
+            title="Ficha técnica de"
+            highlight="grado quirúrgico."
+          />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+            {commonComponents.map((cat, i) => (
+              <motion.div key={cat.category} initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={fadeUp}>
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#A5B4FC] to-[#7DD3FC] flex items-center justify-center text-indigo-900 shadow-lg">
+                    {i === 0 ? <WrenchIcon className="w-6 h-6" /> : <BeakerIcon className="w-6 h-6" />}
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">{String(cat.category)}</h3>
+                </div>
+                <div className="space-y-6">
+                  {cat.items.map((item) => (
+                    <div key={item.name} className="group p-8 rounded-[2rem] bg-[#F8FAFC] border border-slate-100 hover:border-[#7DD3FC] hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl shadow-slate-200/50">
+                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-2 group-hover:text-indigo-600 transition-colors">{String(item.name)}</h4>
+                      <p className="text-slate-500 text-sm font-medium leading-relaxed">{String(item.desc)}</p>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             ))}
@@ -573,161 +371,97 @@ export default function PurificadoraInfo() {
         </div>
       </section>
 
-      {/* ===== Extras Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Extras y Servicios Opcionales</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
-            {extras.map((extra, i) => (
-              <motion.div
-                key={extra.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.4, delay: i * 0.04 }}
-                className="rounded-2xl border border-slate-200/80 bg-slate-50/60 hover:bg-white hover:shadow-md transition p-5 flex flex-col justify-between"
-              >
-                <p className="font-semibold text-sm text-slate-900">
-                  {extra.name}
-                </p>
-                <p className="mt-3 text-cyan-700 font-bold text-sm">
-                  {extra.price}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-          <p className="mt-8 text-xs text-slate-500 flex items-center gap-2">
-            <TruckIcon className="h-4 w-4" />
-            *Flete y viáticos se cotizan de acuerdo con el código postal de
-            instalación.
-          </p>
-        </div>
-      </section>
-
-      {/* ===== Installation Requirements Section ===== */}
-      <section className="py-20 md:py-28 bg-slate-900 text-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle className="text-left md:text-left text-white">
-            ¿Qué requieres para instalar tu Planta?
-          </SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {installRequirements.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="relative rounded-2xl bg-slate-800/60 border border-slate-700/80 p-6"
-              >
-                <div className="absolute -top-4 -right-4 h-10 w-10 rounded-full bg-cyan-500/30 blur-xl" />
-                <h3 className="font-semibold text-base mb-2">{item.title}</h3>
-                <p className="text-sm text-slate-300">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== How It Works Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Tu Proyecto de Purificación, Simplificado</SectionTitle>
-          <div className="mt-16 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-            {processSteps.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="text-center p-6 bg-slate-50 rounded-2xl border border-slate-200/80"
-              >
-                <div className="inline-block p-4 bg-cyan-100 text-cyan-700 rounded-full mb-4">
-                  <step.icon className="h-8 w-8" />
+      {/* SECCIÓN REQUERIMIENTOS */}
+      <section className="py-24 sm:py-32 bg-indigo-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(165,180,252,0.15),transparent)]" />
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-20">
+            <div className="lg:w-2/5 text-left">
+              <SectionTitle 
+                align="left"
+                light
+                eyebrow="Antes de Instalar"
+                title="Preparando tu"
+                highlight="infraestructura."
+              />
+              <p className="text-[#E0E7FF] text-lg mb-12 leading-relaxed font-medium">
+                La eficiencia de tu Mostrador Neptuno comienza con una base sólida. Nuestros técnicos supervisan cada detalle de tu obra civil y eléctrica.
+              </p>
+              <Link to="/contacto" className="inline-flex items-center gap-4 text-[#A5B4FC] font-black uppercase tracking-[0.3em] text-[10px] hover:gap-6 transition-all group">
+                Hablar con un técnico <ChevronDownIcon className="w-4 h-4 -rotate-90 group-hover:text-white" />
+              </Link>
+            </div>
+            <div className="lg:w-3/5 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              {requirements.map((r) => (
+                <div key={r.title} className="p-10 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-md group hover:bg-white/10 transition-all duration-700">
+                  <h5 className="text-[#A5B4FC] font-black text-[10px] uppercase tracking-[0.3em] mb-4">{String(r.title)}</h5>
+                  <p className="text-white text-xl font-bold tracking-tight leading-snug">{String(r.desc)}</p>
                 </div>
-                <h3 className="font-bold text-lg">{step.title}</h3>
-                <p className="text-sm text-slate-600 mt-1">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="mt-12 text-center">
-            <Link
-              to="/contacto"
-              className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-cyan-400 shadow-lg hover:bg-cyan-300 transition-all transform hover:scale-105"
-            >
-              Solicitar Asesoría
-            </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ===== Gallery Section ===== */}
-      <section className="py-20 md:py-28">
-        <div className="max-w-7xl mx-auto">
-          <SectionTitle className="px-6">
-            Nuestras Plantas en Operación
-          </SectionTitle>
-        </div>
-        <div className="mt-8 relative">
-          <div className="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-6 md:px-10">
-            {galleryImages.map((src, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 snap-center"
-              >
-                <img
-                  src={src}
-                  alt={`Instalación real ${i + 1}`}
-                  className="w-full h-80 rounded-2xl object-cover shadow-lg"
-                />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FAQ Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-4xl mx-auto px-6 md:px-10">
-          <SectionTitle>Resolvemos tus Dudas</SectionTitle>
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      {/* SECCIÓN FAQ */}
+      <section className="py-24 sm:py-32 bg-white">
+        <div className="max-w-4xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Resolviendo Dudas"
+            title="Preguntas"
+            highlight="frecuentes."
+          />
+          <div className="space-y-5 border border-slate-100 rounded-[3.5rem] overflow-hidden shadow-xl shadow-slate-200/50">
             {faqs.map((f, i) => (
-              <FaqItem key={i} q={f.q} a={f.a} />
+              <details key={i} className="group border-b border-slate-50 last:border-none">
+                <summary className="cursor-pointer list-none p-10 font-black text-slate-800 flex items-center justify-between hover:bg-[#F5F7FF] transition-colors uppercase tracking-tight text-sm">
+                  {String(f.q)}
+                  <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 group-open:rotate-180 transition-transform duration-500">
+                    <ChevronDownIcon className="h-4 w-4" />
+                  </div>
+                </summary>
+                <div className="px-10 pb-10 text-slate-500 text-base leading-relaxed font-medium">
+                  {String(f.a)}
+                </div>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== Final CTA Section ===== */}
-      <section className="py-20">
-        <div className="max-w-3xl mx-auto text-center px-6">
-          <h2 className="text-3xl font-extrabold text-slate-900">
-            Emprende con un Producto Esencial
+      {/* FINAL CTA */}
+      <section className="py-24 sm:py-40 bg-slate-900 text-center relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-10">
+          <img src="/img/vending/mostrador.png" alt="Darmax Mostrador" className="w-full h-full object-cover" />
+        </div>
+        <div className="relative z-10 max-w-4xl mx-auto px-6">
+          <h2 className="text-4xl sm:text-7xl font-black text-white tracking-tighter leading-[0.9] mb-10">
+            Crea tu propia <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#A5B4FC] to-[#67E8F9]">marca de agua.</span>
           </h2>
-          <p className="mt-4 text-lg text-slate-600">
-            El agua purificada es un negocio noble y de alta demanda. Contáctanos
-            hoy y da el primer paso para construir tu propia marca de agua con
-            tu planta y mostrador Darmax.
+          <p className="text-xl text-slate-400 mb-14 max-w-2xl mx-auto leading-relaxed font-medium">
+            El agua purificada es el producto más esencial. Da el primer paso hacia un negocio estable y rentable con Darmax.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-8">
             <Link
               to="/configurar-maquina/Purificadora"
-              className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-cyan-400 shadow-lg hover:bg-cyan-300 transition-all transform hover:scale-105"
+              className="px-14 py-7 bg-gradient-to-r from-[#A5B4FC] to-[#7DD3FC] text-indigo-900 font-black rounded-2xl shadow-2xl transition-all transform hover:scale-110 uppercase tracking-widest text-sm"
             >
               Configurar mi Planta
             </Link>
-            <button
-              onClick={() => navigate(-1)}
-              className="px-8 py-3 rounded-full font-semibold bg-slate-200 hover:bg-slate-300 text-slate-800 transition"
+            <Link
+              to="/contacto"
+              className="px-14 py-7 bg-white text-blue-900 font-black rounded-2xl hover:bg-slate-100 transition-all uppercase tracking-widest text-sm"
             >
-              Volver
-            </button>
+              Hablar con Ventas
+            </Link>
           </div>
+          <button 
+            onClick={() => navigate(-1)}
+            className="mt-20 text-slate-500 hover:text-white transition-colors flex items-center gap-3 mx-auto font-black uppercase tracking-[0.4em] text-[10px]"
+          >
+            <ChevronDownIcon className="h-4 w-4 rotate-90" /> Volver atrás
+          </button>
         </div>
       </section>
     </div>

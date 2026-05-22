@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Helmet } from "react-helmet-async"; // o "react-helmet" según uses
+import { Helmet } from "react-helmet-async";
 import SEO from "../components/SEO";
 import {
   ChevronDownIcon,
@@ -14,569 +14,369 @@ import {
   TruckIcon,
   AcademicCapIcon,
   ShieldCheckIcon,
-  TruckIcon as ShippingIcon,
+  CheckIcon,
+  XMarkIcon,
+  InformationCircleIcon,
+  SparklesIcon,
+  CircleStackIcon,
+  CpuChipIcon,
+  WrenchIcon,
 } from "@heroicons/react/24/outline";
 
+/* --- Configuration --- */
+const BRAND_BLUE = "#5188C9";
+const BRAND_BLUE_LIGHT = "#93C5FD";
+
+const fadeUp = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.1 },
+  transition: { duration: 0.6, ease: "easeOut" }
+};
+
 /* --- Data --- */
-const HERO_IMG = "/img/vending/TOUCHAGUA.png";
-
-const highlights = [
+const atlantisModels = [
   {
-    icon: CurrencyDollarIcon,
-    title: "Desde $64,950 MXN",
-    desc: "Atlantis 300 con sistema de purificación completo.",
+    id: "Atlantis",
+    name: "Atlantis 300 Tradicional",
+    tagline: "Sencillez Industrial",
+    price: "$54,950",
+    gradient: "from-blue-600 to-blue-400",
+    osmosis: false,
+    interface: "Botones Físicos",
+    image: "/img/vending/ATLANTIS300MAX.png",
+    specs: [
+      "500 garrafones por mes",
+      "Bomba 3/4 HP en acero inoxidable",
+      "Tanques de filtración 9x48 (NSF)",
+      "Sistema UV 16 LPM Inoxidable",
+      "Generador de Ozono + Ventury 3/4",
+      "Despachador 4 modos (1, 4, 10, 20L)",
+      "Monedero antirrobo con cambio",
+    ]
   },
   {
-    icon: ShieldCheckIcon,
-    title: "Certificación NSF",
-    desc: "Filtros y resinas certificados para agua segura.",
+    id: "AtlantisMax",
+    name: "Atlantis 300 Tradicional + Ósmosis",
+    tagline: "Máxima Pureza",
+    price: "$82,000",
+    gradient: "from-blue-800 to-blue-600",
+    osmosis: true,
+    interface: "Botones Físicos",
+    image: "/img/vending/ATLANTIS300MAX.png",
+    specs: [
+      "800 garrafones por mes",
+      "Sistema de Ósmosis Inversa Industrial",
+      "Bomba multietapas especial",
+      "Filtro lecho profundo + carbón + suavizador",
+      "2 portafiltros polyspun (20” y 10”)",
+      "UV 16 LPM + Ozono + Ventury",
+      "Monedero antirrobo con cambio",
+    ]
   },
   {
-    icon: BuildingStorefrontIcon,
-    title: "Local desde 12 m²",
-    desc: "Requisitos claros para montar tu purificadora.",
+    id: "AtlantisTouch",
+    name: "Atlantis 300 Touch Max",
+    tagline: "Tecnología Inteligente",
+    price: "$64,950",
+    gradient: "from-blue-500 to-indigo-600",
+    osmosis: false,
+    interface: "Pantalla Touch 8\"",
+    image: "/img/vending/TOUCHAGUA.png",
+    specs: [
+      "500 garrafones por mes",
+      "Pantalla TOUCH interactiva de 8\"",
+      "Sistema de audio con mensajes",
+      "Sensado de precisión por litros",
+      "Dispensador de tapas integrado",
+      "Sistema de verificación de fallas",
+      "Gabinete Inox 304 Grado Alimenticio",
+    ]
   },
   {
-    icon: ClockIcon,
-    title: "Entrega 15–20 días",
-    desc: "A partir de la firma de contrato y anticipo.",
+    id: "AtlantisMaxTouch",
+    name: "Atlantis 300 Touch Max + Ósmosis",
+    tagline: "Liderazgo en Purificación",
+    price: "$92,950",
+    gradient: "from-indigo-700 to-blue-600",
+    osmosis: true,
+    interface: "Pantalla Touch 8\"",
+    image: "/img/vending/TOUCHAGUA.png",
+    specs: [
+      "800 garrafones por mes",
+      "Ósmosis Inversa de alta producción",
+      "Pantalla TOUCH interactiva de 8\"",
+      "Audio guía para el usuario",
+      "Automatización total de procesos",
+      "Sensores de flujo y solenoides",
+      "Máximo valor de reventa",
+    ]
   },
 ];
 
-const features = [
+const commonComponents = [
   {
-    icon: ArrowTrendingUpIcon,
-    title: "Sistema Completo de Purificación",
-    description:
-      "La Atlantis 300 integra bomba Jet de 3/4 hp en acero inoxidable, presurizador automático, filtro de lecho profundo, filtro de carbón activado, suavizador con resina catiónica y pulidor final. Todo en tanques con certificación NSF para ofrecer agua segura y cristalina.",
-    image: "/img/vending/produccion.png",
+    category: "Ingeniería de Purificación",
+    items: [
+      { name: "Tanques 9x48 NSF", desc: "Material certificado para alta presión y filtración eficiente." },
+      { name: "Medios Filtrantes", desc: "Zeolita, carbón activado y resina catiónica de alta pureza." },
+      { name: "Bomba Jet 3/4 HP", desc: "Construcción en acero inoxidable para durabilidad extrema." },
+      { name: "Sistema UV & Ozono", desc: "Doble barrera bacteriológica para agua 100% segura." },
+    ]
   },
   {
-    icon: CurrencyDollarIcon,
-    title: "Vending Touch con 4 Modalidades de Llenado",
-    description:
-      "Dispensador automático para 1, 4, 10 y 20 litros con pantalla touch de 8”, validador de monedas que da cambio, enjuague automático de garrafón, sensado de litros, solenoides de precisión y sistema de verificación de fallas para una operación confiable 24/7.",
-    image: "/img/vending/pagos.png",
-  },
-  {
-    icon: ShieldCheckIcon,
-    title: "Gabinete de Acero Inoxidable 304",
-    description:
-      "Gabinete de acero quirúrgico grado alimenticio 304 con marco y puerta en inoxidable, vinil laminado contra luz UV, monedero antirrobo y bocina integrada. Imagen profesional y resistencia al uso rudo y a la intemperie.",
-    image: "/img/vending/acero.png",
-  },
+    category: "Vending & Control",
+    items: [
+      { name: "Gabinete Inox 304", desc: "Acero quirúrgico resistente a corrosión e intemperie." },
+      { name: "Validador Premium", desc: "Acepta todas las monedas mexicanas y entrega cambio." },
+      { name: "Electrónica Inteligente", desc: "Control de flujo y sistema de autodiagnóstico de fallas." },
+      { name: "Protección UV", desc: "Vinil laminado de alta resistencia contra rayos solares." },
+    ]
+  }
 ];
 
-const processSteps = [
-  {
-    icon: MapPinIcon,
-    title: "1. Análisis de Ubicación",
-    desc: "Te ayudamos a evaluar la zona, flujo de personas y competencia para elegir el mejor punto de venta.",
-  },
-  {
-    icon: TruckIcon,
-    title: "2. Instalación Profesional",
-    desc: "Nuestro equipo instala la máquina, conecta el sistema hidráulico y deja todo funcionando.",
-  },
-  {
-    icon: AcademicCapIcon,
-    title: "3. Capacitación Completa",
-    desc: "Te enseñamos operación diaria, manejo del dinero, mantenimiento preventivo y buenas prácticas.",
-  },
-  {
-    icon: WrenchScrewdriverIcon,
-    title: "4. Operación y Soporte",
-    desc: "Disfruta de un negocio de bajo mantenimiento con soporte técnico post-venta cuando lo necesites.",
-  },
+const requirements = [
+  { title: "Espacio", desc: "Local mínimo de 12 m² con acceso frontal." },
+  { title: "Eléctrico", desc: "127V con tierra física y No-Break." },
+  { title: "Hidráulico", desc: "Toma de red y drenaje de 2\"." },
+  { title: "Construcción", desc: "Muro de 80.5 x 80.5 cm para empotre." },
 ];
 
 const faqs = [
   {
-    q: "¿Qué se necesita para la instalación?",
-    a: "Requieres un local mínimo de 12 m², conexiones de luz independientes con regulador de voltaje no break, drenaje dentro del local y tinacos grado alimenticio (dos de 2,500 litros para agua cruda o uno de 5,000 litros). También se levanta un muro con medidas aproximadas de 80.5 x 80.5 cm y 90 cm de altura al suelo para la máquina vending.",
+    q: "¿Qué incluye el precio de inversión?",
+    a: "Incluye el equipo vending completo, sistema de purificación industrial (filtros, UV, Ozono), gabinete de acero inoxidable 304, validador de monedas con cambio y un tinaco de 2,500L de regalo para agua cruda.",
   },
   {
-    q: "¿Qué incluye el sistema de purificación de la Atlantis 300?",
-    a: "Incluye bomba Jet de 3/4 hp, presurizador automático, filtro de lecho profundo, filtro de carbón activado, filtro suavizador con resina catiónica, portacartuchos pulidor, lámpara de luz ultravioleta de 25 LPM, generador de ozono y sistema de inyección tipo ventury. Todo en tanques con certificación NSF para garantizar agua de alta calidad.",
+    q: "¿Cuándo es necesaria la Ósmosis Inversa?",
+    a: "Se recomienda en zonas donde el agua de red tiene alta concentración de sales o sarro. La ósmosis garantiza la eliminación de minerales pesados, asegurando un sabor premium y protegiendo la vida útil del equipo.",
   },
   {
-    q: "¿Cuáles son las formas de pago y tiempos de entrega?",
-    a: "Se maneja 50% de anticipo y 50% restante a la entrega del equipo. Si requieres factura, se agrega el IVA al costo. El tiempo de entrega es de entre 15 y 20 días naturales a partir de la firma del contrato. Además, puedes complementar tu proyecto con extras como trámite de aviso de funcionamiento, kit de insumos anuales, ósmosis inversa, seguro de vending y más.",
-  },
-  {
-    q: "¿Qué garantía y soporte ofrecen?",
-    a: "Ofrecemos una garantía completa sobre todos los componentes del equipo y un plan de soporte técnico post-venta para asegurar el funcionamiento óptimo de tu inversión.",
+    q: "¿El equipo entrega cambio?",
+    a: "Sí, todos nuestros modelos Atlantis 300 cuentan con un validador de monedas de alta gama que acepta todas las denominaciones y entrega cambio de forma automática y segura.",
   },
 ];
 
-const galleryImages = [
-  "/img/trabajos/trabajos1.jpg",
-  "/img/trabajos/trabajos2.jpg",
-  "/img/trabajos/trabajos3.jpg",
-  "/img/trabajos/trabajos5.jpg",
-  "/img/purificadoras/purificadora-negocio.jpeg",
-  "/img/purificadoras/purificadora-comercial.jpg",
-];
+/* --- UI Components --- */
+function SectionTitle({ eyebrow, title, highlight, light = false, align = "center" }) {
+  const alignClass = align === "center" ? "text-center" : "text-left";
+  const eyebrowColor = light ? "text-blue-100" : "text-blue-600";
+  const titleColor = light ? "text-white" : "text-slate-900";
 
-const pricingCards = [
-  {
-    name: "Atlantis 300 Vending Touch",
-    price: "$64,950 MXN",
-    badge: "Equipo principal",
-    description:
-      "Máquina vending de agua purificada con sistema completo de filtración y gabinete de acero inoxidable 304.",
-    items: [
-      "Pantalla touch de 8”",
-      "4 modalidades de llenado: 1, 4, 10 y 20 litros",
-      "Validador de monedas que da cambio",
-      "Enjuague automático de garrafón",
-      "Sensado de litros y sistema de verificación de fallas",
-    ],
-  },
-  {
-    name: "Módulo de Agua Alcalina",
-    price: "+ $12,000 MXN",
-    badge: "Upgrade opcional",
-    description:
-      "Agrega valor a tu negocio ofreciendo agua alcalina en la misma estación vending.",
-    items: [
-      "Filtro alcalinizador",
-      "Pre-filtro pulidor",
-      "Lámpara UV de 16 watts",
-      "Tarjeta vending para 2 tipos de agua",
-    ],
-  },
-];
+  return (
+    <div className={`mb-12 sm:mb-20 ${alignClass}`}>
+      {eyebrow && (
+        <span className={`text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] mb-4 block ${eyebrowColor}`}>
+          {String(eyebrow)}
+        </span>
+      )}
+      <h2 className={`text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter leading-tight ${titleColor}`}>
+        {String(title)} {highlight && <br className="hidden sm:block" />}
+        {highlight && (
+          <span className="inline-block pb-2 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-[#5188C9] to-[#93C5FD]">
+            {String(highlight)}
+          </span>
+        )}
+      </h2>
+    </div>
+  );
+}
 
-const extras = [
-  { name: "Trámite de aviso de funcionamiento", price: "$3,500 MXN" },
-  { name: 'Toma de pipa 2" PVC Cédula 40', price: "$5,500 MXN" },
-  { name: "Kit de insumos anuales", price: "$3,900 MXN" },
-  { name: "Seguro de vending", price: "$4,950 MXN" },
-  {
-    name: "Tinaco grado alimenticio translúcido 5,000 L",
-    price: "$10,500 MXN",
-  },
-  {
-    name: "Tinaco grado alimenticio translúcido 2,500 L",
-    price: "$5,500 MXN",
-  },
-  {
-    name: "Tinaco grado alimenticio translúcido 1,100 L",
-    price: "$3,300 MXN",
-  },
-  {
-    name: "Tinaco grado alimenticio translúcido 1,100 L tipo bala",
-    price: "$3,600 MXN",
-  },
-  { name: "Mantenimiento anual", price: "$8,500 MXN" },
-  { name: "Mostrador para atención", price: "$18,000 MXN" },
-  { name: "Ósmosis inversa", price: "$28,000 MXN" },
-  { name: "Automatización de ósmosis", price: "$9,000 MXN" },
-  {
-    name: "Paquete para promoción o inauguración",
-    price: "$7,500 MXN",
-  },
-];
-
-const installRequirements = [
-  {
-    title: "Espacio Comercial",
-    desc: "Local mínimo de 12 m² con buena visibilidad y flujo de personas.",
-  },
-  {
-    title: "Instalación Eléctrica",
-    desc: "Conexiones de luz independientes, regulador de voltaje no break y contactos dentro del local.",
-  },
-  {
-    title: "Hidráulico y Drenaje",
-    desc: "Acceso a toma de agua, drenaje dentro del local y preparación para conexiones en PVC.",
-  },
-  {
-    title: "Almacenamiento de Agua Cruda",
-    desc: "Dos tinacos grado alimenticio translúcidos de 2,500 L o uno de 5,000 L para agua cruda.",
-  },
-  {
-    title: "Muro para Vending",
-    desc: "Levantamiento de muro con medidas aproximadas de 80.5 x 80.5 cm y 90 cm de altura al suelo para la vending.",
-  },
-];
-
-const FaqItem = ({ q, a }) => (
-  <details className="group border-b border-slate-200/80 last:border-none">
-    <summary className="cursor-pointer list-none p-5 md:p-6 font-semibold text-slate-800 flex items-center justify-between hover:bg-slate-50 transition">
-      {q}
-      <div className="ml-4 text-slate-400 transition-transform duration-300 group-open:rotate-180">
-        <ChevronDownIcon className="h-5 w-5" />
-      </div>
-    </summary>
-    <div className="px-5 md:px-6 pb-6 text-slate-600 leading-relaxed">{a}</div>
-  </details>
-);
-
-const SectionTitle = ({ eyebrow, children, align = "center", className = "" }) => (
-  <div className={`${align === "center" ? "text-center" : ""} mb-12`}>
-    {eyebrow && (
-      <p className="text-sm font-semibold tracking-[0.2em] uppercase text-cyan-600 mb-3">
-        {eyebrow}
-      </p>
-    )}
-    <h2 className={`text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight ${className}`}>
-      {children}
-    </h2>
+const ComparisonTable = () => (
+  <div className="overflow-x-auto rounded-[2.5rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/50">
+    <table className="w-full text-left border-collapse min-w-[850px]">
+      <thead>
+        <tr className="bg-blue-900 text-white">
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/10">Atributo Técnico</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/10">Tradicional</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest text-blue-300 border-r border-white/10">Tradicional + Ósmosis</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/10">Touch Max</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest text-blue-300">Touch Max + Ósmosis</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-slate-100 font-medium">
+        {[
+          { label: "Interfaz de Usuario", vals: ["Botones Físicos", "Botones Físicos", "Touch 8\" Full Color", "Touch 8\" Full Color"] },
+          { label: "Variedad de Llenado", vals: ["3 Modos", "3 Modos", "4 Modos", "4 Modos"] },
+          { label: "Ósmosis Inversa", vals: [false, true, false, true] },
+          { label: "Audio y Bocina", vals: [false, false, true, true] },
+          { label: "Medición de Despacho", vals: ["Temporizado", "Temporizado", "Flujómetro Digital", "Flujómetro Digital"] },
+          { label: "Capacidad (Lts/Día)", vals: ["~10,000", "16,000+", "~10,000", "16,000+"] },
+          { label: "Inversión Sugerida", vals: ["$54,950", "$82,000", "$64,950", "$92,950"], bold: true },
+        ].map((row, i) => (
+          <tr key={i} className="hover:bg-blue-50/20 transition-colors">
+            <td className="p-7 text-slate-900 font-black text-sm uppercase tracking-tight">{row.label}</td>
+            {row.vals.map((v, idx) => (
+              <td key={idx} className={`p-7 text-sm ${row.bold ? "font-black text-blue-900" : "text-slate-500"}`}>
+                {typeof v === "boolean" ? (
+                  v ? <CheckIcon className="h-6 w-6 text-blue-600" /> : <XMarkIcon className="h-6 w-6 text-slate-200" />
+                ) : String(v)}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   </div>
 );
 
-/* --- Main Component --- */
 export default function VendingInfo() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const contRef = useRef(null);
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    const t = setTimeout(
-      () => contRef.current?.scrollIntoView({ behavior: "smooth" }),
-      200
-    );
-    return () => clearTimeout(t);
-  }, [location.pathname]);
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   return (
-    <div ref={contRef} className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen bg-white selection:bg-blue-500 selection:text-white font-sans overflow-x-hidden">
       <Helmet>
-        <title>
-          Atlantis 300 Vending Touch | Purificadora de Agua 24 Horas | Darmax
-        </title>
-        <meta
-          name="description"
-          content="Conoce la máquina Vending Touch Atlantis 300 de Darmax: sistema de purificación con filtros certificados NSF, gabinete de acero inoxidable 304, pantalla touch, 4 modalidades de llenado, agua alcalina opcional y todos los requisitos para iniciar tu negocio."
-        />
-        <meta
-          name="keywords"
-          content="vending de agua, Atlantis 300, purificadora de agua 24 horas, negocio de agua, máquina expendedora de agua, Darmax Agua, agua alcalina, tinacos grado alimenticio"
-        />
-        <link
-          rel="canonical"
-          href="https://darmaxagua.com.mx/vending-info"
-        />
-
-        {/* Datos Estructurados (Schema.org) para Producto/Servicio */}
-        <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org/",
-              "@type": "Product",
-              "name": "Máquina Vending Touch Atlantis 300 Darmax",
-              "image": "https://darmaxagua.com.mx/img/vending/TOUCHAGUA.png",
-              "description": "Máquina expendedora de agua purificada con sistema de filtros certificados NSF, gabinete de acero inoxidable 304, pantalla touch y 4 modalidades de llenado. Incluye tinaco de 2,500 L y opciones de agua alcalina.",
-              "brand": {
-                "@type": "Brand",
-                "name": "Darmax Agua"
-              },
-              "offers": {
-                "@type": "AggregateOffer",
-                "priceCurrency": "MXN",
-                "lowPrice": "64950",
-                "highPrice": "76950",
-                "offerCount": "2"
-              }
-            }
-          `}
-        </script>
+        <title>Vending Atlantis 300 | Ficha Técnica y Modelos | Darmax</title>
+        <meta name="description" content="Detalles técnicos de la familia Atlantis 300. Componentes de purificación, ósmosis inversa y sistemas vending touch 24/7." />
       </Helmet>
 
-      <SEO
-        title="Vending de Agua Purificada 24/7 | Máquinas Rentables"
-        description="Inicia tu negocio de Vending de Agua 24 horas con Darmax. Equipos automáticos de acero inoxidable, alta capacidad y múltiples formas de pago."
-        keywords="vending de agua, purificadora 24 horas, negocio rentable, franquicia agua, vending machine precio"
-        productData={{
-          name: "Máquina Vending de Agua Purificada Darmax",
-          price: "54950",
-        }}
-        faqData={faqs.map((f) => ({ question: f.q, answer: f.a }))}
+      <SEO 
+        title="Vending Atlantis 300 - Ingeniería y Componentes"
+        description="Explora los componentes de alta gama de la Atlantis 300. Purificación certificada y tecnología vending de vanguardia."
       />
 
-      {/* ===== Hero Section ===== */}
-      <section className="relative bg-slate-900 overflow-hidden">
-        <div className="absolute inset-0">
+      {/* HERO SECTION */}
+      <section className="relative min-h-[90vh] flex items-center pt-32 pb-20 bg-slate-900">
+        <div className="absolute inset-0 z-0">
           <img
-            src={HERO_IMG}
-            alt="Máquina Vending de Agua Darmax Atlantis 300"
-            className="w-full h-full object-cover opacity-25"
+            src="/img/vending/vendingmodelcss.png"
+            alt="Darmax Atlantis 300"
+            className="w-full h-full object-cover opacity-15"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-950/60 via-slate-900/40 to-slate-900" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-cyan-500/5" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/70 to-slate-900/95" />
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-center min-h-[85vh] text-center text-white pt-24 pb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="max-w-3xl"
-          >
-            <span className="inline-flex items-center gap-2 rounded-full bg-slate-900/60 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300 mb-5">
-              Atlantis 300 · Vending Touch
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 w-full">
+          <motion.div initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={fadeUp} className="max-w-3xl">
+            <span className="inline-block px-5 py-1.5 rounded-full bg-blue-500/10 text-blue-300 text-[10px] font-black uppercase tracking-[0.3em] mb-8 border border-blue-500/20 backdrop-blur-sm">
+              Identity: Atlantis Line
             </span>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
-              Tu Purificadora 24/7,
-              <span className="text-cyan-400"> Lista para Vender.</span>
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-8">
+              Ingeniería <br />
+              <span className="inline-block pb-2 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-[#5188C9] to-[#93C5FD]">de alto nivel.</span>
             </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-200 leading-relaxed">
-              Arranca tu negocio de agua con un equipo vending profesional:
-              purificación certificada, gabinete de acero inoxidable 304,
-              pantalla touch y sistema automático de cobro y llenado.
+            <p className="text-lg sm:text-xl text-blue-100/70 mb-12 max-w-xl leading-relaxed">
+              La familia Atlantis 300 combina componentes de grado industrial con tecnología inteligente para ofrecerte la purificadora 24/7 más confiable del mercado.
             </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-wrap gap-5">
               <Link
                 to="/configurar-maquina/Vending"
-                className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-cyan-400 shadow-xl hover:bg-cyan-300 transition-all transform hover:scale-105"
+                className="px-12 py-5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl shadow-2xl shadow-blue-900/40 transition-all transform hover:scale-105 uppercase tracking-widest text-xs"
               >
-                Configurar mi Atlantis 300
+                Configurar mi Atlantis
               </Link>
               <button
-                onClick={() =>
-                  document
-                    .getElementById("pricing")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-                className="px-8 py-3 rounded-full font-semibold border-2 border-slate-500 text-slate-100 hover:bg-slate-800 hover:border-slate-300 transition"
+                onClick={() => document.getElementById("tecnico")?.scrollIntoView({ behavior: "smooth" })}
+                className="px-12 py-5 bg-white/5 hover:bg-white/10 text-white font-black rounded-2xl border border-white/10 transition-all uppercase tracking-widest text-xs backdrop-blur-sm"
               >
-                Ver Precio y Qué Incluye
+                Ver Ficha Técnica
               </button>
             </div>
-            <p className="mt-4 text-sm text-slate-300/80">
-              Entrega estimada entre 15 y 20 días naturales a partir de la firma
-              del contrato.
-            </p>
           </motion.div>
         </div>
       </section>
 
-      {/* ===== Highlights Section ===== */}
-      <section className="bg-slate-800 py-10 border-b border-slate-700/60">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8">
-            {highlights.map((h, i) => (
+      {/* SECCIÓN MODELOS */}
+      <section id="modelos" className="py-24 sm:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Configuraciones"
+            title="Cuatro niveles de"
+            highlight="potencia y tecnología."
+          />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {atlantisModels.map((m, i) => (
               <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                key={m.id}
+                initial="initial"
+                whileInView="whileInView"
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="flex items-start gap-4 text-white"
+                variants={fadeUp}
+                transition={{ delay: i * 0.1 }}
+                className="group relative flex flex-col bg-white rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden hover:-translate-y-2 transition-all duration-500"
               >
-                <div className="flex-shrink-0 bg-slate-900/60 backdrop-blur-sm p-3 rounded-xl border border-slate-700/80">
-                  <h.icon className="h-7 w-7 text-cyan-400" />
-                </div>
-                <div>
-                  <p className="font-semibold text-base">{h.title}</p>
-                  <p className="text-sm text-slate-400 mt-1">{h.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Pricing & What's Included ===== */}
-      <section
-        id="pricing"
-        className="py-20 md:py-24 bg-gradient-to-b from-slate-50 via-white to-slate-50"
-      >
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle eyebrow="Inversión y Alcance">
-            Precio, Upgrades y Regalos Incluidos
-          </SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-            {pricingCards.map((card, i) => (
-              <motion.div
-                key={card.name}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.6, delay: i * 0.08 }}
-                className={`relative rounded-3xl p-7 md:p-8 bg-white shadow-lg border ${
-                  i === 0
-                    ? "border-cyan-200 shadow-cyan-100"
-                    : "border-slate-200/80"
-                }`}
-              >
-                {card.badge && (
-                  <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide mb-4 ${
-                      i === 2
-                        ? "bg-green-100 text-green-700"
-                        : "bg-cyan-100 text-cyan-700"
-                    }`}
-                  >
-                    {card.badge}
-                  </span>
-                )}
-                <h3 className="text-xl font-bold text-slate-900">
-                  {card.name}
-                </h3>
-                <p className="mt-2 text-2xl font-extrabold text-slate-900">
-                  {card.price}
-                </p>
-                <p className="mt-3 text-sm text-slate-600">
-                  {card.description}
-                </p>
-                <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                  {card.items.map((item) => (
-                    <li key={item} className="flex gap-2">
-                      <span className="mt-[6px] h-1.5 w-1.5 rounded-full bg-cyan-500" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-10 max-w-3xl mx-auto text-center text-sm text-slate-500">
-            <p>
-              Forma de pago: <strong>50% de anticipo</strong> y{" "}
-              <strong>50% contra entrega</strong> del equipo. Si requieres
-              factura, se agrega el <strong>IVA</strong> al costo.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Technical Components Section ===== */}
-      <section className="py-20 md:py-24 bg-white border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle eyebrow="Ficha Técnica">
-            Componentes de Purificación y Vending
-          </SectionTitle>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
-            {/* Sistema de purificación */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6 }}
-              className="lg:col-span-2 rounded-3xl bg-slate-50 border border-slate-200/80 p-7 md:p-8"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="p-2 rounded-full bg-cyan-100 text-cyan-700">
-                  <ShieldCheckIcon className="h-6 w-6" />
-                </span>
-                <h3 className="text-xl font-bold text-slate-900">
-                  Sistema de Purificación en Múltiples Etapas
-                </h3>
-              </div>
-              <p className="text-sm text-slate-600 mb-4">
-                Cada etapa está diseñada para remover sedimentos, cloro,
-                dureza, microorganismos y entregar agua purificada lista para
-                consumo.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm text-slate-700">
-                <ul className="space-y-2">
-                  <li>• Bomba de 3/4 hp Jet en acero inoxidable 127 volts.</li>
-                  <li>• Presurizador automático.</li>
-                  <li>
-                    • Filtro de lecho profundo: tanque 9x48 NSF con gravas,
-                    arenas sílicas y zeolita certificadas.
-                  </li>
-                  <li>
-                    • Filtro de carbón activado: tanque 9x48 NSF con carbón
-                    activado certificado.
-                  </li>
-                  <li>
-                    • Filtro suavizador: tanque 9x48 NSF con válvula manual de
-                    5 pasos y resina catiónica certificada.
-                  </li>
-                </ul>
-                <ul className="space-y-2">
-                  <li>• Portacartuchos pulidor 10” Slim certificado NSF.</li>
-                  <li>
-                    • Lámpara de rayos ultravioleta de 25 LPM con balastro en
-                    acero inoxidable.
-                  </li>
-                  <li>• Generador de ozono.</li>
-                  <li>• Inyector tipo ventury de 3/4”.</li>
-                  <li>
-                    • Tinaco grado alimenticio de 2,500 litros incluido sin
-                    costo.
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-
-            {/* Gabinete y electrónica */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="rounded-3xl bg-slate-900 text-slate-50 p-7 md:p-8 relative overflow-hidden"
-            >
-              <div className="absolute -top-8 -right-10 h-32 w-32 rounded-full bg-cyan-500/30 blur-2xl" />
-              <div className="relative">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="p-2 rounded-full bg-slate-800 text-cyan-300">
-                    <CurrencyDollarIcon className="h-6 w-6" />
-                  </span>
-                  <h3 className="text-xl font-bold">
-                    Gabinete Vending y Electrónica
-                  </h3>
-                </div>
-                <ul className="space-y-2 text-sm text-slate-200/90">
-                  <li>• Gabinete de acero quirúrgico grado alimenticio 304.</li>
-                  <li>• Marco y puerta en acero inoxidable.</li>
-                  <li>• Pantalla inicial touch de 8”.</li>
-                  <li>• Dispensador de tapas integrado.</li>
-                  <li>• Monedero antirrobo.</li>
-                  <li>• Bocina y mensajes auditivos.</li>
-                  <li>• Vinil laminado contra luz UV.</li>
-                  <li>• Sensores de flujo y solenoides de control.</li>
-                  <li>• Sistema de verificación de fallas.</li>
-                </ul>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Key Features Section (beneficios) ===== */}
-      <section id="features" className="py-20 md:py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle eyebrow="Beneficios Clave">
-            Diseño Profesional, Operación Eficiente
-          </SectionTitle>
-
-          <div className="space-y-16">
-            {features.map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.6 }}
-                className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${
-                  i % 2 !== 0 ? "md:flex-row-reverse" : ""
-                }`}
-              >
-                <div className="md:w-1/2">
-                  <div className="inline-flex items-center gap-3 mb-4">
-                    <span className="p-2 bg-cyan-100 rounded-full">
-                      <feature.icon className="h-6 w-6 text-cyan-700" />
-                    </span>
-                    <h3 className="text-2xl font-bold text-slate-900">
-                      {feature.title}
-                    </h3>
+                <div className={`h-2 bg-gradient-to-r ${m.gradient}`} />
+                <div className="p-10 flex flex-col h-full">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2">{m.tagline}</span>
+                  <h3 className="text-2xl font-black text-slate-900 leading-tight mb-4">{m.name}</h3>
+                  
+                  <div className="aspect-square mb-8 bg-slate-50 rounded-3xl p-6 flex items-center justify-center group-hover:bg-blue-50 transition-colors duration-500">
+                    <img src={m.image} alt={m.name} className="max-h-full object-contain transform group-hover:scale-110 transition-transform duration-700" />
                   </div>
-                  <p className="text-slate-600 leading-relaxed text-base">
-                    {feature.description}
-                  </p>
+
+                  <div className="mt-auto space-y-6">
+                    <ul className="space-y-2">
+                       {m.specs.map((s, idx) => (
+                         <li key={idx} className="flex items-start gap-2 text-[11px] font-bold text-slate-500 uppercase tracking-tight">
+                           <CheckIcon className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" />
+                           <span>{String(s)}</span>
+                         </li>
+                       ))}
+                    </ul>
+                    <div className="pt-8 border-t border-slate-50">
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inversión Desde</span>
+                        <span className="text-2xl font-black text-slate-900">{m.price}</span>
+                      </div>
+                      <Link
+                        to="/configurar-maquina/Vending"
+                        className="block w-full py-4 text-center bg-gradient-to-r from-blue-600 to-blue-400 text-white font-black rounded-2xl hover:shadow-lg transition-all text-[10px] uppercase tracking-widest"
+                      >
+                        Seleccionar Modelo
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-                <div className="md:w-1/2">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
-                    className="w-full h-auto rounded-2xl shadow-xl object-cover"
-                  />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN TABLA COMPARATIVA */}
+      <section className="py-24 sm:py-32 bg-blue-50/30">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Análisis Detallado"
+            title="Diferencias que"
+            highlight="impulsan tu éxito."
+          />
+          <ComparisonTable />
+        </div>
+      </section>
+
+      {/* SECCIÓN COMPONENTES TÉCNICOS */}
+      <section id="tecnico" className="py-24 sm:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Ingeniería Darmax"
+            title="Componentes de"
+            highlight="grado industrial."
+          />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+            {commonComponents.map((cat, i) => (
+              <motion.div key={cat.category} initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={fadeUp}>
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-xl bg-blue-900 flex items-center justify-center text-white shadow-lg">
+                    {i === 0 ? <WrenchIcon className="w-6 h-6" /> : <CpuChipIcon className="w-6 h-6" />}
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">{String(cat.category)}</h3>
+                </div>
+                <div className="space-y-6">
+                  {cat.items.map((item) => (
+                    <div key={item.name} className="group p-10 rounded-[2rem] bg-slate-50 border border-slate-100 hover:border-blue-200 hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-900/5">
+                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-2 group-hover:text-blue-600 transition-colors">{String(item.name)}</h4>
+                      <p className="text-slate-500 text-sm font-medium leading-relaxed">{String(item.desc)}</p>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             ))}
@@ -584,163 +384,97 @@ export default function VendingInfo() {
         </div>
       </section>
 
-      {/* ===== Extras Section ===== */}
-      <section className="py-20 md:py-24 bg-white border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle eyebrow="Complementos Opcionales">
-            Servicios y Accesorios para Potenciar tu Negocio
-          </SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
-            {extras.map((extra, i) => (
-              <motion.div
-                key={extra.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.4, delay: i * 0.04 }}
-                className="rounded-2xl border border-slate-200/80 bg-slate-50/60 hover:bg-white hover:shadow-md transition p-5 flex flex-col justify-between"
-              >
-                <p className="font-semibold text-sm text-slate-900">
-                  {extra.name}
-                </p>
-                <p className="mt-3 text-cyan-700 font-bold text-sm">
-                  {extra.price}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-          <p className="mt-8 text-xs text-slate-500 flex items-center gap-2">
-            <ShippingIcon className="h-4 w-4" />
-            *Flete y viáticos se cotizan de acuerdo con el código postal de
-            instalación.
-          </p>
-        </div>
-      </section>
-
-      {/* ===== Installation Requirements Section ===== */}
-      <section className="py-20 md:py-24 bg-slate-900 text-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle eyebrow="Antes de Instalar" align="left" className="text-white">
-            Requisitos del Local e Instalación
-          </SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {installRequirements.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="relative rounded-2xl bg-slate-800/60 border border-slate-700/80 p-6"
-              >
-                <div className="absolute -top-4 -right-4 h-10 w-10 rounded-full bg-cyan-500/30 blur-xl" />
-                <h3 className="font-semibold text-base mb-2">{item.title}</h3>
-                <p className="text-sm text-slate-300">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== How It Works Section ===== */}
-      <section className="py-20 md:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>De la Idea a la Realidad en 4 Pasos</SectionTitle>
-          <div className="mt-16 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-            {processSteps.map((step, i) => (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="text-center p-6 bg-slate-50 rounded-2xl border border-slate-200/80"
-              >
-                <div className="inline-block p-4 bg-cyan-100 text-cyan-700 rounded-full mb-4">
-                  <step.icon className="h-8 w-8" />
+      {/* SECCIÓN REQUERIMIENTOS */}
+      <section className="py-24 sm:py-32 bg-blue-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent)]" />
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-20">
+            <div className="lg:w-2/5 text-left">
+              <SectionTitle 
+                align="left"
+                light
+                eyebrow="Preparación"
+                title="Lo que necesitas"
+                highlight="en tu local."
+              />
+              <p className="text-blue-100/70 text-lg mb-12 leading-relaxed font-medium">
+                Un negocio exitoso comienza con una instalación profesional. Nuestros técnicos te guían en cada paso de la obra civil.
+              </p>
+              <Link to="/contacto" className="inline-flex items-center gap-4 text-blue-300 font-black uppercase tracking-[0.3em] text-[10px] hover:gap-6 transition-all group">
+                Hablar con un técnico <ChevronDownIcon className="w-4 h-4 -rotate-90 group-hover:text-white" />
+              </Link>
+            </div>
+            <div className="lg:w-3/5 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              {requirements.map((r) => (
+                <div key={r.title} className="p-10 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-md group hover:bg-white/10 transition-all duration-700">
+                  <h5 className="text-blue-400 font-black text-[10px] uppercase tracking-[0.3em] mb-4">{String(r.title)}</h5>
+                  <p className="text-white text-xl font-bold tracking-tight leading-snug">{String(r.desc)}</p>
                 </div>
-                <h3 className="font-bold text-lg text-slate-900">
-                  {step.title}
-                </h3>
-                <p className="text-sm text-slate-600 mt-1">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="mt-12 text-center">
-            <Link
-              to="/contacto"
-              className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-cyan-400 shadow-lg hover:bg-cyan-300 transition-all transform hover:scale-105"
-            >
-              Solicitar Asesoría
-            </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ===== Gallery Section ===== */}
-      <section className="py-20 md:py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Nuestros Equipos en Acción</SectionTitle>
-        </div>
-        <div className="mt-8 relative">
-          <div className="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-6 md:px-10">
-            {galleryImages.map((src, i) => (
-              <motion.div
-                key={src}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 snap-center"
-              >
-                <img
-                  src={src}
-                  alt={`Instalación real ${i + 1}`}
-                  className="w-full h-80 rounded-2xl object-cover shadow-lg"
-                />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FAQ Section ===== */}
-      <section className="py-20 md:py-24 bg-white">
-        <div className="max-w-4xl mx-auto px-6 md:px-10">
-          <SectionTitle>Preguntas Frecuentes</SectionTitle>
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      {/* SECCIÓN FAQ */}
+      <section className="py-24 sm:py-32 bg-white">
+        <div className="max-w-4xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Resolviendo Dudas"
+            title="Preguntas"
+            highlight="frecuentes."
+          />
+          <div className="space-y-5 border border-slate-100 rounded-[3rem] overflow-hidden shadow-xl shadow-slate-200/50">
             {faqs.map((f, i) => (
-              <FaqItem key={i} q={f.q} a={f.a} />
+              <details key={i} className="group border-b border-slate-50 last:border-none">
+                <summary className="cursor-pointer list-none p-10 font-black text-slate-800 flex items-center justify-between hover:bg-blue-50/20 transition-colors uppercase tracking-tight text-sm">
+                  {String(f.q)}
+                  <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 group-open:rotate-180 transition-transform duration-500">
+                    <ChevronDownIcon className="h-4 w-4" />
+                  </div>
+                </summary>
+                <div className="px-10 pb-10 text-slate-500 text-base leading-relaxed font-medium">
+                  {String(f.a)}
+                </div>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== Final CTA Section ===== */}
-      <section className="py-20 bg-slate-900 text-slate-50">
-        <div className="max-w-3xl mx-auto text-center px-6">
-          <h2 className="text-3xl md:text-4xl font-extrabold">
-            ¿Listo para Iniciar tu Negocio de Agua?
+      {/* FINAL CTA */}
+      <section className="py-24 sm:py-40 bg-blue-950 text-center relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-20">
+          <img src="/img/vending/atlantistouchvending.jpg" alt="Darmax Atlantis" className="w-full h-full object-cover" />
+        </div>
+        <div className="relative z-10 max-w-4xl mx-auto px-6">
+          <h2 className="text-4xl sm:text-7xl font-black text-white tracking-tighter leading-tight mb-10">
+            ¿Tu próximo gran <br />
+            <span style={{ color: BRAND_BLUE }}>negocio rentable?</span>
           </h2>
-          <p className="mt-4 text-lg text-slate-300">
-            Da el primer paso hacia tu independencia financiera con la Atlantis
-            300. Configura tu equipo ideal o contáctanos para una asesoría
-            personalizada sin compromiso.
+          <p className="text-xl text-blue-100/60 mb-14 max-w-2xl mx-auto leading-relaxed font-medium">
+            Únete a los emprendedores que ya facturan 24/7 con la tecnología Atlantis 300. Configura tu equipo hoy.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-8">
             <Link
               to="/configurar-maquina/Vending"
-              className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-cyan-400 shadow-lg hover:bg-cyan-300 transition-all transform hover:scale-105"
+              className="px-14 py-7 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl shadow-2xl shadow-blue-500/30 transition-all transform hover:scale-110 uppercase tracking-widest text-sm"
             >
               Configurar mi Equipo
             </Link>
-            <button
-              onClick={() => navigate(-1)}
-              className="px-8 py-3 rounded-full font-semibold bg-slate-800 hover:bg-slate-700 text-slate-50 border border-slate-600 transition"
+            <Link
+              to="/contacto"
+              className="px-14 py-7 bg-white text-blue-900 font-black rounded-2xl hover:bg-slate-100 transition-all uppercase tracking-widest text-sm"
             >
-              Volver
-            </button>
+              Hablar con Ventas
+            </Link>
           </div>
+          <button 
+            onClick={() => navigate(-1)}
+            className="mt-20 text-blue-500 hover:text-white transition-colors flex items-center gap-3 mx-auto font-black uppercase tracking-[0.4em] text-[10px]"
+          >
+            <ChevronDownIcon className="h-4 w-4 rotate-90" /> Volver atrás
+          </button>
         </div>
       </section>
     </div>

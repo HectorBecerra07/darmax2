@@ -1,542 +1,330 @@
-import { useEffect, useRef } from "react";
-import { Helmet } from "react-helmet-async";
+import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import SEO from "../components/SEO";
 import {
   ChevronDownIcon,
+  CurrencyDollarIcon,
+  BuildingStorefrontIcon,
+  ClockIcon,
   WrenchScrewdriverIcon,
+  ArrowTrendingUpIcon,
   MapPinIcon,
   TruckIcon,
   AcademicCapIcon,
   ShieldCheckIcon,
-  CpuChipIcon,
+  CheckIcon,
+  XMarkIcon,
+  InformationCircleIcon,
   SparklesIcon,
-  DocumentTextIcon,
-  RectangleStackIcon,
-  BoltIcon,
-  CurrencyDollarIcon,
+  CircleStackIcon,
+  CpuChipIcon,
+  WrenchIcon,
   BeakerIcon,
   ArchiveBoxIcon,
+  RectangleStackIcon,
 } from "@heroicons/react/24/outline";
 
-/* --- Data --- */
-const HERO_IMG = "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png";
+/* --- Identity & Style (Dúo Emprendedor: Menta to Aqua) --- */
+const BRAND = {
+  mint: "#8fd8bc",
+  aquaMint: "#7edcb7",
+  turquoise: "#73cdbd",
+  deepAqua: "#5aa7bf",
+  greenCyan: "#67cdb9",
+};
 
-/* Paquete real: Dúo Emprendedor Atlantis 300 + Limpieza 5 productos */
-const highlights = [
+const fadeUp = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.1 },
+  transition: { duration: 0.6, ease: "easeOut" }
+};
+
+/* --- Data: 4 Bundle Variations --- */
+const duoBundles = [
   {
-    icon: RectangleStackIcon,
-    title: "2 Negocios en 1 Paquete",
-    desc: "Agua purificada + productos de limpieza a granel",
+    id: "DuoTradicional",
+    name: "Dúo Tradicional",
+    tagline: "El Punto de Partida",
+    price: "$89,900",
+    gradient: "from-[#8fd8bc] to-[#7edcb7]",
+    image: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png",
+    specs: [
+      "Atlantis 300 Tradicional",
+      "Vending Clean 5 Productos",
+      "Purificación Industrial NSF",
+      "Interfaz de Botones",
+      "Monederos con Cambio",
+      "Gabinete Inox 304",
+      "Tinaco 2,500L de Regalo",
+    ]
   },
   {
-    icon: CurrencyDollarIcon,
-    title: "Precio Paquete $99,900 MXN",
-    desc: "Incluye Atlantis 300 y vending de 5 productos",
+    id: "DuoTradicionalMax",
+    name: "Dúo Tradicional Max",
+    tagline: "Pureza Garantizada",
+    price: "$116,950",
+    gradient: "from-[#7edcb7] to-[#73cdbd]",
+    image: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png",
+    specs: [
+      "Atlantis 300 Tradicional + Ósmosis",
+      "Vending Clean 5 Productos",
+      "Eliminación de Sarro y Sales",
+      "Sabor Premium Embajador",
+      "Ideal para Zonas de Agua Dura",
+      "Capacidad de Producción Max",
+      "Kit de Instalación Completo",
+    ]
   },
   {
-    icon: ShieldCheckIcon,
-    title: "Calidad Certificada",
-    desc: "Filtros y resinas con certificación NSF",
+    id: "DuoTouch",
+    name: "Dúo Touch Pro",
+    tagline: "Tecnología y Servicio",
+    price: "$99,900",
+    gradient: "from-[#73cdbd] to-[#67cdb9]",
+    image: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png",
+    specs: [
+      "Atlantis 300 Touch Max (8\")",
+      "Vending Clean 5 Productos",
+      "Sensado de Precisión",
+      "Sistema de Audio y Guía",
+      "Interfaz Touch Interactiva",
+      "Control de Ventas Digital",
+      "Máximo Valor de Reventa",
+    ]
   },
-  
+  {
+    id: "DuoTouchMax",
+    name: "Dúo Touch Max + Ósmosis",
+    tagline: "La Estación Definitiva",
+    price: "$127,900",
+    gradient: "from-[#67cdb9] to-[#5aa7bf]",
+    image: "https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png",
+    specs: [
+      "Atlantis 300 Touch + Ósmosis",
+      "Vending Clean 5 Productos",
+      "Purificación Grado Quirúrgico",
+      "Máximo Portafolio de Ventas",
+      "Automatización Total",
+      "Membranas Industriales OI",
+      "La mejor inversión ROI 24/7",
+    ]
+  },
 ];
 
-const features = [
+const sharedEngineering = [
   {
-    icon: BeakerIcon,
-    title: "Vending Touch Atlantis 300",
-    description:
-      "Sistema completo de purificación con bomba Jet de 3/4 hp en acero inoxidable, filtros de lecho profundo, carbón activado y suavizador 9x48 NSF, pulidor 10” Slim NSF, luz UV de 25 LPM y generador de ozono. Incluye vending touch con 4 modalidades de llenado (1, 4, 10 y 20 L), enjuague de garrafón, validador de monedas que da cambio, gabinete de acero quirúrgico 304 y tinaco de 2,500 L grado alimenticio (regalo).",
-    image: "/img/vending/TOUCHAGUA.png",
+    category: "Ingeniería de Purificación",
+    items: [
+      { name: "Atlantis 300 Tech", desc: "Sistema de filtración en 4 etapas: lecho profundo, carbón activado, suavizado y pulido." },
+      { name: "Desinfección Dual", desc: "Lámpara de rayos ultravioleta de 25 LPM y Generador de Ozono de alta eficiencia." },
+      { name: "Bomba Inox 3/4 HP", desc: "Potencia constante para el despacho de agua purificada certificada." },
+    ]
   },
   {
-    icon: RectangleStackIcon,
-    title: "Vending 5 Productos de Limpieza",
-    description:
-      "Máquina Darmax Clean para cinco productos de limpieza con bombas de 1/2 hp con válvula check, gabinete de acero inoxidable con llave, mangueras y conectores, luz interna y vinil de alta calidad. Registra ventas, sensa litros y despacha 1 litro por ciclo. Acepta monedas de $1, $2, $5 y $10 pesos y da cambio, con monedero antirrobo de alta capacidad.",
-    image: "/img/vending/productoslimpieza5.png",
-  },
-  {
-    icon: CpuChipIcon,
-    title: "Negocio Listo para Crecer",
-    description:
-      "Con este paquete puedes atender dos necesidades básicas de tu comunidad: agua purificada y productos de limpieza a granel. Aumentas el ticket promedio y creas un punto de venta recurrente con consumos frecuentes.",
-    image: "/img/purificadoras/purificadora-comercial.jpg",
-  },
+    category: "Tecnología de Dosificación",
+    items: [
+      { name: "Vending Clean 5", desc: "5 Bombas de 1/2 HP con válvula check para dosificación exacta de productos químicos." },
+      { name: "Control de Ventas", desc: "Registro digital de transacciones y litros despachados en ambas unidades." },
+      { name: "Gabinetes Inox 304", desc: "Construcción blindada en acero inoxidable grado alimenticio para máxima durabilidad." },
+    ]
+  }
 ];
 
-const processSteps = [
-  {
-    icon: MapPinIcon,
-    title: "1. Evaluación de Ubicación",
-    desc: "Analizamos tu zona, flujo de personas y competencia para validar el potencial del Dúo Emprendedor.",
-  },
-  {
-    icon: TruckIcon,
-    title: "2. Producción e Instalación",
-    desc: "Fabricamos tu Atlantis 300 y tu vending de limpieza, los enviamos e instalamos en tu local con todos los materiales necesarios.",
-  },
-  {
-    icon: AcademicCapIcon,
-    title: "3. Capacitación Completa",
-    desc: "Te capacitamos en operación diaria, manejo del dinero, reabastecimiento de productos, mantenimiento y buenas prácticas.",
-  },
-  {
-    icon: WrenchScrewdriverIcon,
-    title: "4. Arranque y Soporte",
-    desc: "Dejas tus equipos trabajando y cuentas con nuestro soporte técnico y asesoría para seguir haciendo crecer tu negocio.",
-  },
+const requirements = [
+  { title: "Local", desc: "Área mínima sugerida de 16 m² a 18 m²." },
+  { title: "Instalación", desc: "Muro para vending de agua y espacio interno para bidones." },
+  { title: "Eléctrico", desc: "Líneas 127V independientes con tierra física." },
+  { title: "Hidráulico", desc: "Toma de red y drenaje interno de 2\"." },
 ];
 
 const faqs = [
   {
-    q: "¿Qué incluye exactamente el paquete Dúo Emprendedor?",
-    a: "Incluye la máquina Vending Touch Atlantis 300 con sistema de purificación completo y gabinete de acero inoxidable, más la máquina vending Darmax Clean para 5 productos de limpieza con su gabinete metálico, bombas, mangueras, conectores y sistema de cobro. Además, recibes tinaco de 2,500 L grado alimenticio, materiales de instalación, instalación y capacitación.",
+    q: "¿Por qué invertir en un paquete Dúo?",
+    a: "El Dúo Emprendedor permite captar dos nichos de mercado: el de consumo vital (agua) y el de consumo recurrente (limpieza), duplicando las oportunidades de venta sin duplicar el local.",
   },
   {
-    q: "¿Cuál es el precio y cómo se paga?",
-    a: "El paquete Dúo Emprendedor tiene un precio de $99,900 MXN. La forma de pago es 50% de anticipo y 50% restante a la entrega del equipo. Si requieres factura, se maneja esquema Costo + IVA.",
+    q: "¿Qué mantenimiento requieren los equipos?",
+    a: "El sistema de agua requiere cambio de filtros y resinas periódico, mientras que el de limpieza solo requiere reabastecimiento de bidones y purga de líneas para mantener la higiene.",
   },
   {
-    q: "¿Qué tiempo de entrega manejan?",
-    a: "El tiempo de entrega estimado es de entre 15 y 20 días naturales a partir de la firma del contrato, ya con tu anticipo aplicado.",
-  },
-  {
-    q: "¿Qué requisitos tiene el local para instalar este paquete?",
-    a: "Necesitas un local de al menos 16 m², conexiones de luz independiente con regulador de voltaje no break, drenaje dentro del local, dos tinacos de 2,500 L o uno de 5,000 L grado alimenticio para agua cruda y un muro con medidas 80.5 x 80.5 cm a 90 cm de altura para la vending de agua.",
+    q: "¿Incluye todo para operar?",
+    a: "Sí, el paquete incluye desde los equipos hasta el tinaco de regalo, materiales de instalación y la capacitación necesaria para que tú mismo operes tu negocio.",
   },
 ];
 
-const galleryImages = [
-  "/img/trabajos/trabajos1.jpg",
-  "/img/trabajos/trabajos2.jpg",
-  "/img/trabajos/trabajos3.jpg",
-  "/img/trabajos/trabajos5.jpg",
-  "/img/purificadoras/purificadora-negocio.jpeg",
-  "/img/purificadoras/purificadora-comercial.jpg",
-];
-
-/* Pricing, extras y requisitos específicos del PDF */
-
-const pricingCards = [
-  {
-    name: "Dúo Emprendedor Atlantis 300 + Limpieza 5 Productos",
-    price: "$99,900 MXN",
-    badge: "Paquete principal",
-    description:
-      "Incluye Vending Touch Atlantis 300 con sistema de purificación completo y vending de 5 productos de limpieza Darmax Clean.",
-    items: [
-      "Bomba Jet 3/4 hp en acero inoxidable 127 V",
-      "Filtros 9x48 NSF: lecho profundo, carbón activado y suavizador",
-      "Pulidor 10\" Slim NSF, lámpara UV 25 LPM y generador de ozono",
-      "Despachador automático 4 modalidades: 1, 4, 10 y 20 litros con enjuague",
-      "Vending limpieza con bombas 1/2 hp, gabinete de acero inoxidable y monedero antirrobo",
-    ],
-  },
-  {
-    name: "Upgrade Agua Alcalina",
-    price: "+ $12,000 MXN",
-    badge: "Opcional recomendado",
-    description:
-      "Agrega agua alcalina a tu Atlantis 300 para ofrecer dos tipos de agua y aumentar tu ticket promedio.",
-    items: [
-      "Filtro alcalinizador",
-      "Pre-filtro pulidor",
-      "Lámpara UV 16 watts",
-      "Tarjeta vending para 2 tipos de agua",
-    ],
-  },
-  {
-    name: "Regalos Incluidos",
-    badge: "Inicia",
-    description:
-      "Beneficios adicionales al adquirir tu paquete Dúo Emprendedor.",
-    items: [
-      "Materiales de instalación en PVC hidráulico Cédula 40",
-      "Instalación profesional",
-      "Capacitación al momento de la entrega",
-    ],
-  },
-  {
-    name: "Inicia tu negocio de limpieza",
-    badge: "Inicia",
-    description: "Complemento para tu vending de 5 productos de limpieza.",
-    items: ["5 bidones de 20 L para producto (no incluye rack)"],
-  },
-];
-
-const extras = [
-  { name: "Trámite de aviso de funcionamiento", price: "+ $3,500 MXN" },
-  { name: "Toma de pipa 2” PVC Cédula 40", price: "+ $5,500 MXN" },
-  { name: "Kit de insumos anuales", price: "+ $3,900 MXN" },
-  { name: "Seguro de vending", price: "+ $4,950 MXN" },
-  { name: "Tinaco 5,000 L grado alimenticio translúcido", price: "+ $10,500 MXN" },
-  { name: "Tinaco 2,500 L grado alimenticio translúcido", price: "+ $5,500 MXN" },
-  { name: "Tinaco 1,100 L grado alimenticio translúcido", price: "+ $3,300 MXN" },
-  {
-    name: "Tinaco 1,100 L grado alimenticio translúcido tipo bala",
-    price: "+ $3,600 MXN",
-  },
-  { name: "Mantenimiento anual", price: "+ $8,500 MXN" },
-  { name: "Mostrador (tarja de lavado y llenado)", price: "+ $18,000 MXN" },
-  { name: "Ósmosis inversa", price: "+ $28,000 MXN" },
-  { name: "Automatización de ósmosis", price: "+ $9,000 MXN" },
-  {
-    name: "Paquete para promoción o inauguración",
-    price: "+ $7,500 MXN",
-  },
-];
-
-const installRequirements = [
-  {
-    title: "Espacio Comercial",
-    desc: "Local de al menos 16 m², con buena visibilidad y flujo de personas.",
-  },
-  {
-    title: "Instalación Eléctrica y Drenaje",
-    desc: "Conexiones de luz independiente, regulador de voltaje no break, contactos y drenaje dentro del local.",
-  },
-  {
-    title: "Almacenamiento de Agua Cruda",
-    desc: "Dos tinacos grado alimenticio translúcido de 2,500 L o un tinaco de 5,000 L para agua cruda.",
-  },
-  {
-    title: "Muro para Vending de Agua",
-    desc: "Levantamiento de muro con medidas 80.5 x 80.5 cm y altura de 90 cm del suelo para la vending Atlantis 300.",
-  },
-];
-
-/* --- Sub-components --- */
-const FaqItem = ({ q, a }) => (
-  <details className="group border-b border-slate-200/80 last:border-none">
-    <summary className="cursor-pointer list-none p-5 md:p-6 font-semibold text-slate-800 flex items-center justify-between hover:bg-slate-50 transition">
-      {q}
-      <div className="ml-4 text-slate-400 transition-transform duration-300 group-open:rotate-180">
-        <ChevronDownIcon className="h-5 w-5" />
-      </div>
-    </summary>
-    <div className="px-5 md:px-6 pb-6 text-slate-600 leading-relaxed">{a}</div>
-  </details>
-);
-
-const SectionTitle = ({ children, className = "" }) => (
-  <div className={`text-center mb-12`}>
-    <h2 className={`text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight ${className}`}>
-      {children}
-    </h2>
-  </div>
-);
-
-/* --- Main Component --- */
-export default function TridenteInfo() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const contRef = useRef(null);
-
-  useEffect(() => {
-    const t = setTimeout(
-      () => contRef.current?.scrollIntoView({ behavior: "smooth" }),
-      200
-    );
-    return () => clearTimeout(t);
-  }, [location.pathname]);
+/* --- UI Components --- */
+function SectionTitle({ eyebrow, title, highlight, light = false, align = "center" }) {
+  const alignClass = align === "center" ? "text-center" : "text-left";
+  const eyebrowColor = light ? "text-emerald-100" : "text-teal-600";
+  const titleColor = light ? "text-white" : "text-slate-900";
 
   return (
-    <div ref={contRef} className="min-h-screen bg-slate-50 text-slate-800">
+    <div className={`mb-12 sm:mb-20 ${alignClass}`}>
+      {eyebrow && (
+        <span className={`text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] mb-4 block ${eyebrowColor}`}>
+          {String(eyebrow)}
+        </span>
+      )}
+      <h2 className={`text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter leading-tight ${titleColor}`}>
+        {String(title)} {highlight && <br className="hidden sm:block" />}
+        {highlight && (
+          <span className="inline-block pb-2 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-[#8fd8bc] to-[#5aa7bf]">
+            {String(highlight)}
+          </span>
+        )}
+      </h2>
+    </div>
+  );
+}
+
+export default function DuoEmprendedorInfo() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return (
+    <div className="min-h-screen bg-white selection:bg-[#73cdbd] selection:text-white font-sans overflow-x-hidden">
       <Helmet>
-        <title>Dúo Emprendedor Atlantis 300 + Limpieza 5 Productos | Darmax</title>
-        <meta
-          name="description"
-          content="Paquete Dúo Emprendedor: Vending Touch Atlantis 300 + Vending 5 productos de limpieza. Sistema completo de purificación, vending de limpieza a granel, regalos, extras y requisitos de instalación."
-        />
+        <title>Paquetes Dúo Emprendedor | Agua + Limpieza | Darmax</title>
+        <meta name="description" content="Compara los 4 paquetes del Dúo Emprendedor. Combina Atlantis 300 con Vending de Limpieza para maximizar tu rentabilidad 24/7." />
       </Helmet>
 
-      {/* ===== Hero Section ===== */}
-      <section className="relative bg-slate-900 overflow-hidden">
-        <div className="absolute inset-0">
+      <SEO 
+        title="Dúo Emprendedor - Cuatro Niveles de Inversión"
+        description="Selecciona la potencia de tu negocio multiservicio. Agua purificada y productos de limpieza a granel en una sola estación."
+      />
+
+      {/* HERO SECTION */}
+      <section className="relative min-h-[90vh] flex items-center pt-32 pb-20 bg-slate-900">
+        <div className="absolute inset-0 z-0">
           <img
-            src={HERO_IMG}
-            alt="Dúo Emprendedor Atlantis 300 + Limpieza 5 productos"
-            className="w-full h-full object-cover opacity-30"
+            src="https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png"
+            alt="Dúo Emprendedor Darmax"
+            className="w-full h-full object-cover opacity-15"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0d2e28]/80 via-slate-900/40 to-slate-900" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#8fd8bc]/20 via-transparent to-[#5aa7bf]/10" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/40 to-slate-900/60" />
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-center min-h-[85vh] text-center text-white pt-24 pb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            <span className="inline-block px-4 py-1.5 mb-4 bg-white/10 text-teal-300 rounded-full text-sm font-semibold">
-              Paquete Dúo Emprendedor · Agua + Limpieza
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 w-full">
+          <motion.div initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={fadeUp} className="max-w-3xl">
+            <span className="inline-block px-5 py-1.5 rounded-full bg-teal-500/10 text-[#8fd8bc] text-[10px] font-black uppercase tracking-[0.3em] mb-8 border border-teal-500/20 backdrop-blur-sm">
+              Bundle Experience: Dúo Emprendedor
             </span>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
-              Atlantis 300 + Limpieza 5 Productos,{" "}
-              <span className="text-teal-400">2 Negocios en 1 Inversión</span>.
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-8">
+              Tu éxito, <br />
+              potenciado <span className="inline-block pb-2 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-[#8fd8bc] to-[#73cdbd]">al doble.</span>
             </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-200 leading-relaxed">
-              Combina una vending de agua purificada de alto rendimiento con una
-              vending de productos de limpieza a granel. Más ingresos, más
-              clientes y un solo paquete listo para instalar.
+            <p className="text-lg sm:text-xl text-slate-300 mb-12 max-w-xl leading-relaxed">
+              El Dúo Emprendedor es la estación multiservicio más rentable de México. Selecciona el nivel de tecnología que mejor se adapte a tu territorio.
             </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-wrap gap-5">
               <Link
                 to="/configurar-maquina/Tridente"
-                className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-teal-400 shadow-lg hover:bg-teal-300 transition-all transform hover:scale-105"
+                className="px-12 py-5 bg-gradient-to-r from-[#8fd8bc] to-[#73cdbd] hover:shadow-[#8fd8bc]/20 text-[#0d2e28] font-black rounded-2xl shadow-2xl transition-all transform hover:scale-105 uppercase tracking-widest text-xs"
               >
-                Configurar mi Paquete
+                Configurar mi Dúo
               </Link>
-              <Link
-                to="#pricing"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document
-                    .getElementById("pricing")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="px-8 py-3 rounded-full font-semibold border-2 border-slate-600 text-slate-200 hover:bg-slate-800 hover:border-slate-800 transition"
+              <button
+                onClick={() => document.getElementById("modelos").scrollIntoView({ behavior: "smooth" })}
+                className="px-12 py-5 bg-white/5 hover:bg-white/10 text-white font-black rounded-2xl border border-white/10 transition-all uppercase tracking-widest text-xs backdrop-blur-sm"
               >
-                Ver Precio y Qué Incluye
-              </Link>
+                Comparar Paquetes
+              </button>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ===== Highlights Section ===== */}
-      <section className="bg-slate-800 py-12">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
-            {highlights.map((h, i) => (
+      {/* SECCIÓN MODELOS (4 PAQUETES JUNTOS) */}
+      <section id="modelos" className="py-24 sm:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Gama de Inversión"
+            title="Cuatro variaciones de"
+            highlight="paquete multiservicio."
+          />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {duoBundles.map((m, i) => (
               <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                key={m.id}
+                initial="initial"
+                whileInView="whileInView"
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="flex items-center gap-4 text-white"
+                variants={fadeUp}
+                transition={{ delay: i * 0.1 }}
+                className="group relative flex flex-col bg-white rounded-[3rem] border border-slate-100 shadow-xl shadow-teal-900/5 overflow-hidden hover:-translate-y-2 transition-all duration-500"
               >
-                <div className="flex-shrink-0 bg-slate-700 p-3 rounded-lg">
-                  <h.icon className="h-7 w-7 text-teal-400" />
-                </div>
-                <div>
-                  <p className="font-bold text-lg">{h.title}</p>
-                  <p className="text-sm text-slate-400">{h.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Pricing & What's Included ===== */}
-      <section
-        id="pricing"
-        className="py-20 md:py-28 bg-gradient-to-b from-slate-50 via-white to-slate-50"
-      >
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle></SectionTitle>
-          <div className="grid grid-cols-1 md:gInversión, Agua Alcalina y Regalosrid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
-            {pricingCards.map((card, i) => (
-              <motion.div
-                key={card.name}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.6, delay: i * 0.08 }}
-                className={`relative rounded-3xl p-7 md:p-8 bg-white shadow-lg border ${
-                  i === 0
-                    ? "border-teal-200 shadow-teal-100"
-                    : "border-slate-200/80"
-                }`}
-              >
-                <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide mb-4 ${
-                    i === 2 || i === 3
-                      ? "bg-emerald-100 text-emerald-700"
-                      : "bg-teal-100 text-teal-700"
-                  }`}
-                >
-                  {card.badge}
-                </span>
-                <h3 className="text-xl font-bold text-slate-900">
-                  {card.name}
-                </h3>
-                <p className="mt-2 text-2xl font-extrabold text-slate-900">
-                  {card.price}
-                </p>
-                <p className="mt-3 text-sm text-slate-600">
-                  {card.description}
-                </p>
-                <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                  {card.items.map((item) => (
-                    <li key={item} className="flex gap-2">
-                      <span className="mt-[6px] h-1.5 w-1.5 rounded-full bg-teal-500" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-8 max-w-3xl mx-auto text-center text-sm text-slate-500">
-            <p>
-              Forma de pago: <strong>50% de anticipo</strong> y{" "}
-              <strong>50% restante a la entrega</strong> del equipo. Si
-              requieres factura, se maneja esquema{" "}
-              <strong>Costo + IVA</strong>.
-            </p>
-            <p className="mt-2">
-              Tiempo de entrega estimado: entre{" "}
-              <strong>15 y 20 días naturales</strong> a partir de la firma del
-              contrato.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Technical Components Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Componentes de Purificación y Vending</SectionTitle>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
-            {/* Purificación Atlantis 300 */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6 }}
-              className="lg:col-span-2 rounded-3xl bg-slate-50 border border-slate-200/80 p-7 md:p-8"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="p-2 rounded-full bg-teal-100 text-teal-700">
-                  <ShieldCheckIcon className="h-6 w-6" />
-                </span>
-                <h3 className="text-xl font-bold text-slate-900">
-                  Sistema de Purificación Atlantis 300
-                </h3>
-              </div>
-              <p className="text-sm text-slate-600 mb-4">
-                Basado en tanques y medios filtrantes con certificación NSF para
-                garantizar la calidad del agua.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm text-slate-700">
-                <ul className="space-y-2">
-                  <li>• Bomba de 3/4 hp Jet en acero inoxidable 127 V.</li>
-                  <li>• Presurizador automático.</li>
-                  <li>
-                    • Filtro de lecho profundo 9x48 NSF con gravas, arenas
-                    sílicas y zeolita certificadas.
-                  </li>
-                  <li>
-                    • Filtro de carbón activado 9x48 NSF con carbón certificado
-                    y válvula manual de 3 vías.
-                  </li>
-                  <li>
-                    • Filtro suavizador 9x48 NSF con válvula de 5 pasos, tanque
-                    de salmuera y resina catiónica certificada.
-                  </li>
-                </ul>
-                <ul className="space-y-2">
-                  <li>• Portacartuchos pulidor 10\" Slim certificado NSF.</li>
-                  <li>
-                    • Lámpara de rayos ultravioleta de 25 LPM con balastro en
-                    acero inoxidable.
-                  </li>
-                  <li>• Generador de ozono.</li>
-                  <li>• Inyector tipo ventury de 3/4\".</li>
-                  <li>
-                    • Despachador automático de agua purificada para 4
-                    modalidades con validador de monedas que da cambio y
-                    enjuaga garrafón.
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-
-            {/* Vending limpieza */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="rounded-3xl bg-slate-900 text-slate-50 p-7 md:p-8 relative overflow-hidden"
-            >
-              <div className="absolute -top-8 -right-10 h-32 w-32 rounded-full bg-teal-500/30 blur-2xl" />
-              <div className="relative">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="p-2 rounded-full bg-slate-800 text-teal-300">
-                    <ArchiveBoxIcon className="h-6 w-6" />
-                  </span>
-                  <h3 className="text-xl font-bold">
-                    Vending Gabinete de Acero Inoxidable · Limpieza
-                  </h3>
-                </div>
-                <ul className="space-y-2 text-sm text-slate-200/90">
-                  <li>• Registra ventas y sensa litros.</li>
-                  <li>• Llenado estándar de 1 litro por operación.</li>
-                  <li>• Configuración de precios de llenado.</li>
-                  <li>
-                    • Acepta monedas de $1, $2, $5 y $10 pesos (da cambio).
-                  </li>
-                  <li>• Monedero antirrobo.</li>
-                  <li>• Luz interna y vinil exterior Darmax Clean.</li>
-                  <li>
-                    • Bombas de 1/2 hp con válvula check, mangueras, conectores
-                    y conexiones listas para instalación.
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Key Features Section ===== */}
-      <section id="features" className="py-20 md:py-28 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Una Oferta de Servicios sin Competencia
-            </h2>
-            <p className="mt-4 text-lg text-slate-600">
-              Dos equipos pensados para trabajar juntos y multiplicar tus
-              ingresos desde el mismo punto de venta.
-            </p>
-          </div>
-
-          <div className="space-y-16">
-            {features.map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.6 }}
-                className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${
-                  i % 2 !== 0 ? "md:flex-row-reverse" : ""
-                }`}
-              >
-                <div className="md:w-1/2">
-                  <div className="inline-flex items-center gap-3 mb-4">
-                    <span className="p-2 bg-teal-100 rounded-full">
-                      <feature.icon className="h-6 w-6 text-teal-700" />
-                    </span>
-                    <h3 className="text-2xl font-bold">{feature.title}</h3>
+                <div className={`h-2 bg-gradient-to-r ${m.gradient}`} />
+                <div className="p-10 flex flex-col h-full">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[#0f766e] mb-2">{m.tagline}</span>
+                  <h3 className="text-2xl font-black text-slate-900 leading-tight mb-6">{m.name}</h3>
+                  
+                  <div className="aspect-video mb-8 bg-[#f0fdfa] rounded-[2rem] overflow-hidden flex items-center justify-center group-hover:bg-[#ccfbf1] transition-colors duration-500">
+                    <img src={m.image} alt={m.name} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
                   </div>
-                  <p className="text-slate-600 leading-relaxed text-base">
-                    {feature.description}
-                  </p>
+
+                  <div className="mt-auto space-y-6">
+                    <ul className="grid grid-cols-1 gap-2.5">
+                       {m.specs.map((s, idx) => (
+                         <li key={idx} className="flex items-start gap-3 text-[11px] font-bold text-slate-500 uppercase tracking-tight">
+                           <CheckIcon className="h-4 w-4 text-[#73cdbd] mt-0.5 shrink-0" />
+                           <span>{String(s)}</span>
+                         </li>
+                       ))}
+                    </ul>
+                    <div className="pt-8 border-t border-slate-50">
+                      <div className="flex justify-between items-center mb-6">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inversión Desde</span>
+                        <span className="text-2xl font-black text-slate-900">{m.price}</span>
+                      </div>
+                      <Link
+                        to="/configurar-maquina/Tridente"
+                        className="block w-full py-4 text-center bg-gradient-to-r from-[#8fd8bc] to-[#73cdbd] text-[#0d2e28] font-black rounded-2xl hover:shadow-lg transition-all text-[10px] uppercase tracking-widest"
+                      >
+                        Seleccionar Dúo
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-                <div className="md:w-1/2">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
-                    className="w-full h-auto rounded-2xl shadow-xl object-cover"
-                  />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN INGENIERÍA COMPARTIDA */}
+      <section className="py-24 sm:py-32 bg-[#f0fdfa]/30">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Potencia Combinada"
+            title="Componentes técnicos"
+            highlight="de alta gama."
+          />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+            {sharedEngineering.map((cat, i) => (
+              <motion.div key={cat.category} initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={fadeUp}>
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#8fd8bc] to-[#73cdbd] flex items-center justify-center text-[#0d2e28] shadow-lg">
+                    {i === 0 ? <WrenchIcon className="w-6 h-6" /> : <ArchiveBoxIcon className="w-6 h-6" />}
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">{String(cat.category)}</h3>
+                </div>
+                <div className="space-y-6">
+                  {cat.items.map((item) => (
+                    <div key={item.name} className="group p-8 rounded-[2rem] bg-white border border-slate-100 hover:border-[#73cdbd] transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-teal-900/5">
+                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-2 group-hover:text-[#0f766e] transition-colors">{String(item.name)}</h4>
+                      <p className="text-slate-500 text-sm font-medium leading-relaxed">{String(item.desc)}</p>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             ))}
@@ -544,161 +332,97 @@ export default function TridenteInfo() {
         </div>
       </section>
 
-      {/* ===== Extras Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Extras y Servicios Opcionales</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-7">
-            {extras.map((extra, i) => (
-              <motion.div
-                key={extra.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.4, delay: i * 0.06 }}
-                className="rounded-2xl border border-slate-200/80 bg-slate-50/60 hover:bg-white hover:shadow-md transition p-5 flex flex-col justify-between"
-              >
-                <p className="font-semibold text-sm text-slate-900">
-                  {extra.name}
-                </p>
-                <p className="mt-3 text-teal-700 font-bold text-sm">
-                  {extra.price}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-          <p className="mt-8 text-xs text-slate-500 flex items-center gap-2">
-            <TruckIcon className="h-4 w-4" />
-            *Flete y viáticos se cotizan de acuerdo con el código postal de
-            instalación.
-          </p>
-        </div>
-      </section>
-
-      {/* ===== Installation Requirements Section ===== */}
-      <section className="py-20 md:py-28 bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 ">
-          <SectionTitle className="text-left md:text-left text-white">
-            ¿Qué requieres para instalar tu Dúo Emprendedor?
-          </SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {installRequirements.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="relative rounded-2xl bg-slate-800/60 border border-slate-700/80 p-6"
-              >
-                <div className="absolute -top-4 -right-4 h-10 w-10 rounded-full bg-teal-500/30 blur-xl" />
-                <h3 className="font-semibold text-base mb-2">{item.title}</h3>
-                <p className="text-sm text-slate-300">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== How It Works Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Tu Estación Multiservicio, Lista para Operar</SectionTitle>
-          <div className="mt-16 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-            {processSteps.map((step, i) => (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="text-center p-6 bg-slate-50 rounded-2xl border border-slate-200/80"
-              >
-                <div className="inline-block p-4 bg-teal-100 text-teal-700 rounded-full mb-4">
-                  <step.icon className="h-8 w-8" />
+      {/* SECCIÓN REQUERIMIENTOS */}
+      <section className="py-24 sm:py-32 bg-[#0d2e28] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(143,216,188,0.15),transparent)]" />
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-20">
+            <div className="lg:w-2/5 text-left">
+              <SectionTitle 
+                align="left"
+                light
+                eyebrow="Preparación"
+                title="Requisitos de tu"
+                highlight="punto multiservicio."
+              />
+              <p className="text-teal-100/70 text-lg mb-12 leading-relaxed font-medium">
+                La eficiencia de tu estación depende de una infraestructura sólida. Nuestros técnicos te asesoran en la distribución estratégica de tus equipos.
+              </p>
+              <Link to="/contacto" className="inline-flex items-center gap-4 text-[#8fd8bc] font-black uppercase tracking-[0.3em] text-[10px] hover:gap-6 transition-all group">
+                Hablar con un técnico <ChevronDownIcon className="w-4 h-4 -rotate-90 group-hover:text-white" />
+              </Link>
+            </div>
+            <div className="lg:w-3/5 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              {requirements.map((r) => (
+                <div key={r.title} className="p-10 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-md group hover:bg-white/10 transition-all duration-700">
+                  <h5 className="text-[#8fd8bc] font-black text-[10px] uppercase tracking-[0.3em] mb-4">{String(r.title)}</h5>
+                  <p className="text-white text-xl font-bold tracking-tight leading-snug">{String(r.desc)}</p>
                 </div>
-                <h3 className="font-bold text-lg">{step.title}</h3>
-                <p className="text-sm text-slate-600 mt-1">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="mt-12 text-center">
-            <Link
-              to="/contacto"
-              className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-teal-400 shadow-lg hover:bg-teal-300 transition-all transform hover:scale-105"
-            >
-              Solicitar Propuesta
-            </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ===== Gallery Section ===== */}
-      <section className="py-20 md:py-28">
-        <div className="max-w-7xl mx-auto">
-          <SectionTitle className="px-6">
-            Proyectos y Diseños de Instalación
-          </SectionTitle>
-        </div>
-        <div className="mt-8 relative">
-          <div className="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-6 md:px-10">
-            {galleryImages.map((src, i) => (
-              <motion.div
-                key={src}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 snap-center"
-              >
-                <img
-                  src={src}
-                  alt={`Proyecto Dúo Emprendedor ${i + 1}`}
-                  className="w-full h-80 rounded-2xl object-cover shadow-lg"
-                />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FAQ Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-4xl mx-auto px-6 md:px-10">
-          <SectionTitle>Preguntas Frecuentes</SectionTitle>
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      {/* SECCIÓN FAQ */}
+      <section className="py-24 sm:py-32 bg-white">
+        <div className="max-w-4xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Resolviendo Dudas"
+            title="Preguntas"
+            highlight="frecuentes."
+          />
+          <div className="space-y-5 border border-slate-100 rounded-[3.5rem] overflow-hidden shadow-xl shadow-teal-900/5">
             {faqs.map((f, i) => (
-              <FaqItem key={i} q={f.q} a={f.a} />
+              <details key={i} className="group border-b border-slate-50 last:border-none">
+                <summary className="cursor-pointer list-none p-10 font-black text-slate-800 flex items-center justify-between hover:bg-[#f0fdfa] transition-colors uppercase tracking-tight text-sm">
+                  {String(f.q)}
+                  <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 group-open:rotate-180 transition-transform duration-500">
+                    <ChevronDownIcon className="h-4 w-4" />
+                  </div>
+                </summary>
+                <div className="px-10 pb-10 text-slate-500 text-base leading-relaxed font-medium">
+                  {String(f.a)}
+                </div>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== Final CTA Section ===== */}
-      <section className="py-20">
-        <div className="max-w-3xl mx-auto text-center px-6">
-          <h2 className="text-3xl font-extrabold text-slate-900">
-            Una Solución, Múltiples Fuentes de Ingreso
+      {/* FINAL CTA */}
+      <section className="py-24 sm:py-40 bg-slate-900 text-center relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-10">
+          <img src="https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png" alt="Dúo Emprendedor" className="w-full h-full object-cover" />
+        </div>
+        <div className="relative z-10 max-w-4xl mx-auto px-6">
+          <h2 className="text-4xl sm:text-7xl font-black text-white tracking-tighter leading-tight mb-10">
+            Dúplica tus ingresos <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8fd8bc] to-[#73cdbd]">con un solo paquete.</span>
           </h2>
-          <p className="mt-4 text-lg text-slate-600">
-            Aprovecha el poder del Dúo Emprendedor: agua purificada y productos
-            de limpieza en un solo punto. Contáctanos y diseña tu estación
-            multiservicio con Darmax.
+          <p className="text-xl text-slate-400 mb-14 max-w-2xl mx-auto leading-relaxed font-medium">
+            Agua y limpieza: los negocios con mayor retorno de inversión en un solo lugar. Asegura tu éxito con Darmax.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-8">
             <Link
               to="/configurar-maquina/Tridente"
-              className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-teal-400 shadow-lg hover:bg-teal-300 transition-all transform hover:scale-105"
+              className="px-14 py-7 bg-gradient-to-r from-[#8fd8bc] to-[#7edcb7] text-[#0d2e28] font-black rounded-2xl shadow-2xl transition-all transform hover:scale-110 uppercase tracking-widest text-sm"
             >
-              Configurar mi Paquete
+              Configurar mi Dúo
             </Link>
-            <button
-              onClick={() => navigate(-1)}
-              className="px-8 py-3 rounded-full font-semibold bg-slate-200 hover:bg-slate-300 text-slate-800 transition"
+            <Link
+              to="/contacto"
+              className="px-14 py-7 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-100 transition-all uppercase tracking-widest text-sm"
             >
-              Volver
-            </button>
+              Hablar con Ventas
+            </Link>
           </div>
+          <button 
+            onClick={() => navigate(-1)}
+            className="mt-20 text-slate-500 hover:text-white transition-colors flex items-center gap-3 mx-auto font-black uppercase tracking-[0.4em] text-[10px]"
+          >
+            <ChevronDownIcon className="h-4 w-4 rotate-90" /> Volver atrás
+          </button>
         </div>
       </section>
     </div>
