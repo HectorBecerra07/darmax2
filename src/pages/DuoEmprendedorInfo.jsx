@@ -300,7 +300,7 @@ export default function DuoEmprendedorInfo() {
         </div>
       </section>
 
-      {/* SECCIÓN MODELOS (4 PAQUETES JUNTOS) */}
+      {/* SECCIÓN MODELOS (HORIZONTAL ZIGZAG) */}
       <section id="modelos" className="py-24 sm:py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6 sm:px-10">
           <SectionTitle 
@@ -309,51 +309,9 @@ export default function DuoEmprendedorInfo() {
             highlight="paquete multiservicio."
           />
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+          <div className="space-y-12 sm:space-y-20">
             {duoBundles.map((m, i) => (
-              <motion.div
-                key={m.id}
-                initial="initial"
-                whileInView="whileInView"
-                viewport={{ once: true }}
-                variants={fadeUp}
-                transition={{ delay: i * 0.1 }}
-                className="group relative flex flex-col bg-white rounded-[3rem] border border-slate-100 shadow-xl shadow-teal-900/5 overflow-hidden hover:-translate-y-2 transition-all duration-500"
-              >
-                <div className={`h-2 bg-gradient-to-r ${m.gradient}`} />
-                <div className="p-10 flex flex-col h-full">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#0f766e] mb-2">{m.tagline}</span>
-                  <h3 className="text-3xl font-black text-slate-900 leading-tight mb-6">{m.name}</h3>
-                  
-                  <div className="relative aspect-video mb-8 bg-[#f0fdfa] rounded-[2rem] overflow-hidden flex items-center justify-center group-hover:bg-[#ccfbf1] transition-colors duration-500">
-                    <img src={m.images[0]} alt="Agua" className="h-4/5 w-auto object-contain transform -translate-x-4 group-hover:scale-110 transition-transform duration-700" />
-                    <img src={m.images[1]} alt="Limpieza" className="h-3/5 w-auto object-contain transform translate-x-4 group-hover:scale-110 transition-transform duration-700" />
-                  </div>
-
-                  <div className="mt-auto space-y-6">
-                    <ul className="grid grid-cols-1 gap-2.5">
-                       {m.specs.map((s, idx) => (
-                         <li key={idx} className="flex items-start gap-3 text-[11px] font-bold text-slate-500 uppercase tracking-tight">
-                           <CheckIcon className="h-4 w-4 text-[#73cdbd] mt-0.5 shrink-0" />
-                           <span>{String(s)}</span>
-                         </li>
-                       ))}
-                    </ul>
-                    <div className="pt-8 border-t border-slate-50">
-                      <div className="flex justify-between items-center mb-6">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inversión Desde</span>
-                        <span className="text-2xl font-black text-slate-900 uppercase">{m.price}</span>
-                      </div>
-                      <Link
-                        to="/configurar-maquina/Tridente"
-                        className="block w-full py-5 text-center bg-gradient-to-r from-[#8fd8bc] to-[#73cdbd] text-[#0d2e28] font-black rounded-2xl hover:shadow-lg transition-all text-xs uppercase tracking-widest"
-                      >
-                        Seleccionar Dúo
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              <ProductCard key={m.id} product={m} index={i} />
             ))}
           </div>
         </div>
@@ -438,6 +396,113 @@ export default function DuoEmprendedorInfo() {
               <SectionTitle 
                 align="left"
                 light
+                eyebrow="Inversión Segura"
+                title="Términos y"
+                highlight="requerimientos."
+              />
+              <p className="text-teal-100/70 text-lg mb-12 leading-relaxed font-medium">
+                Un negocio de dos frentes requiere una planeación precisa. Te acompañamos en la distribución estratégica de tus equipos.
+              </p>
+              
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 group">
+                   <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-teal-400 transition-colors">
+                     <CreditCardIcon className="w-6 h-6" />
+                   </div>
+                   <div>
+                     <h5 className="font-black uppercase tracking-widest text-[10px] text-teal-300">Forma de Pago</h5>
+                     <p className="font-bold text-sm">50% Anticipo / 50% Contra Entrega</p>
+                   </div>
+                </div>
+                <div className="flex items-center gap-4 group">
+                   <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-teal-400 transition-colors">
+                     <ClockIcon className="w-6 h-6" />
+                   </div>
+                   <div>
+                     <h5 className="font-black uppercase tracking-widest text-[10px] text-teal-300">Tiempo de Entrega</h5>
+                     <p className="font-bold text-sm">15 a 20 Días Naturales</p>
+                   </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="lg:w-3/5 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              {requirements.map((r) => (
+                <div key={r.title} className="p-10 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-md group hover:bg-white/10 transition-all duration-700">
+                  <h5 className="text-[#8fd8bc] font-black text-[10px] uppercase tracking-[0.3em] mb-4">{String(r.title)}</h5>
+                  <p className="text-white text-xl font-bold tracking-tight leading-snug">{String(r.desc)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN FAQ */}
+      <section className="py-24 sm:py-32 bg-white">
+        <div className="max-w-4xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Resolviendo Dudas"
+            title="Preguntas"
+            highlight="frecuentes."
+          />
+          <div className="space-y-5 border border-slate-100 rounded-[3.5rem] overflow-hidden shadow-xl shadow-teal-900/5">
+            {faqs.map((f, i) => (
+              <details key={i} className="group border-b border-slate-50 last:border-none">
+                <summary className="cursor-pointer list-none p-10 font-black text-slate-800 flex items-center justify-between hover:bg-[#f0fdfa] transition-colors uppercase tracking-tight text-sm">
+                  {String(f.q)}
+                  <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 group-open:rotate-180 transition-transform duration-500">
+                    <ChevronDownIcon className="h-4 w-4" />
+                  </div>
+                </summary>
+                <div className="px-10 pb-10 text-slate-500 text-base leading-relaxed font-medium">
+                  {String(f.a)}
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="py-24 sm:py-40 bg-slate-900 text-center relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-10">
+          <img src="https://res.cloudinary.com/dunrpwsfq/image/upload/v1767901903/duo_emprendedor_mgs6zz.png" alt="Dúo Emprendedor" className="w-full h-full object-cover" />
+        </div>
+        <div className="relative z-10 max-w-4xl mx-auto px-6">
+          <h2 className="text-4xl sm:text-7xl font-black text-white tracking-tighter leading-tight mb-10">
+            Dúplica tus ingresos <br />
+            <span className="inline-block pb-2 pr-6 text-transparent bg-clip-text bg-gradient-to-r from-[#8fd8bc] to-[#73cdbd]">con un solo paquete.</span>
+          </h2>
+          <p className="text-xl text-slate-400 mb-14 max-w-2xl mx-auto leading-relaxed font-medium">
+            Agua y limpieza: los negocios con mayor retorno de inversión en un solo lugar. Asegura tu éxito con Darmax.
+          </p>
+          <div className="flex flex-wrap justify-center gap-8">
+            <Link
+              to="/configurar-maquina/Tridente"
+              className="px-14 py-7 bg-gradient-to-r from-[#8fd8bc] to-[#7edcb7] text-[#0d2e28] font-black rounded-2xl shadow-2xl transition-all transform hover:scale-110 uppercase tracking-widest text-sm"
+            >
+              Configurar mi Dúo
+            </Link>
+            <Link
+              to="/contacto"
+              className="px-14 py-7 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-100 transition-all uppercase tracking-widest text-sm"
+            >
+              Hablar con Ventas
+            </Link>
+          </div>
+          <button 
+            onClick={() => navigate(-1)}
+            className="mt-20 text-slate-500 hover:text-white transition-colors flex items-center gap-3 mx-auto font-black uppercase tracking-[0.4em] text-[10px]"
+          >
+            <ChevronDownIcon className="h-4 w-4 rotate-90" /> Volver atrás
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+}
+       light
                 eyebrow="Inversión Segura"
                 title="Términos y"
                 highlight="requerimientos."

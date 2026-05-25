@@ -193,6 +193,57 @@ function SectionTitle({ eyebrow, title, highlight, light = false, align = "cente
   );
 }
 
+const ProductCard = ({ product, index }) => {
+  return (
+    <motion.div
+      initial="initial"
+      whileInView="whileInView"
+      viewport={{ once: true }}
+      variants={fadeUp}
+      className={`flex flex-col ${index % 2 !== 0 ? "lg:flex-row-reverse" : "lg:flex-row"} items-center gap-10 lg:gap-16 bg-white rounded-[3rem] border border-slate-100 shadow-xl shadow-blue-900/5 overflow-hidden group`}
+    >
+      <div className="w-full lg:w-1/2 aspect-video bg-slate-50 relative overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors duration-500">
+        <div className={`absolute inset-0 bg-gradient-to-br ${product.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-700`} />
+        
+        <div className="w-full h-full flex items-center justify-center p-8 sm:p-12">
+          <img
+            src={product.image}
+            className="max-w-full max-h-full object-contain relative z-10 drop-shadow-2xl transform group-hover:scale-110 transition-transform duration-700"
+            alt={product.name}
+          />
+        </div>
+      </div>
+
+      <div className="w-full lg:w-1/2 p-10 sm:p-14 flex flex-col h-full">
+        <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2">{product.tagline}</span>
+        <h3 className="text-3xl sm:text-4xl font-black text-slate-900 leading-tight mb-6">{product.name}</h3>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mb-10">
+           {product.specs.map((s, idx) => (
+             <div key={idx} className="flex items-start gap-3 text-xs font-bold text-slate-500 uppercase tracking-tight">
+               <CheckIcon className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
+               <span>{String(s)}</span>
+             </div>
+           ))}
+        </div>
+
+        <div className="mt-auto pt-8 border-t border-slate-50 flex flex-col sm:flex-row justify-between items-center gap-8">
+          <div className="text-center sm:text-left">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Inversión Desde</span>
+            <span className="text-4xl font-black text-slate-900 tracking-tighter">{product.price}</span>
+          </div>
+          <Link
+            to="/configurar-maquina/Vending"
+            className="w-full sm:w-auto px-12 py-5 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-black rounded-2xl hover:shadow-2xl hover:shadow-blue-500/30 transition-all text-xs uppercase tracking-widest text-center"
+          >
+            Seleccionar Modelo
+          </Link>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const ComparisonTable = () => (
   <div className="overflow-x-auto rounded-[2.5rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/50">
     <table className="w-full text-left border-collapse min-w-[900px]">
@@ -292,7 +343,7 @@ export default function VendingInfo() {
         </div>
       </section>
 
-      {/* SECCIÓN MODELOS (4 CONFIGURACIONES JUNTAS) */}
+      {/* SECCIÓN MODELOS (HORIZONTAL ZIGZAG) */}
       <section id="modelos" className="py-24 sm:py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6 sm:px-10">
           <SectionTitle 
@@ -301,50 +352,9 @@ export default function VendingInfo() {
             highlight="potencia y tecnología."
           />
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="space-y-12 sm:space-y-20">
             {atlantisModels.map((m, i) => (
-              <motion.div
-                key={m.id}
-                initial="initial"
-                whileInView="whileInView"
-                viewport={{ once: true }}
-                variants={fadeUp}
-                transition={{ delay: i * 0.1 }}
-                className="group relative flex flex-col bg-white rounded-[3rem] border border-slate-100 shadow-xl shadow-blue-900/5 overflow-hidden hover:-translate-y-2 transition-all duration-500"
-              >
-                <div className={`h-2 bg-gradient-to-r ${m.gradient}`} />
-                <div className="p-10 flex flex-col h-full">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2">{m.tagline}</span>
-                  <h3 className="text-2xl font-black text-slate-900 leading-tight mb-4">{m.name}</h3>
-                  
-                  <div className="aspect-square mb-8 bg-slate-50 rounded-3xl p-6 flex items-center justify-center group-hover:bg-blue-50 transition-colors duration-500">
-                    <img src={m.image} alt={m.name} className="max-h-full object-contain transform group-hover:scale-110 transition-transform duration-700" />
-                  </div>
-
-                  <div className="mt-auto space-y-6">
-                    <ul className="space-y-2">
-                       {m.specs.map((s, idx) => (
-                         <li key={idx} className="flex items-start gap-2 text-[11px] font-bold text-slate-500 uppercase tracking-tight">
-                           <CheckIcon className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" />
-                           <span>{String(s)}</span>
-                         </li>
-                       ))}
-                    </ul>
-                    <div className="pt-6 border-t border-slate-50">
-                      <div className="flex justify-between items-center mb-4">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inversión Desde</span>
-                        <span className="text-xl font-black text-slate-900">{m.price}</span>
-                      </div>
-                      <Link
-                        to="/configurar-maquina/Vending"
-                        className="block w-full py-4 text-center bg-gradient-to-r from-blue-600 to-blue-400 text-white font-black rounded-2xl hover:shadow-lg transition-all text-[10px] uppercase tracking-widest"
-                      >
-                        Seleccionar Modelo
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              <ProductCard key={m.id} product={m} index={i} />
             ))}
           </div>
         </div>
@@ -422,7 +432,7 @@ export default function VendingInfo() {
 
       {/* SECCIÓN REQUERIMIENTOS & PAGO */}
       <section className="py-24 sm:py-32 bg-blue-900 relative overflow-hidden text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at:70%_20%,rgba(59,130,246,0.15),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(59,130,246,0.15),transparent)]" />
         <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-20">
             <div className="lg:w-2/5 text-left">
@@ -519,7 +529,7 @@ export default function VendingInfo() {
             </Link>
             <Link
               to="/contacto"
-              className="px-14 py-7 bg-white text-blue-900 font-black rounded-2xl hover:bg-blue-50 transition-all uppercase tracking-widest text-sm"
+              className="px-14 py-7 bg-white text-slate-900 font-black rounded-2xl hover:bg-blue-50 transition-all uppercase tracking-widest text-sm"
             >
               Hablar con Ventas
             </Link>
