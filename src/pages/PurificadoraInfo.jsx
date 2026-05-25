@@ -22,9 +22,11 @@ import {
   CpuChipIcon,
   WrenchIcon,
   BeakerIcon,
+  CreditCardIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
-/* --- Identity & Style (Mostrador: Lavanda to Turquesa) --- */
+/* --- Identity & Style (Mostrador Identity: Lavanda to Turquesa) --- */
 const BRAND = {
   lavender: "#A5B4FC",
   sky: "#7DD3FC",
@@ -49,7 +51,7 @@ const purificadoraModels = [
     price: "$52,950",
     gradient: "from-[#A5B4FC] to-[#7DD3FC]",
     osmosis: false,
-    image: "/img/purificadoras/MOSTRADOR%20NEPTUNO%20A-PLUS/PURI%20MAS%20ALCALINA%20PROCS.jpg",
+    image: "https://res.cloudinary.com/defkuaytw/image/upload/v1776400526/mostrador_djpelm.png",
     specs: [
       "Capacidad ~600 garrafones/día",
       "Bomba Jet 1.5 HP Acero Inoxidable",
@@ -67,7 +69,7 @@ const purificadoraModels = [
     price: "$80,950",
     gradient: "from-[#7DD3FC] to-[#67E8F9]",
     osmosis: true,
-    image: "/img/purificadoras/MOSTRADOR%20POSEIDON%20PRO/OSMOSIS%20MAS%20ALCALINA%20PROCS.jpg",
+    image: "https://res.cloudinary.com/defkuaytw/image/upload/v1776403043/mostrador_osmosis_jqr3cb.png",
     specs: [
       "Capacidad ~800 garrafones/día",
       "Sistema de Ósmosis Inversa Industrial",
@@ -80,27 +82,13 @@ const purificadoraModels = [
   },
 ];
 
-const highlights = [
-  {
-    icon: ArrowTrendingUpIcon,
-    title: "Hasta 3,000 L/Día",
-    desc: "Producción industrial adaptable a tu demanda.",
-  },
-  {
-    icon: ShieldCheckIcon,
-    title: "Grado Quirúrgico",
-    desc: "Tarjas y mesas en Acero Inoxidable 304.",
-  },
-  {
-    icon: BeakerIcon,
-    title: "Pureza Certificada",
-    desc: "Componentes NSF para agua 100% segura.",
-  },
-  {
-    icon: ClockIcon,
-    title: "ROI Acelerado",
-    desc: "Bajo costo operativo, máxima utilidad por litro.",
-  },
+const extras = [
+  { name: "Upgrade Agua Alcalina", price: "$12,000 MXN", desc: "Doble tipo de agua (Natural + Alcalina)." },
+  { name: "Aviso de Funcionamiento", price: "$3,500 MXN", desc: "Trámite de alta ante COFEPRIS / Salubridad." },
+  { name: "Kit Insumos Anuales", price: "$6,900 MXN", desc: "Filtros, resinas y lámparas UV de repuesto." },
+  { name: "Mantenimiento Anual", price: "$8,500 MXN", desc: "Servicio preventivo integral por técnicos Darmax." },
+  { name: "Vending Tradicional", price: "$23,000 MXN", desc: "Módulo para venta automática de agua." },
+  { name: "Tinaco 5,000 L Translúcido", price: "$10,500 MXN", desc: "Mayor almacenamiento de agua cruda." },
 ];
 
 const commonComponents = [
@@ -134,15 +122,15 @@ const requirements = [
 const faqs = [
   {
     q: "¿Qué diferencia al Mostrador Neptuno de una purificadora convencional?",
-    a: "El Mostrador Neptuno integra en una sola unidad compacta y profesional el lavado interior, exterior y el llenado doble, eliminando la necesidad de múltiples estaciones separadas y garantizando la máxima higiene con Acero Inoxidable 304.",
+    a: "El Mostrador Neptuno integra en una sola unidad compacta y profesional el lavado interior, exterior y el llenado doble, eliminando la necesidad de múltiples estaciones separadas.",
   },
   {
     q: "¿Cuándo debo elegir la versión con Ósmosis Inversa?",
-    a: "Se recomienda si el agua en tu zona tiene altos niveles de sarro, sales o metales pesados. La Ósmosis Inversa garantiza un sabor ligero y purificación de nivel embotelladora premium.",
+    a: "Se recomienda si el agua en tu zona tiene altos niveles de sarro o sales. La Ósmosis Inversa garantiza un sabor ligero y purificación de nivel embotelladora premium.",
   },
   {
     q: "¿Incluyen instalación y capacitación?",
-    a: "Sí, todos nuestros modelos incluyen la instalación técnica profesional y la capacitación completa para ti y tu personal sobre la operación y control de calidad.",
+    a: "Sí, todos nuestros modelos incluyen la instalación técnica profesional y la capacitación completa sobre la operación y control de calidad.",
   },
 ];
 
@@ -172,13 +160,13 @@ function SectionTitle({ eyebrow, title, highlight, light = false, align = "cente
 }
 
 const ComparisonTable = () => (
-  <div className="overflow-x-auto rounded-[2.5rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/50">
+  <div className="overflow-x-auto rounded-[2.5rem] border border-slate-200 bg-white shadow-xl shadow-indigo-900/5">
     <table className="w-full text-left border-collapse min-w-[750px]">
       <thead>
         <tr className="bg-gradient-to-r from-[#A5B4FC] to-[#67E8F9] text-indigo-900">
           <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/20">Especificación Técnica</th>
-          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/20">Mostrador Tradicional</th>
-          <th className="p-7 text-[10px] font-black uppercase tracking-widest">Mostrador Ósmosis Inversa</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/20 text-center">Mostrador Tradicional</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest text-center">Mostrador Ósmosis Inversa</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-slate-100 font-medium">
@@ -194,9 +182,9 @@ const ComparisonTable = () => (
           <tr key={i} className="hover:bg-indigo-50/20 transition-colors">
             <td className="p-7 text-slate-900 font-black text-sm uppercase tracking-tight">{row.label}</td>
             {row.vals.map((v, idx) => (
-              <td key={idx} className={`p-7 text-sm ${row.bold ? "font-black text-slate-900" : "text-slate-500"}`}>
+              <td key={idx} className={`p-7 text-sm text-center ${row.bold ? "font-black text-slate-900" : "text-slate-500"}`}>
                 {typeof v === "boolean" ? (
-                  v ? <CheckIcon className="h-6 w-6 text-indigo-600" /> : <XMarkIcon className="h-6 w-6 text-slate-200" />
+                  v ? <CheckIcon className="h-6 w-6 text-indigo-600 mx-auto" /> : <XMarkIcon className="h-6 w-6 text-slate-200 mx-auto" />
                 ) : String(v)}
               </td>
             ))}
@@ -246,7 +234,7 @@ export default function PurificadoraInfo() {
             </span>
             <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-8">
               Pureza que <br />
-              se nota <span className="inline-block pb-2 pr-4 text-transparent bg-clip-text bg-gradient-to-r from-[#A5B4FC] to-[#67E8F9]">al instante.</span>
+              se nota <span className="inline-block pb-2 pr-6 text-transparent bg-clip-text bg-gradient-to-r from-[#A5B4FC] to-[#67E8F9]">al instante.</span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-300 mb-12 max-w-xl leading-relaxed">
               El Mostrador Neptuno redefine la eficiencia operativa con un diseño estético y componentes de grado industrial. Tu planta, tu éxito.
@@ -259,7 +247,7 @@ export default function PurificadoraInfo() {
                 Configurar mi Planta
               </Link>
               <button
-                onClick={() => document.getElementById("tecnico")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => document.getElementById("modelos").scrollIntoView({ behavior: "smooth" })}
                 className="px-12 py-5 bg-white/5 hover:bg-white/10 text-white font-black rounded-2xl border border-white/10 transition-all uppercase tracking-widest text-xs backdrop-blur-sm"
               >
                 Ver Variaciones
@@ -278,7 +266,7 @@ export default function PurificadoraInfo() {
             highlight="purificación industrial."
           />
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
             {purificadoraModels.map((m, i) => (
               <motion.div
                 key={m.id}
@@ -359,7 +347,7 @@ export default function PurificadoraInfo() {
                 </div>
                 <div className="space-y-6">
                   {cat.items.map((item) => (
-                    <div key={item.name} className="group p-8 rounded-[2rem] bg-[#F8FAFC] border border-slate-100 hover:border-[#7DD3FC] hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl shadow-slate-200/50">
+                    <div key={item.name} className="group p-8 rounded-[2rem] bg-[#F8FAFC] border border-slate-100 hover:border-[#7DD3FC] hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-900/5">
                       <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-2 group-hover:text-indigo-600 transition-colors">{String(item.name)}</h4>
                       <p className="text-slate-500 text-sm font-medium leading-relaxed">{String(item.desc)}</p>
                     </div>
@@ -371,8 +359,34 @@ export default function PurificadoraInfo() {
         </div>
       </section>
 
-      {/* SECCIÓN REQUERIMIENTOS */}
-      <section className="py-24 sm:py-32 bg-indigo-900 relative overflow-hidden">
+      {/* SECCIÓN EXTRAS & UPGRADES */}
+      <section className="py-24 sm:py-32 bg-[#F8FAFC] border-y border-slate-100">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Personalización"
+            title="Completa tu"
+            highlight="planta Neptuno."
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {extras.map((extra, i) => (
+              <motion.div key={i} initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={fadeUp} transition={{ delay: i * 0.1 }} className="p-8 bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                <h4 className="font-black text-slate-900 uppercase tracking-tighter mb-2">{extra.name}</h4>
+                <p className="text-xs text-slate-500 mb-6 font-medium leading-relaxed">{extra.desc}</p>
+                <div className="text-xl font-black text-indigo-600">{extra.price}</div>
+              </motion.div>
+            ))}
+          </div>
+          <div className="mt-12 flex items-center justify-center gap-3 p-6 bg-amber-50 rounded-2xl border border-amber-100 text-amber-800 text-sm max-w-2xl mx-auto">
+            <ExclamationTriangleIcon className="w-6 h-6 shrink-0" />
+            <p className="font-medium">
+              <strong>Nota importante:</strong> El precio no incluye obra civil, acabados de local, adecuaciones hidráulicas/eléctricas mayores, ni fletes/viáticos fuera de zona.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN REQUERIMIENTOS & PAGO */}
+      <section className="py-24 sm:py-32 bg-indigo-900 relative overflow-hidden text-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(165,180,252,0.15),transparent)]" />
         <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-20">
@@ -380,17 +394,36 @@ export default function PurificadoraInfo() {
               <SectionTitle 
                 align="left"
                 light
-                eyebrow="Antes de Instalar"
-                title="Preparando tu"
-                highlight="infraestructura."
+                eyebrow="Inversión Segura"
+                title="Términos y"
+                highlight="requerimientos."
               />
               <p className="text-[#E0E7FF] text-lg mb-12 leading-relaxed font-medium">
-                La eficiencia de tu Mostrador Neptuno comienza con una base sólida. Nuestros técnicos supervisan cada detalle de tu obra civil y eléctrica.
+                La planta Neptuno es un activo de alta rentabilidad. Te asesoramos en cada detalle técnico para asegurar una operación fluida desde el primer día.
               </p>
-              <Link to="/contacto" className="inline-flex items-center gap-4 text-[#A5B4FC] font-black uppercase tracking-[0.3em] text-[10px] hover:gap-6 transition-all group">
-                Hablar con un técnico <ChevronDownIcon className="w-4 h-4 -rotate-90 group-hover:text-white" />
-              </Link>
+              
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 group">
+                   <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-[#7DD3FC] transition-colors">
+                     <CreditCardIcon className="w-6 h-6" />
+                   </div>
+                   <div>
+                     <h5 className="font-black uppercase tracking-widest text-[10px] text-blue-200">Forma de Pago</h5>
+                     <p className="font-bold text-sm">50% Anticipo / 50% Contra Entrega</p>
+                   </div>
+                </div>
+                <div className="flex items-center gap-4 group">
+                   <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-[#7DD3FC] transition-colors">
+                     <ClockIcon className="w-6 h-6" />
+                   </div>
+                   <div>
+                     <h5 className="font-black uppercase tracking-widest text-[10px] text-blue-200">Tiempo de Entrega</h5>
+                     <p className="font-bold text-sm">15 a 20 Días Naturales</p>
+                   </div>
+                </div>
+              </div>
             </div>
+            
             <div className="lg:w-3/5 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
               {requirements.map((r) => (
                 <div key={r.title} className="p-10 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-md group hover:bg-white/10 transition-all duration-700">
@@ -435,7 +468,7 @@ export default function PurificadoraInfo() {
           <img src="/img/vending/mostrador.png" alt="Darmax Mostrador" className="w-full h-full object-cover" />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-6">
-          <h2 className="text-4xl sm:text-7xl font-black text-white tracking-tighter leading-[0.9] mb-10">
+          <h2 className="text-4xl sm:text-7xl font-black text-white tracking-tighter leading-tight mb-10">
             Crea tu propia <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#A5B4FC] to-[#67E8F9]">marca de agua.</span>
           </h2>
@@ -445,13 +478,13 @@ export default function PurificadoraInfo() {
           <div className="flex flex-wrap justify-center gap-8">
             <Link
               to="/configurar-maquina/Purificadora"
-              className="px-14 py-7 bg-gradient-to-r from-[#A5B4FC] to-[#7DD3FC] text-indigo-900 font-black rounded-2xl shadow-2xl transition-all transform hover:scale-110 uppercase tracking-widest text-sm"
+              className="px-14 py-7 bg-gradient-to-r from-[#A5B4FC] to-[#7DD3FC] text-indigo-900 font-black rounded-2xl shadow-2xl shadow-indigo-500/20 transition-all transform hover:scale-110 uppercase tracking-widest text-sm"
             >
               Configurar mi Planta
             </Link>
             <Link
               to="/contacto"
-              className="px-14 py-7 bg-white text-blue-900 font-black rounded-2xl hover:bg-slate-100 transition-all uppercase tracking-widest text-sm"
+              className="px-14 py-7 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-100 transition-all uppercase tracking-widest text-sm"
             >
               Hablar con Ventas
             </Link>

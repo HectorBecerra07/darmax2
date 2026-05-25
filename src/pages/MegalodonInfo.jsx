@@ -1,542 +1,459 @@
-import { useEffect, useRef } from "react";
-import { Helmet } from "react-helmet-async";
-import { motion } from "framer-motion";
+import React, { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import SEO from "../components/SEO";
 import {
   ChevronDownIcon,
   CurrencyDollarIcon,
+  BuildingStorefrontIcon,
+  ClockIcon,
   WrenchScrewdriverIcon,
+  ArrowTrendingUpIcon,
   MapPinIcon,
   TruckIcon,
   AcademicCapIcon,
   ShieldCheckIcon,
-  CpuChipIcon,
-  CubeIcon,
-  UserGroupIcon,
-  ComputerDesktopIcon,
+  CheckIcon,
+  XMarkIcon,
+  InformationCircleIcon,
   SparklesIcon,
+  CircleStackIcon,
+  CpuChipIcon,
+  WrenchIcon,
+  BeakerIcon,
   ArchiveBoxIcon,
-  BeakerIcon, // 👈 ESTE FALTABA
+  RectangleStackIcon,
+  UserGroupIcon,
+  CubeIcon,
+  CreditCardIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
-/* --- Data --- */
-const HERO_IMG = "/img/Iniciatunegocio/fachadacalle.jpg";
+/* --- Identity & Style (Megalodón: Petroleum Blue to Deep Navy) --- */
+const BRAND = {
+  petrol: "#2f7384",
+  darkTeal: "#245f73",
+  navy: "#17355b",
+  petrolDark: "#1e5670",
+  lightBlue: "#e0f2fe",
+};
 
-const highlights = [
+const fadeUp = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.1 },
+  transition: { duration: 0.6, ease: "easeOut" }
+};
+
+/* --- Data: 4 Megalodón Configurations --- */
+const megalodonBundles = [
   {
-    icon: UserGroupIcon,
-    title: "Ultra Alta Capacidad",
-    desc: "Pensado para zonas de tráfico masivo",
+    id: "MegalodonTradicional",
+    name: "Megalodón Tradicional 8",
+    tagline: "Vending Tradicional Atlantis 300 Max + Mostrador + Clean 8",
+    price: "$127,900",
+    gradient: "from-[#2f7384] to-[#245f73]",
+    images: [
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776397327/tradicional_atlantis_hbnrfy.png",
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776400526/mostrador_djpelm.png",
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776400516/8_productos_vfaf1e.png"
+    ],
+    specs: [
+      "Atlantis 300 Tradicional",
+      "Mostrador Neptuno Inox 304",
+      "Vending Clean 8 Productos",
+      "Bomba Jet 1.5 HP Inox",
+      "Interfaz de Botones Físicos",
+      "Filtración NSF 10x34",
+      "Tinaco 2,500L + 8 Bidones Regalo",
+    ]
   },
   {
-    icon: ComputerDesktopIcon,
-    title: "Tecnología de Vanguardia",
-    desc: "Vending touch, sensores y monitoreo",
+    id: "MegalodonTradicionalMax",
+    name: "Megalodón Tradicional Max 8",
+    tagline: "Vending Tradicional Atlantis 300 Max + Mostrador + Clean 8",
+    price: "$154,950",
+    gradient: "from-[#245f73] to-[#1e5670]",
+    images: [
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776397327/tradicional_atlantis_max_e2obmt.png",
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776403043/mostrador_osmosis_jqr3cb.png",
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776400516/8_productos_vfaf1e.png"
+    ],
+    specs: [
+      "Atlantis 300 Max + Ósmosis",
+      "Mostrador Neptuno Inox 304",
+      "Vending Clean 8 Productos",
+      "Eliminación de Sarro y Sales",
+      "Producción de Alta Demanda",
+      "Ideal para Zonas Críticas",
+      "Instalación Premium Incluida",
+    ]
   },
   {
-    icon: CubeIcon,
-    title: "Estación Completa",
-    desc: "Agua + mostrador + limpieza 8 productos",
+    id: "MegalodonTouch",
+    name: "Megalodón Touch Pro 8",
+    tagline: "Vending Touch Atlantis 300 Max + Mostrador + Clean 8",
+    price: "$137,900",
+    gradient: "from-[#1e5670] to-[#17355b]",
+    images: [
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776394713/touch_atlantis_oh7wui.png",
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776400526/mostrador_djpelm.png",
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776400516/8_productos_vfaf1e.png"
+    ],
+    specs: [
+      "Atlantis 300 Touch Max (8\")",
+      "Mostrador Neptuno Inox 304",
+      "Vending Clean 8 Productos",
+      "Sensado Digital de Precisión",
+      "Audio Guía e Interfaz Color",
+      "Control de Ventas Digital",
+      "Máximo Impacto Visual",
+    ]
   },
   {
-    icon: CurrencyDollarIcon,
-    title: "Inversión Inteligente",
-    desc: "Precio paquete $127,900 MXN",
+    id: "MegalodonTouchMax",
+    name: "Megalodón Touch Max 8",
+    tagline: "Vending Touch Atlantis 300 Max + Mostrador + Clean 8",
+    price: "$164,950",
+    gradient: "from-[#17355b] via-[#245f73] to-[#2f7384]",
+    images: [
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776394713/touch_atlantis_max_q41zpd.png",
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776403043/mostrador_osmosis_jqr3cb.png",
+      "https://res.cloudinary.com/defkuaytw/image/upload/v1776400516/8_productos_vfaf1e.png"
+    ],
+    specs: [
+      "Atlantis 300 Touch + Ósmosis",
+      "Mostrador Neptuno Inox 304",
+      "Vending Clean 8 Productos",
+      "La Estación de Mayor Tráfico",
+      "Automatización Inteligente",
+      "Pureza Premium Garantizada",
+      "El ROI más alto de la línea",
+    ]
   },
 ];
 
-const features = [
-  {
-    icon: BeakerIcon,
-    title: "Vending Touch Atlantis 300 con Mostrador",
-    description:
-      "Sistema de purificación de alto rendimiento con bomba Jet de 1.5 hp en acero inoxidable, filtros de lecho profundo, carbón activado y suavizador 10x34 NSF, pulidor 10” Slim NSF, luz UV de 30 LPM y generador de ozono. Incluye mesa mixta de acero inoxidable para lavado interior, lavado exterior y llenado de dos garrafones al mismo tiempo.",
-    image: "/img/vending/TOUCHAGUA.png",
-  },
-  {
-    icon: ArchiveBoxIcon,
-    title: "Vending Gabinete de Acero Inoxidable · 8 Productos de Limpieza",
-    description:
-      "Máquina Darmax Clean con gabinete de acero inoxidable con llave, bombas de 1/2 hp con válvula check, mangueras, conectores, conexiones y monedero antirrobo. Registra ventas, sensa litros, configura precios y despacha 1 litro por operación. Acepta monedas de $1, $2, $5 y $10 pesos, y da cambio.",
-    image: "/img/vending/productoslimpieza8.png",
-  },
-  {
-    icon: CpuChipIcon,
-    title: "Estación Megalodón: Negocio de Alto Tráfico",
-    description:
-      "Una estación diseñada para dominar puntos de gran afluencia: purificación, lavado y llenado de garrafones más recarga de productos de limpieza a granel. Máxima presencia visual, operación continua y dos líneas de negocio en un solo lugar.",
-    image: "/img/purificadoras/purificadora-comercial.jpg",
-  },
+const extras = [
+  { name: "Upgrade Agua Alcalina", price: "$12,000 MXN", desc: "Doble tipo de agua en tu estación de ultra flujo." },
+  { name: "Seguro de Vending Anual", price: "$10,500 MXN", desc: "Protección integral para los tres módulos blindados." },
+  { name: "Aviso de Funcionamiento", price: "$3,500 MXN", desc: "Gestoría ante COFEPRIS / Salubridad." },
+  { name: "Mantenimiento Anual", price: "$15,000 MXN", desc: "Servicio preventivo para estación de alta demanda." },
 ];
 
-const processSteps = [
+const sharedEngineering = [
   {
-    icon: MapPinIcon,
-    title: "1. Consultoría y Diseño",
-    desc: "Analizamos tu ubicación de alto tráfico y definimos la mejor configuración del Megalodón para tu proyecto.",
+    category: "Ingeniería de Purificación",
+    items: [
+      { name: "Planta de Ultra Capacidad", desc: "Equipada con tanques NSF de gran volumen y bombas Jet de 1.5 HP para flujo masivo." },
+      { name: "Mostrador Sanitario Neptuno", desc: "Mesa mixta de acero inoxidable 304 con tarja integrada para lavado y llenado doble." },
+      { name: "Sistemas de Desinfección", desc: "Lámparas UV de alto flujo (30 LPM) y generadores de ozono industriales." },
+    ]
   },
   {
-    icon: TruckIcon,
-    title: "2. Fabricación e Instalación",
-    desc: "Construimos tu estación con los más altos estándares y nuestro equipo técnico se encarga de la instalación y puesta en marcha.",
-  },
-  {
-    icon: AcademicCapIcon,
-    title: "3. Capacitación Completa",
-    desc: "Te capacitamos en operación diaria, manejo del dinero, reabastecimiento de productos y mantenimiento preventivo.",
-  },
-  {
-    icon: WrenchScrewdriverIcon,
-    title: "4. Lanzamiento y Soporte",
-    desc: "Te acompañamos en el arranque y cuentas con soporte técnico y asesoría para asegurar el máximo rendimiento.",
-  },
+    category: "Vending Clean 8",
+    items: [
+      { name: "8 Canales de Despacho", desc: "Ocho bombas independientes de 1/2 HP con válvulas check para un portafolio completo." },
+      { name: "Cobro Centralizado", desc: "Sistemas de monedero electrónico blindados con alta capacidad de cambio automático." },
+      { name: "Gestión Digital", desc: "Registro digital inalterable de litros vendidos por cada uno de los 8 productos." },
+    ]
+  }
+];
+
+const requirements = [
+  { title: "Espacio", desc: "Área sugerida de 35 m² a 45 m²." },
+  { title: "Infraestructura", desc: "Muro de 96x58 cm a 75 cm del suelo." },
+  { title: "Hidráulico", desc: "Drenaje de 2\" y 2 tinacos de 5,000L." },
+  { title: "Eléctrico", desc: "Líneas 127V independientes con tierra." },
 ];
 
 const faqs = [
   {
-    q: "¿Cuál es el precio del Megalodón y cómo se paga?",
-    a: "El paquete Megalodón (Vending Touch Atlantis 300 con mostrador + Vending 8 productos de limpieza) tiene un precio de $127,900 MXN. La forma de pago es 50% de anticipo y 50% restante a la entrega del equipo. Si requieres factura, se maneja esquema Costo + IVA.",
+    q: "¿Por qué el Megalodón es para zonas de tráfico masivo?",
+    a: "Por su capacidad de despacho simultáneo en agua y sus 8 canales de limpieza, lo que permite atender a múltiples clientes sin esperas, maximizando la facturación.",
   },
   {
-    q: "¿Qué incluye el paquete de Agua Alcalina?",
-    a: "El upgrade de Agua Alcalina (+$12,000 MXN) incluye filtro alcalinizador, pre-filtro pulidor, lámpara UV de 16 watts y tarjeta vending para manejar 2 tipos de agua desde tu equipo.",
+    q: "¿Qué incluye el kit de regalo?",
+    a: "Recibes un tinaco de 2,500 litros grado alimenticio y 8 bidones de 20 litros para los productos de limpieza.",
   },
   {
-    q: "¿Qué regalos vienen incluidos?",
-    a: "Recibes un tinaco de 2,500 litros grado alimenticio (valor aprox. $5,500 MXN) y 8 bidones de 20 litros para productos de limpieza (valor aprox. $3,200 MXN). Los racks no están incluidos.",
-  },
-  {
-    q: "¿Qué tiempo de entrega manejan?",
-    a: "El tiempo de entrega estimado es de entre 15 y 20 días naturales a partir de la firma del contrato, una vez aplicado tu anticipo.",
+    q: "¿Incluyen instalación y capacitación?",
+    a: "Sí, el paquete Megalodón incluye la instalación técnica profesional y la capacitación completa para operar la estación más potente de Darmax.",
   },
 ];
 
-const galleryImages = [
-  "/img/trabajos/trabajos1.jpg",
-  "/img/trabajos/trabajos2.jpg",
-  "/img/trabajos/trabajos3.jpg",
-  "/img/trabajos/trabajos5.jpg",
-  "/img/purificadoras/purificadora-negocio.jpeg",
-  "/img/purificadoras/purificadora-comercial.jpg",
-];
+/* --- UI Components --- */
+function SectionTitle({ eyebrow, title, highlight, light = false, align = "center" }) {
+  const alignClass = align === "center" ? "text-center" : "text-left";
+  const eyebrowColor = light ? "text-blue-100" : "text-[#2f7384]";
+  const titleColor = light ? "text-white" : "text-slate-900";
 
-/* Pricing, agua alcalina, regalos y extras */
+  return (
+    <div className={`mb-12 sm:mb-20 ${alignClass}`}>
+      {eyebrow && (
+        <span className={`text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] mb-4 block ${eyebrowColor}`}>
+          {String(eyebrow)}
+        </span>
+      )}
+      <h2 className={`text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter leading-tight ${titleColor}`}>
+        {String(title)} {highlight && <br className="hidden sm:block" />}
+        {highlight && (
+          <span className="inline-block pb-2 pr-6 text-transparent bg-clip-text bg-gradient-to-r from-[#2f7384] to-[#1e5670]">
+            {String(highlight)}
+          </span>
+        )}
+      </h2>
+    </div>
+  );
+}
 
-const pricingCards = [
-  {
-    name: "Megalodón · Atlantis 300 con Mostrador + Limpieza 8 Productos",
-    price: "$127,900 MXN",
-    badge: "Paquete principal",
-    description:
-      "Incluye Vending Touch Atlantis 300 con sistema completo de purificación, mesa mixta de acero inoxidable para lavado y llenado, y vending Darmax Clean para 8 productos de limpieza.",
-    items: [
-      "Bomba 1.5 hp Jet de acero inoxidable 127 V con presurizador automático",
-      "Filtros 10x34 NSF: lecho profundo, carbón activado y suavizador con resina catiónica certificada",
-      "Pulidor 10\" Slim NSF, lámpara UV 30 LPM y generador de ozono metálico con ventury 3/4\"",
-      "Despachador automático con 4 modalidades: 1, 4, 10 y 20 L (enjuaga garrafón y da cambio)",
-      "Mesa mixta de acero inoxidable 304 con tarja y charola de lavado interior, lavado exterior y llenado de dos garrafones",
-      "Bomba 1/2 hp para mostrador y tubería en PVC cédula 40",
-      "Vending de limpieza con gabinete de acero inoxidable, monedero antirrobo y registro de ventas",
-    ],
-  },
-  {
-    name: "Upgrade Agua Alcalina",
-    price: "+ $12,000 MXN",
-    badge: "Opcional recomendado",
-    description:
-      "Añade agua alcalina a tu sistema para ofrecer dos tipos de agua y elevar tu ticket promedio.",
-    items: [
-      "Filtro alcalinizador",
-      "Pre-filtro pulidor",
-      "Lámpara UV 16 watts",
-      "Tarjeta vending para 2 tipos de agua",
-    ],
-  },
+const BundleCard = ({ bundle, index }) => {
+  const [activeImg, setActiveImg] = useState(0);
+  
+  const nextImg = () => setActiveImg((prev) => (prev + 1) % bundle.images.length);
+  const prevImg = () => setActiveImg((prev) => (prev - 1 + bundle.images.length) % bundle.images.length);
 
- 
-];
+  return (
+    <motion.div
+      initial="initial"
+      whileInView="whileInView"
+      viewport={{ once: true }}
+      variants={fadeUp}
+      className={`flex flex-col ${index % 2 !== 0 ? "lg:flex-row-reverse" : "lg:flex-row"} items-center gap-10 lg:gap-16 bg-white rounded-[3rem] border border-slate-100 shadow-xl shadow-blue-900/5 overflow-hidden group`}
+    >
+      {/* Carousel Container */}
+      <div className="w-full lg:w-1/2 aspect-video bg-[#f8fafc] relative overflow-hidden flex items-center justify-center">
+        <div className={`absolute inset-0 bg-gradient-to-br ${bundle.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-700`} />
+        
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeImg}
+            initial={{ opacity: 0, scale: 0.9, x: 20 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.9, x: -20 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="w-full h-full flex items-center justify-center p-8 sm:p-12"
+          >
+            <img
+              src={bundle.images[activeImg]}
+              className="max-w-full max-h-full object-contain relative z-10 drop-shadow-2xl"
+              alt={`${bundle.name} - ${activeImg}`}
+            />
+          </motion.div>
+        </AnimatePresence>
 
-const extras = [
-  { name: "Trámite de aviso de funcionamiento", price: "+ $3,500 MXN" },
-  { name: "Tinaco 5,000 L grado alimenticio translúcido", price: "+ $10,500 MXN" },
-  { name: "Tinaco 2,500 L grado alimenticio translúcido", price: "+ $5,500 MXN" },
-  { name: "Tinaco 1,100 L grado alimenticio translúcido", price: "+ $3,300 MXN" },
-  {
-    name: "Tinaco 1,100 L grado alimenticio translúcido tipo bala",
-    price: "+ $3,600 MXN",
-  },
-  { name: "Toma de pipa 2” PVC Cédula 40", price: "+ $5,500 MXN" },
-  { name: "Paquete para promoción o inauguración", price: "+ $7,500 MXN" },
-  { name: "Seguro de vending", price: "+ $4,950 MXN" },
-  { name: "Mantenimiento anual", price: "+ $8,500 MXN" },
-  { name: "Kit de insumos anuales", price: "+ $6,900 MXN" },
-  { name: "Ósmosis inversa", price: "+ $28,000 MXN" },
-  { name: "Automatización de ósmosis", price: "+ $9,000 MXN" },
-];
+        {/* Custom Controls con Colores de Identidad */}
+        <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 flex justify-between z-20 pointer-events-none">
+          <button 
+            onClick={prevImg} 
+            className="p-4 rounded-full bg-white/90 shadow-xl pointer-events-auto hover:bg-[#245f73] hover:text-white transition-all transform hover:scale-110 active:scale-95 group/btn"
+          >
+            <ChevronDownIcon className="h-6 w-6 rotate-90 text-slate-400 group-hover/btn:text-white" />
+          </button>
+          <button 
+            onClick={nextImg} 
+            className="p-4 rounded-full bg-white/90 shadow-xl pointer-events-auto hover:bg-[#245f73] hover:text-white transition-all transform hover:scale-110 active:scale-95 group/btn"
+          >
+            <ChevronDownIcon className="h-6 w-6 -rotate-90 text-slate-400 group-hover/btn:text-white" />
+          </button>
+        </div>
 
-const installRequirements = [
-  {
-    title: "Espacio Comercial",
-    desc: "Local de 30 m² a 40 m², con buena visibilidad y flujo constante de personas.",
-  },
-  {
-    title: "Instalación Eléctrica y Drenaje",
-    desc: "Conexiones de luz independiente, regulador de voltaje no break, contactos y drenaje dentro del local.",
-  },
-  {
-    title: "Almacenamiento de Agua Cruda",
-    desc: "Dos tinacos grado alimenticio translúcido de 5,000 litros para agua cruda.",
-  },
-  {
-    title: "Muro para Vending de Agua",
-    desc: "Levantamiento de muro con medidas 96 cm de altura x 58 cm de largo y altura al piso de 75 cm (dentro tiene un cajón de 15 cm de ancho).",
-  },
-];
-
-/* --- Sub-components --- */
-const FaqItem = ({ q, a }) => (
-  <details className="group border-b border-slate-200/80 last:border-none">
-    <summary className="cursor-pointer list-none p-5 md:p-6 font-semibold text-slate-800 flex items-center justify-between hover:bg-slate-50 transition">
-      {q}
-      <div className="ml-4 text-slate-400 transition-transform duration-300 group-open:rotate-180">
-        <ChevronDownIcon className="h-5 w-5" />
+        {/* Indicators estilizados */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 z-20">
+          {bundle.images.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveImg(i)}
+              className={`h-2.5 rounded-full transition-all duration-500 ${activeImg === i ? "w-12 bg-[#245f73]" : "w-2.5 bg-slate-300 hover:bg-slate-400"}`}
+            />
+          ))}
+        </div>
       </div>
-    </summary>
-    <div className="px-5 md:px-6 pb-6 text-slate-600 leading-relaxed">{a}</div>
-  </details>
-);
 
-const SectionTitle = ({ children, className = "" }) => (
-  <div className={`text-center mb-12`}>
-    <h2 className={`text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight ${className}`}>
-      {children}
-    </h2>
+      {/* Info Container */}
+      <div className="w-full lg:w-1/2 p-10 sm:p-14 flex flex-col h-full">
+        <span className="text-[10px] font-black uppercase tracking-widest text-[#245f73] mb-2">{bundle.tagline}</span>
+        <h3 className="text-3xl sm:text-4xl font-black text-slate-900 leading-tight mb-6">{bundle.name}</h3>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mb-10">
+           {bundle.specs.map((s, idx) => (
+             <div key={idx} className="flex items-start gap-3 text-xs font-bold text-slate-500 uppercase tracking-tight">
+               <CheckIcon className="h-4 w-4 text-[#2f7384] mt-0.5 shrink-0" />
+               <span>{String(s)}</span>
+             </div>
+           ))}
+        </div>
+
+        <div className="mt-auto pt-8 border-t border-slate-50 flex flex-col sm:flex-row justify-between items-center gap-8">
+          <div className="text-center sm:text-left">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Inversión Desde</span>
+            <span className="text-4xl font-black text-slate-900 tracking-tighter">{bundle.price}</span>
+          </div>
+          <Link
+            to="/configurar-maquina/Megalodon"
+            className="w-full sm:w-auto px-12 py-5 bg-gradient-to-r from-[#2f7384] to-[#17355b] text-white font-black rounded-2xl hover:shadow-2xl hover:shadow-blue-500/30 transition-all text-xs uppercase tracking-widest text-center"
+          >
+            Seleccionar Megalodón
+          </Link>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const ComparisonTable = () => (
+  <div className="overflow-x-auto rounded-[2.5rem] border border-slate-200 bg-white shadow-xl shadow-blue-900/5">
+    <table className="w-full text-left border-collapse min-w-[900px]">
+      <thead>
+        <tr className="bg-[#17355b] text-white">
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/10">Atributo</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/10 text-center">Tradicional 8</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/10 text-center text-blue-300">Tradicional Max</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest border-r border-white/10 text-center">Touch Pro 8</th>
+          <th className="p-7 text-[10px] font-black uppercase tracking-widest text-center text-blue-300">Touch Max 8</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-slate-100 font-medium">
+        {[
+          { label: "Canales de Limpieza", vals: ["8", "8", "8", "8"] },
+          { label: "Ósmosis Inversa Industrial", vals: [false, true, false, true] },
+          { label: "Interfaz de Agua", vals: ["Botones", "Botones", "Touch 8\"", "Touch 8\""] },
+          { label: "Sensado de Precisión", vals: ["Temporizado", "Digital", "Digital", "Digital"] },
+          { label: "Capacidad Producción", vals: ["Industrial", "Máxima", "Industrial", "Máxima"] },
+          { label: "Inversión Sugerida", vals: ["$127,900", "$154,950", "$137,900", "$164,950"], bold: true },
+        ].map((row, i) => (
+          <tr key={i} className="hover:bg-blue-50/20 transition-colors">
+            <td className="p-7 text-slate-900 font-black text-xs uppercase tracking-tight">{row.label}</td>
+            {row.vals.map((v, idx) => (
+              <td key={idx} className={`p-7 text-sm text-center ${row.bold ? "font-black text-slate-900" : "text-slate-500"}`}>
+                {typeof v === "boolean" ? (
+                  v ? <CheckIcon className="h-6 w-6 text-blue-600 mx-auto" /> : <XMarkIcon className="h-6 w-6 text-slate-200 mx-auto" />
+                ) : v}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   </div>
 );
 
-/* --- Main Component --- */
 export default function MegalodonInfo() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const contRef = useRef(null);
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    const t = setTimeout(
-      () => contRef.current?.scrollIntoView({ behavior: "smooth" }),
-      200
-    );
-    return () => clearTimeout(t);
-  }, [location.pathname]);
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   return (
-    <div ref={contRef} className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen bg-white selection:bg-[#2f7384] selection:text-white font-sans overflow-x-hidden">
       <Helmet>
-        <title>Megalodón · Atlantis 300 con Mostrador + Limpieza 8 Productos | Darmax</title>
-        <meta
-          name="description"
-          content="Megalodón: Vending Touch Atlantis 300 con mostrador + Vending 8 productos de limpieza. Estación de ultra capacidad con purificación, lavado y recarga de productos a granel."
-        />
+        <title>Estación Megalodón | Vending de Ultra Capacidad | Darmax</title>
+        <meta name="description" content="Domina zonas de alto tráfico con la Estación Megalodón. Agua purificada, mostrador profesional y recarga de 8 productos de limpieza." />
       </Helmet>
 
-      {/* ===== Hero Section ===== */}
-      <section className="relative bg-slate-900 overflow-hidden">
-        <div className="absolute inset-0">
+      <SEO 
+        title="Megalodón - El Paquete Más Potente de México"
+        description="Selecciona la ultra capacidad para tu negocio. Purificación Atlantis Max y Vending Clean de 8 productos en una estación total."
+      />
+
+      {/* HERO SECTION */}
+      <section className="relative min-h-[90vh] flex items-center pt-32 pb-20 bg-slate-900">
+        <div className="absolute inset-0 z-0">
           <img
-            src={HERO_IMG}
-            alt="Estación Megalodón de Darmax"
-            className="w-full h-full object-cover opacity-30"
+            src="/img/Iniciatunegocio/fachadacalle.jpg"
+            alt="Megalodón Darmax Ultra Tráfico"
+            className="w-full h-full object-cover opacity-15"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#17355b]/80 via-slate-900/60 to-slate-900" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#2f7384]/20 via-transparent to-[#1e5670]/10" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/40 to-slate-900/60" />
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 flex flex-col items-center justify-center min-h-[85vh] text-center text-white pt-24 pb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            <span className="inline-block px-4 py-1.5 mb-4 bg-white/10 text-blue-300 rounded-full text-sm font-semibold">
-              Megalodón · Estación de Ultra Capacidad
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 w-full">
+          <motion.div initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={fadeUp} className="max-w-3xl">
+            <span className="inline-block px-5 py-1.5 rounded-full bg-blue-500/10 text-[#2f7384] text-[10px] font-black uppercase tracking-[0.3em] mb-8 border border-blue-500/20 backdrop-blur-sm">
+              Ultra-High Capacity: Megalodón Edition
             </span>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
-              Estación de Vending <span className="text-blue-400">Megalodón</span>.
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-white tracking-tighter leading-tight mb-8">
+              Domina puntos <br />
+              de alto <span className="inline-block pb-2 pr-6 text-transparent bg-clip-text bg-gradient-to-r from-[#2f7384] to-[#1e5670]">tráfico.</span>
             </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-200 leading-relaxed">
-              Vending Touch Atlantis 300 con mostrador + Vending de 8 productos
-              de limpieza. Una estación diseñada para dominar las ubicaciones de
-              mayor tráfico y demanda.
+            <p className="text-lg sm:text-xl text-slate-300 mb-12 max-w-xl leading-relaxed">
+              La Estación Megalodón es la herramienta definitiva para conquistar ubicaciones estratégicas. Agua purificada, lavado profesional Neptuno y 8 canales de limpieza a granel.
             </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-wrap gap-5">
               <Link
                 to="/configurar-maquina/Megalodon"
-                className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-blue-400 shadow-lg hover:bg-blue-300 transition-all transform hover:scale-105"
+                className="px-12 py-5 bg-gradient-to-r from-[#2f7384] to-[#245f73] hover:shadow-[#2f7384]/20 text-white font-black rounded-2xl shadow-2xl transition-all transform hover:scale-105 uppercase tracking-widest text-xs"
               >
                 Configurar mi Estación
               </Link>
-              <Link
-                to="#pricing"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document
-                    .getElementById("pricing")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="px-8 py-3 rounded-full font-semibold border-2 border-slate-600 text-slate-200 hover:bg-slate-800 hover:border-slate-800 transition"
+              <button
+                onClick={() => document.getElementById("modelos").scrollIntoView({ behavior: "smooth" })}
+                className="px-12 py-5 bg-white/5 hover:bg-white/10 text-white font-black rounded-2xl border border-white/10 transition-all uppercase tracking-widest text-xs backdrop-blur-sm"
               >
-                Ver Precio y Qué Incluye
-              </Link>
+                Ver Combinaciones
+              </button>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ===== Highlights Section ===== */}
-      <section className="bg-slate-800 py-12">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
-            {highlights.map((h, i) => (
-              <motion.div
-                key={h.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="flex items-center gap-4 text-white"
-              >
-                <div className="flex-shrink-0 bg-slate-700 p-3 rounded-lg">
-                  <h.icon className="h-7 w-7 text-blue-400" />
-                </div>
-                <div>
-                  <p className="font-bold text-lg">{h.title}</p>
-                  <p className="text-sm text-slate-400">{h.desc}</p>
-                </div>
-              </motion.div>
+      {/* SECCIÓN MODELOS (HORIZONTAL ZIGZAG CON CARUSEL) */}
+      <section id="modelos" className="py-24 sm:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Gama de Potencia"
+            title="Cuatro variaciones"
+            highlight="de ultra capacidad."
+          />
+          
+          <div className="space-y-12 sm:space-y-20">
+            {megalodonBundles.map((m, i) => (
+              <BundleCard key={m.id} bundle={m} index={i} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== Pricing & What's Included ===== */}
-      <section
-        id="pricing"
-        className="py-20 md:py-28 bg-gradient-to-b from-slate-50 via-white to-slate-50"
-      >
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Inversión, Agua Alcalina y Regalos</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
-            {pricingCards.map((card, i) => (
-              <motion.div
-                key={card.name}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.6, delay: i * 0.08 }}
-                className={`relative rounded-3xl p-7 md:p-8 bg-white shadow-lg border ${
-                  i === 0
-                    ? "border-blue-200 shadow-blue-100"
-                    : "border-slate-200/80"
-                }`}
-              >
-                <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide mb-4 ${
-                    i >= 2 ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"
-                  }`}
-                >
-                  {card.badge}
-                </span>
-                <h3 className="text-xl font-bold text-slate-900">
-                  {card.name}
-                </h3>
-                <p className="mt-2 text-2xl font-extrabold text-slate-900">
-                  {card.price}
-                </p>
-                <p className="mt-3 text-sm text-slate-600">
-                  {card.description}
-                </p>
-                <ul className="mt-4 space-y-2 text-sm text-slate-600">
-                  {card.items.map((item) => (
-                    <li key={item} className="flex gap-2">
-                      <span className="mt-[6px] h-1.5 w-1.5 rounded-full bg-blue-500" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-8 max-w-3xl mx-auto text-center text-sm text-slate-500">
-            <p>
-              Forma de pago: <strong>50% de anticipo</strong> y{" "}
-              <strong>50% restante a la entrega</strong> del equipo. Si
-              requieres factura, se maneja esquema{" "}
-              <strong>Costo + IVA</strong>.
-            </p>
-            <p className="mt-2">
-              Tiempo de entrega estimado: entre{" "}
-              <strong>15 y 20 días naturales</strong> a partir de la firma del
-              contrato.
-            </p>
-          </div>
+      {/* SECCIÓN TABLA COMPARATIVA */}
+      <section className="py-24 sm:py-32 bg-[#f1f5f9]/40">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Transparencia Técnica"
+            title="Diferencias que"
+            highlight="impulsan tu éxito."
+          />
+          <ComparisonTable />
         </div>
       </section>
 
-      {/* ===== Technical Components Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>
-            Componentes de Purificación, Mostrador y Vending
-          </SectionTitle>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
-            {/* Purificación + Mostrador */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6 }}
-              className="lg:col-span-2 rounded-3xl bg-slate-50 border border-slate-200/80 p-7 md:p-8"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="p-2 rounded-full bg-blue-100 text-blue-700">
-                  <ShieldCheckIcon className="h-6 w-6" />
-                </span>
-                <h3 className="text-xl font-bold text-slate-900">
-                  Sistema de Purificación Atlantis 300 + Mesa Mixta
-                </h3>
-              </div>
-              <p className="text-sm text-slate-600 mb-4">
-                Tanques y medios filtrantes con certificación NSF y una mesa
-                mixta de acero inoxidable 304 para lavado y llenado de
-                garrafones.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm text-slate-700">
-                <ul className="space-y-2">
-                  <li>• Bomba 1.5 hp Jet de acero inoxidable 127 V.</li>
-                  <li>• Presurizador automático.</li>
-                  <li>
-                    • Filtro de lecho profundo 10x34 NSF con gravas, arenas
-                    sílicas y zeolita certificadas y difusores internos.
-                  </li>
-                  <li>
-                    • Filtro de carbón activado 10x34 NSF con carbón certificado
-                    y válvula manual de tres vías.
-                  </li>
-                  <li>
-                    • Filtro suavizador 10x34 NSF con válvula manual de 5 pasos,
-                    tanque de salmuera y resina catiónica con certificación
-                    NSF.
-                  </li>
-                  <li>• Portacartuchos pulidor 10\" Slim certificado NSF.</li>
-                </ul>
-                <ul className="space-y-2">
-                  <li>
-                    • Lámpara de rayos ultravioleta de 30 LPM con balastro en
-                    acero inoxidable.
-                  </li>
-                  <li>• Generador de ozono metálico.</li>
-                  <li>• Inyector ventury de 3/4\".</li>
-                  <li>
-                    • Despachador automático de agua purificada para 4
-                    modalidades de llenado con validador de monedas (da cambio y
-                    enjuaga garrafón).
-                  </li>
-                  <li>
-                    • Mesa mixta en acero inoxidable (170 cm frente x 160 cm
-                    alto x 50 cm fondo) con charola de lavado interior para un
-                    garrafón, lavado exterior para dos garrafones y llenado para
-                    dos garrafones.
-                  </li>
-                  <li>
-                    • Bomba 1/2 hp para mostrador y tubería en PVC cédula 40.
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-
-            {/* Vending limpieza */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="rounded-3xl bg-slate-900 text-slate-50 p-7 md:p-8 relative overflow-hidden"
-            >
-              <div className="absolute -top-8 -right-10 h-32 w-32 rounded-full bg-blue-500/30 blur-2xl" />
-              <div className="relative">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="p-2 rounded-full bg-slate-800 text-blue-300">
-                    <ArchiveBoxIcon className="h-6 w-6" />
-                  </span>
-                  <h3 className="text-xl font-bold">
-                    Vending Gabinete de Acero Inoxidable · Limpieza 8 Productos
-                  </h3>
-                </div>
-                <ul className="space-y-2 text-sm text-slate-200/90">
-                  <li>• Registra ventas y sensa litros.</li>
-                  <li>• Llenado estándar de 1 litro por operación.</li>
-                  <li>• Configuración de precios de llenado.</li>
-                  <li>
-                    • Acepta monedas de $1, $2, $5 y $10 pesos (da cambio).
-                  </li>
-                  <li>• Monedero antirrobo.</li>
-                  <li>• Luz interna y vinil exterior Darmax Clean.</li>
-                  <li>
-                    • Pantalla inicial con botones de acero inoxidable y
-                    gabinete con llave para protección del dinero y del sistema.
-                  </li>
-                  <li>
-                    • Bombas de 1/2 hp con válvula check, mangueras, conectores
-                    y conexiones listas para instalación.
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Key Features Section ===== */}
-      <section id="features" className="py-20 md:py-28 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Rendimiento y Presencia Inigualables
-            </h2>
-            <p className="mt-4 text-lg text-slate-600">
-              Cada detalle del Megalodón está pensado para un rendimiento
-              extremo y una experiencia de usuario fluida.
-            </p>
-          </div>
-
-          <div className="space-y-16">
-            {features.map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.6 }}
-                className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${
-                  i % 2 !== 0 ? "md:flex-row-reverse" : ""
-                }`}
-              >
-                <div className="md:w-1/2">
-                  <div className="inline-flex items-center gap-3 mb-4">
-                    <span className="p-2 bg-blue-100 rounded-full">
-                      <feature.icon className="h-6 w-6 text-blue-700" />
-                    </span>
-                    <h3 className="text-2xl font-bold">{feature.title}</h3>
+      {/* SECCIÓN INGENIERÍA ULTRA */}
+      <section id="tecnico" className="py-24 sm:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Integración Industrial"
+            title="Ingeniería total"
+            highlight="en una sola unidad."
+          />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+            {sharedEngineering.map((cat, i) => (
+              <motion.div key={cat.category} initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={fadeUp}>
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-xl bg-[#17355b] flex items-center justify-center text-white shadow-lg">
+                    {i === 0 ? <WrenchIcon className="w-6 h-6" /> : <ArchiveBoxIcon className="w-6 h-6" />}
                   </div>
-                  <p className="text-slate-600 leading-relaxed text-base">
-                    {feature.description}
-                  </p>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">{String(cat.category)}</h3>
                 </div>
-                <div className="md:w-1/2">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
-                    className="w-full h-auto rounded-2xl shadow-xl object-cover"
-                  />
+                <div className="space-y-6">
+                  {cat.items.map((item) => (
+                    <div key={item.name} className="group p-10 rounded-[2rem] bg-white border border-slate-100 hover:border-[#2f7384] transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-900/5">
+                      <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-2 group-hover:text-[#245f73] transition-colors">{String(item.name)}</h4>
+                      <p className="text-slate-500 text-sm font-medium leading-relaxed">{String(item.desc)}</p>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             ))}
@@ -544,159 +461,142 @@ export default function MegalodonInfo() {
         </div>
       </section>
 
-      {/* ===== Extras Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Extras y Servicios Opcionales</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-7">
+      {/* SECCIÓN EXTRAS & UPGRADES */}
+      <section className="py-24 sm:py-32 bg-[#F8FAFC] border-y border-slate-100">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Personalización"
+            title="Completa tu"
+            highlight="estación Megalodón."
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {extras.map((extra, i) => (
-              <motion.div
-                key={extra.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.4, delay: i * 0.06 }}
-                className="rounded-2xl border border-slate-200/80 bg-slate-50/60 hover:bg-white hover:shadow-md transition p-5 flex flex-col justify-between"
-              >
-                <p className="font-semibold text-sm text-slate-900">
-                  {extra.name}
-                </p>
-                <p className="mt-3 text-blue-700 font-bold text-sm">
-                  {extra.price}
-                </p>
+              <motion.div key={i} initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={fadeUp} transition={{ delay: i * 0.1 }} className="p-8 bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all text-center">
+                <h4 className="font-black text-slate-900 uppercase tracking-tighter mb-2">{extra.name}</h4>
+                <p className="text-xs text-slate-500 mb-6 font-medium leading-relaxed">{extra.desc}</p>
+                <div className="text-xl font-black text-[#2f7384]">{extra.price}</div>
               </motion.div>
             ))}
           </div>
-          <p className="mt-8 text-xs text-slate-500 flex items-center gap-2">
-            <TruckIcon className="h-4 w-4" />
-            *Flete y viáticos se cotizan de acuerdo con el código postal de
-            instalación.
-          </p>
-        </div>
-      </section>
-
-      {/* ===== Installation Requirements Section ===== */}
-      <section className="py-20 md:py-28 bg-slate-900 text-white" >
-        <div className="max-w-7xl mx-auto px-6 md:px-10 ">
-          <SectionTitle className="text-left md:text-left text-white">
-            ¿Qué requieres para instalar tu Megalodón?
-          </SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {installRequirements.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="relative rounded-2xl bg-slate-800/60 border border-slate-700/80 p-6"
-              >
-                <div className="absolute -top-4 -right-4 h-10 w-10 rounded-full bg-blue-500/30 blur-xl" />
-                <h3 className="font-semibold text-base mb-2">{item.title}</h3>
-                <p className="text-sm text-slate-300">{item.desc}</p>
-              </motion.div>
-            ))}
+          <div className="mt-12 flex items-center justify-center gap-3 p-6 bg-amber-50 rounded-2xl border border-amber-100 text-amber-800 text-sm max-w-2xl mx-auto">
+            <ExclamationTriangleIcon className="w-6 h-6 shrink-0" />
+            <p className="font-medium">
+              <strong>Nota importante:</strong> El paquete incluye bidones iniciales para limpieza, pero no incluye racks metálicos para los mismos ni envases para el cliente final.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ===== How It Works Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <SectionTitle>Un Proyecto a la Medida de tu Ambición</SectionTitle>
-          <div className="mt-16 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-            {processSteps.map((step, i) => (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="text-center p-6 bg-slate-50 rounded-2xl border border-slate-200/80"
-              >
-                <div className="inline-block p-4 bg-blue-100 text-blue-700 rounded-full mb-4">
-                  <step.icon className="h-8 w-8" />
+      {/* SECCIÓN REQUERIMIENTOS & PAGO */}
+      <section className="py-24 sm:py-32 bg-[#17355b] relative overflow-hidden text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(47,115,132,0.2),transparent)]" />
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-20">
+            <div className="lg:w-2/5 text-left">
+              <SectionTitle 
+                align="left"
+                light
+                eyebrow="Inversión Segura"
+                title="Términos y"
+                highlight="requerimientos."
+              />
+              <p className="text-blue-100/70 text-lg mb-12 leading-relaxed font-medium">
+                La Estación Megalodón es un proyecto de alto nivel. Te acompañamos en cada etapa, desde la preparación del local hasta la capacitación de tu personal.
+              </p>
+              
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 group">
+                   <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-[#7DD3FC] transition-colors">
+                     <CreditCardIcon className="w-6 h-6" />
+                   </div>
+                   <div>
+                     <h5 className="font-black uppercase tracking-widest text-[10px] text-blue-200">Forma de Pago</h5>
+                     <p className="font-bold text-sm">50% Anticipo / 50% Contra Entrega</p>
+                   </div>
                 </div>
-                <h3 className="font-bold text-lg">{step.title}</h3>
-                <p className="text-sm text-slate-600 mt-1">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="mt-12 text-center">
-            <Link
-              to="/contacto"
-              className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-blue-400 shadow-lg hover:bg-blue-300 transition-all transform hover:scale-105"
-            >
-              Solicitar Propuesta
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== Gallery Section ===== */}
-      <section className="py-20 md:py-28">
-        <div className="max-w-7xl mx-auto">
-          <SectionTitle className="px-6">Conceptos y Proyectos</SectionTitle>
-        </div>
-        <div className="mt-8 relative">
-          <div className="flex overflow-x-auto snap-x snap-mandatory pb-8 gap-6 px-6 md:px-10">
-            {galleryImages.map((src, i) => (
-              <motion.div
-                key={src}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="flex-shrink-0 w-4/5 sm:w-1/2 md:w-1/3 lg:w-1/4 snap-center"
-              >
-                <img
-                  src={src}
-                  alt={`Concepto Megalodón ${i + 1}`}
-                  className="w-full h-80 rounded-2xl object-cover shadow-lg"
-                />
-              </motion.div>
-            ))}
+                <div className="flex items-center gap-4 group">
+                   <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-[#7DD3FC] transition-colors">
+                     <ClockIcon className="w-6 h-6" />
+                   </div>
+                   <div>
+                     <h5 className="font-black uppercase tracking-widest text-[10px] text-blue-200">Tiempo de Entrega</h5>
+                     <p className="font-bold text-sm">15 a 20 Días Naturales</p>
+                   </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="lg:w-3/5 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              {requirements.map((r) => (
+                <div key={r.title} className="p-10 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-md group hover:bg-white/10 transition-all duration-700">
+                  <h5 className="text-[#2f7384] font-black text-[10px] uppercase tracking-[0.3em] mb-4">{String(r.title)}</h5>
+                  <p className="text-white text-xl font-bold tracking-tight leading-snug">{String(r.desc)}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ===== FAQ Section ===== */}
-      <section className="py-20 md:py-28 bg-white">
-        <div className="max-w-4xl mx-auto px-6 md:px-10">
-          <SectionTitle>Preguntas Frecuentes</SectionTitle>
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      {/* SECCIÓN FAQ */}
+      <section className="py-24 sm:py-32 bg-white">
+        <div className="max-w-4xl mx-auto px-6 sm:px-10">
+          <SectionTitle 
+            eyebrow="Resolviendo Dudas"
+            title="Preguntas"
+            highlight="frecuentes."
+          />
+          <div className="space-y-5 border border-slate-100 rounded-[3.5rem] overflow-hidden shadow-xl shadow-blue-900/5">
             {faqs.map((f, i) => (
-              <FaqItem key={i} q={f.q} a={f.a} />
+              <details key={i} className="group border-b border-slate-50 last:border-none">
+                <summary className="cursor-pointer list-none p-10 font-black text-slate-800 flex items-center justify-between hover:bg-[#f1f5f9] transition-colors uppercase tracking-tight text-sm">
+                  {String(f.q)}
+                  <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 group-open:rotate-180 transition-transform duration-500">
+                    <ChevronDownIcon className="h-4 w-4" />
+                  </div>
+                </summary>
+                <div className="px-10 pb-10 text-slate-500 text-base leading-relaxed font-medium">
+                  {String(f.a)}
+                </div>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== Final CTA Section ===== */}
-      <section className="py-20">
-        <div className="max-w-3xl mx-auto text-center px-6">
-          <h2 className="text-3xl font-extrabold text-slate-900">
-            El Vending a Otra Escala
+      {/* FINAL CTA */}
+      <section className="py-24 sm:py-40 bg-slate-900 text-center relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-10">
+          <img src="/img/Iniciatunegocio/fachadacalle.jpg" alt="Darmax Megalodón" className="w-full h-full object-cover" />
+        </div>
+        <div className="relative z-10 max-w-4xl mx-auto px-6">
+          <h2 className="text-4xl sm:text-7xl font-black text-white tracking-tighter leading-tight mb-10">
+            Domina el mercado <br />
+            <span className="inline-block pb-2 pr-6 text-transparent bg-clip-text bg-gradient-to-r from-[#2f7384] to-[#1e5670]">con la Estación Total.</span>
           </h2>
-          <p className="mt-4 text-lg text-slate-600">
-            Si tu visión es grande, el Megalodón es tu herramienta. Combina
-            purificación, lavado y recarga de productos de limpieza en una sola
-            estación de ultra capacidad.
+          <p className="text-xl text-slate-400 mb-14 max-w-2xl mx-auto leading-relaxed font-medium">
+            Agua, mostrador y limpieza: la combinación más potente para dominar tu mercado. Inicia hoy con el respaldo tecnológico de Darmax.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-8">
             <Link
               to="/configurar-maquina/Megalodon"
-              className="px-8 py-3 rounded-full font-semibold text-slate-900 bg-blue-400 shadow-lg hover:bg-blue-300 transition-all transform hover:scale-105"
+              className="px-14 py-7 bg-gradient-to-r from-[#2f7384] to-[#245f73] text-white font-black rounded-2xl shadow-2xl transition-all transform hover:scale-110 uppercase tracking-widest text-sm"
             >
-              Configurar mi Estación
+              Configurar mi Megalodón
             </Link>
-            <button
-              onClick={() => navigate(-1)}
-              className="px-8 py-3 rounded-full font-semibold bg-slate-200 hover:bg-slate-300 text-slate-800 transition"
+            <Link
+              to="/contacto"
+              className="px-14 py-7 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-100 transition-all uppercase tracking-widest text-sm"
             >
-              Volver
-            </button>
+              Hablar con Ventas
+            </Link>
           </div>
+          <button 
+            onClick={() => navigate(-1)}
+            className="mt-20 text-slate-500 hover:text-white transition-colors flex items-center gap-3 mx-auto font-black uppercase tracking-[0.4em] text-[10px]"
+          >
+            <ChevronDownIcon className="h-4 w-4 rotate-90" /> Volver atrás
+          </button>
         </div>
       </section>
     </div>

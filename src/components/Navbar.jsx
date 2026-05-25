@@ -12,6 +12,16 @@ import { useUser } from "../context/UserContext";
 import { useSettings } from "../context/SettingsContext";
 import CarritoLateral from "./CarritoLateral";
 
+/* --- Temas Dinámicos por Ruta --- */
+const PATH_THEMES = {
+  "/vending-info": { accent: "#5188C9", bg: "bg-[#5188C9]/10", hover: "bg-[#5188C9]/5" },
+  "/purificadora-info": { accent: "#7DD3FC", bg: "bg-[#7DD3FC]/10", hover: "bg-[#7DD3FC]/5" },
+  "/vending-limpieza-info": { accent: "#e7b341", bg: "bg-[#e7b341]/10", hover: "bg-[#e7b341]/5" },
+  "/duo-emprendedor-info": { accent: "#73cdbd", bg: "bg-[#73cdbd]/10", hover: "bg-[#73cdbd]/5" },
+  "/tridente-info": { accent: "#4d79bf", bg: "bg-[#4d79bf]/10", hover: "bg-[#4d79bf]/5" },
+  "/megalodon-info": { accent: "#2f7384", bg: "bg-[#2f7384]/10", hover: "bg-[#2f7384]/5" },
+};
+
 export default function NavBar() {
   const [navOpen, setNavOpen] = useState(false);
   const [showCart, setShowCart] = useState(false);
@@ -22,11 +32,12 @@ export default function NavBar() {
   const [localMode, setLocalMode] = useState(globalMode);
   
   const { carrito } = useCarrito();
-  const { user, logout } = useUser();
-  const navigate = useNavigate();
+  const { user } = useUser();
   const location = useLocation();
   const navRef = useRef(null);
-  const linksRef = useRef([]);
+
+  // Determinar tema actual basado en la ruta
+  const currentTheme = PATH_THEMES[location.pathname] || null;
 
   // Animación de entrada GSAP optimizada
   useLayoutEffect(() => {
@@ -39,12 +50,12 @@ export default function NavBar() {
           duration: 0.5,
           stagger: 0.05,
           ease: "back.out(1.7)",
-          clearProps: "all" // Limpia los estilos de GSAP al terminar para evitar conflictos
+          clearProps: "all"
         }
       );
     });
     return () => ctx.revert();
-  }, [location.pathname]); // Se dispara al cambiar de ruta para asegurar visibilidad
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!isScrolled) {
@@ -88,20 +99,27 @@ export default function NavBar() {
 
   const isClean = localMode === 'clean';
 
-  // Estilos dinámicos premium con Glassmorphism
+  // Estilos dinámicos premium
   const bgClass = isDarkTheme 
     ? "bg-slate-950/80 backdrop-blur-xl border-white/5" 
-    : "bg-white/80 backdrop-blur-xl border-cyan-500/10";
+    : "bg-white/80 backdrop-blur-xl border-slate-200/50";
   
   const textClass = isDarkTheme ? "text-white" : "text-slate-900";
   
-  const accentText = isClean 
-    ? (isDarkTheme ? "text-pink-400" : "text-pink-600")
-    : (isDarkTheme ? "text-cyan-400" : "text-[#168387]");
+  // Lógica de color de acento (Prioridad: Ruta Info > Branding Mode > Default)
+  let accentStyle = { color: isDarkTheme ? "#24d4da" : "#168387" };
+  let activeBgClass = "bg-cyan-500/10";
+  let hoverLineColor = "#24d4da";
 
-  const activeLinkBg = isClean
-    ? "bg-pink-500/10"
-    : "bg-cyan-500/10";
+  if (currentTheme) {
+    accentStyle = { color: currentTheme.accent };
+    activeBgClass = currentTheme.bg;
+    hoverLineColor = currentTheme.accent;
+  } else if (isClean) {
+    accentStyle = { color: isDarkTheme ? "#f472b6" : "#db2777" }; // Rosa
+    activeBgClass = "bg-pink-500/10";
+    hoverLineColor = "#f472b6";
+  }
 
   const logoSrc = isDarkTheme 
     ? "/img/logos/logoblanco.png" 
@@ -122,81 +140,78 @@ export default function NavBar() {
       >
         <div className="w-full max-w-7xl mx-auto flex items-center justify-between h-full px-6 lg:px-10">
           
-          {/* Logo con Animación refinada */}
           <div className="shrink-0 flex items-center">
             <Link 
               to="/" 
               onClick={scrollToTop} 
               className={`
                 transition-all duration-1000 cubic-bezier(0.22, 1, 0.36, 1)
-                ${isScrolled || !isHome
-                  ? 'opacity-100 scale-100 blur-0' 
-                  : 'opacity-0 scale-95 blur-md pointer-events-none'
-                }
+                ${isScrolled || !isHome ? 'opacity-100 scale-100' : 'opacity-0 scale-95 blur-md pointer-events-none'}
               `}
             >
-              <img src={logoSrc} alt="Logo Darmax" className="h-10 md:h-11 w-auto object-contain hover:brightness-110 transition-all" />
+              <img src={logoSrc} alt="Logo Darmax" className="h-10 md:h-11 w-auto object-contain" />
             </Link>
           </div>
 
-          {/* Menú Desktop con GSAP Stagger */}
           <div className={`hidden nav:flex items-center justify-center gap-2 flex-1 px-8 ${textClass}`}>
-            {navLinks.map((link, idx) => {
+            {navLinks.map((link) => {
               const isActive = link.href === "/" ? location.pathname === "/" : location.pathname.startsWith(link.href);
               return (
                 <Link
                   key={link.href}
                   to={link.href}
                   className={`nav-link-item px-5 py-2 rounded-full font-black transition-all duration-500 text-[10px] tracking-[0.2em] uppercase whitespace-nowrap relative group ${
-                    isActive ? `${activeLinkBg} ${accentText}` : `hover:opacity-100 opacity-60`
+                    isActive ? activeBgClass : `hover:opacity-100 opacity-60`
                   }`}
+                  style={isActive ? accentStyle : {}}
                 >
                   {link.text}
-                  {/* Indicador de hover minimalista */}
                   {!isActive && (
-                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-cyan-500 transition-all duration-500 group-hover:w-1/2 opacity-50" />
+                    <span 
+                      className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] transition-all duration-500 group-hover:w-1/2 opacity-50" 
+                      style={{ backgroundColor: hoverLineColor }}
+                    />
                   )}
                 </Link>
               );
             })}
           </div>
 
-          {/* Acciones */}
           <div className={`hidden nav:flex items-center gap-6 ${textClass}`}>
-            {/* Carrito oculto por petición del usuario */}
+            <Link to={user ? "/perfil" : "/login"} className="group">
+              <UserIcon 
+                className="w-5 h-5 transition-all group-hover:scale-110 cursor-pointer" 
+                style={location.pathname === "/perfil" ? accentStyle : {}}
+              />
+            </Link>
             <button 
               onClick={() => setShowCart(true)} 
-              className="hidden relative group"
+              className="relative group"
             >
               <ShoppingBagIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-cyan-500 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-lg border border-white/20">
+                <span 
+                  className="absolute -top-1 -right-1 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-lg"
+                  style={{ backgroundColor: hoverLineColor }}
+                >
                   {totalItems}
                 </span>
               )}
             </button>
-            <Link to={user ? "/perfil" : "/login"} className="group">
-              <UserIcon className="w-5 h-5 transition-all group-hover:scale-110 group-hover:text-cyan-500 cursor-pointer" />
-            </Link>
           </div>
 
-          {/* Menú móvil trigger */}
           <div className={`flex items-center justify-end nav:hidden gap-x-5 ${textClass}`}>
-             {/* Carrito oculto en móvil también */}
-            <button onClick={() => setShowCart(true)} className="hidden relative">
-              <ShoppingBagIcon className="w-6 h-6" />
-            </button>
             <Link to={user ? "/perfil" : "/login"}>
               <UserIcon className="w-6 h-6 active:scale-90" />
             </Link>
-            <button onClick={() => setNavOpen(!navOpen)} className="p-1 hover:text-cyan-500 transition-colors">
+            <button onClick={() => setNavOpen(!navOpen)} className="p-1 transition-colors">
               {navOpen ? <XMarkIcon className="w-7 h-7" /> : <Bars3Icon className="w-7 h-7" />}
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Menú Lateral Móvil con estética Glass Dark */}
+      {/* Menú Lateral Móvil */}
       <div className={`fixed top-0 right-0 h-full w-full max-w-xs bg-slate-950/95 backdrop-blur-2xl z-[60] transform transition-transform duration-700 ease-in-out shadow-2xl border-l border-white/5 ${navOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex justify-between items-center px-8 h-20 border-b border-white/5">
           <img src="/img/logos/logoblanco.png" alt="Logo Darmax" className="h-9 w-auto object-contain" />
@@ -211,7 +226,8 @@ export default function NavBar() {
               <Link 
                 key={link.href} 
                 to={link.href} 
-                className={`px-6 py-4 rounded-2xl font-black text-[11px] tracking-[0.2em] transition-all duration-300 uppercase ${isActive ? "bg-cyan-500/10 text-cyan-400" : "text-slate-400 hover:text-white hover:bg-white/5"}`} 
+                className={`px-6 py-4 rounded-2xl font-black text-[11px] tracking-[0.2em] transition-all duration-300 uppercase ${isActive ? `${activeBgClass}` : "text-slate-400 hover:text-white hover:bg-white/5"}`} 
+                style={isActive ? accentStyle : {}}
                 onClick={() => setNavOpen(false)}
               >
                 {link.text}
