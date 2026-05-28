@@ -1,10 +1,10 @@
 // Archivo: Step4Summary.jsx
-import React from "react";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
+import { MODEL_SPECS } from "../utils/modelSpecs";
 
-const BRAND_BLUE = "#5188C9";
-const BRAND_TEAL = "#03A4A4";
+const BRAND_BLUE = "#168387"; // Usar el color corporativo
 
 /* Utilidades */
 const loadImage = (src) =>
@@ -16,12 +16,6 @@ const loadImage = (src) =>
     img.src = src;
   });
 
-function hexToRgb(hex) {
-  const s = hex.replace("#", "");
-  const n = parseInt(s, 16);
-  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
-}
-
 export default function Step4Summary({
   summaryData, // Objeto completo con model, selectedExtras, displayImage, secondaryImage
   onBack,
@@ -29,6 +23,12 @@ export default function Step4Summary({
   if (!summaryData || !summaryData.model) return null;
 
   const { model, selectedExtras, displayImage, secondaryImage, summaryString } = summaryData;
+
+  // Obtener características reales del mapeo local si existe para el slug
+  const modelData = MODEL_SPECS[model.slug] || {};
+  const realFeatures = modelData.specs || model.features || [];
+  const realRequirements = modelData.requirements || [];
+  const importantNote = modelData.note || "";
 
   const toMoney = (n) =>
     (Number(n) || 0).toLocaleString("es-MX", { minimumFractionDigits: 0 });
@@ -40,10 +40,9 @@ export default function Step4Summary({
   );
 
   const precioBaseModelo = model.basePrice ?? 0;
-
   const precioTotal = precioBaseModelo + precioExtras;
 
-  /* ====== PDF con líneas que no tocan el logo + líneas inferiores ====== */
+  /* ====== PDF con tablas y mejor formato ====== */
   const generarPDF = async () => {
     try {
       const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -56,122 +55,170 @@ export default function Step4Summary({
 
       // Dibuja cabecera/plantilla para cada página
       const addHeader = (pageNumber = 1) => {
-        // Añade la plantilla como fondo
         doc.addImage(templateImage, "PNG", 0, 0, pageW, pageH);
-
-        // Número de página (opcional, si no está en la plantilla)
-        doc.setFontSize(9);
-        doc.setTextColor("#888");
-        doc.text(`Página ${pageNumber}`, pageW / 2, pageH - 8, { align: "center" });
+        doc.setFontSize(8);
+        doc.setTextColor("#999");
+        doc.text(`Página ${pageNumber}`, pageW - 20, pageH - 8, { align: "right" });
       };
 
-      let y = 45; // Ajustar la 'y' inicial para el contenido, dejando espacio para el encabezado de la plantilla
-      const maxWidth = pageW - M * 2;
+      let y = 22; // Subir el título más para que no se encime en el cuadro gris
 
       const ensureSpace = (need = 8) => {
-        // Ajustar el límite inferior para no sobreescribir el pie de página de la plantilla
-        if (y + need > pageH - 25) { 
+        if (y + need > pageH - 30) { 
           doc.addPage();
           addHeader(doc.getNumberOfPages());
-          y = 45; // Reiniciar 'y' en la nueva página
+          y = 45; 
         }
-      };
-
-      const writeTitle = (text) => {
-        ensureSpace(12);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-        doc.setTextColor("#111");
-        doc.text(text, pageW / 2, y, { align: "center" });
-        y += 10;
-      };
-
-      const writeH2 = (text) => {
-        ensureSpace(9);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(13.5);
-        doc.setTextColor("#111");
-        doc.text(text, M, y);
-        y += 7;
-      };
-
-      const write = (text, { bold = false, size = 12 } = {}) => {
-        doc.setFont("helvetica", bold ? "bold" : "normal");
-        doc.setFontSize(size);
-        doc.setTextColor("#111");
-        const lines = doc.splitTextToSize(text, maxWidth);
-        lines.forEach((line) => {
-          ensureSpace(6);
-          doc.text(line, M, y);
-          y += 6;
-        });
-        y += 2;
-      };
-
-      const writeBullets = (items) => {
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(12);
-        items.forEach((it) => {
-          const lines = doc.splitTextToSize(`• ${it}`, maxWidth);
-          lines.forEach((line) => {
-            ensureSpace(6);
-            doc.text(line, M, y);
-            y += 6;
-          });
-          y += 2;
-        });
-        y += 2;
       };
 
       // Página 1
       addHeader(1);
 
-      writeTitle("DARMAX | Cotización");
+      // Título con salto de línea y más alto
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(26);
+      doc.setTextColor("#000");
+      doc.text("DARMAX", pageW / 2, y, { align: "center" });
+      y += 10;
+      doc.setFontSize(18);
+      doc.setTextColor("#666");
+      doc.text("Cotización de Equipo", pageW / 2, y, { align: "center" });
+      y += 15;
 
-      writeH2("Modelo seleccionado:");
-      write(`${model.name} — $${toMoney(precioBaseModelo)} MXN`, { bold: true });
-      if (model?.description) write(model.description);
+      // Info del Modelo
+      doc.setFontSize(14);
+      doc.setTextColor("#111");
+      doc.text("Modelo seleccionado:", M, y);
+      y += 7;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.setTextColor(BRAND_BLUE);
+      doc.text(`${model.name}`, M, y);
+      doc.text(`$${toMoney(precioBaseModelo)} MXN`, pageW - M, y, { align: "right" });
+      y += 8;
 
-      if (model.features && model.features.length > 0) {
-        writeH2("Características del modelo:");
-        writeBullets(model.features);
-      } 
+      if (model?.description) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor("#444");
+        const descLines = doc.splitTextToSize(model.description, pageW - M * 2);
+        doc.text(descLines, M, y);
+        y += (descLines.length * 5) + 5;
+      }
 
+      // Tabla de Especificaciones
+      if (realFeatures.length > 0) {
+        ensureSpace(20);
+        autoTable(doc, {
+          startY: y,
+          head: [[{ content: 'Especificaciones Técnicas', colSpan: 1 }]],
+          body: realFeatures.map(f => [f]),
+          theme: 'striped',
+          headStyles: { fillColor: BRAND_BLUE, textColor: 255, fontStyle: 'bold' },
+          styles: { fontSize: 9, cellPadding: 2 },
+          margin: { left: M, right: M }
+        });
+        y = doc.lastAutoTable.finalY + 10;
+      }
+
+      // Tabla de Requerimientos
+      if (realRequirements.length > 0) {
+        ensureSpace(20);
+        autoTable(doc, {
+          startY: y,
+          head: [['Requerimiento', 'Descripción']],
+          body: realRequirements.map(r => [r.title, r.desc]),
+          theme: 'grid',
+          headStyles: { fillColor: "#333", textColor: 255 },
+          styles: { fontSize: 8, cellPadding: 2 },
+          columnStyles: { 0: { fontStyle: 'bold', width: 40 } },
+          margin: { left: M, right: M }
+        });
+        y = doc.lastAutoTable.finalY + 10;
+      }
+
+      // Extras
       if (selectedExtras.length > 0) {
-          writeH2("Extras seleccionados:");
-          writeBullets(selectedExtras.map((me) => `${me.extra.name} — $${toMoney(me.priceOverride ?? me.extra.basePrice)} MXN`));
-      } else {
-          write("No seleccionaste extras.");
+          ensureSpace(20);
+          autoTable(doc, {
+            startY: y,
+            head: [['Extras Adicionales', 'Precio']],
+            body: selectedExtras.map(e => [e.extra.name, `$${toMoney(e.priceOverride ?? e.extra.basePrice)} MXN`]),
+            theme: 'plain',
+            headStyles: { textColor: "#000", fontStyle: 'bold', borderBottom: { width: 0.5, color: '#ccc' } },
+            styles: { fontSize: 9 },
+            columnStyles: { 1: { halign: 'right' } },
+            margin: { left: M, right: M }
+          });
+          y = doc.lastAutoTable.finalY + 5;
       }
-      
-      if (displayImage) {
-          ensureSpace(80);
+
+      // Resumen de Totales
+      ensureSpace(30);
+      y += 5;
+      doc.setDrawColor("#eee");
+      doc.line(M, y, pageW - M, y);
+      y += 8;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.setTextColor("#555");
+      doc.text("Subtotal Equipo:", M, y);
+      doc.text(`$${toMoney(precioBaseModelo)} MXN`, pageW - M, y, { align: "right" });
+      y += 6;
+      doc.text("Total Extras:", M, y);
+      doc.text(`$${toMoney(precioExtras)} MXN`, pageW - M, y, { align: "right" });
+      y += 8;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.setTextColor("#000");
+      doc.text("Inversión Total:", M, y);
+      doc.text(`$${toMoney(precioTotal)} MXN`, pageW - M, y, { align: "right" });
+      y += 15;
+
+      // Nota Importante
+      if (importantNote) {
+        ensureSpace(20);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor("#d97706"); // Color amber
+        doc.text("Nota Importante:", M, y);
+        y += 5;
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(9);
+        doc.setTextColor("#92400e");
+        const noteLines = doc.splitTextToSize(importantNote, pageW - M * 2);
+        doc.text(noteLines, M, y);
+        y += (noteLines.length * 4) + 10;
+      }
+
+      // Imágenes si existen
+      if (displayImage || secondaryImage) {
           try {
-            const img = await loadImage(displayImage);
-            const imgWidth = 100;
-            const imgHeight = (img.height / img.width) * imgWidth;
-            try {
-                doc.addImage(img, "JPEG", M, y, imgWidth, imgHeight);
-            } catch (addImgError) {
-                console.error("Error adding image to PDF:", addImgError);
-                write("  [Error al renderizar imagen]", { size: 9, bold: false });
+            if (displayImage) {
+                ensureSpace(80);
+                const pW = 110;
+                const pX = (pageW - pW) / 2;
+                const img1 = await loadImage(displayImage);
+                const img1H = (img1.height / img1.width) * pW;
+                doc.addImage(img1, "JPEG", pX, y, pW, img1H);
+                y += img1H + 10;
             }
-            y += imgHeight + 5;
-          } catch (imgError) {
-            console.error("Could not load image:", imgError);
-            write("  [Imagen no disponible]", { size: 9, bold: false });
-          }
+            if (secondaryImage) {
+                ensureSpace(60);
+                const sW = 70;
+                const sX = (pageW - sW) / 2;
+                const img2 = await loadImage(secondaryImage);
+                const img2H = (img2.height / img2.width) * sW;
+                doc.addImage(img2, "JPEG", sX, y, sW, img2H);
+                y += img2H + 10;
+            }
+          } catch (e) { console.error("Error cargando imágenes para PDF:", e); }
       }
 
-      writeH2("Resumen de precio:");
-      write(`Precio Base: $${toMoney(precioBaseModelo)} MXN`);
-      write(`Extras: $${toMoney(precioExtras)} MXN`);
-      write(`Total: $${toMoney(precioTotal)} MXN`, { bold: true });
-
-      doc.save("Darmax_Cotizacion.pdf");
+      doc.save(`Darmax_Cotizacion_${model.slug}.pdf`);
     } catch (error) {
       console.error("Error al generar PDF:", error);
-      toast.error("No se pudo generar el PDF. Revise la consola para más detalles.");
+      toast.error("No se pudo generar el PDF. Revise la consola.");
     }
   };
 
@@ -187,90 +234,150 @@ export default function Step4Summary({
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
-      <h2 className="text-3xl font-bold text-gray-800">Resumen de tu Configuración</h2>
+    <div className="space-y-8 max-w-5xl mx-auto pb-6">
+      <h2 className="text-3xl font-bold text-gray-800 tracking-tighter -mt-4 sm:-mt-6">Resumen de tu Configuración</h2>
 
-      <div className="p-6 border rounded-xl space-y-4">
-        <h3 className="font-semibold text-xl text-gray-800">Modelo Seleccionado</h3>
-        <p className="text-gray-700">
-          <span className="font-medium">{model.name}</span> — $
-          {toMoney(precioBaseModelo)} MXN
-        </p>
-        {model?.description && (
-          <p className="text-slate-600">{model.description}</p>
-        )}
-
-        <p className="text-sm font-medium text-gray-700 mb-2">Vistas Previas:</p>
-        <div className="flex flex-col md:flex-row gap-4">
-          {displayImage && (
-            <div className="w-full md:w-1/2">
-              <img src={displayImage} alt={model.name} className="w-full h-48 object-contain border rounded-lg p-2" />
-            </div>
-          )}
-          {secondaryImage && (
-              <div className="w-full md:w-1/2">
-                  <img src={secondaryImage} alt={`${model.name} componente adicional`} className="w-full h-48 object-contain border rounded-lg p-2" />
-              </div>
-          )}
+      <div className="p-6 sm:p-8 bg-white border border-slate-100 rounded-[2rem] shadow-xl shadow-slate-200/50 space-y-6">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+          <div>
+            <h3 className="font-black text-2xl sm:text-3xl text-slate-900 tracking-tighter">{model.name}</h3>
+            <p className="text-slate-500 font-medium mt-1 uppercase tracking-widest text-xs">Configuración Base</p>
+          </div>
+          <div className="text-left md:text-right">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Inversión Base</span>
+            <p className="text-3xl font-black text-[#168387] tracking-tighter">${toMoney(precioBaseModelo)}</p>
+          </div>
         </div>
 
-        {model.features && model.features.length > 0 && (
-          <div className="mt-6">
-            <p className="font-semibold text-gray-800 mb-2">Características:</p>
-            <ul className="list-disc pl-5 space-y-1 text-gray-700">
-              {model.features.map((c, i) => (
-                <li key={i}>{c}</li>
+        {model?.description && (
+          <p className="text-slate-600 leading-relaxed border-l-4 border-slate-100 pl-4">{model.description}</p>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-4">
+            <p className="font-bold text-slate-900 flex items-center gap-2">
+               <span className="w-1.5 h-6 bg-[#168387] rounded-full" />
+               Características Técnicas
+            </p>
+            <ul className="grid grid-cols-1 gap-2">
+              {realFeatures.map((c, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-slate-600 font-medium">
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-200 mt-1.5 shrink-0" />
+                  {c}
+                </li>
               ))}
             </ul>
+          </div>
+
+          <div className="space-y-4">
+             <p className="font-bold text-slate-900 flex items-center gap-2">
+               <span className="w-1.5 h-6 bg-slate-900 rounded-full" />
+               Vistas de Equipo
+            </p>
+            <div className="flex gap-4">
+              {displayImage && (
+                <div className="flex-1 aspect-square bg-slate-50 rounded-2xl p-4 flex items-center justify-center border border-slate-100 hover:shadow-lg transition-shadow">
+                  <img src={displayImage} alt={model.name} className="max-w-full max-h-full object-contain drop-shadow-xl" />
+                </div>
+              )}
+              {secondaryImage && (
+                  <div className="flex-1 aspect-square bg-slate-50 rounded-2xl p-4 flex items-center justify-center border border-slate-100 hover:shadow-lg transition-shadow">
+                      <img src={secondaryImage} alt="Componente" className="max-w-full max-h-full object-contain drop-shadow-xl" />
+                  </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {realRequirements.length > 0 && (
+          <div className="pt-6 border-t border-slate-50">
+            <p className="font-bold text-slate-900 mb-4 uppercase tracking-widest text-[10px]">Requerimientos de Instalación</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {realRequirements.map((r, i) => (
+                <div key={i} className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                  <p className="text-[9px] font-black text-[#168387] uppercase mb-1">{r.title}</p>
+                  <p className="text-xs font-bold text-slate-700">{r.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 p-6 bg-white border border-slate-100 rounded-[2rem] shadow-lg shadow-slate-200/50 space-y-4">
+          <h3 className="font-black text-xl text-slate-900 tracking-tighter uppercase text-sm">Extras Seleccionados</h3>
+          {selectedExtras.length > 0 ? (
+            <ul className="space-y-3">
+              {selectedExtras.map((me) => (
+                <li key={me.id} className="flex justify-between items-center p-3 hover:bg-slate-50 rounded-xl transition-colors group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-cyan-500 group-hover:scale-150 transition-transform" />
+                    <span className="text-sm font-bold text-slate-700">{me.extra.name}</span>
+                  </div>
+                  <span className="text-sm font-black text-slate-900">${toMoney(me.priceOverride ?? me.extra.basePrice)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-slate-400 text-sm italic py-4">No se han añadido componentes adicionales.</p>
+          )}
+        </div>
 
-      <div className="p-6 border rounded-xl space-y-3">
-        <h3 className="font-semibold text-xl text-gray-800">Extras Seleccionados</h3>
-        {selectedExtras.length > 0 ? (
-          <ul className="list-disc pl-5 space-y-1 text-gray-700">
-            {selectedExtras.map((me) => (
-              <li key={me.id}>
-                {me.extra.name} — ${toMoney(me.priceOverride ?? me.extra.basePrice)} MXN
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-600">No seleccionaste extras.</p>
-        )}
+        <div className="p-8 bg-slate-900 text-white rounded-[2rem] shadow-xl shadow-cyan-900/20 flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full -mr-16 -mt-16 blur-2xl" />
+          <div className="relative z-10">
+            <h3 className="font-black text-xs uppercase tracking-[0.3em] text-cyan-400 mb-6">Resumen de Inversión</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center text-sm opacity-60">
+                <span>Equipo Base</span>
+                <span className="font-bold">${toMoney(precioBaseModelo)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm opacity-60">
+                <span>Total Extras</span>
+                <span className="font-bold">${toMoney(precioExtras)}</span>
+              </div>
+              <div className="pt-4 border-t border-white/10 mt-4">
+                <span className="text-[10px] font-black uppercase tracking-widest text-cyan-500 block mb-1">Inversión Total Estimada</span>
+                <p className="text-4xl font-black tracking-tighter">${toMoney(precioTotal)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="p-6 border rounded-xl space-y-2">
-        <h3 className="font-semibold text-xl text-gray-800">Resumen de Precio</h3>
-        <p className="text-gray-700">Precio Base: ${toMoney(precioBaseModelo)} MXN</p>
-        <p className="text-gray-700">Extras: ${toMoney(precioExtras)} MXN</p>
-        <p className="font-bold text-2xl text-black">
-          Total: ${toMoney(precioTotal)} MXN
-        </p>
-      </div>
+      {importantNote && (
+        <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100 flex gap-4 items-center">
+          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+            <span className="text-amber-600 font-black">!</span>
+          </div>
+          <p className="text-sm text-amber-900 font-medium italic leading-relaxed">
+            <strong>Nota Importante:</strong> {importantNote}
+          </p>
+        </div>
+      )}
 
-      <div className="flex flex-col md:flex-row justify-between gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8">
         <button
           onClick={onBack}
-          className="bg-gray-300 text-gray-800 rounded-lg px-6 py-3 hover:bg-gray-400"
+          className="w-full md:w-auto px-10 py-4 text-slate-500 font-black uppercase tracking-widest text-xs hover:text-slate-900 transition-colors"
         >
-          ← Regresar
+          ← Regresar y Editar
         </button>
 
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
           <button
             onClick={generarPDF}
-            className="bg-black text-white rounded-lg px-6 py-3 hover:opacity-90 w-full"
+            className="group relative px-10 py-5 bg-white border-2 border-slate-900 text-slate-900 font-black rounded-2xl hover:bg-slate-900 hover:text-white transition-all duration-300 text-xs uppercase tracking-widest flex items-center justify-center gap-3 overflow-hidden"
           >
-            Descargar Cotización PDF
+            <div className="absolute inset-0 bg-slate-900 translate-y-full group-hover:translate-y-0 transition-transform duration-300 -z-10" />
+            Descargar Cotización Premium
           </button>
           <button
             onClick={enviarWhatsApp}
-            className="bg-green-500 text-white rounded-lg px-6 py-3 hover:opacity-90 w-full"
+            className="px-10 py-5 bg-[#25D366] text-white font-black rounded-2xl hover:shadow-xl hover:shadow-green-500/20 transition-all text-xs uppercase tracking-widest flex items-center justify-center gap-3"
           >
-            Enviar por WhatsApp
+            WhatsApp para Seguimiento
           </button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDownIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import { MODEL_SPECS } from "../utils/modelSpecs";
 
 const VendingTypeEnum = {
   TRADICIONAL: 'TRADICIONAL',
@@ -12,7 +13,8 @@ export default function Step2ModelDetails({ modelo, vendingType, onNext, onBack 
   const [openSection, setOpenSection] = useState(0);
 
   const precioBase = Number(modelo?.basePrice ?? 0);
-  const caracteristicas = modelo?.features || [];
+  const modelData = MODEL_SPECS[modelo?.slug];
+  const caracteristicas = modelData ? modelData.specs : (modelo?.features || []);
 
   const groupSize = Math.ceil(caracteristicas.length / 2);
   const groups = [

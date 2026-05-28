@@ -156,9 +156,9 @@ export default function WizardGeneral() {
   };
 
   return (
-    <div ref={wizardRef} className="bg-slate-50 min-h-screen">
+    <div ref={wizardRef} className="bg-slate-50 min-h-screen pt-12 sm:pt-16 pb-32">
       {/* Breadcrumbs Container más pequeño */}
-      <div className="max-w-7xl mx-auto pt-20 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto pt-2 px-4 sm:px-6">
         <div className={`bg-white/50 backdrop-blur-sm rounded-xl border border-slate-100 p-2 sm:p-3 transition-all duration-500 ${
           (step === 0 || step === 3) ? 'mb-2 sm:mb-4' : 'mb-12 sm:mb-24'
         }`}>

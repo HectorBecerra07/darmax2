@@ -116,9 +116,9 @@ export default function NavBar() {
     activeBgClass = currentTheme.bg;
     hoverLineColor = currentTheme.accent;
   } else if (isClean) {
-    accentStyle = { color: isDarkTheme ? "#f472b6" : "#db2777" }; // Rosa
-    activeBgClass = "bg-pink-500/10";
-    hoverLineColor = "#f472b6";
+    accentStyle = { color: "#e7b341" }; // Dorado/Amarillo
+    activeBgClass = "bg-[#e7b341]/10";
+    hoverLineColor = "#e7b341";
   }
 
   const logoSrc = isDarkTheme 

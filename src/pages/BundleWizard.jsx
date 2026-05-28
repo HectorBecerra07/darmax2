@@ -6,20 +6,22 @@ import toast from "react-hot-toast";
 import Step3ExtrasConfigurator from "../components/Step3ExtrasConfigurator";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { MODEL_SPECS } from "../utils/modelSpecs";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 // --- Helper Functions and Constants ---
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("es-MX", {
+const BRAND_BLUE = "#168387";
+const BRAND_TEAL = "#03A4A4";
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat("es-MX", {
     style: "currency",
     currency: "MXN",
     minimumFractionDigits: 0,
   }).format(value);
-
-// --- PDF Generation Utilities (adapted from Step4Summary) ---
-const BRAND_BLUE = "#5188C9";
-const BRAND_TEAL = "#03A4A4";
+}
 
 const loadImage = (src) =>
   new Promise((resolve, reject) => {
@@ -364,150 +366,205 @@ export default function BundleWizard() {
   }, []);
 
   const generarPDF = async () => {
-    toast.loading("Generando PDF...", { id: "pdf-toast" });
+    toast.loading("Generando tu Cotización Premium...", { id: "pdf-toast" });
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
     const M = 15;
-    let y = 45;
+    let y = 22; // Subir el título
 
     try {
         const templateImage = await loadImage("/img/Plantillas/coti_dar.jpg");
 
         const addHeader = (pageNumber = 1) => {
             doc.addImage(templateImage, "PNG", 0, 0, pageW, pageH);
-            doc.setFontSize(9);
-            doc.setTextColor("#888");
-            doc.text(`Página ${pageNumber}`, pageW / 2, pageH - 8, { align: "center" });
+            doc.setFontSize(8);
+            doc.setTextColor("#999");
+            doc.text(`Página ${pageNumber}`, pageW - 20, pageH - 8, { align: "right" });
         };
 
         const ensureSpace = (need = 8) => {
-            if (y + need > pageH - 25) {
+            if (y + need > pageH - 30) {
                 doc.addPage();
                 addHeader(doc.getNumberOfPages());
                 y = 45;
             }
         };
 
-        const writeTitle = (text) => {
-            ensureSpace(12);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(20);
-            doc.setTextColor("#111");
-            doc.text(text, pageW / 2, y, { align: "center" });
-            y += 12;
-        };
-
-        const writeH2 = (text) => {
-            ensureSpace(10);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.setTextColor(hexToRgb(BRAND_BLUE).r, hexToRgb(BRAND_BLUE).g, hexToRgb(BRAND_BLUE).b);
-            doc.text(text, M, y);
-            y += 8;
-        };
-        
-        const write = (text, { bold = false, size = 11 } = {}) => {
-            const maxWidth = pageW - M * 2;
-            doc.setFont("helvetica", bold ? "bold" : "normal");
-            doc.setFontSize(size);
-            doc.setTextColor("#333");
-            const lines = doc.splitTextToSize(text, maxWidth);
-            lines.forEach(line => {
-                ensureSpace(6);
-                doc.text(line, M, y);
-                y += 6;
-            });
-            y += 2;
-        };
-
-        const writeBullets = (items) => {
-            if (!items || items.length === 0) return;
-            const maxWidth = pageW - M * 2 - 5;
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.setTextColor("#333");
-            items.forEach(it => {
-                const lines = doc.splitTextToSize(it, maxWidth);
-                lines.forEach((line, index) => {
-                    ensureSpace(5);
-                    doc.text(index === 0 ? `• ${line}` : line, M + 5, y);
-                    y += 5;
-                });
-            });
-            y += 3;
-        };
-
-        // ====== PDF CONTENT ======
+        // ====== INICIO PDF ======
         addHeader(1);
-        writeTitle(`Cotización de Paquete: ${id}`);
+
+        // Título con salto de línea
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(26);
+        doc.setTextColor("#000");
+        doc.text("DARMAX", pageW / 2, y, { align: "center" });
+        y += 10;
+        doc.setFontSize(18);
+        doc.setTextColor("#666");
+        doc.text("Cotización de Paquete", pageW / 2, y, { align: "center" });
         y += 5;
+        doc.setFontSize(14);
+        doc.setTextColor(BRAND_BLUE);
+        doc.text(String(id), pageW / 2, y, { align: "center" });
+        y += 15;
 
         const summaryItems = steps.filter(s => s.type !== 'summary' && s.type !== 'extras');
-        let total = 0;
+        let totalVal = 0;
+        let consolidatedNotes = [];
 
         for (const item of summaryItems) {
             const model = bundleConfig[item.modelType];
             const extras = extrasConfig[item.modelType]?.selectedExtras || [];
             
             if (model) {
-                total += model.basePrice;
-                writeH2(item.title.replace(/Paso \d: /g, ''));
-                write(`${model.name} — ${formatCurrency(model.basePrice)}`, { bold: true, size: 12 });
-                if (model.description) write(model.description, { size: 10 });
-                writeBullets(model.features);
+                const modelData = MODEL_SPECS[model.slug] || {};
+                const realSpecs = modelData.specs || model.features || [];
+                const realReqs = modelData.requirements || [];
+                if (modelData.note) consolidatedNotes.push(modelData.note);
+
+                // Obtener imágenes del modelo
+                const sortedImgs = [...(model.images || [])].sort((a,b) => a.priority - b.priority);
+                const pImg = sortedImgs.find(i => !i.isSecondary) || sortedImgs[0];
+                const sImg = sortedImgs.find(i => i.isSecondary);
+
+                const itemBasePrice = (id === 'Tridente' || id === 'Megalodon') && item.modelType === 'mostrador' ? 18000 : model.basePrice;
+                totalVal += itemBasePrice;
+
+                ensureSpace(20);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(14);
+                doc.setTextColor("#111");
+                doc.text(item.title.replace(/Paso \d: /g, ''), M, y);
+                y += 7;
+                
+                doc.setFontSize(12);
+                doc.setTextColor(BRAND_BLUE);
+                doc.text(`${model.name}`, M, y);
+                doc.text(`${formatCurrency(itemBasePrice)}`, pageW - M, y, { align: "right" });
+                y += 5;
+
+                // Tablas
+                if (realSpecs.length > 0) {
+                    autoTable(doc, {
+                        startY: y,
+                        head: [[{ content: 'Especificaciones', colSpan: 1 }]],
+                        body: realSpecs.map(s => [s]),
+                        theme: 'striped',
+                        headStyles: { fillColor: BRAND_BLUE, textColor: 255 },
+                        styles: { fontSize: 8, cellPadding: 1.5 },
+                        margin: { left: M, right: M }
+                    });
+                    y = doc.lastAutoTable.finalY + 5;
+                }
+
+                // Imágenes del equipo en el Paquete
+                if (pImg || sImg) {
+                    try {
+                        if (pImg) {
+                            ensureSpace(50);
+                            const iW = 65; // Imagen principal más grande
+                            const iX = (pageW - iW) / 2;
+                            const img1 = await loadImage(pImg.url);
+                            const img1H = (img1.height / img1.width) * iW;
+                            doc.addImage(img1, "JPEG", iX, y, iW, img1H);
+                            y += img1H + 5;
+                        }
+                        if (sImg) {
+                            ensureSpace(40);
+                            const iW2 = 40; // Imagen secundaria normal
+                            const iX2 = (pageW - iW2) / 2;
+                            const img2 = await loadImage(sImg.url);
+                            const img2H = (img2.height / img2.width) * iW2;
+                            doc.addImage(img2, "JPEG", iX2, y, iW2, img2H);
+                            y += img2H + 5;
+                        }
+                    } catch(e) { console.error(e); }
+                }
+
+                // Requerimientos
+                if (realReqs.length > 0) {
+                    ensureSpace(15);
+                    autoTable(doc, {
+                        startY: y,
+                        head: [['Requerimiento Técnico', 'Detalle']],
+                        body: realReqs.map(r => [r.title, r.desc]),
+                        theme: 'grid',
+                        headStyles: { fillColor: "#444", textColor: 255 },
+                        styles: { fontSize: 7, cellPadding: 1.5 },
+                        columnStyles: { 0: { fontStyle: 'bold', width: 35 } },
+                        margin: { left: M, right: M }
+                    });
+                    y = doc.lastAutoTable.finalY + 8;
+                }
 
                 if (extras.length > 0) {
-                    write("Extras seleccionados:", { bold: true, size: 11 });
-                    const extraItems = extras.map(e => `${e.extra.name} - ${formatCurrency(e.priceOverride ?? e.extra.basePrice)}`);
-                    writeBullets(extraItems);
-                    extras.forEach(e => {
-                        total += (e.priceOverride ?? e.extra.basePrice);
+                    ensureSpace(10);
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(9);
+                    doc.setTextColor("#333");
+                    doc.text("Extras para este equipo:", M, y);
+                    y += 4;
+                    
+                    const extraItems = extras.map(e => {
+                        const p = (e.priceOverride ?? e.extra.basePrice);
+                        totalVal += p;
+                        return [e.extra.name, formatCurrency(p)];
                     });
-                }
 
-                if (model.images && model.images.length > 0) {
-                    try {
-                        const modelImage = await loadImage(model.images[0].url);
-                        const imgW = 60;
-                        const imgH = (modelImage.height / modelImage.width) * imgW;
-
-                        ensureSpace(imgH + 5);
-                        try {
-                            doc.addImage(modelImage, M, y, imgW, imgH);
-                        } catch (addImgError) {
-                            console.error("Error adding image to PDF:", addImgError);
-                            write("  [Error al renderizar imagen]", { size: 9, bold: false });
-                        }
-                        y += imgH + 5;
-                    } catch (imgError) {
-                        console.error(`Could not load image for model ${model.name}:`, imgError);
-                        write("  [Imagen no disponible]", { size: 9, bold: false });
-                    }
+                    autoTable(doc, {
+                        startY: y,
+                        body: extraItems,
+                        theme: 'plain',
+                        styles: { fontSize: 8, cellPadding: 1 },
+                        columnStyles: { 1: { halign: 'right' } },
+                        margin: { left: M + 5, right: M }
+                    });
+                    y = doc.lastAutoTable.finalY + 10;
                 }
-                y += 5;
             }
         }
 
-        ensureSpace(20);
-        doc.setLineWidth(0.5);
-        doc.setDrawColor("#ddd");
+        // Resumen Final
+        ensureSpace(40);
+        doc.setDrawColor("#ccc");
         doc.line(M, y, pageW - M, y);
         y += 10;
         
         doc.setFont("helvetica", "bold");
         doc.setFontSize(18);
-        doc.setTextColor("#111");
-        doc.text("Total del Paquete:", M, y);
-        doc.text(formatCurrency(total), pageW - M, y, { align: "right" });
-        y += 10;
+        doc.setTextColor("#000");
+        doc.text("Inversión Total del Paquete:", M, y);
+        doc.text(formatCurrency(totalVal), pageW - M, y, { align: "right" });
+        y += 15;
+
+        // Notas Consolidadas
+        const uniqueNotes = [...new Set(consolidatedNotes)];
+        if (uniqueNotes.length > 0) {
+            ensureSpace(25);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10);
+            doc.setTextColor("#d97706");
+            doc.text("Notas Importantes de Instalación:", M, y);
+            y += 5;
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(8.5);
+            doc.setTextColor("#92400e");
+            
+            uniqueNotes.forEach(note => {
+                const lines = doc.splitTextToSize(`• ${note}`, pageW - M * 2);
+                doc.text(lines, M, y);
+                y += (lines.length * 4) + 2;
+                ensureSpace(10);
+            });
+        }
         
         doc.save(`Darmax_Paquete_${id}.pdf`);
-        toast.success("PDF generado con éxito", { id: "pdf-toast" });
+        toast.success("Tu cotización ha sido generada con éxito", { id: "pdf-toast" });
 
     } catch (error) {
         console.error("Error al generar PDF:", error);
-        toast.error("No se pudo generar el PDF", { id: "pdf-toast" });
+        toast.error("Hubo un problema al generar el documento", { id: "pdf-toast" });
     }
   };
 
@@ -638,7 +695,7 @@ export default function BundleWizard() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen pt-12 sm:pt-16 pb-32">
       <Helmet>
         <title>Configurador de Paquete - Darmax</title>
         <meta name="description" content="Configura tu paquete de purificadora y vending a la medida de tus necesidades." />

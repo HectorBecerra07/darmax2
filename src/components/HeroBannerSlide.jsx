@@ -93,7 +93,7 @@ export default function HeroBannerSlide() {
       className="relative w-full h-[100svh] flex flex-col items-center justify-center overflow-hidden bg-white"
     >
       
-      {/* FONDO DINÁMICO (Video para Agua / Gradiente para Clean) */}
+      {/* FONDO DINÁMICO (Imagen bannerwater para Agua / Gradiente para Clean) */}
       <AnimatePresence mode="wait">
         {mode === 'agua' ? (
           <motion.div 
@@ -105,9 +105,11 @@ export default function HeroBannerSlide() {
             style={{ y: videoY, scale: isExiting ? 2.5 : videoScaleBase }}
             className="absolute inset-0 z-0 bg-[#f8fafc] flex items-center justify-center will-change-transform"
           >
-            <video autoPlay loop muted playsInline className="w-full h-full object-cover">
-              <source src="https://res.cloudinary.com/defkuaytw/video/upload/q_auto:best,f_auto/v1774072458/Agua_fluyendo_efecto_202603202353_ioypg7.mp4" type="video/mp4" />
-            </video>
+            <img 
+              src="/img/bannerwater.png" 
+              alt="Background Water" 
+              className="w-full h-full object-cover"
+            />
           </motion.div>
         ) : (
           <motion.div 
@@ -150,19 +152,96 @@ export default function HeroBannerSlide() {
               transition={{ duration: 0.7, ease: [0.45, 0, 0.55, 1] }}
               className="w-full h-full max-w-7xl mx-auto px-6 sm:px-16 flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-12 sm:gap-14 pb-[5vh] transform-gpu"
            >
-              <div className="w-full lg:w-1/2 flex justify-center lg:justify-start">
-                <div className={`transition-all duration-700 ease-in-out ${isScrolled ? 'opacity-0 scale-50 -translate-y-20' : 'opacity-100 scale-100 translate-y-0'}`}>
+              <div className="w-full lg:w-1/2 flex justify-center lg:justify-start pt-16 sm:pt-0">
+                <div className={`transition-all duration-700 ease-in-out ${isScrolled ? 'opacity-0 scale-50 -translate-y-10' : 'opacity-100 scale-100 translate-y-0'}`}>
                   <AnimatePresence mode="wait">
-                    <motion.img 
-                      key={mode}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.8 }}
-                      src={mode === 'agua' ? "/img/darmaxfoto.png" : "/img/LogoClean.png"} 
-                      alt={mode === 'agua' ? "Darmax Agua" : "Darmax Clean"}
-                      className="w-[160px] sm:w-[240px] md:w-[300px] lg:w-[480px] h-auto object-contain drop-shadow-2xl" 
-                    />
+                    {mode === 'agua' ? (
+                      <motion.div 
+                        key="vending-montage"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 10 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.8 }}
+                        className="flex flex-col items-center gap-6 sm:gap-10 relative"
+                      >
+                        {/* Glow de Fondo (Agua) */}
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 0.6, scale: 1 }}
+                          transition={{ delay: 1.2, duration: 1.5, ease: "easeOut" }}
+                          className="absolute top-0 bottom-0 pointer-events-none flex items-center justify-center -z-10"
+                        >
+                          <div className="w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] bg-gradient-to-tr from-[#5188C9] to-[#93C5FD] rounded-full blur-[80px] sm:blur-[100px] mix-blend-multiply opacity-70 animate-pulse" />
+                        </motion.div>
+
+                        {/* Imágenes de Vendings Inclinadas (Efecto 3D / Perspectiva) */}
+                        <div className="relative flex items-center justify-center -space-x-16 sm:-space-x-24 perspective-[1000px]">
+                          <motion.img 
+                            initial={{ rotateY: -45, x: -50, opacity: 0 }}
+                            animate={{ rotateY: -25, x: 0, opacity: 1 }}
+                            transition={{ delay: 0.3, duration: 1, ease: "easeOut" }}
+                            src="https://res.cloudinary.com/defkuaytw/image/upload/v1779689000/tradicional_atlantis_max_umqitz.png" 
+                            alt="Atlantis Tradicional Max"
+                            className="w-[140px] sm:w-[200px] md:w-[260px] lg:w-[320px] h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-10" 
+                          />
+                          <motion.img 
+                            initial={{ rotateY: 45, x: 50, opacity: 0 }}
+                            animate={{ rotateY: 25, x: 0, opacity: 1 }}
+                            transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
+                            src="https://res.cloudinary.com/defkuaytw/image/upload/v1779689000/touch_atlantis_max_a2hi0p.png" 
+                            alt="Atlantis Touch Max"
+                            className="w-[120px] sm:w-[180px] md:w-[230px] lg:w-[290px] h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-20" 
+                          />
+                        </div>
+                        {/* Logo original de la Navbar debajo (Solo en Escritorio) */}
+                        <motion.img 
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.8, duration: 0.6 }}
+                          src="/img/logos/logonegro.png" 
+                          alt="Darmax Logo"
+                          className="hidden lg:block w-[120px] sm:w-[160px] md:w-[220px] h-auto object-contain brightness-110" 
+                        />
+                      </motion.div>
+                    ) : (
+                      <motion.div 
+                        key="vending-clean-montage"
+                        initial={{ opacity: 0, y: 60 }}
+                        animate={{ opacity: 1, y: 40 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ duration: 0.8 }}
+                        className="flex flex-col items-center gap-2 sm:gap-0 lg:translate-x-8"
+                      >
+                        {/* Imágenes de Vendings de Limpieza */}
+                        <div className="flex items-center justify-center -space-x-16 sm:-space-x-24 perspective-[1000px] -translate-y-6 sm:-translate-y-8">
+                          <motion.img 
+                            initial={{ rotateY: -45, x: -50, opacity: 0 }}
+                            animate={{ rotateY: -25, x: 0, opacity: 1 }}
+                            transition={{ delay: 0.3, duration: 1, ease: "easeOut" }}
+                            src="https://res.cloudinary.com/defkuaytw/image/upload/v1779936687/8_productos_ayggvi.png" 
+                            alt="Vending Clean 8"
+                            className="w-[140px] sm:w-[200px] md:w-[260px] lg:w-[260px] h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-10" 
+                          />
+                          <motion.img 
+                            initial={{ rotateY: 45, x: 50, opacity: 0 }}
+                            animate={{ rotateY: 25, x: 0, opacity: 1 }}
+                            transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
+                            src="https://res.cloudinary.com/defkuaytw/image/upload/v1779936686/5_productos_qjhieo.png" 
+                            alt="Vending Clean 5"
+                            className="w-[120px] sm:w-[180px] md:w-[230px] lg:w-[230px] h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-20" 
+                          />
+                        </div>
+                        {/* Logo Clean debajo (Solo en Escritorio) */}
+                        <motion.img 
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.8, duration: 0.6 }}
+                          src="/img/LogoClean.png" 
+                          alt="Darmax Clean Logo"
+                          className="hidden lg:block w-[100px] sm:w-[130px] md:w-[180px] h-auto object-contain brightness-110 -mt-8 sm:-mt-12" 
+                        />
+                      </motion.div>
+                    )}
                   </AnimatePresence>
                 </div>
               </div>
@@ -186,7 +265,7 @@ export default function HeroBannerSlide() {
                         ) : (
                           <>
                             <Typewriter text="Emprende Con" /><br />
-                            <Typewriter text="Productos De Limpieza" className="text-pink-500" />
+                            <Typewriter text="Productos De Limpieza" className="text-[#e7b341]" />
                           </>
                         )}
                       </h1>
@@ -202,8 +281,8 @@ export default function HeroBannerSlide() {
                     onClick={handleCTA}
                     className="relative z-30 inline-flex items-center justify-center text-white font-extrabold py-3.5 px-8 sm:py-4 sm:px-14 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 text-[12px] sm:text-base uppercase tracking-widest shadow-xl animate-btn-pulse"
                     style={{ 
-                      backgroundColor: mode === 'agua' ? '#168387' : '#e11d48', 
-                      boxShadow: mode === 'agua' ? '0 10px 25px rgba(22, 131, 135, 0.4)' : '0 10px 25px rgba(225, 29, 72, 0.4)'
+                      backgroundColor: mode === 'agua' ? '#168387' : '#e7b341', 
+                      boxShadow: mode === 'agua' ? '0 10px 25px rgba(22, 131, 135, 0.4)' : '0 10px 25px rgba(231, 179, 65, 0.4)'
                     }}
                   >
                     <span>CONFIGURA TU {mode === 'agua' ? 'NEGOCIO' : 'NEGOCIO'}</span>
@@ -235,19 +314,19 @@ export default function HeroBannerSlide() {
         .animate-clean-bg { animation: clean-bg 12s linear infinite; width: 200%; height: 200%; left: -50%; top: -50%; }
       `}</style>
 
-      {/* CUADROS INFERIORES */}
-      <motion.div style={{ opacity: boxesOpacity, scale: boxesScale }} className="absolute bottom-6 left-0 right-0 z-30 flex justify-center px-4">
+      {/* CUADROS INFERIORES (Ocultos en móvil, visibles en escritorio) */}
+      <motion.div style={{ opacity: boxesOpacity, scale: boxesScale }} className="hidden lg:flex absolute bottom-6 left-0 right-0 z-30 justify-center px-4">
         <div className="w-full max-w-5xl bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl border border-white overflow-hidden grid grid-cols-3 divide-x divide-slate-200">
           <div className="px-2 py-4 sm:px-6 sm:py-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 transition-colors hover:bg-slate-50/50">
-            <ClockIcon className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-1000 ${mode === 'agua' ? 'text-[#168387]' : 'text-pink-500'}`} />
+            <ClockIcon className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-1000 ${mode === 'agua' ? 'text-[#168387]' : 'text-[#e7b341]'}`} />
             <p className="font-black text-slate-900 text-xs uppercase">Beneficios 24/7</p>
           </div>
           <button onClick={() => document.getElementById('agenda-llamada')?.scrollIntoView({ behavior: 'smooth' })} className="px-2 py-4 sm:px-6 sm:py-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 transition-colors hover:bg-slate-50/50">
-            <CalendarDaysIcon className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-1000 ${mode === 'agua' ? 'text-[#168387]' : 'text-pink-500'}`} />
+            <CalendarDaysIcon className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-1000 ${mode === 'agua' ? 'text-[#168387]' : 'text-[#e7b341]'}`} />
             <p className="font-black text-slate-900 text-xs uppercase">Agenda Llamada</p>
           </button>
           <a href="https://wa.me/525519655369" target="_blank" rel="noopener noreferrer" className="px-2 py-4 sm:px-6 sm:py-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 transition-colors hover:bg-slate-50/50">
-            <svg className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-1000 ${mode === 'agua' ? 'text-[#168387]' : 'text-pink-500'}`} fill="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 sm:w-6 sm:h-6 transition-colors duration-1000 ${mode === 'agua' ? 'text-[#168387]' : 'text-[#e7b341]'}`} fill="currentColor" viewBox="0 0 24 24">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.353-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.131.57-.074 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.87 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.87 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
             </svg>
             <p className="font-black text-slate-900 text-xs uppercase">WhatsApp</p>
