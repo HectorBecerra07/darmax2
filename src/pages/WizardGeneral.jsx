@@ -102,39 +102,104 @@ export default function WizardGeneral() {
     if (loadingModels) return [];
     let filteredByCategory = allModels;
     
-    if (id === "Purificadora") filteredByCategory = allModels.filter(m => m.slug.includes("Neptuno"));
-    else if (id === "Vending") filteredByCategory = allModels.filter(m => m.slug.includes("Atlantis"));
-    else if (id === "Vending-Limpieza") filteredByCategory = allModels.filter(m => m.slug === "Vending5" || m.slug === "Vending8");
-    else if (id === "Duo-Emprendedor") filteredByCategory = allModels.filter(m => m.slug.includes("duo-emprendedor"));
-    else if (id === "Tridente") filteredByCategory = allModels.filter(m => m.slug.includes("tridente"));
-    else if (id === "Megalodon") filteredByCategory = allModels.filter(m => m.slug.includes("megalodon"));
+    if (id === "Purificadora") {
+      filteredByCategory = allModels.filter(
+        (m) =>
+          m.slug.toLowerCase().includes("neptuno") ||
+          m.slug.toLowerCase().includes("poseidon") ||
+          m.slug.toLowerCase().includes("mostrador") ||
+          m.slug.toLowerCase().includes("purificadora")
+      );
+    } else if (id === "Vending") {
+      filteredByCategory = allModels.filter(
+        (m) =>
+          (m.slug.toLowerCase().includes("atlantis") || m.isAtlantis) &&
+          !m.slug.toLowerCase().includes("vending5") &&
+          !m.slug.toLowerCase().includes("vending8") &&
+          !m.slug.toLowerCase().includes("limpieza")
+      );
+    } else if (id === "Vending-Limpieza") {
+      filteredByCategory = allModels.filter(
+        (m) =>
+          m.slug.toLowerCase() === "vending5" ||
+          m.slug.toLowerCase() === "vending8" ||
+          m.slug.toLowerCase().includes("limpieza") ||
+          (m.name && m.name.toLowerCase().includes("clean"))
+      );
+    } else if (id === "Duo-Emprendedor") {
+      filteredByCategory = allModels.filter((m) => m.slug.toLowerCase().includes("duo-emprendedor"));
+    } else if (id === "Tridente") {
+      filteredByCategory = allModels.filter((m) => m.slug.toLowerCase().includes("tridente"));
+    } else if (id === "Megalodon") {
+      filteredByCategory = allModels.filter((m) => m.slug.toLowerCase().includes("megalodon"));
+    }
 
     if (id === "Vending" && vendingType) {
-      return filteredByCategory.filter(m => m.vendingType === vendingType);
+      return filteredByCategory.filter((m) => m.vendingType === vendingType);
     }
     return filteredByCategory;
   }, [id, vendingType, allModels, loadingModels]);
 
   const landingImages = useMemo(() => {
     if (loadingModels) return [];
-    let images = modelos.flatMap(m => m.images.filter(img => img.context === 'CAROUSEL' && img.url).map(img => img.url));
-    return [...new Set(images.filter(url => url && url.trim() !== ""))];
+    let images = modelos.flatMap((m) =>
+      (m.images || []).filter((img) => img.context === "CAROUSEL" && img.url).map((img) => img.url)
+    );
+    return [...new Set(images.filter((url) => url && url.trim() !== ""))];
   }, [modelos, loadingModels]);
 
   const availableVendingTypes = useMemo(() => {
     if (loadingModels) return [];
     const types = new Set();
-    allModels.forEach(m => {
+    const waterVendingModels = allModels.filter(
+      (m) =>
+        (m.slug.toLowerCase().includes("atlantis") || m.isAtlantis) &&
+        !m.slug.toLowerCase().includes("vending5") &&
+        !m.slug.toLowerCase().includes("vending8") &&
+        !m.slug.toLowerCase().includes("limpieza")
+    );
+
+    waterVendingModels.forEach((m) => {
       if (m.vendingType === VendingTypeEnum.TRADICIONAL || m.vendingType === VendingTypeEnum.TOUCH) {
         types.add(m.vendingType);
       }
     });
-    return Array.from(types);
+
+    const result = [];
+    if (types.has(VendingTypeEnum.TOUCH)) result.push(VendingTypeEnum.TOUCH);
+    if (types.has(VendingTypeEnum.TRADICIONAL)) result.push(VendingTypeEnum.TRADICIONAL);
+    return result.length > 0 ? result : [VendingTypeEnum.TOUCH, VendingTypeEnum.TRADICIONAL];
   }, [allModels, loadingModels]);
 
   const getVendingTypeImage = (type) => {
-    const model = allModels.find(m => m.vendingType === type && m.images.some(img => img.context === 'CAROUSEL'));
-    return model?.images.find(img => img.context === 'CAROUSEL')?.url || "/img/placeholder.png";
+    // Filtrar unicamente modelos de vending de agua (Atlantis) y excluir maquinas de limpieza
+    const waterVendingModels = allModels.filter(
+      (m) =>
+        (m.slug.toLowerCase().includes("atlantis") || m.isAtlantis) &&
+        !m.slug.toLowerCase().includes("vending5") &&
+        !m.slug.toLowerCase().includes("vending8") &&
+        !m.slug.toLowerCase().includes("limpieza")
+    );
+
+    const model = waterVendingModels.find(
+      (m) => m.vendingType === type && m.images && m.images.length > 0
+    );
+
+    if (model && model.images && model.images.length > 0) {
+      const secondaryImg = model.images.find((img) => img.isSecondary && img.url);
+      if (secondaryImg) return secondaryImg.url;
+
+      const carouselImg = model.images.find((img) => img.context === "CAROUSEL" && img.url);
+      if (carouselImg) return carouselImg.url;
+
+      const baseImg = model.images.find((img) => img.url);
+      if (baseImg) return baseImg.url;
+    }
+
+    if (type === VendingTypeEnum.TOUCH) {
+      return "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/1touch_heazvd.png";
+    }
+    return "https://res.cloudinary.com/defkuaytw/image/upload/v1776397327/tradicional_atlantis_hbnrfy.png";
   };
 
   if (loadingModels) {

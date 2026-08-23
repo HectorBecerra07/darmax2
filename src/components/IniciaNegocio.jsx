@@ -129,7 +129,8 @@ const getConfigurePath = (modeloId) =>
     ? `/configurar-paquete/${modeloId}`
     : `/configurar-maquina/${modeloId}`;
 
-const modelos = [
+const API_URL = import.meta.env.VITE_API_URL;
+const INITIAL_MODELOS = [
   {
     id: "Vending",
     nombre: "Máquina Vending",
@@ -187,6 +188,102 @@ const modelos = [
     rutaInfo: "/megalodon-info",
   },
 ];
+
+// Helper para calcular dinamicamente los precios "desde" mas bajos a partir de la BD
+const computeMinPrices = (dbModels, baseModelos) => {
+  if (!Array.isArray(dbModels) || dbModels.length === 0) return baseModelos;
+
+  const validModels = dbModels.filter(
+    (m) => typeof m.basePrice === "number" && m.basePrice > 0
+  );
+
+  if (validModels.length === 0) return baseModelos;
+
+  // 1. Modelos Vending de Agua (Atlantis, AtlantisTouch, etc.)
+  const vendingAguaModels = validModels.filter((m) => {
+    const slug = (m.slug || "").toLowerCase();
+    const isVendingType = m.vendingType && m.vendingType !== "NONE";
+    const notCleaning = !slug.includes("vending5") && !slug.includes("vending8");
+    return slug.includes("atlantis") || m.isAtlantis || (isVendingType && notCleaning);
+  });
+
+  // 2. Modelos Purificadora / Mostrador (Neptuno, Poseidon, etc.)
+  const purificadoraModels = validModels.filter((m) => {
+    const slug = (m.slug || "").toLowerCase();
+    return (
+      slug.includes("neptuno") ||
+      slug.includes("poseidon") ||
+      slug.includes("mostrador") ||
+      slug.includes("purificadora")
+    );
+  });
+
+  // 3. Modelos Vending de Limpieza
+  const vendingLimpiezaModels = validModels.filter((m) => {
+    const slug = (m.slug || "").toLowerCase();
+    const name = (m.name || "").toLowerCase();
+    return (
+      slug === "vending5" ||
+      slug === "vending8" ||
+      (slug.includes("vending") && !slug.includes("atlantis")) ||
+      slug.includes("limpieza") ||
+      name.includes("clean") ||
+      name.includes("limpieza")
+    );
+  });
+
+  // 4. Modelos Vending 8 (para Megalodon)
+  const vendingLimpieza8Models = validModels.filter((m) => {
+    const slug = (m.slug || "").toLowerCase();
+    return slug === "vending8" || (slug.includes("8") && slug.includes("vending"));
+  });
+
+  // Precios minimos individuales
+  const minVendingAgua = vendingAguaModels.length > 0
+    ? Math.min(...vendingAguaModels.map((m) => m.basePrice))
+    : 54950;
+
+  const minPurificadora = purificadoraModels.length > 0
+    ? Math.min(...purificadoraModels.map((m) => m.basePrice))
+    : 52950;
+
+  const minVendingLimpieza = vendingLimpiezaModels.length > 0
+    ? Math.min(...vendingLimpiezaModels.map((m) => m.basePrice))
+    : 34950;
+
+  const minVendingLimpieza8 = vendingLimpieza8Models.length > 0
+    ? Math.min(...vendingLimpieza8Models.map((m) => m.basePrice))
+    : (vendingLimpiezaModels.find((m) => (m.slug || "").toLowerCase() === "vending8")?.basePrice || 44950);
+
+  // En Tridente y Megalodon, el mostrador en paquete tiene un precio especial base de $18,000 en el configurador (BundleWizard)
+  const bundleMostradorBasePrice = 18000;
+
+  return baseModelos.map((item) => {
+    let minPrice = item.precio;
+
+    if (item.id === "Vending") {
+      minPrice = minVendingAgua;
+    } else if (item.id === "Purificadora") {
+      minPrice = minPurificadora;
+    } else if (item.id === "Vending-Limpieza") {
+      minPrice = minVendingLimpieza;
+    } else if (item.id === "Duo-Emprendedor") {
+      const directModel = validModels.find((m) => (m.slug || "").toLowerCase().includes("duo-emprendedor"));
+      minPrice = directModel ? directModel.basePrice : (minVendingAgua + minVendingLimpieza);
+    } else if (item.id === "Tridente") {
+      const directModel = validModels.find((m) => (m.slug || "").toLowerCase().includes("tridente"));
+      minPrice = directModel ? directModel.basePrice : (minVendingAgua + bundleMostradorBasePrice + minVendingLimpieza);
+    } else if (item.id === "Megalodon") {
+      const directModel = validModels.find((m) => (m.slug || "").toLowerCase().includes("megalodon"));
+      minPrice = directModel ? directModel.basePrice : (minVendingAgua + bundleMostradorBasePrice + minVendingLimpieza8);
+    }
+
+    return {
+      ...item,
+      precio: minPrice || item.precio,
+    };
+  });
+};
 
 /* =========================
    COMPONENTES UI PREMIUM
@@ -461,6 +558,25 @@ const IniciaNegocio = () => {
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
   const [compareOpen, setCompareOpen] = useState(false);
+  const [modelosData, setModelosData] = useState(INITIAL_MODELOS);
+
+  useEffect(() => {
+    const fetchDbModels = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/configurador/models`);
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setModelosData(computeMinPrices(data, INITIAL_MODELOS));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching models for IniciaNegocio:", error);
+      }
+    };
+
+    fetchDbModels();
+  }, []);
 
   const roiSceneRef = useRef(null);
 
@@ -491,7 +607,7 @@ const IniciaNegocio = () => {
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
 
-  const selectedModels = modelos.filter((m) => selected.includes(m.id));
+  const selectedModels = modelosData.filter((m) => selected.includes(m.id));
 
   return (
     <>
@@ -702,7 +818,7 @@ const IniciaNegocio = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {modelos
+              {modelosData
                 .filter((m) => !BUNDLE_IDS.has(m.id))
                 .map((modelo) => (
                   <TarjetaModelo
@@ -730,7 +846,7 @@ const IniciaNegocio = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {modelos
+              {modelosData
                 .filter((m) => BUNDLE_IDS.has(m.id))
                 .map((modelo) => (
                   <TarjetaModelo
