@@ -53,37 +53,37 @@ const VALORES = [
   {
     icon: ClipboardDocumentCheckIcon,
     t: "Disciplina",
-    d: "Orden, método y ejecución impecable para resultados consistentes.",
+    d: "Mantenemos un enfoque riguroso y ordenado en todas nuestras acciones para garantizar resultados consistentes y de calidad, impulsando la mejora continua.",
     color: "from-cyan-500 to-[#168387]"
   },
   {
     icon: ArrowTrendingUpIcon,
     t: "Constancia",
-    d: "Mejora diaria: evolución continua para estar siempre a la vanguardia.",
+    d: "Nos esforzamos día a día para superar desafíos, alcanzar nuestras metas y mantenernos en la vanguardia tecnológica del sector.",
     color: "from-[#24d4da] to-cyan-600"
   },
   {
     icon: BriefcaseIcon,
     t: "Responsabilidad",
-    d: "Compromiso real con clientes, equipo y el entorno de negocio.",
+    d: "Asumimos con seriedad nuestro compromiso con clientes, colaboradores y el medio ambiente, desarrollando soluciones que promueven un uso consciente y sostenible del agua.",
     color: "from-slate-700 to-slate-900"
   },
   {
     icon: ScaleIcon,
     t: "Integridad",
-    d: "Honestidad para construir relaciones duraderas y transparentes.",
+    d: "Actuamos con honestidad y ética, construyendo relaciones basadas en la confianza, la transparencia y el respeto mutuo.",
     color: "from-cyan-400 to-[#24d4da]"
   },
   {
     icon: UserGroupIcon,
     t: "Liderazgo",
-    d: "Inspirar con visión, innovación y ejemplo en cada proyecto.",
+    d: "Inspiramos y guiamos con visión, motivando a nuestro equipo y comunidad hacia la innovación, el éxito sostenible y la excelencia en el servicio.",
     color: "from-[#168387] to-teal-700"
   },
   {
     icon: Handshake,
     t: "Compromiso",
-    d: "Atención y soluciones que aportan valor real y medible.",
+    d: "Estamos dedicados a cumplir nuestras promesas, brindando productos y servicios de calidad que aportan valor real y duradero a quienes confían en nosotros.",
     color: "from-[#ccff00] to-lime-600"
   },
 ];
@@ -320,31 +320,42 @@ export default function Nosotros() {
               <motion.div {...fadeUp(0)} className="lg:col-span-5">
                 <span className="inline-block px-4 py-1.5 bg-white/20 text-white font-black rounded-full text-[10px] uppercase tracking-[0.2em] mb-6 border border-white/20 backdrop-blur-sm">Nuestra historia</span>
                 <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-white leading-none mb-8">El origen de Darmax</h2>
-                <div className="space-y-6 text-lg text-cyan-50 font-medium leading-relaxed">
+                <div className="space-y-6 text-base md:text-lg text-cyan-50 font-medium leading-relaxed">
                   <p>
-                    Darmax nació con un sueño claro: transformar la manera en que las personas acceden al agua y a productos esenciales, convirtiéndolos en <strong>oportunidades reales de negocio</strong>.
+                    Darmax nació con un sueño: transformar la manera en que las personas acceden al agua y a productos esenciales, creando soluciones que generen bienestar y nuevas oportunidades. Detrás de este sueño está <strong className="text-white drop-shadow-sm">Max</strong>, un joven emprendedor que, con solo 17 años, se inició en la venta de purificadores caseros y suministros para purificadoras. Su curiosidad y determinación lo llevaron a conocer a fondo el negocio, hasta descubrir el potencial de las máquinas vending de agua purificada. Fue entonces cuando comprendió que este modelo no solo resolvía una necesidad básica, sino que abría la puerta al emprendimiento local.
                   </p>
                   <p>
-                    Detrás de este proyecto está <strong className="text-white drop-shadow-sm">Max</strong>, un joven emprendedor que comenzó vendiendo purificadores caseros, hasta descubrir el potencial infinito de la automatización vending.
+                    Con los ahorros generados por su trabajo y el apoyo de su familia, adquirió su primera purificadora: <strong>DARMAX</strong>. Desde entonces, diseñar soluciones a la medida se convirtió en su filosofía, y conectar con las personas, en su mayor fortaleza. Hoy, esa visión sigue viva en cada producto y servicio de Darmax.
+                  </p>
+                  <p>
+                    Más que vender tecnología, creamos oportunidades. Impulsamos a personas a emprender, a cuidar el agua y a mejorar su entorno, con disciplina, integridad, compromiso y pasión. En Darmax creemos que, con las herramientas correctas, una sola idea puede cambiar una vida, y una vida puede transformar una comunidad.
                   </p>
                 </div>
               </motion.div>
 
               <div className="lg:col-span-7 grid sm:grid-cols-2 gap-6">
                 {[
-                  { t: "Misión", d: "Ayudarte a crecer con un negocio simple. Te acompañamos desde la elección hasta la puesta en marcha.", icon: RocketLaunchIcon },
-                  { t: "Visión", d: "Tecnología accesible para emprender 24/7. Soluciones robustas, estéticas y automatizadas.", icon: GlobeAltIcon }
+                  { 
+                    t: "Misión", 
+                    d: "Ser líderes en innovación, desarrollo, venta, distribución y mantenimiento de máquinas vending automáticas de alta calidad. En Darmax, empoderamos a emprendedores a través de modelos de negocio rentables y sostenibles. Nos comprometemos a ser un socio confiable y accesible, garantizando la satisfacción de nuestros clientes mediante un servicio excepcional, contribuyendo a mejorar la calidad de vida de las familias mexicanas al facilitar el acceso práctico a productos esenciales.", 
+                    icon: RocketLaunchIcon 
+                  },
+                  { 
+                    t: "Visión", 
+                    d: "Ser una empresa referente en tecnología de vanguardia, ofreciendo soluciones automatizadas que mejoren la vida diaria al facilitar el acceso a productos esenciales. En Darmax aspiramos a transformar comunidades mediante modelos de negocio accesibles, fomentando el emprendimiento y generando un impacto positivo basado en la innovación, responsabilidad social y la sostenibilidad, con el firme propósito de construir un México más justo, saludable y próspero.", 
+                    icon: GlobeAltIcon 
+                  }
                 ].map((card, i) => (
                   <motion.div 
                     key={i}
                     {...fadeUp(0.2 * i)}
-                    className="p-8 rounded-[2.5rem] bg-white/10 border border-white/20 backdrop-blur-md group hover:bg-white/20 transition-all shadow-xl"
+                    className="p-8 rounded-[2.5rem] bg-white/10 border border-white/20 backdrop-blur-md group hover:bg-white/20 transition-all shadow-xl flex flex-col justify-start"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-white text-[#168387] shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-xl bg-white text-[#168387] shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shrink-0">
                       <card.icon className="w-6 h-6" />
                     </div>
                     <h4 className="text-xl font-black text-white mb-3">{card.t}</h4>
-                    <p className="text-cyan-50/80 font-medium text-sm leading-relaxed">{card.d}</p>
+                    <p className="text-cyan-50/90 font-medium text-sm leading-relaxed">{card.d}</p>
                   </motion.div>
                 ))}
                 <motion.div 
