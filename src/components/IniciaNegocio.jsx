@@ -5,6 +5,9 @@ import Parallax from "parallax-js";
 import SEO from "../components/SEO";
 import Calendar from "../components/Calendar";
 import VendingPrecise3D from "../components/Vending";
+import { optimizeCloudinaryUrl } from "../utils/cloudinary";
+import { getConfiguradorModels, getCachedConfiguradorModels } from "../services/configuradorService";
+
 
 /* =========================
    ANIMACIONES Y HELPERS
@@ -134,7 +137,7 @@ const INITIAL_MODELOS = [
   {
     id: "Vending",
     nombre: "Máquina Vending",
-    imagen: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/1touch_heazvd.png",
+    imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/1touch_heazvd.png", 700),
     precio: 54950,
     descripcion:
       "Automatización total 24/7. Genera ingresos pasivos con tecnología de despacho automático y cero personal.",
@@ -143,7 +146,7 @@ const INITIAL_MODELOS = [
   {
     id: "Purificadora",
     nombre: "Mostrador Darmax",
-    imagen: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/2mostrador_iajzgl.png",
+    imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/2mostrador_iajzgl.png", 700),
     precio: 52950,
     descripcion:
       "El punto de entrada perfecto. Capacidad industrial de 600 garrafones, diseño compacto para locales comerciales.",
@@ -152,7 +155,7 @@ const INITIAL_MODELOS = [
   {
     id: "Vending-Limpieza",
     nombre: "Vending Limpieza",
-    imagen: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/3productos_dcha1t.png",
+    imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/3productos_dcha1t.png", 700),
     precio: 34950,
     descripcion:
       "Diversifica tu portafolio. Despacho automático de productos de limpieza a granel de alta demanda.",
@@ -161,8 +164,7 @@ const INITIAL_MODELOS = [
   {
     id: "Duo-Emprendedor",
     nombre: "Paquete Dúo Emprendedor",
-    imagen:
-      "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/4emprendedor_lxuzyt.png",
+    imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/4emprendedor_lxuzyt.png", 700),
     precio: 89900,
     descripcion:
       "Paquete integral que combina la venta de agua purificada con productos de limpieza a granel, maximizando tu oferta y rentabilidad en un solo espacio.",
@@ -171,8 +173,7 @@ const INITIAL_MODELOS = [
   {
     id: "Tridente",
     nombre: "Paquete Tridente",
-    imagen:
-      "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/puri3_sr1yoc.png",
+    imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/puri3_sr1yoc.png", 700),
     precio: 107900,
     descripcion:
       "Paquete completo de alto impacto que integra agua purificada, productos de limpieza y otros artículos esenciales en una solución llave en mano.",
@@ -181,7 +182,7 @@ const INITIAL_MODELOS = [
   {
     id: "Megalodon",
     nombre: "Paquete Megalodon",
-    imagen: "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/6megalodon_wd13q6.png",
+    imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/6megalodon_wd13q6.png", 700),
     precio: 117900,
     descripcion:
       "Nuestro paquete más avanzado y de mayor capacidad. La estación de vending definitiva para ubicaciones de alto tráfico.",
@@ -328,47 +329,59 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
   const isBundle = BUNDLE_IDS.has(modelo.id);
   const configurePath = getConfigurePath(modelo.id);
 
-  // Determinar el distintivo de nivel
-  const getLevelBadge = () => {
-    let label = "";
-    let bgColor = "bg-slate-900"; // Default
-    
+  // Determinar el distintivo de nivel y los estilos correspondientes de badge y borde
+  const getLevelConfig = () => {
     if (modelo.id === "Vending" || modelo.id === "Vending-Limpieza") {
-      label = "Esencial";
-      bgColor = "bg-slate-800";
+      return {
+        label: "Esencial",
+        badgeBg: "bg-blue-600 shadow-blue-600/30",
+        borderClass: "border-2 border-slate-200 hover:border-blue-500 shadow-sm hover:shadow-lg hover:shadow-blue-950/5",
+      };
     } else if (modelo.id === "Purificadora" || modelo.id === "Duo-Emprendedor") {
-      label = "Escalable";
-      bgColor = "bg-[#168387]";
+      return {
+        label: "Escalable",
+        badgeBg: "bg-[#168387] shadow-[#168387]/30",
+        borderClass: "border-2 border-slate-200 hover:border-[#168387] shadow-sm hover:shadow-lg hover:shadow-cyan-950/5",
+      };
     } else if (isBundle) {
-      label = "Ecosistema Premium";
-      bgColor = "bg-[#168387]";
+      return {
+        label: "Ecosistema Premium",
+        badgeBg: "bg-gradient-to-r from-amber-500 to-amber-600 shadow-amber-500/30",
+        borderClass: "border-2 border-slate-200 hover:border-amber-500 shadow-sm hover:shadow-lg hover:shadow-amber-950/5",
+      };
     }
 
-    if (!label) return null;
-
-    return (
-      <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-1.5 ${bgColor} text-white text-xs font-black uppercase tracking-[0.2em] rounded-full shadow-lg whitespace-nowrap`}>
-        {label}
-      </div>
-    );
+    return {
+      label: "",
+      badgeBg: "bg-slate-800",
+      borderClass: "border-2 border-slate-200 hover:border-slate-300 shadow-sm",
+    };
   };
+
+  const levelConfig = getLevelConfig();
 
   return (
     <motion.article
-      variants={fadeInUp}
+      variants={{
+        initial: { opacity: 0, y: 25 },
+        whileInView: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+      }}
+      whileHover={{ y: -8, transition: { duration: 0.25 } }}
       className={[
         "group relative flex flex-col h-full rounded-[2rem] sm:rounded-[2.5rem] bg-white p-4 sm:p-4",
-        "transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]",
-        "hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] hover:-translate-y-2",
+        "transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]",
+        "hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.12)]",
         "lg:max-w-[360px] lg:mx-auto",
-        isBundle 
-          ? "border-2 border-cyan-200/60 bg-gradient-to-b from-white to-cyan-50/30 shadow-lg shadow-cyan-900/5 hover:border-cyan-300" 
-          : "border border-slate-200 shadow-sm hover:border-slate-300",
+        levelConfig.borderClass,
         isSelected ? "ring-2 ring-[#24d4da]" : "",
       ].join(" ")}
     >
       {/* BADGE DE NIVEL */}
-      {getLevelBadge()}
+      {levelConfig.label && (
+        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-1.5 ${levelConfig.badgeBg} text-white text-xs font-black uppercase tracking-[0.2em] rounded-full shadow-lg whitespace-nowrap`}>
+          {levelConfig.label}
+        </div>
+      )}
 
       {/* IMAGEN Y CONTROL */}
       <div 
@@ -377,10 +390,10 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       >
         {!errorImagen ? (
           <motion.img
-            src={modelo.imagen}
+            src={optimizeCloudinaryUrl(modelo.imagen, 700)}
             alt={modelo.nombre}
             loading="lazy"
-            className="h-full w-full object-contain p-1 sm:p-2 transition-transform duration-1000 group-hover/img:scale-110"
+            className="h-full w-full object-contain p-1 sm:p-2 transition-transform duration-700 group-hover/img:scale-108"
             onError={() => setErrorImagen(true)}
           />
         ) : (
@@ -446,19 +459,23 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
           </div>
 
           <div className="flex flex-col gap-2 w-full">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => navigate(configurePath)}
-              className="w-full h-10 px-6 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-black uppercase tracking-widest hover:bg-[#168387] shadow-lg shadow-slate-900/10 transition-all duration-300 active:scale-[0.98]"
+              className="w-full h-10 px-6 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-black uppercase tracking-widest hover:bg-[#168387] shadow-lg shadow-slate-900/10 transition-all duration-300"
             >
               Configurar
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => navigate(modelo.rutaInfo)}
-              className="w-full h-10 px-6 rounded-xl border border-slate-200 text-slate-900 text-xs sm:text-sm font-black uppercase tracking-widest hover:border-[#168387] hover:text-[#168387] transition-all duration-300 active:scale-[0.98]"
+              className="w-full h-10 px-6 rounded-xl border border-slate-200 text-slate-900 text-xs sm:text-sm font-black uppercase tracking-widest hover:border-[#168387] hover:text-[#168387] hover:bg-slate-50 transition-all duration-300"
             >
               Conoce más
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
@@ -558,17 +575,21 @@ const IniciaNegocio = () => {
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
   const [compareOpen, setCompareOpen] = useState(false);
-  const [modelosData, setModelosData] = useState(INITIAL_MODELOS);
+  const [modelosData, setModelosData] = useState(() => {
+    const cached = getCachedConfiguradorModels();
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      return computeMinPrices(cached, INITIAL_MODELOS);
+    }
+    return INITIAL_MODELOS;
+  });
 
   useEffect(() => {
+    let isMounted = true;
     const fetchDbModels = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/configurador/models`);
-        if (response.ok) {
-          const data = await response.json();
-          if (Array.isArray(data) && data.length > 0) {
-            setModelosData(computeMinPrices(data, INITIAL_MODELOS));
-          }
+        const data = await getConfiguradorModels();
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          setModelosData(computeMinPrices(data, INITIAL_MODELOS));
         }
       } catch (error) {
         console.error("Error fetching models for IniciaNegocio:", error);
@@ -576,6 +597,9 @@ const IniciaNegocio = () => {
     };
 
     fetchDbModels();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const roiSceneRef = useRef(null);
@@ -735,7 +759,7 @@ const IniciaNegocio = () => {
 
       <section
         id="catalogo"
-        className="min-h-screen flex items-center py-16 sm:py-24 bg-[#fbfbfd] overflow-hidden"
+        className="min-h-screen flex items-center py-16 sm:py-24 bg-[#fbfbfd] overflow-hidden scroll-mt-16 sm:scroll-mt-20"
       >
         <div className="max-w-7xl mx-auto px-4 w-full">
           {/* NARRATIVA DE ENTRADA */}
@@ -755,17 +779,17 @@ const IniciaNegocio = () => {
                 Desde unidades autónomas hasta modelos híbridos. <span className="text-[#168387] font-bold">Todo diseñado para crecer contigo.</span>
               </p>
               <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-4 sm:mt-6">
-                <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-white rounded-xl border border-slate-100 shadow-sm">
-                  <div className="w-2 h-2 rounded-full bg-slate-300" />
-                  <span className="text-xs font-black text-slate-500 uppercase tracking-widest">Esencial</span>
+                <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-blue-50/80 rounded-xl border border-blue-200 shadow-sm">
+                  <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                  <span className="text-xs font-black text-blue-700 uppercase tracking-widest">Esencial</span>
                 </div>
-                <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#168387]/5 rounded-xl border border-[#168387]/10 shadow-sm">
-                  <div className="w-2 h-2 rounded-full bg-[#168387]" />
+                <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-teal-50/80 rounded-xl border border-[#168387]/30 shadow-sm">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#168387]" />
                   <span className="text-xs font-black text-[#168387] uppercase tracking-widest">Escalable</span>
                 </div>
-                <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-cyan-500/5 rounded-xl border border-cyan-500/10 shadow-sm">
-                  <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
-                  <span className="text-xs font-black text-cyan-500 uppercase tracking-widest">Ecosistema</span>
+                <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-amber-50/80 rounded-xl border border-amber-300 shadow-sm">
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="text-xs font-black text-amber-700 uppercase tracking-widest">Ecosistema Premium</span>
                 </div>
               </div>
             </div>
@@ -817,7 +841,13 @@ const IniciaNegocio = () => {
               <div className="h-px w-full bg-slate-200" />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <motion.div 
+              variants={staggerContainer}
+              initial="initial"
+              whileInView="whileInView"
+              viewport={{ once: true, amount: 0.05 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+            >
               {modelosData
                 .filter((m) => !BUNDLE_IDS.has(m.id))
                 .map((modelo) => (
@@ -829,7 +859,7 @@ const IniciaNegocio = () => {
                     onToggleSelect={toggleSelect}
                   />
                 ))}
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* GRUPO 2: ESCALA */}
@@ -845,7 +875,13 @@ const IniciaNegocio = () => {
               <div className="h-px w-full bg-[#168387]/20" />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <motion.div 
+              variants={staggerContainer}
+              initial="initial"
+              whileInView="whileInView"
+              viewport={{ once: true, amount: 0.05 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+            >
               {modelosData
                 .filter((m) => BUNDLE_IDS.has(m.id))
                 .map((modelo) => (
@@ -857,7 +893,7 @@ const IniciaNegocio = () => {
                     onToggleSelect={toggleSelect}
                   />
                 ))}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>

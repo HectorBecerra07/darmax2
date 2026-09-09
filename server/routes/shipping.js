@@ -1,11 +1,10 @@
-// server/routes/shipping.js
 import express from "express";
-import { PrismaClient } from "@prisma/client";
 import { skydropxProRequest } from "../utils/skydropx.js";
 import { sendOrderConfirmationEmail } from "./orderEmail.js";
+import prisma from "../prisma.js";
 
-const prisma = new PrismaClient();
 const router = express.Router();
+
 
 // Helper para límite de 30 caracteres (Skydropx)
 const truncate30 = (value) => {

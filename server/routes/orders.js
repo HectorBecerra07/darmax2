@@ -1,11 +1,10 @@
-// server/routes/orders.js
 import express from "express";
-import { PrismaClient } from "@prisma/client";
-import { createSkydropxLabel } from "./shipping.js"; // Importar
-import { sendOrderConfirmationEmail } from "./orderEmail.js"; // Importar
+import { createSkydropxLabel } from "./shipping.js";
+import { sendOrderConfirmationEmail } from "./orderEmail.js";
+import prisma from "../prisma.js";
 
-const prisma = new PrismaClient();
 const router = express.Router();
+
 
 /**
  * POST /api/orders/confirm

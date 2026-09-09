@@ -9,6 +9,7 @@ import { useUser } from "../context/UserContext";
 import { useFavorites } from "../context/FavoritesContext";
 import { Link } from "react-router-dom";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { getProductos, getCachedProductos } from "../services/productosService";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
@@ -87,10 +88,19 @@ const Carrito = () => {
 
   const { user } = useUser();
   const { favorites, toggleFavorite } = useFavorites();
-  const [wishlistItems, setWishlistItems] = useState([]);
-  const [loadingWishlist, setLoadingWishlist] = useState(true);
+  const [wishlistItems, setWishlistItems] = useState(() => {
+    const cached = getCachedProductos();
+    if (cached && favorites.length > 0) {
+      return cached.filter(p => favorites.includes(p.id));
+    }
+    return [];
+  });
+  const [loadingWishlist, setLoadingWishlist] = useState(() => {
+    return favorites.length > 0 && !getCachedProductos();
+  });
 
   useEffect(() => {
+    let isMounted = true;
     const fetchWishlistProducts = async () => {
       if (favorites.length === 0) {
         setWishlistItems([]);
@@ -98,20 +108,24 @@ const Carrito = () => {
         return;
       }
       try {
-        setLoadingWishlist(true);
-        const res = await fetch(`${API_URL}/api/productos`);
-        if (!res.ok) throw new Error("No se pudieron cargar los productos.");
-        const allProducts = await res.json();
-        const favoriteProducts = allProducts.filter(p => favorites.includes(p.id));
-        setWishlistItems(favoriteProducts);
+        const allProducts = await getProductos();
+        if (isMounted) {
+          const favoriteProducts = allProducts.filter(p => favorites.includes(p.id));
+          setWishlistItems(favoriteProducts);
+        }
       } catch (error) {
         console.error("Error fetching wishlist products:", error);
       } finally {
-        setLoadingWishlist(false);
+        if (isMounted) {
+          setLoadingWishlist(false);
+        }
       }
     };
 
     fetchWishlistProducts();
+    return () => {
+      isMounted = false;
+    };
   }, [favorites]);
 
   // Total SOLO productos

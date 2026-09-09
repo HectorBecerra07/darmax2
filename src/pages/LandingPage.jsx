@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
 import { Helmet } from "react-helmet-async";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import IniciaNegocio from "../components/IniciaNegocio";
 import HeroBannerSlide from "../components/HeroBannerSlide";
+import TouchModal from "../components/TouchModal";
 import { 
   BeakerIcon, 
   CircleStackIcon, 
@@ -22,6 +22,8 @@ import {
 
 gsap.registerPlugin(ScrollTrigger);
 
+const IniciaNegocio = lazy(() => import("../components/IniciaNegocio"));
+
 /* =========================================
    ANIMATION & PREMIUM HELPERS
 ========================================= */
@@ -32,11 +34,11 @@ const fadeUp = (d = 0) => ({
   transition: { duration: 0.6, delay: d, ease: "easeOut" }
 });
 
-const GSAPCounter = ({ value, suffix = "" }) => {
+const GSAPCounter = React.memo(({ value, suffix = "" }) => {
   const el = useRef();
-  const numericValue = parseInt(value.toString().replace(/[^0-9]/g, ""));
+  const numericValue = parseInt(value.toString().replace(/[^0-9]/g, "")) || 0;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(el.current, 
         { innerText: 0 }, 
@@ -50,7 +52,9 @@ const GSAPCounter = ({ value, suffix = "" }) => {
           },
           ease: "expo.out",
           onUpdate: function() {
-            el.current.innerText = Math.floor(this.targets()[0].innerText).toLocaleString() + suffix;
+            if (el.current) {
+              el.current.innerText = Math.floor(this.targets()[0].innerText).toLocaleString() + suffix;
+            }
           }
         }
       );
@@ -59,15 +63,20 @@ const GSAPCounter = ({ value, suffix = "" }) => {
   }, [numericValue, suffix]);
 
   return <span ref={el}>0{suffix}</span>;
-};
+});
 
-const MetricCard = ({ title, value, suffix, icon: Icon, delay = 0 }) => (
-  <div 
-    className="relative p-6 sm:p-8 rounded-[2.5rem] bg-white border border-cyan-100 shadow-xl shadow-cyan-900/5 group overflow-hidden"
+const MetricCard = React.memo(({ title, value, suffix, icon: Icon, delay = 0 }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 25 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.15 }}
+    transition={{ duration: 0.55, delay, ease: "easeOut" }}
+    whileHover={{ y: -6, transition: { duration: 0.25 } }}
+    className="relative p-6 sm:p-8 rounded-[2.5rem] bg-white border border-cyan-100 shadow-xl shadow-cyan-900/5 group overflow-hidden cursor-default transition-shadow hover:shadow-2xl hover:shadow-cyan-900/10"
   >
     <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-cyan-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
     <div className="relative z-10 flex flex-col items-center text-center">
-      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-4 sm:mb-6 shadow-lg shadow-cyan-600/20 group-hover:rotate-12 transition-transform">
+      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-4 sm:mb-6 shadow-lg shadow-cyan-600/20 group-hover:rotate-12 group-hover:scale-110 transition-all duration-300">
         <Icon className="w-7 h-7 sm:w-8 sm:h-8" />
       </div>
       <div className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-2">
@@ -75,8 +84,8 @@ const MetricCard = ({ title, value, suffix, icon: Icon, delay = 0 }) => (
       </div>
       <p className="text-[#168387] font-bold uppercase tracking-widest text-xs sm:text-sm">{title}</p>
     </div>
-  </div>
-);
+  </motion.div>
+));
 
 /* =========================================================
    CALCULADORA: UTILIDADES
@@ -98,7 +107,7 @@ const formatCurrency = (amount) => {
 /* =========================================================
    CALCULADORA: COMPONENTES UI
 ========================================================= */
-const CompactInput = ({ label, value, setValue, color, suffix = "", prefix = "$", icon: Icon, help }) => {
+const CompactInput = React.memo(({ label, value, setValue, color, suffix = "", prefix = "$", icon: Icon, help }) => {
   const handleChange = (e) => {
     const cleanValue = e.target.value.replace(/[^0-9.]/g, "");
     setValue(cleanValue);
@@ -134,9 +143,9 @@ const CompactInput = ({ label, value, setValue, color, suffix = "", prefix = "$"
       </div>
     </div>
   );
-};
+});
 
-const CompactSlider = ({ value, min, max, onChange, color, label }) => {
+const CompactSlider = React.memo(({ value, min, max, onChange, color, label }) => {
   const percentage = ((value - min) / (max - min)) * 100;
   return (
     <div className="w-full">
@@ -151,18 +160,18 @@ const CompactSlider = ({ value, min, max, onChange, color, label }) => {
       </div>
     </div>
   );
-};
+});
 
 /* =========================================================
    CALCULADORA: PANEL DE RESULTADOS
 ========================================================= */
-function DashboardResults({ data }) {
-  const Card = ({ title, amount, sub }) => {
-    const el = useRef();
-    const count = useRef({ value: 0 });
-    
-    useLayoutEffect(() => {
-      const targetValue = isNaN(amount) ? 0 : amount;
+const DashboardCard = React.memo(({ title, amount, sub }) => {
+  const el = useRef();
+  const count = useRef({ value: 0 });
+  
+  useEffect(() => {
+    const targetValue = isNaN(amount) ? 0 : amount;
+    const ctx = gsap.context(() => {
       gsap.to(count.current, {
         value: targetValue,
         duration: 1.5,
@@ -173,19 +182,43 @@ function DashboardResults({ data }) {
           }
         }
       });
-    }, [amount]);
+    });
+    return () => ctx.revert();
+  }, [amount]);
 
-    return (
-      <div className="p-3 sm:p-3.5 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm group hover:bg-white/10 transition-colors duration-500">
-        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/30 mb-1 group-hover:text-cyan-400/50 transition-colors">{title}</p>
-        <p className="text-base sm:text-lg font-black text-white tracking-tight leading-none">
-          <span ref={el}>{formatCurrency(amount || 0)}</span>
-        </p>
-        {sub && <p className="text-[8px] text-white/20 uppercase font-bold mt-0.5 tracking-wider">{sub}</p>}
-      </div>
-    );
-  };
+  return (
+    <div className="p-3 sm:p-3.5 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm group hover:bg-white/10 transition-colors duration-500">
+      <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/30 mb-1 group-hover:text-cyan-400/50 transition-colors">{title}</p>
+      <p className="text-base sm:text-lg font-black text-white tracking-tight leading-none">
+        <span ref={el}>{formatCurrency(amount || 0)}</span>
+      </p>
+      {sub && <p className="text-[8px] text-white/20 uppercase font-bold mt-0.5 tracking-wider">{sub}</p>}
+    </div>
+  );
+});
 
+const GSAPCurrencyCounter = React.memo(({ value }) => {
+  const el = useRef();
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.to(el.current, {
+        innerText: value || 0,
+        duration: 2,
+        snap: { innerText: 1 },
+        ease: "expo.out",
+        onUpdate: function() {
+          if (el.current) {
+            el.current.innerText = formatCurrency(Math.floor(this.targets()[0].innerText));
+          }
+        }
+      });
+    });
+    return () => ctx.revert();
+  }, [value]);
+  return <span ref={el}>$0</span>;
+});
+
+const DashboardResults = React.memo(function DashboardResults({ data }) {
   return (
     <div className="h-full bg-[#0f172a] px-5 py-6 sm:p-6 lg:p-8 flex flex-col justify-between relative overflow-hidden">
       {/* Luces de fondo dinámicas */}
@@ -204,10 +237,10 @@ function DashboardResults({ data }) {
         </div>
 
         <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
-          <Card title="Ingreso Bruto" amount={data.ingresosBrutos} sub={`${data.ventasMes} vtas/mes`} />
-          <Card title="Producción" amount={data.costosProduccion} sub="Insumos" />
-          <Card title="Gastos Fijos" amount={data.gastosFijos} sub="Operación" />
-          <Card title="Costo x Unidad" amount={data.costoUnitario} sub="Promedio" />
+          <DashboardCard title="Ingreso Bruto" amount={data.ingresosBrutos} sub={`${data.ventasMes} vtas/mes`} />
+          <DashboardCard title="Producción" amount={data.costosProduccion} sub="Insumos" />
+          <DashboardCard title="Gastos Fijos" amount={data.gastosFijos} sub="Operación" />
+          <DashboardCard title="Costo x Unidad" amount={data.costoUnitario} sub="Promedio" />
           
           {/* CONTENEDOR GARRAFON TÉCNICO */}
           <div className="col-span-2 mt-2 sm:mt-4 relative flex items-center justify-center min-h-[220px] sm:min-h-[320px] group overflow-hidden">
@@ -265,31 +298,12 @@ function DashboardResults({ data }) {
       </div>
     </div>
   );
-}
-
-const GSAPCurrencyCounter = ({ value }) => {
-  const el = useRef();
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.to(el.current, {
-        innerText: value,
-        duration: 2,
-        snap: { innerText: 1 },
-        ease: "expo.out",
-        onUpdate: function() {
-          el.current.innerText = formatCurrency(Math.floor(this.targets()[0].innerText));
-        }
-      });
-    });
-    return () => ctx.revert();
-  }, [value]);
-  return <span ref={el}>$0</span>;
-};
+});
 
 /* =========================================================
    CALCULADORA: VISTA DE AGUA
 ========================================================= */
-function AguaView({ isActive }) {
+const AguaView = React.memo(function AguaView() {
   const [precioVenta, setPrecioVenta] = useState(25);
   const [ventasDia, setVentasDia] = useState("30");
   const [diasOp, setDiasOp] = useState("28");
@@ -301,30 +315,38 @@ function AguaView({ isActive }) {
   const [otros, setOtros] = useState("0");
   const [osmosis, setOsmosis] = useState(true);
 
-  const safe = (v) => (v === "" ? 0 : Number(v));
-  const nVentasMes = safe(ventasDia) * safe(diasOp);
-  
-  // Lógica de costos unitarios
-  const costoH2OUnitario = (21 * (osmosis ? 1.25 : 1)) * (safe(costoPipa) / 10000);
-  const costoTapaUnitario = safe(costoTapa) / 1000; // Costo por pieza (tapa + liner)
-  
-  const costsProd = (costoH2OUnitario + costoTapaUnitario) * nVentasMes;
-  const costsFijos = safe(renta) + safe(luz) + safe(internet) + safe(otros);
-  const ingresos = nVentasMes * precioVenta;
-  const utilidad = ingresos - (costsProd + costsFijos);
+  const handlePrecioVentaChange = useCallback((e) => {
+    setPrecioVenta(Number(e.target.value));
+  }, []);
 
-  const results = {
-    ventasMes: nVentasMes,
-    diasActivos: diasOp,
-    ingresosBrutos: ingresos,
-    costosProduccion: costsProd,
-    gastosFijos: costsFijos,
-    utilidadMensual: utilidad,
-    utilidadAnual: utilidad * 12,
-    costoUnitario: nVentasMes > 0 ? (costsProd + costsFijos) / nVentasMes : 0
-  };
+  const handleOsmosisToggle = useCallback(() => {
+    setOsmosis((prev) => !prev);
+  }, []);
 
-  if (!isActive) return null;
+  const results = useMemo(() => {
+    const safe = (v) => (v === "" ? 0 : Number(v));
+    const nVentasMes = safe(ventasDia) * safe(diasOp);
+    
+    // Logica de costos unitarios
+    const costoH2OUnitario = (21 * (osmosis ? 1.25 : 1)) * (safe(costoPipa) / 10000);
+    const costoTapaUnitario = safe(costoTapa) / 1000;
+    
+    const costsProd = (costoH2OUnitario + costoTapaUnitario) * nVentasMes;
+    const costsFijos = safe(renta) + safe(luz) + safe(internet) + safe(otros);
+    const ingresos = nVentasMes * precioVenta;
+    const utilidad = ingresos - (costsProd + costsFijos);
+
+    return {
+      ventasMes: nVentasMes,
+      diasActivos: diasOp,
+      ingresosBrutos: ingresos,
+      costosProduccion: costsProd,
+      gastosFijos: costsFijos,
+      utilidadMensual: utilidad,
+      utilidadAnual: utilidad * 12,
+      costoUnitario: nVentasMes > 0 ? (costsProd + costsFijos) / nVentasMes : 0
+    };
+  }, [ventasDia, diasOp, osmosis, costoPipa, costoTapa, renta, luz, internet, otros, precioVenta]);
 
   return (
     <div className="flex flex-col lg:flex-row h-full">
@@ -332,7 +354,7 @@ function AguaView({ isActive }) {
       <div className="w-full lg:w-[62%] p-5 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 overflow-y-auto custom-scrollbar-thin bg-white">
         
         <div className="space-y-6 sm:space-y-8">
-          <CompactSlider label="Precio de Venta Sugerido" value={precioVenta} min={10} max={60} onChange={(e) => setPrecioVenta(Number(e.target.value))} color={CALC_BRAND.accent} />
+          <CompactSlider label="Precio de Venta Sugerido" value={precioVenta} min={10} max={60} onChange={handlePrecioVentaChange} color={CALC_BRAND.accent} />
           
           <div className="grid grid-cols-2 gap-4 sm:gap-6 bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200 shadow-inner">
             <CompactInput label="Ventas / Día" value={ventasDia} setValue={setVentasDia} color={CALC_BRAND.accent} prefix="#" icon={CurrencyDollarIcon} help="Promedio de garrafones vendidos cada 24h." />
@@ -352,7 +374,8 @@ function AguaView({ isActive }) {
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm font-black uppercase text-cyan-700 tracking-widest">Sistema de Ósmosis Inversa</span>
                 <button 
-                  onClick={() => setOsmosis(!osmosis)} 
+                  type="button"
+                  onClick={handleOsmosisToggle} 
                   className={`w-9 h-5 sm:w-10 sm:h-5.5 rounded-full transition-colors duration-300 ${osmosis ? 'bg-cyan-500 shadow-sm' : 'bg-slate-300'} relative cursor-pointer`}
                 >
                   <div className={`absolute top-0.5 sm:top-0.75 left-0.5 sm:left-0.75 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-md ${osmosis ? 'translate-x-4 sm:translate-x-4.5' : 'translate-x-0'}`} />
@@ -384,15 +407,34 @@ function AguaView({ isActive }) {
       </div>
     </div>
   );
-}
+});
 
 /* =========================================================
    PÁGINA DE LANDING PRINCIPAL
 ========================================================= */
 export default function LandingPage() {
   const [tipoCalc, setTipoCalc] = useState("agua");
-  const inicioRef = useRef(null);
-  const calculadoraRef = useRef(null);
+  const [isTouchModalOpen, setIsTouchModalOpen] = useState(false);
+
+  // Apertura inteligente sutil tras 4.5 segundos si no se ha visto en la sesion
+  useEffect(() => {
+    const hasSeenModal = sessionStorage.getItem("darmax_touch_modal_seen");
+    if (!hasSeenModal) {
+      const timer = setTimeout(() => {
+        setIsTouchModalOpen(true);
+      }, 4500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleCloseTouchModal = useCallback(() => {
+    sessionStorage.setItem("darmax_touch_modal_seen", "true");
+    setIsTouchModalOpen(false);
+  }, []);
+
+  const handleOpenTouchModal = useCallback(() => {
+    setIsTouchModalOpen(true);
+  }, []);
 
   return (
     <>
@@ -456,26 +498,32 @@ export default function LandingPage() {
 
       <main className="min-h-screen bg-white selection:bg-[#24d4da] selection:text-white">
         {/* HERO SECTION */}
-        <HeroBannerSlide />
+        <HeroBannerSlide onOpenTouchModal={handleOpenTouchModal} />
 
         {/* SECCIÓN DE AUTORIDAD */}
         <section className="py-12 sm:py-16 bg-slate-50/50 border-y border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-10">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              <MetricCard title="Equipos Instalados" value="350" suffix="+" icon={CheckBadgeIcon} delay={0.1} />
-              <MetricCard title="Negocios Rentables" value="280" suffix="+" icon={ChartBarIcon} delay={0.2} />
-              <MetricCard title="Litros Purificados" value="10" suffix="M+" icon={RocketLaunchIcon} delay={0.3} />
+              <MetricCard title="Equipos Instalados" value="350" suffix="+" icon={CheckBadgeIcon} delay={0} />
+              <MetricCard title="Negocios Rentables" value="280" suffix="+" icon={ChartBarIcon} delay={0.12} />
+              <MetricCard title="Litros Purificados" value="10" suffix="M+" icon={RocketLaunchIcon} delay={0.24} />
             </div>
           </div>
         </section>
 
-        {/* CATÁLOGO Y ROI */}
-        <div ref={inicioRef} className="scroll-mt-1">
-          <IniciaNegocio />
+        {/* CATÁLOGO Y ROI CON CARGA DIFERIDA */}
+        <div className="scroll-mt-1">
+          <Suspense fallback={
+            <div className="min-h-[400px] flex items-center justify-center bg-slate-50/50">
+              <div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          }>
+            <IniciaNegocio />
+          </Suspense>
         </div>
 
         {/* CALCULADORA INTEGRADA */}
-        <section id="calculadora-negocio" ref={calculadoraRef} className="min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-sans overflow-hidden py-12 sm:py-16">
+        <section id="calculadora-negocio" className="min-h-screen lg:min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-sans overflow-visible lg:overflow-hidden py-12 sm:py-16">
           
           <div className="max-w-[1440px] mx-auto px-0 sm:px-6 w-full flex flex-col">
             {/* Header Calculadora - HISTORIA DE ÉXITO MATEMÁTICO */}
@@ -496,12 +544,14 @@ export default function LandingPage() {
               {/* Switch de modo discreto */}
               <div className="bg-slate-200/50 p-1 rounded-xl flex shadow-inner border border-slate-200 shrink-0 mx-6 sm:mx-0">
                 <button 
+                  type="button"
                   onClick={() => setTipoCalc("agua")}
                   className={`px-5 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-black rounded-lg transition-all ${tipoCalc === "agua" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                   AGUA
                 </button>
                 <button 
+                  type="button"
                   onClick={() => setTipoCalc("limpieza")}
                   className={`px-5 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-black rounded-lg transition-all ${tipoCalc === "limpieza" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
@@ -515,7 +565,10 @@ export default function LandingPage() {
               className="w-full bg-white rounded-none sm:rounded-[3rem] shadow-2xl shadow-slate-900/10 overflow-hidden border-y sm:border border-slate-200 flex flex-col lg:h-[620px] min-h-0"
             >
               <div className="flex-1 min-h-0">
-                <AguaView isActive={tipoCalc === "agua"} />
+                {/* Contenedor persistente para no perder datos al alternar de pestana */}
+                <div className={tipoCalc === "agua" ? "h-full" : "hidden"}>
+                  <AguaView />
+                </div>
                 {tipoCalc === "limpieza" && (
                   <div className="h-full flex items-center justify-center p-8 sm:p-12 text-center animate-fade-in bg-slate-50/20">
                     <div className="space-y-6 sm:space-y-8">
@@ -537,14 +590,8 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
-
-      <style>{`
-        .custom-scrollbar-thin::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar-thin::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        @media (max-width: 1024px) {
-          #calculadora-negocio { height: auto; padding: 60px 0; overflow: visible; }
-        }
-      `}</style>
+      <TouchModal isOpen={isTouchModalOpen} onClose={handleCloseTouchModal} />
     </>
   );
 }
+

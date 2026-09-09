@@ -1,13 +1,14 @@
 import express from 'express';
-import { PrismaClient } from "@prisma/client";
+import prisma from '../prisma.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
+
 
 // GET: Obtener un MachineModel por su slug con sus relaciones
 router.get('/models/:slug', async (req, res) => {
   const { slug } = req.params;
   try {
+    res.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     const model = await prisma.machineModel.findUnique({
       where: { slug },
       include: {
@@ -43,6 +44,7 @@ router.get('/models/:slug', async (req, res) => {
 router.get('/models/:slug/extras', async (req, res) => {
     const { slug } = req.params;
     try {
+        res.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
         const model = await prisma.machineModel.findUnique({
             where: { slug },
             select: {
@@ -71,6 +73,7 @@ router.get('/models/:slug/extras', async (req, res) => {
 // GET: Obtener todos los MachineModels con sus relaciones
 router.get('/models', async (req, res) => {
   try {
+    res.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     const models = await prisma.machineModel.findMany({
       include: {
         extras: {

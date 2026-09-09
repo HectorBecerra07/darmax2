@@ -8,8 +8,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { MODEL_SPECS } from "../utils/modelSpecs";
+import { getConfiguradorModels, getCachedConfiguradorModels } from "../services/configuradorService";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
 
 // --- Helper Functions and Constants ---
 const BRAND_BLUE = "#168387";
@@ -318,8 +320,8 @@ export default function BundleWizard() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [allModels, setAllModels] = useState([]);
-  const [loadingModels, setLoadingModels] = useState(true);
+  const [allModels, setAllModels] = useState(() => getCachedConfiguradorModels() || []);
+  const [loadingModels, setLoadingModels] = useState(() => !getCachedConfiguradorModels());
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [bundleConfig, setBundleConfig] = useState({
@@ -349,20 +351,25 @@ export default function BundleWizard() {
   }, [isModalOpen, navigate]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchAllModels = async () => {
-      setLoadingModels(true);
       try {
-        const response = await fetch(`${API_URL}/api/configurador/models`);
-        if (!response.ok) throw new Error("Error al cargar modelos.");
-        const data = await response.json();
-        setAllModels(data);
+        const data = await getConfiguradorModels();
+        if (isMounted) {
+          setAllModels(data);
+        }
       } catch (error) {
         toast.error(error.message);
       } finally {
-        setLoadingModels(false);
+        if (isMounted) {
+          setLoadingModels(false);
+        }
       }
     };
     fetchAllModels();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const generarPDF = async () => {

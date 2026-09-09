@@ -1,9 +1,9 @@
 import express from "express";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import prisma from "../prisma.js";
 
 const router = express.Router();
-const prisma = new PrismaClient();
+
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;

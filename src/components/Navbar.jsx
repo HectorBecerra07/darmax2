@@ -177,33 +177,39 @@ export default function NavBar() {
             })}
           </div>
 
-          <div className={`hidden nav:flex items-center gap-6 ${textClass}`}>
-            <Link to={user ? "/perfil" : "/login"} className="group">
-              <UserIcon 
-                className="w-5 h-5 transition-all group-hover:scale-110 cursor-pointer" 
-                style={location.pathname === "/perfil" ? accentStyle : {}}
-              />
-            </Link>
-            <button 
-              onClick={() => setShowCart(true)} 
-              className="relative group"
-            >
-              <ShoppingBagIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
-              {totalItems > 0 && (
-                <span 
-                  className="absolute -top-1 -right-1 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-lg"
-                  style={{ backgroundColor: hoverLineColor }}
-                >
-                  {totalItems}
-                </span>
-              )}
-            </button>
-          </div>
+          {/* Seccion de usuario y carrito (oculto temporalmente sin borrar) */}
+          {false && (
+            <div className={`hidden nav:flex items-center gap-6 ${textClass}`}>
+              <Link to={user ? "/perfil" : "/login"} className="group">
+                <UserIcon 
+                  className="w-5 h-5 transition-all group-hover:scale-110 cursor-pointer" 
+                  style={location.pathname === "/perfil" ? accentStyle : {}}
+                />
+              </Link>
+              <button 
+                onClick={() => setShowCart(true)} 
+                className="relative group"
+              >
+                <ShoppingBagIcon className="w-5 h-5 transition-transform group-hover:scale-110" />
+                {totalItems > 0 && (
+                  <span 
+                    className="absolute -top-1 -right-1 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-lg"
+                    style={{ backgroundColor: hoverLineColor }}
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
 
           <div className={`flex items-center justify-end nav:hidden gap-x-5 ${textClass}`}>
-            <Link to={user ? "/perfil" : "/login"}>
-              <UserIcon className="w-6 h-6 active:scale-90" />
-            </Link>
+            {/* Login movil (oculto temporalmente sin borrar) */}
+            {false && (
+              <Link to={user ? "/perfil" : "/login"}>
+                <UserIcon className="w-6 h-6 active:scale-90" />
+              </Link>
+            )}
             <button onClick={() => setNavOpen(!navOpen)} className="p-1 transition-colors">
               {navOpen ? <XMarkIcon className="w-7 h-7" /> : <Bars3Icon className="w-7 h-7" />}
             </button>

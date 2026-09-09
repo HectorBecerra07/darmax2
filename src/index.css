@@ -66,6 +66,15 @@ body {
   display: none;
 }
 
+.custom-scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+
 @keyframes fadeInDown {
   from {
     opacity: 0;

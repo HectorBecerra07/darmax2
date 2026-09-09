@@ -1,11 +1,10 @@
-// server/routes/orderEmail.js
 import express from "express";
-import { PrismaClient } from "@prisma/client";
 import { sendEmail } from "../utils/mailer.js";
 import { getOrderEmailTemplate } from "../utils/templates/orderEmailTemplate.js";
+import prisma from "../prisma.js";
 
-const prisma = new PrismaClient();
 const router = express.Router();
+
 
 /**
  * 🔹 Exportable: sendOrderConfirmationEmail

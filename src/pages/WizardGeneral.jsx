@@ -10,8 +10,7 @@ import Step4Summary from "../components/Step4Summary";
 import CarouselImages from "../components/CarouselImages";
 import Breadcrumbs from "../components/Breadcrumbs";
 import toast from "react-hot-toast";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { getConfiguradorModels, getCachedConfiguradorModels } from "../services/configuradorService";
 
 const VendingTypeEnum = {
   TRADICIONAL: 'TRADICIONAL',
@@ -25,33 +24,44 @@ export default function WizardGeneral() {
   const navigate = useNavigate();
   const wizardRef = useRef(null);
 
-  // Sincronizar paso con URL
-  const step = parseInt(searchParams.get("s")) || (id === "Vending" ? 0 : 1);
+  // Sincronizar paso y tipo con URL
+  const urlType = searchParams.get("tipo")?.toUpperCase() || searchParams.get("type")?.toUpperCase();
+  const validUrlType = (urlType === 'TOUCH' || urlType === 'TRADICIONAL') ? urlType : null;
+
+  const step = parseInt(searchParams.get("s")) || (id === "Vending" ? (validUrlType ? 1 : 0) : 1);
   
-  const [vendingType, setVendingType] = useState(id !== "Vending" ? VendingTypeEnum.NONE : null);
+  const [vendingType, setVendingType] = useState(
+    id !== "Vending" ? VendingTypeEnum.NONE : (validUrlType || null)
+  );
   const [selectedModel, setSelectedModel] = useState(null);
   const [extrasPrice, setExtrasPrice] = useState(0);
   const [summaryData, setSummaryData] = useState(null);
 
-  const [allModels, setAllModels] = useState([]);
-  const [loadingModels, setLoadingModels] = useState(true);
+  const [allModels, setAllModels] = useState(() => getCachedConfiguradorModels() || []);
+  const [loadingModels, setLoadingModels] = useState(() => !getCachedConfiguradorModels());
 
-  // Fetch all models
+  // Fetch all models con cache en memoria
   useEffect(() => {
-    const fetchAllModels = async () => {
+    let isMounted = true;
+    const loadModels = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/configurador/models`);
-        if (!response.ok) throw new Error("Error al cargar todos los modelos.");
-        const data = await response.json();
-        setAllModels(data);
+        const data = await getConfiguradorModels();
+        if (isMounted) {
+          setAllModels(data);
+        }
       } catch (error) {
         console.error("Failed to fetch all models:", error);
         toast.error("Error al cargar los modelos de máquinas.");
       } finally {
-        setLoadingModels(false);
+        if (isMounted) {
+          setLoadingModels(false);
+        }
       }
     };
-    fetchAllModels();
+    loadModels();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Efecto para manejar el scroll al cambiar de paso
@@ -221,12 +231,10 @@ export default function WizardGeneral() {
   };
 
   return (
-    <div ref={wizardRef} className="bg-slate-50 min-h-screen pt-12 sm:pt-16 pb-32">
-      {/* Breadcrumbs Container más pequeño */}
-      <div className="max-w-7xl mx-auto pt-2 px-4 sm:px-6">
-        <div className={`bg-white/50 backdrop-blur-sm rounded-xl border border-slate-100 p-2 sm:p-3 transition-all duration-500 ${
-          (step === 0 || step === 3) ? 'mb-2 sm:mb-4' : 'mb-12 sm:mb-24'
-        }`}>
+    <div ref={wizardRef} className="bg-slate-50 min-h-screen pt-20 sm:pt-24 lg:pt-28 pb-32">
+      {/* NAVEGACIÓN Y BREADCRUMBS ADAPTADOS */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 sm:mb-8">
+        <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-4">
           <Breadcrumbs
             steps={breadcrumbSteps}
             currentStepIndex={actualBreadcrumbStepIndex}
@@ -236,6 +244,14 @@ export default function WizardGeneral() {
               setStep((id === "Vending") ? newStep : (newStep + 1));
             }}
           />
+
+          {/* Indicador de progreso para escritorio y tablet */}
+          <div className="hidden sm:flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200/80 shadow-2xs">
+            <span>Paso</span>
+            <span className="text-[#168387] font-black">{Math.min(actualBreadcrumbStepIndex, breadcrumbSteps.length - 1)}</span>
+            <span>de</span>
+            <span>{breadcrumbSteps.length - 1}</span>
+          </div>
         </div>
       </div>
 
@@ -273,6 +289,7 @@ export default function WizardGeneral() {
                   <Step1SelectModel
                     modelos={modelos}
                     vendingType={vendingType}
+                    categoryId={id}
                     onSelect={setSelectedModel}
                     onNext={nextStep}
                   />

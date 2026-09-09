@@ -17,6 +17,7 @@ import {
   FaHeart,
 } from "react-icons/fa";
 import { useFavorites } from "../context/FavoritesContext";
+import { getProductos, getCachedProductos } from "../services/productosService";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CATEGORIA_PURIFICADORES = "PurificadoresCaseros";
@@ -262,11 +263,11 @@ function ProductCard({ p, stockEfectivo, badge, onVerMas, onAgregar, onQuickView
 }
 
 export default function Productos() {
-  const [productos, setProductos] = useState([]);
+  const [productos, setProductos] = useState(() => getCachedProductos() || []);
   const [categoriaActiva, setCategoriaActiva] = useState("Todas");
   const navigate = useNavigate();
   const [paginaActual, setPaginaActual] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !getCachedProductos());
   const [modalImage, setModalImage] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -281,20 +282,25 @@ export default function Productos() {
   const { agregarProducto, carrito } = useCarrito();
 
   useEffect(() => {
+    let isMounted = true;
     const fetchProductos = async () => {
       try {
-        setLoading(true);
-        const res = await fetch(`${API_URL}/api/productos`);
-        if (!res.ok) throw new Error("No se pudieron cargar los productos.");
-        const data = await res.json();
-        setProductos(data);
+        const data = await getProductos();
+        if (isMounted) {
+          setProductos(data);
+        }
       } catch (error) {
         toast.error(error.message);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
     fetchProductos();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const productosVisibles = useMemo(

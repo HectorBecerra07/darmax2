@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCarrito } from "../context/CarritoContext";
 import toast from "react-hot-toast";
+import { getProductos, getCachedProductos } from "../services/productosService";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const CATEGORIA_PURIFICADORES = "PurificadoresCaseros";
@@ -58,8 +59,24 @@ export default function PurificadoresCaseros() {
   const navigate = useNavigate();
   const { agregarProducto, carrito } = useCarrito();
 
-  const [purificadores, setPurificadores] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const filterPurificadores = (list) => {
+    if (!Array.isArray(list)) return [];
+    let filtrados = list.filter(
+      (p) => normaliza(p.categoria?.nombre) === normaliza(CATEGORIA_PURIFICADORES)
+    );
+    if (filtrados.length === 0) {
+      filtrados = list.filter((p) =>
+        normaliza(p.categoria?.nombre).includes("purificador")
+      );
+    }
+    return filtrados;
+  };
+
+  const [purificadores, setPurificadores] = useState(() => {
+    const cached = getCachedProductos();
+    return cached ? filterPurificadores(cached) : [];
+  });
+  const [loading, setLoading] = useState(() => !getCachedProductos());
 
   // Calculadora de ahorro
   const [garrafonesPorSemana, setGarrafonesPorSemana] = useState(3);
@@ -68,32 +85,26 @@ export default function PurificadoresCaseros() {
   const [costoEquipo, setCostoEquipo] = useState(3500);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchPurificadores = async () => {
-      setLoading(true);
       try {
-        const res = await fetch(`${API_URL}/api/productos`);
-        if (!res.ok) throw new Error("No se pudieron cargar los productos.");
-
-        const productosGuardados = await res.json();
-
-        let filtrados = productosGuardados.filter(
-          (p) => normaliza(p.categoria?.nombre) === normaliza(CATEGORIA_PURIFICADORES)
-        );
-
-        if (filtrados.length === 0) {
-          filtrados = productosGuardados.filter((p) =>
-            normaliza(p.categoria?.nombre).includes("purificador")
-          );
+        const productosGuardados = await getProductos();
+        if (isMounted) {
+          setPurificadores(filterPurificadores(productosGuardados));
         }
-        setPurificadores(filtrados);
       } catch (error) {
         toast.error(error.message);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchPurificadores();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleAgregar = (producto) => {

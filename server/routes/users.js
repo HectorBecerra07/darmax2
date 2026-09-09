@@ -1,14 +1,14 @@
 import express from "express";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendEmail } from "../utils/mailer.js";
 import { getVerificationEmailTemplate, getResetPasswordEmailTemplate } from "../utils/templates/authEmailTemplates.js";
 import authMiddleware from "../middleware/auth.js";
+import prisma from "../prisma.js";
 
 const router = express.Router();
-const prisma = new PrismaClient();
+
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 // --- USER PROFILE ROUTES ---

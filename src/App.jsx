@@ -109,7 +109,7 @@ function AppContent() {
         {isLoggingOut && <GoodbyeScreen name={loggedOutUserName} />}
       </AnimatePresence>
       <ScrollToTop />
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence initial={false}>
         <Suspense fallback={<PageLoader />}>
           <Routes location={location} key={location.pathname}>
             {/* ADMIN SIN LAYOUT */}

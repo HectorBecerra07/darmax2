@@ -1,15 +1,13 @@
-import * as React from 'react';
-import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronRightIcon, HomeIcon } from "@heroicons/react/20/solid";
 
 /**
- * Componente Breadcrumbs para la navegación por pasos.
- * Muestra el paso actual y los pasos anteriores como enlaces clicables.
- * Los pasos futuros no se renderizan.
+ * Componente Breadcrumbs optimizado para móvil y escritorio.
+ * Muestra el camino de navegación en una cápsula moderna,
+ * con soporte táctil, espaciado equilibrado y alta legibilidad.
  */
-export default function Breadcrumbs({ steps, currentStepIndex, onStepClick }) {
+export default function Breadcrumbs({ steps = [], currentStepIndex = 0, onStepClick }) {
   const navigate = useNavigate();
 
   const handleLinkClick = (event, path, index) => {
@@ -22,43 +20,49 @@ export default function Breadcrumbs({ steps, currentStepIndex, onStepClick }) {
   };
 
   return (
-    <div role="presentation" className="flex items-center w-full overflow-x-auto no-scrollbar scroll-smooth">
-      <MuiBreadcrumbs 
-        aria-label="breadcrumb"
-        separator={<span className="text-slate-300 mx-0.5 text-[7px] sm:text-[10px]">/</span>}
-        className="flex-nowrap whitespace-nowrap min-w-max px-0.5"
-      >
+    <nav 
+      aria-label="Ruta de navegación" 
+      className="inline-flex items-center max-w-full overflow-x-auto no-scrollbar scroll-smooth"
+    >
+      <ol className="inline-flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-white/90 backdrop-blur-md rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xs">
         {steps.map((step, index) => {
           if (index > currentStepIndex) return null;
 
           const isLast = index === currentStepIndex;
-
-          if (isLast) {
-            return (
-              <Typography 
-                key={step.label} 
-                className="text-[#168387] font-black text-[7px] sm:text-[10px] tracking-[0.05em] sm:tracking-[0.2em] uppercase"
-              >
-                {step.label}
-              </Typography>
-            );
-          }
+          const isFirst = index === 0;
 
           return (
-            <Link
-              key={step.label}
-              underline="none"
-              color="inherit"
-              href={step.path || "#"}
-              onClick={(e) => handleLinkClick(e, step.path, index)}
-              className="text-slate-400 hover:text-slate-900 font-black text-[7px] sm:text-[10px] tracking-[0.05em] sm:tracking-[0.2em] uppercase transition-colors"
-            >
-              {step.label}
-            </Link>
+            <li key={step.label} className="inline-flex items-center">
+              {!isFirst && (
+                <ChevronRightIcon 
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-300 mx-0.5 sm:mx-1 shrink-0" 
+                  aria-hidden="true" 
+                />
+              )}
+
+              {isLast ? (
+                <span 
+                  className="inline-flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl bg-[#168387]/10 text-[#168387] font-black text-[11px] sm:text-xs uppercase tracking-wider whitespace-nowrap"
+                  aria-current="page"
+                >
+                  {isFirst && <HomeIcon className="w-3.5 h-3.5 shrink-0" />}
+                  {step.label}
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => handleLinkClick(e, step.path, index)}
+                  className="inline-flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100/80 font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer"
+                >
+                  {isFirst && <HomeIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />}
+                  {step.label}
+                </button>
+              )}
+            </li>
           );
         })}
-      </MuiBreadcrumbs>
-    </div>
+      </ol>
+    </nav>
   );
 }
 

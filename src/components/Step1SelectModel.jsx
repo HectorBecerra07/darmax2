@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ChevronRightIcon } from "@heroicons/react/24/outline";
+import { ChevronRightIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 
 const VendingTypeEnum = {
   TRADICIONAL: 'TRADICIONAL',
@@ -8,7 +8,9 @@ const VendingTypeEnum = {
   NONE: 'NONE',
 };
 
-export default function Step1SelectModel({ modelos, vendingType, onSelect, onNext }) {
+export default function Step1SelectModel({ modelos, vendingType, categoryId, onSelect, onNext }) {
+  const isVending = categoryId === "Vending" || vendingType === VendingTypeEnum.TOUCH || vendingType === VendingTypeEnum.TRADICIONAL;
+
   const handleClick = (modelo) => {
     onSelect(modelo);
     onNext();
@@ -30,7 +32,7 @@ export default function Step1SelectModel({ modelos, vendingType, onSelect, onNex
   };
 
   return (
-    <div className="space-y-6 sm:space-y-10">
+    <div className="space-y-6 sm:space-y-8">
       <div className="text-center space-y-2">
         <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight px-2">
           Elige tu modelo <br className="sm:hidden" />
@@ -44,6 +46,26 @@ export default function Step1SelectModel({ modelos, vendingType, onSelect, onNex
           Selecciona la base tecnológica que impulsará tu negocio. Cada modelo está diseñado para máxima eficiencia.
         </p>
       </div>
+
+      {/* NOTA IMPORTANTE PARA VENDING: DUREZA EN PPM */}
+      {isVending && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="max-w-2xl mx-auto p-3.5 sm:p-4 bg-amber-50/90 border border-amber-200/90 rounded-2xl flex items-start sm:items-center gap-3 shadow-sm text-left"
+        >
+          <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+            <InformationCircleIcon className="w-5 h-5" />
+          </div>
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+            <strong className="font-black text-amber-700 uppercase tracking-wider text-[11px] sm:text-xs mr-1">
+              Importante:
+            </strong>
+            Consulta la dureza en ppm (partes por millón) de tu estado para identificar tu modelo ideal.
+          </p>
+        </motion.div>
+      )}
 
       <motion.div 
         variants={containerVariants}
