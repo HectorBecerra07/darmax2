@@ -3,9 +3,30 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import Sitemap from 'vite-plugin-sitemap';
 
+const versionPlugin = () => {
+  const buildTime = Date.now().toString();
+  return {
+    name: 'version-plugin',
+    generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'version.json',
+        source: JSON.stringify({ version: buildTime }),
+      });
+    },
+    transformIndexHtml(html) {
+      return html.replace(
+        '</head>',
+        `  <meta name="build-version" content="${buildTime}" />\n  </head>`
+      );
+    },
+  };
+};
+
 export default defineConfig({
   plugins: [
     react(),
+    versionPlugin(),
     Sitemap({
       hostname: 'https://darmaxagua.com.mx',
       dynamicRoutes: [

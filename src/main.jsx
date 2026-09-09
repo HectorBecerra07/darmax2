@@ -7,7 +7,10 @@ import App from "./App";
 import { CarritoProvider } from "./context/CarritoContext";
 import { UserProvider } from "./context/UserContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
+import { initVersionChecker } from "./utils/versionCheck";
 import "./index.css";
+
+initVersionChecker();
 
 const RECAPTCHA_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
