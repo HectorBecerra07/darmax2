@@ -27,3 +27,4 @@ dist-ssr
 .netlify
 
 /src/generated/prisma
+dist/
