@@ -23,16 +23,21 @@ import {
 gsap.registerPlugin(ScrollTrigger);
 
 const IniciaNegocio = lazy(() => import("../components/IniciaNegocio"));
+import usePacedScroll from "../hooks/usePacedScroll";
 
 /* =========================================
    ANIMATION & PREMIUM HELPERS
 ========================================= */
-const fadeUp = (d = 0) => ({
-  initial: { opacity: 0, y: 20 },
+const revealUp = (d = 0) => ({
+  initial: { opacity: 0, y: 16 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.1 },
-  transition: { duration: 0.6, delay: d, ease: "easeOut" }
+  viewport: { once: true, amount: 0.08 },
+  transition: { duration: 0.42, delay: d, ease: [0.16, 1, 0.3, 1] }
 });
+
+const fadeUp = (d = 0) => revealUp(d);
+const slideInLeft = (d = 0) => revealUp(d);
+const slideInRight = (d = 0) => revealUp(d);
 
 const GSAPCounter = React.memo(({ value, suffix = "" }) => {
   const el = useRef();
@@ -413,6 +418,7 @@ const AguaView = React.memo(function AguaView() {
    PÁGINA DE LANDING PRINCIPAL
 ========================================================= */
 export default function LandingPage() {
+  usePacedScroll({ speed: 0.75, damping: 0.09 });
   const [tipoCalc, setTipoCalc] = useState("agua");
   const [isTouchModalOpen, setIsTouchModalOpen] = useState(false);
 
@@ -504,7 +510,7 @@ export default function LandingPage() {
         </script>
       </Helmet>
 
-      <main className="min-h-screen bg-white selection:bg-[#24d4da] selection:text-white">
+      <main className="relative min-h-screen bg-white selection:bg-[#24d4da] selection:text-white overflow-x-hidden">
         {/* HERO SECTION */}
         <HeroBannerSlide onOpenTouchModal={handleOpenTouchModal} />
 
@@ -531,12 +537,12 @@ export default function LandingPage() {
         </div>
 
         {/* CALCULADORA INTEGRADA */}
-        <section id="calculadora-negocio" className="min-h-screen lg:min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-sans overflow-visible lg:overflow-hidden py-12 sm:py-16">
+        <section id="calculadora-negocio" className="min-h-screen lg:min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-sans overflow-hidden py-12 sm:py-16">
           
           <div className="max-w-[1440px] mx-auto px-0 sm:px-6 w-full flex flex-col">
             {/* Header Calculadora - HISTORIA DE ÉXITO MATEMÁTICO */}
             <motion.div 
-              {...fadeUp(0)}
+              {...slideInRight(0, "Tu éxito, es matemática pura.")}
               className="w-full mb-6 sm:mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 px-6 sm:px-0"
             >
               <div className="max-w-3xl text-left">
@@ -569,7 +575,7 @@ export default function LandingPage() {
             </motion.div>
 
             <motion.div 
-              {...fadeUp(0.2)}
+              {...slideInRight(0.04)}
               className="w-full bg-white rounded-none sm:rounded-[3rem] shadow-2xl shadow-slate-900/10 overflow-hidden border-y sm:border border-slate-200 flex flex-col lg:h-[620px] min-h-0"
             >
               <div className="flex-1 min-h-0">
@@ -591,10 +597,13 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            <div className="mt-6 sm:mt-8 flex items-center gap-3 text-xs sm:text-sm text-slate-400 font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-70 shrink-0 px-6 sm:px-0">
+            <motion.div 
+              {...slideInRight(0.06)}
+              className="mt-6 sm:mt-8 flex items-center gap-3 text-xs sm:text-sm text-slate-400 font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-70 shrink-0 px-6 sm:px-0"
+            >
               <InformationCircleIcon className="w-5 h-5 shrink-0" style={{ color: CALC_BRAND.accentDark }} />
               <span>Valores sugeridos basados en el mercado mexicano actual</span>
-            </div>
+            </motion.div>
           </div>
         </section>
       </main>

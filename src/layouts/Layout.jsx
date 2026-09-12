@@ -18,11 +18,11 @@ const Layout = ({ children }) => {
     );
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-gray-800 overflow-x-hidden">
+    <div className="relative flex flex-col min-h-screen bg-white text-gray-800 overflow-x-hidden">
       <Navbar /> {/* Render original Navbar */}
       {/* <NewNavbar /> */} {/* Commented out new Navbar */}
       {/* Eliminamos el padding superior para que el contenido empiece desde arriba (detrás de la Navbar transparente) */}
-      <main className="flex-1">{children}</main>
+      <main className="relative flex-1">{children}</main>
       {!hideFooter && <Footer />}
     </div>
   );

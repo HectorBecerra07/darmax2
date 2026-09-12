@@ -7,12 +7,45 @@ import { MODEL_SPECS } from "../utils/modelSpecs";
 const BRAND_BLUE = "#168387"; // Usar el color corporativo
 
 /* Utilidades */
-const loadImage = (src) =>
+const loadImageAsDataUrl = (src, maxDim = 1200, quality = 0.8) =>
   new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = reject;
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        let { naturalWidth: width, naturalHeight: height } = img;
+        if (!width || !height) {
+          width = img.width || 800;
+          height = img.height || 600;
+        }
+
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+
+        // Fondo blanco para manejar transparencias y evitar fondo negro en JPEG
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve({ dataUrl, width, height });
+      } catch (err) {
+        reject(err);
+      }
+    };
+    img.onerror = (err) => reject(err);
     img.src = src;
   });
 
@@ -50,12 +83,19 @@ export default function Step4Summary({
       const pageH = doc.internal.pageSize.getHeight();
       const M = 15;
 
-      // Carga la plantilla de fondo
-      const templateImage = await loadImage("/img/Plantillas/coti_dar.jpg");
+      // Carga la plantilla de fondo comprimida y optimizada
+      let templateData = null;
+      try {
+        templateData = await loadImageAsDataUrl("/img/Plantillas/coti_dar.jpg", 1200, 0.75);
+      } catch (err) {
+        console.warn("No se pudo cargar la plantilla de fondo para el PDF:", err);
+      }
 
-      // Dibuja cabecera/plantilla para cada página
+      // Dibuja cabecera/plantilla para cada pagina reutilizando el recurso bg_template
       const addHeader = (pageNumber = 1) => {
-        doc.addImage(templateImage, "PNG", 0, 0, pageW, pageH);
+        if (templateData?.dataUrl) {
+          doc.addImage(templateData.dataUrl, "JPEG", 0, 0, pageW, pageH, "bg_template", "FAST");
+        }
         doc.setFontSize(8);
         doc.setTextColor("#999");
         doc.text(`Página ${pageNumber}`, pageW - 20, pageH - 8, { align: "right" });
@@ -193,29 +233,36 @@ export default function Step4Summary({
 
       // Imágenes si existen
       if (displayImage || secondaryImage) {
+        if (displayImage) {
           try {
-            if (displayImage) {
-                ensureSpace(80);
-                const pW = 110;
-                const pX = (pageW - pW) / 2;
-                const img1 = await loadImage(displayImage);
-                const img1H = (img1.height / img1.width) * pW;
-                doc.addImage(img1, "JPEG", pX, y, pW, img1H);
-                y += img1H + 10;
-            }
-            if (secondaryImage) {
-                ensureSpace(60);
-                const sW = 70;
-                const sX = (pageW - sW) / 2;
-                const img2 = await loadImage(secondaryImage);
-                const img2H = (img2.height / img2.width) * sW;
-                doc.addImage(img2, "JPEG", sX, y, sW, img2H);
-                y += img2H + 10;
-            }
-          } catch (e) { console.error("Error cargando imágenes para PDF:", e); }
+            const img1 = await loadImageAsDataUrl(displayImage, 800, 0.8);
+            const pW = 110;
+            const img1H = (img1.height / img1.width) * pW;
+            ensureSpace(img1H + 15);
+            const pX = (pageW - pW) / 2;
+            doc.addImage(img1.dataUrl, "JPEG", pX, y, pW, img1H, undefined, "FAST");
+            y += img1H + 10;
+          } catch (e) {
+            console.error("Error cargando imagen principal para PDF:", e);
+          }
+        }
+        if (secondaryImage) {
+          try {
+            const img2 = await loadImageAsDataUrl(secondaryImage, 800, 0.8);
+            const sW = 70;
+            const img2H = (img2.height / img2.width) * sW;
+            ensureSpace(img2H + 15);
+            const sX = (pageW - sW) / 2;
+            doc.addImage(img2.dataUrl, "JPEG", sX, y, sW, img2H, undefined, "FAST");
+            y += img2H + 10;
+          } catch (e) {
+            console.error("Error cargando imagen secundaria para PDF:", e);
+          }
+        }
       }
 
       doc.save(`Darmax_Cotizacion_${model.slug}.pdf`);
+      toast.success("Cotización descargada con éxito");
     } catch (error) {
       console.error("Error al generar PDF:", error);
       toast.error("No se pudo generar el PDF. Revise la consola.");
@@ -371,7 +418,7 @@ export default function Step4Summary({
             className="group relative px-10 py-5 bg-white border-2 border-slate-900 text-slate-900 font-black rounded-2xl hover:bg-slate-900 hover:text-white transition-all duration-300 text-xs uppercase tracking-widest flex items-center justify-center gap-3 overflow-hidden"
           >
             <div className="absolute inset-0 bg-slate-900 translate-y-full group-hover:translate-y-0 transition-transform duration-300 -z-10" />
-            Descargar Cotización Premium
+            Descargar Cotización
           </button>
           <button
             onClick={enviarWhatsApp}

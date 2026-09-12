@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView, animate } from "framer-motion";
 import Parallax from "parallax-js";
@@ -7,17 +7,22 @@ import Calendar from "../components/Calendar";
 import VendingPrecise3D from "../components/Vending";
 import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 import { getConfiguradorModels, getCachedConfiguradorModels } from "../services/configuradorService";
+import usePacedScroll from "../hooks/usePacedScroll";
 
 
 /* =========================
    ANIMACIONES Y HELPERS
 ========================= */
-const fadeUp = (d = 0) => ({
-  initial: { opacity: 0, y: 20 },
+const revealUp = (d = 0) => ({
+  initial: { opacity: 0, y: 16 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.05 },
-  transition: { duration: 0.6, delay: d, ease: "easeOut" }
+  viewport: { once: true, amount: 0.08 },
+  transition: { duration: 0.42, delay: d, ease: [0.16, 1, 0.3, 1] }
 });
+
+const fadeUp = (d = 0) => revealUp(d);
+const slideInLeft = (d = 0) => revealUp(d);
+const slideInRight = (d = 0) => revealUp(d);
 
 const Counter = ({ value, prefix = "", duration = 1.5 }) => {
   const [count, setCount] = useState(0);
@@ -107,10 +112,26 @@ const fadeInUp = {
   transition: { duration: 0.6, ease: "easeOut" },
 };
 
-const staggerContainer = {
-  initial: {},
-  whileInView: { transition: { staggerChildren: 0.1 } },
-  viewport: { once: true, amount: 0.05 },
+const gridContainerVariants = {
+  hidden: { opacity: 1 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.42,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
 };
 
 const buildWaUrl = ({ modeloId, modeloNombre }) => {
@@ -323,50 +344,44 @@ import {
   SparklesIcon
 } from "@heroicons/react/24/outline";
 
-const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
+const getLevelConfig = (modelId, isBundle) => {
+  if (modelId === "Vending" || modelId === "Vending-Limpieza") {
+    return {
+      label: "Esencial",
+      badgeBg: "bg-blue-600 shadow-blue-600/30",
+      borderClass: "border-2 border-slate-200 hover:border-blue-500 shadow-sm hover:shadow-lg hover:shadow-blue-950/5",
+    };
+  } else if (modelId === "Purificadora" || modelId === "Duo-Emprendedor") {
+    return {
+      label: "Escalable",
+      badgeBg: "bg-[#168387] shadow-[#168387]/30",
+      borderClass: "border-2 border-slate-200 hover:border-[#168387] shadow-sm hover:shadow-lg hover:shadow-cyan-950/5",
+    };
+  } else if (isBundle) {
+    return {
+      label: "Ecosistema Premium",
+      badgeBg: "bg-gradient-to-r from-amber-500 to-amber-600 shadow-amber-500/30",
+      borderClass: "border-2 border-slate-200 hover:border-amber-500 shadow-sm hover:shadow-lg hover:shadow-amber-950/5",
+    };
+  }
+
+  return {
+    label: "",
+    badgeBg: "bg-slate-800",
+    borderClass: "border-2 border-slate-200 hover:border-slate-300 shadow-sm",
+  };
+};
+
+const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect }) => {
   const [errorImagen, setErrorImagen] = useState(false);
-  const isSelected = selected.includes(modelo.id);
   const isBundle = BUNDLE_IDS.has(modelo.id);
   const configurePath = getConfigurePath(modelo.id);
-
-  // Determinar el distintivo de nivel y los estilos correspondientes de badge y borde
-  const getLevelConfig = () => {
-    if (modelo.id === "Vending" || modelo.id === "Vending-Limpieza") {
-      return {
-        label: "Esencial",
-        badgeBg: "bg-blue-600 shadow-blue-600/30",
-        borderClass: "border-2 border-slate-200 hover:border-blue-500 shadow-sm hover:shadow-lg hover:shadow-blue-950/5",
-      };
-    } else if (modelo.id === "Purificadora" || modelo.id === "Duo-Emprendedor") {
-      return {
-        label: "Escalable",
-        badgeBg: "bg-[#168387] shadow-[#168387]/30",
-        borderClass: "border-2 border-slate-200 hover:border-[#168387] shadow-sm hover:shadow-lg hover:shadow-cyan-950/5",
-      };
-    } else if (isBundle) {
-      return {
-        label: "Ecosistema Premium",
-        badgeBg: "bg-gradient-to-r from-amber-500 to-amber-600 shadow-amber-500/30",
-        borderClass: "border-2 border-slate-200 hover:border-amber-500 shadow-sm hover:shadow-lg hover:shadow-amber-950/5",
-      };
-    }
-
-    return {
-      label: "",
-      badgeBg: "bg-slate-800",
-      borderClass: "border-2 border-slate-200 hover:border-slate-300 shadow-sm",
-    };
-  };
-
-  const levelConfig = getLevelConfig();
+  const levelConfig = useMemo(() => getLevelConfig(modelo.id, isBundle), [modelo.id, isBundle]);
 
   return (
     <motion.article
-      variants={{
-        initial: { opacity: 0, y: 25 },
-        whileInView: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
-      }}
-      whileHover={{ y: -8, transition: { duration: 0.25 } }}
+      variants={cardVariants}
+      whileHover={{ y: -6, transition: { duration: 0.25 } }}
       className={[
         "group relative flex flex-col h-full rounded-[2rem] sm:rounded-[2.5rem] bg-white p-4 sm:p-4",
         "transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]",
@@ -389,10 +404,10 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
         className="relative aspect-video overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50 isolate cursor-pointer group/img mb-3 sm:mb-4 transition-all duration-500 hover:shadow-inner"
       >
         {!errorImagen ? (
-          <motion.img
+          <img
             src={optimizeCloudinaryUrl(modelo.imagen, 700)}
             alt={modelo.nombre}
-            loading="lazy"
+            decoding="async"
             className="h-full w-full object-contain p-1 sm:p-2 transition-transform duration-700 group-hover/img:scale-108"
             onError={() => setErrorImagen(true)}
           />
@@ -481,7 +496,7 @@ const TarjetaModelo = ({ modelo, navigate, selected, onToggleSelect }) => {
       </div>
     </motion.article>
   );
-};
+});
 
 /* =========================
    SECCIÓN: TU NEGOCIO EN MARCHA
@@ -523,7 +538,7 @@ function VentajasSection() {
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...fadeUp(0)} className="max-w-3xl mb-12 sm:mb-24">
+        <motion.div {...slideInLeft(0, "Todo lo que necesitas para que tu éxito sea inevitable.")} className="max-w-3xl mb-12 sm:mb-24">
           <span className="font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block text-cyan-100 opacity-80">
             El Ecosistema Darmax
           </span>
@@ -537,15 +552,7 @@ function VentajasSection() {
           {pilares.map((p, i) => (
             <motion.div
               key={i}
-              {...fadeUp(0.1 * i)}
-              animate={{ y: [0, -8, 0] }}
-              transition={{ 
-                duration: 5, 
-                repeat: Infinity, 
-                ease: "easeInOut", 
-                delay: i * 0.4,
-                ...fadeUp(0.1 * i).transition 
-              }}
+              {...slideInLeft(0.04 * (i + 1))}
               className="group relative p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white/20 border border-white/40 backdrop-blur-md hover:bg-white/30 transition-all duration-700 shadow-2xl shadow-cyan-950/10"
             >
               <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-6 sm:mb-8 bg-white text-[#168387] shadow-lg group-hover:scale-110 transition-transform duration-500">
@@ -572,6 +579,7 @@ function VentajasSection() {
    PÁGINA PRINCIPAL
 ========================= */
 const IniciaNegocio = () => {
+  usePacedScroll({ speed: 0.75, damping: 0.09 });
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
   const [compareOpen, setCompareOpen] = useState(false);
@@ -589,7 +597,13 @@ const IniciaNegocio = () => {
       try {
         const data = await getConfiguradorModels();
         if (isMounted && Array.isArray(data) && data.length > 0) {
-          setModelosData(computeMinPrices(data, INITIAL_MODELOS));
+          const updated = computeMinPrices(data, INITIAL_MODELOS);
+          setModelosData((prev) => {
+            const hasDifference = updated.some(
+              (m, idx) => m.precio !== prev[idx]?.precio || m.nombre !== prev[idx]?.nombre
+            );
+            return hasDifference ? updated : prev;
+          });
         }
       } catch (error) {
         console.error("Error fetching models for IniciaNegocio:", error);
@@ -626,10 +640,13 @@ const IniciaNegocio = () => {
     };
   }, []);
 
-  const toggleSelect = (id) =>
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
+  const toggleSelect = useCallback(
+    (id) =>
+      setSelected((prev) =>
+        prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      ),
+    []
+  );
 
   const selectedModels = modelosData.filter((m) => selected.includes(m.id));
 
@@ -669,10 +686,7 @@ const IniciaNegocio = () => {
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.1 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            {...slideInLeft(0, "Una historia de libertad financiera")}
             className="text-center mb-12 sm:mb-16"
           >
             <span className="text-cyan-100 font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block opacity-80">
@@ -686,7 +700,7 @@ const IniciaNegocio = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch">
             {/* PASO 1 */}
             <motion.div
-              {...fadeUp(0.1)}
+              {...slideInLeft(0.02)}
               className="p-6 sm:p-8 rounded-[2.5rem] bg-white/20 border border-white/40 backdrop-blur-md group hover:bg-white/30 transition-all text-center shadow-xl shadow-cyan-950/10"
             >
               <motion.div 
@@ -706,7 +720,7 @@ const IniciaNegocio = () => {
 
             {/* PASO 2 */}
             <motion.div
-              {...fadeUp(0.2)}
+              {...slideInLeft(0.04)}
               className="p-6 sm:p-8 rounded-[2.5rem] bg-white/20 border border-white/40 backdrop-blur-md group hover:bg-white/30 transition-all text-center shadow-xl shadow-cyan-950/10"
             >
               <motion.div 
@@ -726,7 +740,7 @@ const IniciaNegocio = () => {
 
             {/* PASO 3 */}
             <motion.div
-              {...fadeUp(0.3)}
+              {...slideInLeft(0.06)}
               className="p-6 sm:p-8 rounded-[2.5rem] bg-white/20 border border-white/40 backdrop-blur-md group hover:bg-white/30 transition-all text-center shadow-xl shadow-cyan-950/10"
             >
               <motion.div 
@@ -747,7 +761,7 @@ const IniciaNegocio = () => {
 
           <div className="mt-12 sm:mt-20 text-center">
             <motion.div 
-              {...fadeUp(0.4)}
+              {...slideInLeft(0.08)}
               className="inline-flex items-center gap-3 sm:gap-6 p-4 sm:p-8 rounded-3xl sm:rounded-[3rem] bg-white/20 border border-white/40 text-white text-lg sm:text-3xl font-black backdrop-blur-xl shadow-[0_15px_40px_rgba(0,0,0,0.15)]"
             >
               <div className="w-3 h-3 sm:w-5 sm:h-5 rounded-full animate-pulse bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
@@ -764,7 +778,7 @@ const IniciaNegocio = () => {
         <div className="max-w-7xl mx-auto px-4 w-full">
           {/* NARRATIVA DE ENTRADA */}
           <motion.div
-            {...fadeUp(0)}
+            {...slideInRight(0, "Elige la escala de tu próximo éxito")}
             className="flex flex-col items-center text-center mb-12 sm:mb-20 gap-6 sm:gap-8 mx-auto"
           >
             <div className="max-w-4xl flex flex-col items-center">
@@ -829,22 +843,22 @@ const IniciaNegocio = () => {
           )}
 
           {/* GRUPO 1: INICIO */}
-          <motion.div
-            {...fadeUp(0.1)}
-            className="mb-12 sm:mb-20 pt-8 border-t border-slate-200"
-          >
-            <div className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12">
+          <div className="mb-12 sm:mb-20 pt-8 border-t border-slate-200">
+            <motion.div
+              {...slideInRight(0.08)}
+              className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
+            >
               <div className="shrink-0">
                 <span className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em]">Nivel 01</span>
                 <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">Individuales</h3>
               </div>
               <div className="h-px w-full bg-slate-200" />
-            </div>
+            </motion.div>
 
             <motion.div 
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
+              variants={gridContainerVariants}
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true, amount: 0.05 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
             >
@@ -855,30 +869,30 @@ const IniciaNegocio = () => {
                     key={modelo.id}
                     modelo={modelo}
                     navigate={navigate}
-                    selected={selected}
+                    isSelected={selected.includes(modelo.id)}
                     onToggleSelect={toggleSelect}
                   />
                 ))}
             </motion.div>
-          </motion.div>
+          </div>
 
           {/* GRUPO 2: ESCALA */}
-          <motion.div
-            {...fadeUp(0.2)}
-            className="mb-16 sm:mb-24"
-          >
-            <div className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12">
+          <div className="mb-16 sm:mb-24">
+            <motion.div
+              {...slideInRight(0.08)}
+              className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
+            >
               <div className="shrink-0">
                 <span className="text-xs font-black text-[#168387] uppercase tracking-[0.2em] sm:tracking-[0.3em]">Nivel 02</span>
                 <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">Paquetes de Negocio</h3>
               </div>
               <div className="h-px w-full bg-[#168387]/20" />
-            </div>
+            </motion.div>
 
             <motion.div 
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
+              variants={gridContainerVariants}
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true, amount: 0.05 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
             >
@@ -889,12 +903,12 @@ const IniciaNegocio = () => {
                     key={modelo.id}
                     modelo={modelo}
                     navigate={navigate}
-                    selected={selected}
+                    isSelected={selected.includes(modelo.id)}
                     onToggleSelect={toggleSelect}
                   />
                 ))}
             </motion.div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -911,7 +925,10 @@ const IniciaNegocio = () => {
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             
             {/* TEXTO NARRATIVO (IZQUIERDA) */}
-            <div className="lg:col-span-6 space-y-6 sm:space-y-10 relative z-10 lg:pr-12">
+            <motion.div 
+              {...slideInLeft(0, "La nueva generación de purificación inteligente")}
+              className="lg:col-span-6 space-y-6 sm:space-y-10 relative z-10 lg:pr-12"
+            >
               <div>
                 <span className="text-cyan-100 font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block opacity-80">
                   Ingeniería de Precisión
@@ -944,7 +961,7 @@ const IniciaNegocio = () => {
                 ].map((item, i) => (
                   <motion.div 
                     key={i}
-                    {...fadeUp(0.1 * i)}
+                    {...slideInLeft(0.03 * (i + 1), `3D: ${item.t}`)}
                     className="flex gap-4 sm:gap-6 group"
                   >
                     <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl bg-white/10 text-cyan-300 flex items-center justify-center group-hover:bg-white group-hover:text-[#168387] transition-all duration-500 shadow-sm">
@@ -957,10 +974,13 @@ const IniciaNegocio = () => {
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* MODELO 3D (DERECHA) */}
-            <div className="lg:col-span-6 relative w-full overflow-visible">
+            <motion.div 
+              {...slideInRight(0.04, "Módulo 3D Interactivo")}
+              className="lg:col-span-6 relative w-full overflow-visible"
+            >
               <div className="relative rounded-[2rem] sm:rounded-[3rem] bg-white/5 border border-white/10 p-2 sm:p-6 shadow-2xl backdrop-blur-sm group">
                 <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-20">
                   <div className="flex items-center gap-2 sm:gap-3 px-2 py-1 sm:px-3 sm:py-1.5 bg-white/10 rounded-lg sm:rounded-xl border border-white/20 backdrop-blur-md shadow-sm">
@@ -977,7 +997,7 @@ const IniciaNegocio = () => {
                   Arrastra para rotar e interactuar
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </motion.section>
@@ -986,7 +1006,7 @@ const IniciaNegocio = () => {
       <section id="testimonios" className="relative py-20 sm:py-32 overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto px-4 w-full relative z-10">
           <motion.div
-            {...fadeUp(0)}
+            {...slideInRight(0, "Más que clientes, historias de éxito")}
             className="text-center mb-16 sm:mb-24"
           >
             <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
@@ -1007,7 +1027,7 @@ const IniciaNegocio = () => {
                 text: "\"Un aliado fundamental para dar el primer paso. Su tecnología me dio la confianza necesaria para iniciar mi propio camino en el negocio del agua.\"",
                 badge: "Negocio en Operación",
                 Icon: CheckBadgeIcon,
-                delay: 0.1
+                delay: 0.02
               },
               { 
                 initials: "SG", 
@@ -1016,7 +1036,7 @@ const IniciaNegocio = () => {
                 text: "\"Empecé con una sola Vending, pero los resultados fueron tan claros que pronto escalamos a un modelo híbrido con mostrador. La mejor decisión de inversión.\"",
                 badge: "Crecimiento Multi-Unidad",
                 Icon: ArrowTrendingUpIcon,
-                delay: 0.2
+                delay: 0.04
               },
               { 
                 initials: "PM", 
@@ -1025,12 +1045,12 @@ const IniciaNegocio = () => {
                 text: "\"Necesitábamos una solución única y personalizada para nuestra marca. Darmax diseñó una Vending especial que se adapta perfectamente a nuestra identidad.\"",
                 badge: "Diseño a la Medida",
                 Icon: WrenchScrewdriverIcon,
-                delay: 0.3
+                delay: 0.06
               }
             ].map((testimonio, i) => (
               <motion.div
                 key={i}
-                {...fadeUp(testimonio.delay)}
+                {...slideInRight(testimonio.delay)}
                 whileHover={{ y: -12, scale: 1.02 }}
                 className="group relative overflow-hidden p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3.5rem] bg-white border border-slate-100 flex flex-col transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(13,90,94,0.3)] shadow-xl shadow-slate-900/5 cursor-default"
               >

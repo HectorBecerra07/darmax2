@@ -1,7 +1,7 @@
 // src/App.jsx
 import { HelmetProvider } from "react-helmet-async";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import React, { useEffect, lazy, Suspense } from "react";
 
 // Layout general con Navbar y Footer
@@ -109,7 +109,7 @@ function AppContent() {
         {isLoggingOut && <GoodbyeScreen name={loggedOutUserName} />}
       </AnimatePresence>
       <ScrollToTop />
-      <AnimatePresence initial={false}>
+      <AnimatePresence>
         <Suspense fallback={<PageLoader />}>
           <Routes location={location} key={location.pathname}>
             {/* ADMIN SIN LAYOUT */}
@@ -415,8 +415,10 @@ function AppContent() {
 export default function App() {
   return (
     <HelmetProvider>
-      <SettingsProvider> {/* Envolver con SettingsProvider */}
-        <AppContent />
+      <SettingsProvider>
+        <MotionConfig reducedMotion="never">
+          <AppContent />
+        </MotionConfig>
       </SettingsProvider>
     </HelmetProvider>
   );

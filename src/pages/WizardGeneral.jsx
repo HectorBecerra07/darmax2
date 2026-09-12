@@ -1,7 +1,8 @@
 // WizardGeneral.jsx
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowTopRightOnSquareIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import Step0SelectVendingType from "../components/Step0SelectVendingType";
 import Step1SelectModel from "../components/Step1SelectModel";
 import Step2ModelDetails from "../components/Step2ModelDetails";
@@ -81,13 +82,19 @@ export default function WizardGeneral() {
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(Math.max(0, step - 1));
 
+  // Redirigir a paso 1 si se intenta acceder a pasos avanzados sin modelo seleccionado
+  useEffect(() => {
+    if (!loadingModels && !selectedModel && step >= 2) {
+      setStep(1);
+    }
+  }, [step, selectedModel, loadingModels]);
+
   const breadcrumbSteps = useMemo(() => {
     const dynamicSteps = [];
     if (id === "Vending") {
       dynamicSteps.push(
         { label: "Tipo" },
         { label: "Modelo" },
-        { label: "Detalles" },
         { label: "Extras" },
         { label: "Resumen" }
       );
@@ -157,6 +164,37 @@ export default function WizardGeneral() {
     );
     return [...new Set(images.filter((url) => url && url.trim() !== ""))];
   }, [modelos, loadingModels]);
+
+  const selectedModelHasOsmosis = useMemo(() => {
+    if (!selectedModel) return false;
+    const raw = `${selectedModel.name || ""} ${selectedModel.description || ""} ${selectedModel.slug || ""}`
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+    const isLimpieza =
+      id === "Vending-Limpieza" ||
+      raw.includes("limpieza") ||
+      raw.includes("vending5") ||
+      raw.includes("vending8");
+    return !isLimpieza && raw.includes("osmosis");
+  }, [selectedModel, id]);
+
+  const catalogHasOsmosis = useMemo(() => {
+    const isLimpieza =
+      id === "Vending-Limpieza" ||
+      (id && id.toLowerCase().includes("limpieza"));
+    if (isLimpieza) return false;
+    if (modelos && modelos.length > 0) {
+      return modelos.some((m) => {
+        const raw = `${m.name || ""} ${m.description || ""} ${m.slug || ""}`
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+        return raw.includes("osmosis");
+      });
+    }
+    return id === "Vending" || id === "Purificadora";
+  }, [modelos, id]);
 
   const availableVendingTypes = useMemo(() => {
     if (loadingModels) return [];
@@ -234,25 +272,15 @@ export default function WizardGeneral() {
     <div ref={wizardRef} className="bg-slate-50 min-h-screen pt-20 sm:pt-24 lg:pt-28 pb-32">
       {/* NAVEGACIÓN Y BREADCRUMBS ADAPTADOS */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 sm:mb-8">
-        <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-4">
-          <Breadcrumbs
-            steps={breadcrumbSteps}
-            currentStepIndex={actualBreadcrumbStepIndex}
-            onStepClick={(index) => {
-              const baseBreadcrumbCount = 1;
-              const newStep = index - baseBreadcrumbCount;
-              setStep((id === "Vending") ? newStep : (newStep + 1));
-            }}
-          />
-
-          {/* Indicador de progreso para escritorio y tablet */}
-          <div className="hidden sm:flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200/80 shadow-2xs">
-            <span>Paso</span>
-            <span className="text-[#168387] font-black">{Math.min(actualBreadcrumbStepIndex, breadcrumbSteps.length - 1)}</span>
-            <span>de</span>
-            <span>{breadcrumbSteps.length - 1}</span>
-          </div>
-        </div>
+        <Breadcrumbs
+          steps={breadcrumbSteps}
+          currentStepIndex={actualBreadcrumbStepIndex}
+          onStepClick={(index) => {
+            const baseBreadcrumbCount = 1;
+            const newStep = index - baseBreadcrumbCount;
+            setStep((id === "Vending") ? newStep : (newStep + 1));
+          }}
+        />
       </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -282,8 +310,42 @@ export default function WizardGeneral() {
 
             {step === 1 && (
               <>
-                <div className="w-full lg:sticky lg:top-28">
+                <div className="w-full lg:sticky lg:top-28 space-y-3">
                   <CarouselImages images={landingImages} />
+
+                  {/* Botón para conocer más sobre ósmosis inversa */}
+                  {catalogHasOsmosis && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="max-w-3xl mx-auto"
+                    >
+                      <Link
+                        to="/blog/osmosis-inversa-vs-agua-alcalina"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-cyan-50/50 to-white border border-[#168387]/25 hover:border-[#168387] hover:shadow-lg hover:shadow-cyan-900/5 transition-all duration-300 cursor-pointer"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 rounded-xl bg-[#168387] text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                            <SparklesIcon className="w-5 h-5" />
+                          </div>
+                          <div className="text-left min-w-0">
+                            <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#168387] transition-colors">
+                              ¿Quieres conocer más sobre ósmosis inversa?
+                            </p>
+                            <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium block truncate">
+                              Descubre cómo funciona y por qué es el estándar de oro en purificación
+                            </span>
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-xl bg-white border border-slate-200 text-slate-400 group-hover:text-[#168387] group-hover:border-[#168387]/40 group-hover:bg-[#168387]/5 shrink-0 transition-all">
+                          <ArrowTopRightOnSquareIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                        </div>
+                      </Link>
+                    </motion.div>
+                  )}
                 </div>
                 <div className="w-full">
                   <Step1SelectModel
@@ -297,9 +359,10 @@ export default function WizardGeneral() {
               </>
             )}
 
-            {step === 2 && selectedModel && (
+            {/* Paso 2 para NO-Vending: Detalles del modelo */}
+            {id !== "Vending" && step === 2 && selectedModel && (
               <>
-                <div className="w-full lg:sticky lg:top-28">
+                <div className="w-full lg:sticky lg:top-28 space-y-3">
                   <CarouselImages
                     images={selectedModel.images
                       .filter(img => img.context === 'CAROUSEL' && img.url)
@@ -307,6 +370,40 @@ export default function WizardGeneral() {
                       .filter(url => url && url.trim() !== "")
                     }
                   />
+
+                  {/* Botón para conocer más sobre ósmosis inversa */}
+                  {selectedModelHasOsmosis && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="max-w-3xl mx-auto"
+                    >
+                      <Link
+                        to="/blog/osmosis-inversa-vs-agua-alcalina"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-cyan-50/50 to-white border border-[#168387]/25 hover:border-[#168387] hover:shadow-lg hover:shadow-cyan-900/5 transition-all duration-300 cursor-pointer"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-9 h-9 rounded-xl bg-[#168387] text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                            <SparklesIcon className="w-5 h-5" />
+                          </div>
+                          <div className="text-left min-w-0">
+                            <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#168387] transition-colors">
+                              ¿Quieres conocer más sobre ósmosis inversa?
+                            </p>
+                            <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium block truncate">
+                              Descubre cómo funciona y por qué es el estándar de oro en purificación
+                            </span>
+                          </div>
+                        </div>
+                        <div className="p-2 rounded-xl bg-white border border-slate-200 text-slate-400 group-hover:text-[#168387] group-hover:border-[#168387]/40 group-hover:bg-[#168387]/5 shrink-0 transition-all">
+                          <ArrowTopRightOnSquareIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                        </div>
+                      </Link>
+                    </motion.div>
+                  )}
                 </div>
                 <div className="w-full">
                   <Step2ModelDetails
@@ -319,7 +416,8 @@ export default function WizardGeneral() {
               </>
             )}
 
-            {step === 3 && selectedModel && (
+            {/* Extras: Paso 2 para Vending, Paso 3 para otras categorías */}
+            {((id === "Vending" && step === 2) || (id !== "Vending" && step === 3)) && selectedModel && (
               <div className="col-span-1 lg:col-span-2">
                 <Step3ExtrasConfigurator
                   selectedModelId={selectedModel.slug}
@@ -337,7 +435,8 @@ export default function WizardGeneral() {
               </div>
             )}
 
-            {step === 4 && summaryData && (
+            {/* Resumen: Paso 3 para Vending, Paso 4 para otras categorías */}
+            {((id === "Vending" && step === 3) || (id !== "Vending" && step === 4)) && summaryData && (
               <div className="col-span-1 lg:col-span-2">
                 <Step4Summary
                   summaryData={summaryData}
