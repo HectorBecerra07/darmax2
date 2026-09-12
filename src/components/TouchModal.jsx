@@ -7,10 +7,19 @@ import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 export default function TouchModal({ isOpen, onClose }) {
   const navigate = useNavigate();
 
+  const handleClose = () => {
+    try {
+      localStorage.setItem("darmax_touch_modal_seen", "true");
+    } catch (e) {
+      console.error("Error al guardar en localStorage:", e);
+    }
+    if (onClose) onClose();
+  };
+
   // Cerrar con tecla Escape
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
     };
 
     if (isOpen) {
@@ -25,7 +34,7 @@ export default function TouchModal({ isOpen, onClose }) {
   }, [isOpen, onClose]);
 
   const handleVerCatalogo = () => {
-    onClose();
+    handleClose();
     navigate("/configurar-maquina/Vending?tipo=touch");
   };
 
@@ -38,7 +47,7 @@ export default function TouchModal({ isOpen, onClose }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
           />
 
@@ -57,7 +66,7 @@ export default function TouchModal({ isOpen, onClose }) {
             {/* Boton de cierre */}
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors z-20 cursor-pointer"
               aria-label="Cerrar ventana"
             >

@@ -416,19 +416,27 @@ export default function LandingPage() {
   const [tipoCalc, setTipoCalc] = useState("agua");
   const [isTouchModalOpen, setIsTouchModalOpen] = useState(false);
 
-  // Apertura inteligente sutil tras 4.5 segundos si no se ha visto en la sesion
+  // Apertura inteligente sutil tras 4.5 segundos si nunca se ha visto/cerrado previamente
   useEffect(() => {
-    const hasSeenModal = sessionStorage.getItem("darmax_touch_modal_seen");
-    if (!hasSeenModal) {
-      const timer = setTimeout(() => {
-        setIsTouchModalOpen(true);
-      }, 4500);
-      return () => clearTimeout(timer);
+    try {
+      const hasSeenModal = localStorage.getItem("darmax_touch_modal_seen");
+      if (!hasSeenModal) {
+        const timer = setTimeout(() => {
+          setIsTouchModalOpen(true);
+        }, 4500);
+        return () => clearTimeout(timer);
+      }
+    } catch (e) {
+      console.error("Error al leer localStorage:", e);
     }
   }, []);
 
   const handleCloseTouchModal = useCallback(() => {
-    sessionStorage.setItem("darmax_touch_modal_seen", "true");
+    try {
+      localStorage.setItem("darmax_touch_modal_seen", "true");
+    } catch (e) {
+      console.error("Error al guardar en localStorage:", e);
+    }
     setIsTouchModalOpen(false);
   }, []);
 

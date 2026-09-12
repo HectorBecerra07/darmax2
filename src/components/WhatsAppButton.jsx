@@ -5,6 +5,13 @@ export default function WhatsAppButton() {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const location = useLocation();
+
+  // Ocultar el boton en los asistentes de configuracion (WizardGeneral y BundleWizard)
+  const currentPath = location.pathname.toLowerCase();
+  const isWizardPage =
+    currentPath.startsWith('/configurar-maquina') ||
+    currentPath.startsWith('/configurar-paquete');
+
   const isHome = location.pathname === "/";
 
   const phoneNumber = "525519655369";
@@ -17,6 +24,12 @@ export default function WhatsAppButton() {
   ];
 
   useEffect(() => {
+    if (isWizardPage) {
+      setIsVisible(false);
+      setIsOpen(false);
+      return;
+    }
+
     const handleScroll = () => {
       if (isHome) {
         setIsVisible(window.scrollY > 300);
@@ -27,7 +40,11 @@ export default function WhatsAppButton() {
     handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHome]);
+  }, [isHome, isWizardPage]);
+
+  if (isWizardPage) {
+    return null;
+  }
 
   return (
     <div 
