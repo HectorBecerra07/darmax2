@@ -7,7 +7,6 @@ import Calendar from "../components/Calendar";
 import VendingPrecise3D from "../components/Vending";
 import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 import { getConfiguradorModels, getCachedConfiguradorModels } from "../services/configuradorService";
-import usePacedScroll from "../hooks/usePacedScroll";
 
 
 /* =========================
@@ -579,7 +578,6 @@ function VentajasSection() {
    PÁGINA PRINCIPAL
 ========================= */
 const IniciaNegocio = () => {
-  usePacedScroll({ speed: 0.75, damping: 0.09 });
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
   const [compareOpen, setCompareOpen] = useState(false);

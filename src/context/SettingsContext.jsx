@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
 
 const SettingsContext = createContext(null);
 
@@ -19,22 +18,12 @@ export const SettingsProvider = ({ children }) => {
       if (response.ok) {
         const config = await response.json();
         setIsChatbotActive(config.value === 'true');
-      } else if (response.status === 404) {
-        // Setting not found, likely first load, assume false or create
-        setIsChatbotActive(false);
-        // Optionally, create the setting with default false
-        // await fetch('/api/configuration', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ key: 'isChatbotActive', value: 'false' }),
-        // });
       } else {
-        throw new Error('Failed to fetch chatbot status');
+        setIsChatbotActive(false);
       }
-    } catch (error) {
-      console.error("Error fetching chatbot status:", error);
-      toast.error('Error al cargar la configuración del chatbot.');
-      setIsChatbotActive(false); // Default to inactive on error
+    } catch {
+      // Mantener chatbot inactivo por defecto si el servidor no esta disponible
+      setIsChatbotActive(false);
     } finally {
       setIsLoadingSettings(false);
     }

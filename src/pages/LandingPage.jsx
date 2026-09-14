@@ -23,7 +23,6 @@ import {
 gsap.registerPlugin(ScrollTrigger);
 
 const IniciaNegocio = lazy(() => import("../components/IniciaNegocio"));
-import usePacedScroll from "../hooks/usePacedScroll";
 
 /* =========================================
    ANIMATION & PREMIUM HELPERS
@@ -418,7 +417,6 @@ const AguaView = React.memo(function AguaView() {
    PÁGINA DE LANDING PRINCIPAL
 ========================================================= */
 export default function LandingPage() {
-  usePacedScroll({ speed: 0.75, damping: 0.09 });
   const [tipoCalc, setTipoCalc] = useState("agua");
   const [isTouchModalOpen, setIsTouchModalOpen] = useState(false);
 

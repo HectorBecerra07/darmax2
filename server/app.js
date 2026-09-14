@@ -13,9 +13,10 @@ import shippingRoutes from "./routes/shipping.js";
 import chatbotRoutes from "./routes/chatbot.js";
 import intentRoutes from "./routes/intents.js";
 import configurationRoutes from "./routes/configuration.js";
-import zoomRoutes from "./routes/zoom.js"; // ✅ ya importado correctamente
+import zoomRoutes from "./routes/zoom.js";
 import postalCodeRoutes from "./routes/postalcode.js";
 import blogRoutes from "./routes/blog.js";
+import cotizacionesRoutes from "./routes/cotizaciones.js";
 
 const app = express();
 app.disable("x-powered-by");
@@ -62,9 +63,10 @@ app.use("/api/orderEmail", orderEmailRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/intents", intentRoutes);
 app.use("/api/configuration", configurationRoutes);
-app.use("/api/zoom", zoomRoutes); // ✅ CORRECTO
+app.use("/api/zoom", zoomRoutes);
 app.use("/api/blog", blogRoutes);
 app.use("/api/orders", ordersRouter);
+app.use("/api/cotizaciones", cotizacionesRoutes);
 
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");

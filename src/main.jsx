@@ -14,17 +14,26 @@ initVersionChecker();
 
 const RECAPTCHA_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
+const ReCaptchaWrapper = ({ children }) => {
+  if (!RECAPTCHA_KEY) return <>{children}</>;
+  return (
+    <GoogleReCaptchaProvider
+      reCaptchaKey={RECAPTCHA_KEY}
+      container={{
+        parameters: {
+          badge: "bottomleft",
+        },
+      }}
+    >
+      {children}
+    </GoogleReCaptchaProvider>
+  );
+};
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <UserProvider>
-      <GoogleReCaptchaProvider
-        reCaptchaKey={RECAPTCHA_KEY}
-        container={{
-          parameters: {
-            badge: "bottomleft", // Explicitly requesting bottom left
-          },
-        }}
-      >
+      <ReCaptchaWrapper>
         <CarritoProvider>
           <FavoritesProvider>
             <BrowserRouter>
@@ -32,7 +41,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             </BrowserRouter>
           </FavoritesProvider>
         </CarritoProvider>
-      </GoogleReCaptchaProvider>
+      </ReCaptchaWrapper>
     </UserProvider>
   </React.StrictMode>
 );

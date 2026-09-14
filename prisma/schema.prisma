@@ -32,10 +32,11 @@ model User {
   resetToken        String?   @unique
   resetTokenExpiry  DateTime?
 
-  // Relación con Pedidos y Carrito
+  // Relación con Pedidos, Carrito y Cotizaciones
   pedidos      Pedido[]
   carritoItems CarritoItem[] // Un usuario tiene muchos items en su carrito
   chatSessions ChatSession[] // Un usuario puede tener muchas sesiones de chat
+  cotizaciones Cotizacion[]  // Cotizaciones registradas del usuario
 
   @@index([verificationToken])
   @@index([resetToken])
@@ -347,7 +348,7 @@ model BlogPost {
   image     String?  // Imagen de portada
   videoUrl  String?  // Opcional, para incrustar videos
   category  String   @default("Articulo") // Articulo, Video, Curiosidad
-  tags      String[] @default(["Darmax"]) // ✅ NUEVO: Etiquetas dinámicas
+  tags      String[] @default(["Darmax"]) // NUEVO: Etiquetas dinamicas
   published Boolean  @default(true)
   author    String   @default("Darmax")
 }
@@ -365,5 +366,44 @@ model Meeting {
   updatedAt        DateTime @updatedAt
 
   @@map("Meeting")
+}
+
+// --- MODELO DE COTIZACIONES ---
+
+model Cotizacion {
+  id              String   @id @default(cuid())
+  folio           Int      // Folio generado por el sistema de ventas
+  externalId      String?  // ID de referencia externa si existe
+
+  // Datos del cliente
+  nombreCliente   String
+  telefono        String
+  correo          String
+  cp              String
+
+  // Datos del modelo y costos
+  modeloNombre    String
+  precioModelo    Float
+  precioExtras    Float    @default(0)
+  total           Float
+  diasValidez     Int      @default(7)
+  extras          Json?    // Lista de extras seleccionados
+
+  // Enlaces y estado
+  publicUrl       String?  @db.Text
+  estado          String   @default("Activa") // Activa, Vencida, Vendida, etc.
+
+  // Relacion con el usuario registrado (opcional)
+  userId          Int?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([correo])
+  @@index([telefono])
+  @@index([folio])
+  @@index([createdAt])
 }
 
