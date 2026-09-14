@@ -70,7 +70,7 @@ export default function NavBar() {
       const scrollY = window.scrollY;
       setIsScrolled(scrollY > 10);
 
-      const darkSections = ["/purificadores-caseros", "/proyectos-empresariales"];
+      const darkSections = ["/purificadores-caseros"];
       if (location.pathname === "/") {
         setIsDarkTheme(scrollY > 600);
       } else if (darkSections.includes(location.pathname)) {

@@ -91,19 +91,25 @@ export function usePacedScroll({ speed = 0.75, damping = 0.09, enabled = true } 
       };
 
       const onNativeScroll = () => {
-        // Si el usuario hace scroll mediante barra lateral, teclas de navegacion o hash
-        if (!isWheeling && !rafId) {
+        // Si el usuario hace scroll mediante barra lateral, teclas de navegacion, hash o cambio de pagina
+        if (!isWheeling) {
           targetY = window.scrollY;
           currentY = window.scrollY;
+          if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+          }
         }
       };
 
       window.addEventListener("wheel", onWheel, { passive: false });
       window.addEventListener("scroll", onNativeScroll, { passive: true });
+      window.addEventListener("popstate", onNativeScroll);
 
       cleanUpFn = () => {
         window.removeEventListener("wheel", onWheel);
         window.removeEventListener("scroll", onNativeScroll);
+        window.removeEventListener("popstate", onNativeScroll);
         if (rafId) cancelAnimationFrame(rafId);
         clearTimeout(wheelTimeout);
       };

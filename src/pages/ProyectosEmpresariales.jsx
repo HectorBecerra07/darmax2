@@ -1,9 +1,28 @@
 import React, { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
+import {
+  BuildingOffice2Icon,
+  WrenchScrewdriverIcon,
+  ShieldCheckIcon,
+  RocketLaunchIcon,
+  CheckBadgeIcon,
+  ArrowRightIcon,
+  EnvelopeIcon,
+  ChatBubbleLeftRightIcon,
+  SparklesIcon,
+  AdjustmentsHorizontalIcon,
+  ChevronDownIcon,
+  ArrowTopRightOnSquareIcon,
+  BeakerIcon,
+  CircleStackIcon,
+  CpuChipIcon
+} from "@heroicons/react/24/outline";
 
-/* ========= Configuración de destino ========= */
+/* Configuracion de destino y URLs */
 const GMAIL_TO = "darmaxagua@gmail.com";
+const WHATSAPP_PHONE = "525519655369";
+
 const buildGmailUrl = ({ to, subject, body, cc, bcc }) => {
   const base = "https://mail.google.com/mail/?view=cm&fs=1";
   const params = [
@@ -17,6 +36,7 @@ const buildGmailUrl = ({ to, subject, body, cc, bcc }) => {
     .join("&");
   return `${base}&${params}`;
 };
+
 const buildMailto = ({ to, subject, body, cc, bcc }) => {
   const params = new URLSearchParams();
   if (subject) params.set("subject", subject);
@@ -27,88 +47,112 @@ const buildMailto = ({ to, subject, body, cc, bcc }) => {
   return `mailto:${encodeURIComponent(to)}${qs ? `?${qs}` : ""}`;
 };
 
-/* ========= Datos ========= */
-const HERO_BG =
-  "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=2400&q=80";
+const buildWhatsAppUrl = (tituloProyecto = "") => {
+  const text = `Hola equipo Darmax, me interesa cotizar una solucion empresarial${
+    tituloProyecto ? ` para: ${tituloProyecto}` : ""
+  }. ¿Podrian brindarme asesoria personalizada?`;
+  return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
+};
 
+/* Catalogo de Proyectos */
 const proyectos = [
   {
     id: 1,
     titulo: "Franquicias DarmaxAgua",
     descripcion:
-      "Conoce nuestras propuestas de franquicias DarmaxAgua. Asesoría personalizada en toda tu adquisición.",
+      "Conoce nuestras propuestas de franquicias DarmaxAgua. Asesoria y acompanamiento integral en toda tu adquisicion e implementacion.",
     imagen: "/img/proyectosEmpresariales/franquisias.jpg",
     industria: "Franquicias",
+    specs: { alcance: "Llave en mano", tiempo: "15 a 30 dias", operacion: "24/7 Autonoma" }
   },
   {
     id: 2,
     titulo: "Vending personalizado para hoteles",
     descripcion:
-      "Vending machines con branding del hotel, operando 24/7 sin personal.",
+      "Vending machines de agua purificada con la identidad visual de tu hotel, operando 24/7 de forma 100% automatizada sin necesidad de personal.",
     imagen: "/img/proyectosEmpresariales/Hoteles.png",
     industria: "Hoteles",
+    specs: { alcance: "Personalizado", tiempo: "7 a 14 dias", operacion: "Zero Personal" }
   },
   {
     id: 3,
     titulo: "Planta purificadora para centros comerciales",
     descripcion:
-      "Proyecto llave en mano (+10,000 L/día). Incluye consultoría y capacitación.",
+      "Ingenieria de alto volumen (+10,000 L/dia) para centros comerciales y plazas. Incluye analisis hidraulico, instalacion y certificacion.",
     imagen: "/img/proyectosEmpresariales/centros.png",
     industria: "Centros comerciales",
+    specs: { alcance: "+10,000 L/dia", tiempo: "Proyecto Llave", operacion: "Flujo Continuo" }
   },
   {
     id: 4,
     titulo: "Equipos de calentamiento de agua",
     descripcion:
-      "Soluciones de calentamiento eficientes para aplicaciones residenciales, comerciales e industriales.",
+      "Soluciones de calentamiento de alta eficiencia termica para aplicaciones residenciales, comerciales e industriales de gran escala.",
     imagen: "/img/proyectosEmpresariales/equipos.png",
     industria: "Calentamiento de agua",
+    specs: { alcance: "Industrial", tiempo: "Alta Eficiencia", operacion: "Ahorro Energia" }
   },
   {
     id: 5,
     titulo: "Equipos y accesorios para piscina y spa",
     descripcion:
-      "Filtración, circulación y accesorios para mantener tu piscina y spa en óptimas condiciones.",
+      "Sistemas de filtracion cuarzo/cristal, recirculacion y dosificacion automatizada para mantener albercas y spas en optimas condiciones sanitarias.",
     imagen: "/img/proyectosEmpresariales/piscinas.png",
     industria: "Piscinas y Spa",
+    specs: { alcance: "Climatizado", tiempo: "Automatizado", operacion: "Norma Sanitaria" }
   },
   {
     id: 6,
-    titulo: "Presurizadoras individuales y múltiples",
+    titulo: "Presurizadoras individuales y multiples",
     descripcion:
-      "Sistemas tradicionales y de presión constante para caudal estable en todo momento.",
+      "Sistemas hidroneumaticos de velocidad variable y presion constante para un suministro continuo sin caidas de caudal.",
     imagen: "/img/proyectosEmpresariales/Presurizadoras.jpg",
-    industria: "Presurización",
+    industria: "Presurizacion",
+    specs: { alcance: "Inverter", tiempo: "Presion Const.", operacion: "Bajo Consumo" }
   },
   {
     id: 7,
     titulo: "Bombas de superficie",
     descripcion:
-      "Bombas para aplicaciones residenciales, comerciales e industriales con alta confiabilidad.",
+      "Bombas centrifugas y multietapas en acero inoxidable para aplicaciones industriales con alta demanda y funcionamiento continuo.",
     imagen: "/img/proyectosEmpresariales/bombaagua.jpg",
     industria: "Bombas de superficie",
+    specs: { alcance: "Inox 304/316", tiempo: "Alto Caudal", operacion: "Uso Rudo" }
   },
   {
     id: 8,
     titulo: "Equipos para aguas residuales",
     descripcion:
-      "Manejo de efluentes y tratamiento de aguas residuales con equipos robustos y eficientes.",
+      "Tratamiento de efluentes, filtracion biologica y reutilizacion de aguas grises con tecnologia orientada al cumplimiento normativo ambiental.",
     imagen: "/img/proyectosEmpresariales/residuales.jpg",
     industria: "Aguas residuales",
+    specs: { alcance: "Efluentes", tiempo: "Ecologico", operacion: "Reutilizacion" }
   },
   {
     id: 9,
     titulo: "Equipos y accesorios sumergibles",
     descripcion:
-      "Bombas y accesorios sumergibles para pozos, drenaje y aplicaciones exigentes.",
+      "Bombas sumergibles de pozo profundo, desague y aplicaciones exigentes con motores de alto torque y proteccion termica integrada.",
     imagen: "/img/proyectosEmpresariales/sumergible.webp",
     industria: "Sumergibles",
+    specs: { alcance: "Pozo Profundo", tiempo: "Hermetico", operacion: "Alto Rendimiento" }
   },
 ];
 
+/* Animaciones Framer Motion */
+const ease = [0.16, 1, 0.3, 1];
+
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.1 },
+  transition: { duration: 0.6, delay, ease }
+});
+
 export default function ProyectosEmpresariales() {
   const [filtro, setFiltro] = useState("Todos");
-  const [sortBy, setSortBy] = useState("relevancia"); // "relevancia" | "az" | "industria"
+  const [sortBy, setSortBy] = useState("relevancia");
+  const [busqueda, setBusqueda] = useState("");
 
   const industrias = useMemo(
     () => Array.from(new Set(proyectos.map((p) => p.industria))),
@@ -124,10 +168,20 @@ export default function ProyectosEmpresariales() {
   }, []);
 
   const proyectosFiltrados = useMemo(() => {
-    const base =
+    let base =
       filtro === "Todos"
         ? proyectos
         : proyectos.filter((p) => p.industria === filtro);
+
+    if (busqueda.trim() !== "") {
+      const q = busqueda.toLowerCase().trim();
+      base = base.filter(
+        (p) =>
+          p.titulo.toLowerCase().includes(q) ||
+          p.descripcion.toLowerCase().includes(q) ||
+          p.industria.toLowerCase().includes(q)
+      );
+    }
 
     if (sortBy === "az") {
       return [...base].sort((a, b) => a.titulo.localeCompare(b.titulo, "es"));
@@ -139,10 +193,10 @@ export default function ProyectosEmpresariales() {
           a.titulo.localeCompare(b.titulo, "es")
       );
     }
-    return base; // relevancia
-  }, [filtro, sortBy]);
+    return base;
+  }, [filtro, sortBy, busqueda]);
 
-  /* ======= Form ======= */
+  /* Formulario de Cotizacion */
   const [form, setForm] = useState({
     nombre: "",
     email: "",
@@ -155,18 +209,33 @@ export default function ProyectosEmpresariales() {
   const onChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
+  const seleccionarProyecto = (p) => {
+    setForm((prev) => ({
+      ...prev,
+      proyecto: p.titulo,
+      industria: p.industria,
+    }));
+    document
+      .getElementById("formulario-proyectos")
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const handleGmailSubmit = (e) => {
     e.preventDefault();
-    const subject = `Cotización - ${form.proyecto || "Proyecto empresarial"}`;
+    const subject = `Cotizacion Empresarial - ${form.proyecto || "Darmax Agua"}`;
     const body = [
+      `SOLICITUD DE PROYECTO EMPRESARIAL`,
+      `=================================`,
       `Nombre: ${form.nombre}`,
       `Email: ${form.email}`,
-      `Teléfono: ${form.telefono || "-"}`,
-      `Industria: ${form.industria || filtro || "-"}`,
-      `Proyecto: ${form.proyecto || "-"}`,
-      "",
-      "Mensaje:",
-      form.detalles || "-",
+      `Telefono: ${form.telefono || "No especificado"}`,
+      `Industria: ${form.industria || filtro || "General"}`,
+      `Proyecto / Solucion: ${form.proyecto || "Asesoria a la medida"}`,
+      ``,
+      `Detalles y Especificaciones del Proyecto:`,
+      `${form.detalles || "Sin detalles adicionales"}`,
+      ``,
+      `Enviado desde darmaxagua.com.mx/proyectos-empresariales`,
     ].join("\n");
 
     const gmailUrl = buildGmailUrl({ to: GMAIL_TO, subject, body });
@@ -177,508 +246,577 @@ export default function ProyectosEmpresariales() {
   return (
     <>
       <Helmet>
-        <title>Proyectos Empresariales - Darmax</title>
+        <title>Proyectos Empresariales | Ingenieria y Soluciones Darmax Agua</title>
         <meta
           name="description"
-          content="Soluciones empresariales a la medida. Proyectos llave en mano, desde la ingeniería hasta la puesta en marcha y soporte continuo."
+          content="Soluciones de ingenieria hidraulica y purificacion a gran escala. Proyectos llave en mano para hoteles, franquicias, centros comerciales e industrias."
+        />
+        <meta
+          name="keywords"
+          content="proyectos empresariales, plantas purificadoras, vending corporativo, bombas sumergibles, presurizadoras, darmax agua"
         />
       </Helmet>
 
-      <div className="bg-white">
-        {/* HERO (rediseño para combinar: limpio, corporativo, azul/cyan) */}
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0">
-            <img
-              src={HERO_BG}
-              alt="Proyectos Empresariales"
-              className="h-full w-full object-cover"
-              loading="lazy"
+      <main className="min-h-screen bg-white selection:bg-[#24d4da] selection:text-white text-slate-900 overflow-x-hidden font-sans">
+        
+        {/* =========================================================
+            SECCION 1: HERO LUMINOSO DARMAX (BLANCO & TURQUESA)
+        ========================================================= */}
+        <section className="relative pt-28 pb-20 sm:pt-36 sm:pb-28 lg:pt-40 lg:pb-32 overflow-hidden bg-white text-slate-900">
+          
+          {/* Fondo hídrico con gotas luminosas idéntico a Nosotros */}
+          <div className="absolute inset-0 z-0">
+            <img 
+              src="https://res.cloudinary.com/defkuaytw/image/upload/v1776407496/fondo_gotas_jrtijk.png" 
+              alt="Fondo Gotas Darmax" 
+              className="w-full h-full object-cover opacity-70"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/60 to-white" />
-
-            {/* halos sobrios (sin lime) */}
-            <div className="absolute -top-28 left-1/2 -translate-x-1/2 h-80 w-[46rem] rounded-full bg-sky-400/15 blur-3xl" />
-            <div className="absolute top-10 right-10 h-64 w-64 rounded-full bg-cyan-400/10 blur-3xl" />
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            <div className="absolute inset-0 bg-[#24d4da]/10 mix-blend-overlay" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-white" />
+            
+            {/* Halo turquesa suave */}
+            <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-cyan-100/60 rounded-full blur-[120px] pointer-events-none" />
           </div>
 
-          <div className="relative px-4 md:px-10 pt-24 sm:pt-32 pb-12 max-w-screen-2xl mx-auto">
-            <div className="text-center max-w-4xl mx-auto">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white/90 text-sm backdrop-blur">
-                <span className="h-2 w-2 rounded-full bg-sky-400" />
-                Llave en mano • Ingeniería • Instalación • Soporte
-              </span>
+          <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-10">
+            <motion.div {...fadeUp(0)} className="text-center max-w-4xl mx-auto">
+              
+              {/* Badge Eyebrow en tonos turquesa/teal */}
+              <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-cyan-50 border border-cyan-200/80 text-[#168387] text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] mb-6 shadow-sm backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-[#24d4da] animate-ping" />
+                Ingenieria Hidraulica • Proyectos Llave en Mano • Soporte 24/7
+              </div>
 
-              <h2 className="mt-6 text-4xl md:text-6xl font-extrabold text-white tracking-tight">
-                Proyectos Empresariales
-              </h2>
-              <p className="mt-4 text-white/80 text-lg md:text-xl">
-                Soluciones a la medida: desde la planeación hasta la puesta en
-                marcha.
+              {/* Titulo con jerarquia font-black y gradiente oficial */}
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-slate-950 tracking-tighter leading-[1.08]">
+                Soluciones Empresariales <br className="hidden sm:inline" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#168387] via-[#24d4da] to-[#168387]">
+                  Disenadas para Trascender.
+                </span>
+              </h1>
+
+              {/* Parrafo descriptivo */}
+              <p className="mt-6 text-base sm:text-xl text-slate-600 font-medium leading-relaxed max-w-3xl mx-auto">
+                Desarrollamos infraestructura hidraulica, tratamiento de agua y automatizacion comercial con los mas altos estandares de eficiencia, sustentabilidad y rentabilidad.
               </p>
 
-              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-                <button
+              {/* Botones de accion luminosos */}
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                <motion.button
+                  whileHover={{ scale: 1.04, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() =>
                     document
                       .getElementById("catalogo-proyectos")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-sky-400 px-7 py-3 font-bold text-slate-950 shadow-lg shadow-sky-500/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-sky-300"
+                  className="px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-[#24d4da] to-[#168387] text-white font-black rounded-2xl shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all text-xs sm:text-sm uppercase tracking-widest flex items-center gap-3"
                 >
-                  Ver industrias
-                  <ArrowRight />
-                </button>
+                  Explorar Soluciones
+                  <ArrowRightIcon className="w-4 h-4 stroke-[3]" />
+                </motion.button>
 
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.04, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() =>
                     document
                       .getElementById("formulario-proyectos")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-7 py-3 font-semibold text-white backdrop-blur transition-all duration-300 hover:bg-white/15 hover:-translate-y-0.5"
+                  className="px-8 sm:px-10 py-4 sm:py-5 bg-white border-2 border-[#24d4da] text-[#168387] font-black rounded-2xl shadow-xl shadow-cyan-500/10 hover:bg-cyan-50 transition-all text-xs sm:text-sm uppercase tracking-widest flex items-center gap-3"
                 >
-                  Cotizar ahora
-                  <MailIcon />
+                  Cotizar Proyecto
+                  <EnvelopeIcon className="w-4 h-4 stroke-[2.5]" />
+                </motion.button>
+
+                <motion.a
+                  whileHover={{ scale: 1.04, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  href={buildWhatsAppUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-4 sm:py-5 text-[#168387] hover:text-[#0d5a5e] font-black text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2 transition-colors"
+                >
+                  <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                  Asesor via WhatsApp
+                </motion.a>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* =========================================================
+            SECCION 2: METRICAS DE AUTORIDAD (ESTILO NOSOTROS)
+        ========================================================= */}
+        <section className="py-14 sm:py-16 bg-teal-50/50 border-y border-teal-100/60">
+          <div className="max-w-7xl mx-auto px-5 sm:px-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+              
+              <motion.div
+                {...fadeUp(0)}
+                className="relative p-7 rounded-[2.5rem] bg-white border border-teal-100 shadow-xl shadow-teal-900/5 group overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-teal-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
+                <div className="relative z-10 flex flex-col items-center text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-5 shadow-lg shadow-teal-600/20 group-hover:rotate-12 transition-transform">
+                    <BuildingOffice2Icon className="w-7 h-7" />
+                  </div>
+                  <div className="text-4xl md:text-5xl font-black text-teal-950 tracking-tighter mb-1.5">
+                    120+
+                  </div>
+                  <p className="text-[#168387] font-bold uppercase tracking-widest text-xs">
+                    Instalaciones Industriales
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                {...fadeUp(0.1)}
+                className="relative p-7 rounded-[2.5rem] bg-white border border-teal-100 shadow-xl shadow-teal-900/5 group overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-teal-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
+                <div className="relative z-10 flex flex-col items-center text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-5 shadow-lg shadow-teal-600/20 group-hover:rotate-12 transition-transform">
+                    <BeakerIcon className="w-7 h-7" />
+                  </div>
+                  <div className="text-4xl md:text-5xl font-black text-teal-950 tracking-tighter mb-1.5">
+                    500k+ L
+                  </div>
+                  <p className="text-[#168387] font-bold uppercase tracking-widest text-xs">
+                    Capacidad Procesada / Dia
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                {...fadeUp(0.2)}
+                className="relative p-7 rounded-[2.5rem] bg-white border border-teal-100 shadow-xl shadow-teal-900/5 group overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-teal-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
+                <div className="relative z-10 flex flex-col items-center text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-5 shadow-lg shadow-teal-600/20 group-hover:rotate-12 transition-transform">
+                    <ShieldCheckIcon className="w-7 h-7" />
+                  </div>
+                  <div className="text-4xl md:text-5xl font-black text-teal-950 tracking-tighter mb-1.5">
+                    100%
+                  </div>
+                  <p className="text-[#168387] font-bold uppercase tracking-widest text-xs">
+                    Garantia y Soporte Tecnico
+                  </p>
+                </div>
+              </motion.div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================
+            SECCION 3: CATALOGO DE SOLUCIONES Y FILTRADO
+        ========================================================= */}
+        <section id="catalogo-proyectos" className="py-20 sm:py-28 bg-white scroll-mt-10">
+          <div className="max-w-7xl mx-auto px-5 sm:px-10">
+            
+            {/* Header del catalogo */}
+            <motion.div {...fadeUp(0)} className="text-center max-w-3xl mx-auto mb-14">
+              <span className="text-[#24d4da] font-black tracking-[0.25em] text-xs uppercase mb-3 block">
+                Soluciones Integrales
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tighter leading-tight">
+                Catalogo de Especialidades <br className="hidden sm:inline" />
+                <span className="underline decoration-[#24d4da]/40 underline-offset-[8px] decoration-2">
+                  Industriales y Comerciales
+                </span>
+              </h2>
+              <p className="mt-4 text-slate-500 text-base sm:text-lg font-medium leading-relaxed">
+                Selecciona la categoria o proyecto de tu interes para solicitar una cotizacion tecnica detallada.
+              </p>
+            </motion.div>
+
+            {/* Barra de Filtros y Control */}
+            <motion.div
+              {...fadeUp(0.1)}
+              className="mb-12 p-6 sm:p-8 rounded-[2.5rem] bg-slate-50 border border-slate-200/80 shadow-sm"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200/80">
+                
+                <div className="flex items-center gap-2">
+                  <AdjustmentsHorizontalIcon className="w-5 h-5 text-[#168387]" />
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-800">
+                    Filtrar por Industria ({proyectos.length} disponibles)
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                  <input
+                    type="text"
+                    value={busqueda}
+                    onChange={(e) => setBusqueda(e.target.value)}
+                    placeholder="Buscar solucion o equipo..."
+                    className="w-full sm:w-64 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-[#24d4da] transition-all"
+                  />
+
+                  <div className="relative w-full sm:w-auto">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="w-full sm:w-44 px-4 py-2.5 pr-8 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-[#24d4da] cursor-pointer transition-all appearance-none"
+                    >
+                      <option value="relevancia">Relevancia</option>
+                      <option value="az">A - Z</option>
+                      <option value="industria">Por Industria</option>
+                    </select>
+                    <ChevronDownIcon className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Pills de categorias */}
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                {["Todos", ...industrias].map((cat) => {
+                  const activo = filtro === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setFiltro(cat)}
+                      className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                        activo
+                          ? "bg-[#168387] text-white shadow-md shadow-teal-900/20 scale-105"
+                          : "bg-white text-slate-600 border border-slate-200 hover:border-[#168387] hover:text-[#168387]"
+                      }`}
+                    >
+                      {cat}{" "}
+                      <span className={`ml-1 text-[10px] ${activo ? "text-cyan-200" : "text-slate-400"}`}>
+                        ({conteo[cat] ?? 0})
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+
+            {/* Grid de Tarjetas de Proyectos */}
+            {proyectosFiltrados.length === 0 ? (
+              <div className="text-center py-20 px-6 rounded-[2.5rem] bg-slate-50 border border-slate-100">
+                <p className="text-slate-400 font-bold text-lg">No encontramos soluciones que coincidan con tu busqueda.</p>
+                <button
+                  onClick={() => {
+                    setFiltro("Todos");
+                    setBusqueda("");
+                  }}
+                  className="mt-4 px-6 py-2.5 bg-[#168387] text-white rounded-xl font-black text-xs uppercase tracking-wider"
+                >
+                  Restablecer filtros
                 </button>
               </div>
-            </div>
-
-            {/* Banda tipo filtro (más limpia, “site-like”) */}
-            <div className="mt-12">
-              <div className="mx-auto max-w-7xl rounded-3xl border border-white/15 bg-white/10 p-4 md:p-6 backdrop-blur">
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div>
-                    <h3 className="text-white font-extrabold text-xl md:text-2xl">
-                      Industrias que atendemos
-                    </h3>
-                    <p className="text-white/70 text-sm md:text-base">
-                      Filtra por industria y cotiza en 1 clic.
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Pill>24/7</Pill>
-                    <Pill>Llave en mano</Pill>
-                    <Pill>Capacitación</Pill>
-                    <Pill>Soporte</Pill>
-                  </div>
-                </div>
-
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {["Todos", ...industrias].map((cat) => {
-                    const activo = filtro === cat;
-                    return (
-                      <button
-                        key={cat}
-                        onClick={() => setFiltro(cat)}
-                        className={[
-                          "px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 border",
-                          activo
-                            ? "bg-white text-slate-950 border-white shadow-sm"
-                            : "bg-white/10 text-white/85 border-white/15 hover:bg-white/15",
-                        ].join(" ")}
-                        aria-pressed={activo}
-                      >
-                        {cat}{" "}
-                        <span className="opacity-70 font-normal">
-                          ({conteo[cat] ?? 0})
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CATÁLOGO (cards más “corporativas”, fondo blanco, borde gris suave) */}
-        <section
-          id="catalogo-proyectos"
-          className="px-4 md:px-10 pt-10 pb-16 max-w-screen-2xl mx-auto"
-        >
-          <div className="mx-auto max-w-7xl">
-            <div className="flex items-end justify-between gap-4 flex-wrap mb-10">
-              <div>
-                <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">
-                  Catálogo de Soluciones
-                </h3>
-                <p className="text-slate-600 mt-1">
-                  Selecciona una tarjeta para iniciar tu cotización.
-                </p>
-              </div>
-
-              {/* Ordenar (neutral, acorde a sitio) */}
-              <label className="flex items-center gap-2 text-sm">
-                <span className="text-slate-600 font-medium">Ordenar:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="rounded-xl border-slate-200 bg-white px-3 py-2 text-slate-700 font-semibold shadow-sm outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-300"
-                >
-                  <option value="relevancia">Relevancia</option>
-                  <option value="az">A-Z</option>
-                  <option value="industria">Industria</option>
-                </select>
-              </label>
-            </div>
-
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {proyectosFiltrados.map((p, idx) => (
-                <MotionCard key={p.id} delay={idx * 0.05}>
-                  <ProjectCard proyecto={p} setForm={setForm} />
-                </MotionCard>
-              ))}
-            </div>
-
-            <div className="mt-16 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-          </div>
-        </section>
-
-        {/* FORM SECTION (más “brand-corporate”, sin neón, dark elegante) */}
-        <section className="relative py-20 overflow-hidden">
-          {/* Fondo sobrio */}
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-slate-950" />
-            <div className="absolute inset-0 opacity-20">
-              <img
-                src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2000&q=80"
-                className="w-full h-full object-cover"
-                alt=""
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
-
-            {/* acentos suaves */}
-            <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-sky-400/10 blur-[120px]" />
-            <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-cyan-400/10 blur-[120px]" />
-
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-          </div>
-
-          <div
-            id="formulario-proyectos"
-            className="relative z-10 px-4 md:px-10 max-w-5xl mx-auto scroll-mt-20"
-          >
-            <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_20px_80px_-40px_rgba(0,0,0,0.8)] p-8 md:p-12 text-white">
-              <div className="text-center mb-10">
-                <span className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-4 py-1.5 text-sky-200 text-xs font-bold uppercase tracking-wider mb-4">
-                  Contacto Directo
-                </span>
-                <h3 className="text-3xl md:text-5xl font-extrabold tracking-tight">
-                  ¿Listo para cotizar tu proyecto?
-                </h3>
-                <p className="mt-4 text-slate-300 text-lg max-w-2xl mx-auto">
-                  Completa el formulario y se abrirá tu correo con un borrador
-                  listo para enviar a{" "}
-                  <span className="text-sky-200 font-semibold">
-                    darmaxagua@gmail.com
-                  </span>
-                  .
-                </p>
-              </div>
-
-              <form onSubmit={handleGmailSubmit} className="grid gap-8">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <FormInput
-                    required
-                    label="Nombre completo"
-                    name="nombre"
-                    value={form.nombre}
-                    onChange={onChange}
-                    placeholder="Escribe tu nombre"
-                  />
-                  <FormInput
-                    required
-                    type="email"
-                    label="Correo electrónico"
-                    name="email"
-                    value={form.email}
-                    onChange={onChange}
-                    placeholder="tucorreo@dominio.com"
-                  />
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-6">
-                  <FormInput
-                    label="Teléfono / WhatsApp"
-                    name="telefono"
-                    value={form.telefono}
-                    onChange={onChange}
-                    placeholder="Ej. 55 1234 5678"
-                  />
-                  <FormSelect
-                    label="Industria de Interés"
-                    name="industria"
-                    value={form.industria}
-                    onChange={onChange}
-                    options={industrias}
-                  />
-                  <FormInput
-                    label="Proyecto específico"
-                    name="proyecto"
-                    value={form.proyecto}
-                    onChange={onChange}
-                    placeholder="Ej. Vending personalizado"
-                  />
-                </div>
-
-                <FormTextarea
-                  required
-                  label="Mensaje / Detalles del proyecto"
-                  name="detalles"
-                  rows={5}
-                  value={form.detalles}
-                  onChange={onChange}
-                  placeholder="Describe tu proyecto: ubicación, capacidad requerida, presupuesto estimado, etc."
-                />
-
-                <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-                  <button
-                    type="submit"
-                    className="group flex items-center justify-center gap-3 rounded-2xl bg-sky-400 px-10 py-4 font-black text-slate-950 shadow-xl shadow-sky-500/20 transition-all duration-300 hover:-translate-y-1 hover:bg-sky-300 hover:shadow-sky-500/30"
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {proyectosFiltrados.map((p, idx) => (
+                  <motion.article
+                    key={p.id}
+                    {...fadeUp(idx * 0.04)}
+                    whileHover={{ y: -8 }}
+                    className="group relative flex flex-col h-full rounded-[2.5rem] bg-white p-5 border-2 border-slate-100 hover:border-[#24d4da] transition-all duration-500 shadow-lg shadow-slate-900/5 hover:shadow-2xl hover:shadow-cyan-900/15 overflow-hidden"
                   >
-                    Abrir Gmail y Enviar
-                    <ArrowRight />
-                  </button>
+                    {/* Badge superior de categoria en estilo claro */}
+                    <div className="absolute top-8 left-8 z-20 px-3.5 py-1 bg-white/95 backdrop-blur-md text-[#168387] text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-teal-100 shadow-md">
+                      {p.industria}
+                    </div>
 
-                  <a
+                    {/* Contenedor de Imagen con Zoom en Hover */}
+                    <div className="relative aspect-[16/11] overflow-hidden rounded-[1.8rem] bg-slate-100 mb-5">
+                      <img
+                        src={p.imagen}
+                        alt={p.titulo}
+                        className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-108"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.src = "https://placehold.co/600x450/e2e8f0/475569?text=Darmax+Ingenieria";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
+
+                    {/* Contenido descriptivo */}
+                    <div className="flex flex-col flex-grow">
+                      <h3 className="text-xl font-black text-slate-950 tracking-tight leading-tight group-hover:text-[#168387] transition-colors mb-2.5">
+                        {p.titulo}
+                      </h3>
+
+                      <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-3 mb-5">
+                        {p.descripcion}
+                      </p>
+
+                      {/* Mini-specs de 3 columnas */}
+                      <div className="grid grid-cols-3 gap-2 py-3 px-2 rounded-2xl bg-slate-50 border border-slate-100 mb-5">
+                        <div className="flex flex-col items-center text-center">
+                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-wider">Alcance</span>
+                          <span className="text-[11px] font-bold text-slate-800 truncate w-full">{p.specs?.alcance || "Llave en mano"}</span>
+                        </div>
+                        <div className="flex flex-col items-center text-center border-x border-slate-200/60">
+                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-wider">Despliegue</span>
+                          <span className="text-[11px] font-bold text-slate-800 truncate w-full">{p.specs?.tiempo || "Optimo"}</span>
+                        </div>
+                        <div className="flex flex-col items-center text-center">
+                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-wider">Operacion</span>
+                          <span className="text-[11px] font-bold text-slate-800 truncate w-full">{p.specs?.operacion || "24/7"}</span>
+                        </div>
+                      </div>
+
+                      {/* Botones de accion para cotizacion */}
+                      <div className="mt-auto pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-2.5">
+                        <motion.button
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => seleccionarProyecto(p)}
+                          className="w-full h-11 px-4 rounded-xl bg-gradient-to-r from-[#24d4da] to-[#168387] text-white text-xs font-black uppercase tracking-widest shadow-md shadow-cyan-600/15 hover:shadow-cyan-600/30 hover:brightness-105 transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                          <span>Cotizar Ahora</span>
+                          <ArrowRightIcon className="w-3.5 h-3.5 stroke-[2.5]" />
+                        </motion.button>
+
+                        <motion.a
+                          whileTap={{ scale: 0.98 }}
+                          href={buildWhatsAppUrl(p.titulo)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Consultar por WhatsApp"
+                          className="h-11 px-4 rounded-xl border-2 border-slate-200 text-[#168387] text-xs font-black uppercase tracking-widest hover:border-[#168387] hover:bg-cyan-50/50 transition-all duration-300 flex items-center justify-center shrink-0"
+                        >
+                          <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                        </motion.a>
+                      </div>
+
+                    </div>
+                  </motion.article>
+                ))}
+              </div>
+            )}
+
+          </div>
+        </section>
+
+        {/* =========================================================
+            SECCION 4: FORMULARIO DE COTIZACION (BRAND GRADIENT OFICIAL)
+        ========================================================= */}
+        <section id="formulario-proyectos" className="relative py-24 sm:py-32 bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] text-white overflow-hidden scroll-mt-10 shadow-[inset_0_20px_50px_rgba(0,0,0,0.1)]">
+          
+          {/* Textura de puntos hídricos */}
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+
+          <div className="relative z-10 max-w-5xl mx-auto px-5 sm:px-10">
+            
+            {/* Contenedor Glassmorphism Blanco sobre el gradiente oficial de Darmax */}
+            <motion.div
+              {...fadeUp(0)}
+              className="rounded-[3rem] sm:rounded-[3.5rem] bg-white/15 border border-white/30 backdrop-blur-2xl p-8 sm:p-12 md:p-16 shadow-[0_30px_100px_rgba(13,90,94,0.35)]"
+            >
+              <div className="text-center mb-12">
+                <span className="inline-block px-4 py-1.5 rounded-full bg-white/20 border border-white/30 text-white text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] mb-4 backdrop-blur-md">
+                  Atencion Directa de Ingenieria
+                </span>
+                <h3 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter">
+                  ¿Listo para Iniciar tu Proyecto?
+                </h3>
+                <p className="mt-4 text-cyan-50 text-base sm:text-lg max-w-2xl mx-auto font-medium leading-relaxed">
+                  Completa los datos de tu requerimiento. Generaremos un resumen tecnico para iniciar la revision inmediata con nuestro equipo.
+                </p>
+              </div>
+
+              <form onSubmit={handleGmailSubmit} className="space-y-6 sm:space-y-8">
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-cyan-100 mb-2">
+                      Nombre Completo <span className="text-white">*</span>
+                    </label>
+                    <input
+                      required
+                      type="text"
+                      name="nombre"
+                      value={form.nombre}
+                      onChange={onChange}
+                      placeholder="Ej. Ing. Carlos Mendoza"
+                      className="w-full bg-white/20 border border-white/30 rounded-2xl py-3.5 px-4 text-white placeholder-white/60 font-bold text-sm focus:bg-white/30 focus:border-white focus:ring-2 focus:ring-white/40 outline-none backdrop-blur-md transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-cyan-100 mb-2">
+                      Correo Electronico <span className="text-white">*</span>
+                    </label>
+                    <input
+                      required
+                      type="email"
+                      name="email"
+                      value={form.email}
+                      onChange={onChange}
+                      placeholder="correo@empresa.com"
+                      className="w-full bg-white/20 border border-white/30 rounded-2xl py-3.5 px-4 text-white placeholder-white/60 font-bold text-sm focus:bg-white/30 focus:border-white focus:ring-2 focus:ring-white/40 outline-none backdrop-blur-md transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-cyan-100 mb-2">
+                      Telefono / WhatsApp
+                    </label>
+                    <input
+                      type="tel"
+                      name="telefono"
+                      value={form.telefono}
+                      onChange={onChange}
+                      placeholder="Ej. 55 1234 5678"
+                      className="w-full bg-white/20 border border-white/30 rounded-2xl py-3.5 px-4 text-white placeholder-white/60 font-bold text-sm focus:bg-white/30 focus:border-white focus:ring-2 focus:ring-white/40 outline-none backdrop-blur-md transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-cyan-100 mb-2">
+                      Industria de Interes
+                    </label>
+                    <select
+                      name="industria"
+                      value={form.industria}
+                      onChange={onChange}
+                      className="w-full bg-white/20 border border-white/30 rounded-2xl py-3.5 px-4 text-white font-bold text-sm focus:bg-white/30 focus:border-white focus:ring-2 focus:ring-white/40 outline-none backdrop-blur-md transition-all cursor-pointer"
+                    >
+                      <option value="" className="bg-teal-900 text-cyan-100">Seleccionar industria...</option>
+                      {industrias.map((ind) => (
+                        <option key={ind} value={ind} className="bg-teal-900 text-white">
+                          {ind}
+                        </option>
+                      ))}
+                      <option value="Otra" className="bg-teal-900 text-white">Otra / Solucion Mixta</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-cyan-100 mb-2">
+                      Proyecto Especifico
+                    </label>
+                    <input
+                      type="text"
+                      name="proyecto"
+                      value={form.proyecto}
+                      onChange={onChange}
+                      placeholder="Ej. Vending personalizado"
+                      className="w-full bg-white/20 border border-white/30 rounded-2xl py-3.5 px-4 text-white placeholder-white/60 font-bold text-sm focus:bg-white/30 focus:border-white focus:ring-2 focus:ring-white/40 outline-none backdrop-blur-md transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] sm:text-xs font-black uppercase tracking-widest text-cyan-100 mb-2">
+                    Detalles Tecnicos o Especificaciones <span className="text-white">*</span>
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    name="detalles"
+                    value={form.detalles}
+                    onChange={onChange}
+                    placeholder="Describe los requerimientos: ubicacion del proyecto, caudal deseado, caracteristicas del agua cruda o fecha estimada de instalacion..."
+                    className="w-full bg-white/20 border border-white/30 rounded-2xl py-3.5 px-4 text-white placeholder-white/60 font-medium text-sm focus:bg-white/30 focus:border-white focus:ring-2 focus:ring-white/40 outline-none backdrop-blur-md transition-all resize-none"
+                  />
+                </div>
+
+                {/* Botones de envio */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                  <motion.button
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    className="w-full sm:w-auto px-10 py-4 sm:py-5 bg-white text-[#168387] font-black rounded-2xl shadow-2xl hover:bg-cyan-50 transition-all text-xs sm:text-sm uppercase tracking-widest flex items-center justify-center gap-3"
+                  >
+                    <span>Abrir Gmail y Enviar</span>
+                    <ArrowRightIcon className="w-4 h-4 stroke-[3]" />
+                  </motion.button>
+
+                  <motion.a
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
                     href={buildMailto({
                       to: GMAIL_TO,
-                      subject: "Consulta desde Proyectos Empresariales",
-                      body: "",
+                      subject: `Consulta Proyecto: ${form.proyecto || "Empresarial"}`,
+                      body: form.detalles || "Solicitud de cotizacion",
                     })}
-                    className="flex items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-10 py-4 font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/10 hover:-translate-y-1"
+                    className="w-full sm:w-auto px-8 py-4 sm:py-5 bg-white/10 backdrop-blur-xl border border-white/30 text-white font-black rounded-2xl hover:bg-white/20 transition-all text-xs sm:text-sm uppercase tracking-widest flex items-center justify-center gap-3"
                   >
-                    Usar otro cliente
-                    <ExternalIcon />
-                  </a>
+                    <span>Otro Cliente de Correo</span>
+                    <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                  </motion.a>
                 </div>
 
-                <p className="text-center text-sm text-slate-400">
-                  *Este proceso no es automático. Se generará un borrador
-                  profesional para que lo revises antes de enviar.
+                <p className="text-center text-xs text-cyan-100/80 font-medium">
+                  Atencion corporativa directa:{" "}
+                  <a href={`mailto:${GMAIL_TO}`} className="text-white underline font-bold">
+                    {GMAIL_TO}
+                  </a>{" "}
+                  • Nezahualcoyotl, Edo. de Mexico.
                 </p>
+
               </form>
-            </div>
+            </motion.div>
+
           </div>
         </section>
-      </div>
+
+        {/* =========================================================
+            SECCION 5: GRAND CTA FINAL (BRAND SIGNATURE)
+        ========================================================= */}
+        <section className="py-20 sm:py-28 bg-white">
+          <div className="max-w-7xl mx-auto px-5 sm:px-10">
+            <motion.div
+              {...fadeUp(0)}
+              className="bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] rounded-[3.5rem] sm:rounded-[4rem] p-10 sm:p-16 md:p-20 text-center text-white relative overflow-hidden shadow-[0_40px_100px_-15px_rgba(22,131,135,0.4)]"
+            >
+              <div className="absolute inset-0 bg-gradient-to-tr from-white/15 via-transparent to-black/10 pointer-events-none" />
+
+              <div className="relative z-10 max-w-4xl mx-auto">
+                <span className="inline-block px-4 py-1.5 rounded-full bg-white/20 border border-white/30 text-white text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] mb-6 backdrop-blur-md">
+                  Ingenieria que Fluye
+                </span>
+                <h2 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter mb-6 leading-tight">
+                  Construyamos Juntos tu Proxima Infraestructura Hídrica.
+                </h2>
+                <p className="text-lg sm:text-2xl text-cyan-50 font-medium leading-relaxed mb-10 max-w-2xl mx-auto">
+                  Respaldamos tu inversion con tecnologia confiable, componentes certificados y el acompanamiento tecnico especializado de Darmax.
+                </p>
+
+                <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+                  <motion.a
+                    whileHover={{ scale: 1.05, y: -3 }}
+                    whileTap={{ scale: 0.96 }}
+                    href={buildWhatsAppUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-8 sm:px-10 py-4 sm:py-5 bg-slate-950 text-white font-black rounded-2xl shadow-2xl text-xs sm:text-sm uppercase tracking-widest transition-all border border-slate-800 flex items-center gap-3"
+                  >
+                    <ChatBubbleLeftRightIcon className="w-5 h-5 text-[#24d4da]" />
+                    Hablar con un Ingeniero
+                  </motion.a>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -3 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() =>
+                      document
+                        .getElementById("formulario-proyectos")
+                        ?.scrollIntoView({ behavior: "smooth" })
+                    }
+                    className="px-8 sm:px-10 py-4 sm:py-5 bg-white/15 backdrop-blur-xl border border-white/30 text-white font-black rounded-2xl text-xs sm:text-sm uppercase tracking-widest transition-all hover:bg-white/25"
+                  >
+                    Solicitar Propuesta Tecnica
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+      </main>
     </>
-  );
-}
-
-/* ========= Animación contenedor ========= */
-function MotionCard({ children, delay = 0 }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -60px 0px" }}
-      transition={{ duration: 0.5, ease: "easeOut", delay }}
-      className="h-full"
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-/* ========= Cards (rediseño visual, MISMA lógica) ========= */
-function ProjectCard({ proyecto, setForm }) {
-  const imgSrc = proyecto.imagen?.trim()
-    ? proyecto.imagen
-    : "https://placehold.co/600x450/e2e8f0/475569?text=Proyecto";
-
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        setForm((prev) => ({
-          ...prev,
-          proyecto: proyecto.titulo,
-          industria: proyecto.industria,
-        }));
-        document
-          .getElementById("formulario-proyectos")
-          ?.scrollIntoView({ behavior: "smooth" });
-      }}
-      className="
-        group relative overflow-hidden rounded-3xl
-        border border-slate-200 bg-white
-        transition-all duration-300
-        hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10
-        focus:outline-none focus:ring-2 focus:ring-sky-300
-        w-full h-full min-h-[320px] text-left
-      "
-    >
-      {/* Imagen */}
-      <div className="absolute inset-0">
-        <img
-          src={imgSrc}
-          alt={proyecto.titulo}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
-      </div>
-
-      {/* Halo sutil en hover */}
-      <div className="absolute -bottom-28 left-1/2 -translate-x-1/2 h-44 w-80 rounded-full bg-sky-400/15 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
-      {/* Contenido */}
-      <div className="relative p-6 h-full flex flex-col justify-end z-10">
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-[10px] font-black text-slate-950 uppercase tracking-widest">
-            {proyecto.industria}
-          </span>
-          <span className="text-white/90 text-xs font-bold bg-white/10 backdrop-blur-md px-2 py-1 rounded-lg border border-white/15">
-            Cotizar →
-          </span>
-        </div>
-
-        <h3 className="text-xl font-black text-white leading-tight mb-2 drop-shadow-md">
-          {proyecto.titulo}
-        </h3>
-
-        <p className="text-white/80 text-sm line-clamp-2 leading-relaxed opacity-0 transform translate-y-3 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
-          {proyecto.descripcion}
-        </p>
-      </div>
-
-      {/* Footer CTA sutil */}
-      <div className="absolute bottom-4 left-6 right-6 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-        <div className="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent mb-3" />
-        <div className="flex items-center justify-between text-xs text-white/80">
-          <span className="font-semibold">Abrir formulario</span>
-          <span className="inline-flex items-center gap-1 font-bold">
-            Continuar <ArrowRightSmall />
-          </span>
-        </div>
-      </div>
-    </button>
-  );
-}
-
-/* ========= Form helpers (Dark / Glass version, rediseño de colores) ========= */
-function FormInput({ label, ...props }) {
-  return (
-    <label className="block">
-      {label && (
-        <span className="mb-2 block text-sm font-bold text-white/90 uppercase tracking-wide drop-shadow-sm">
-          {label}
-          {props.required && <span className="text-sky-300 ml-1">*</span>}
-        </span>
-      )}
-      <input
-        {...props}
-        className="block w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3.5 text-white placeholder:text-white/45 shadow-inner transition-all focus:border-sky-300 focus:bg-white/15 focus:ring-2 focus:ring-sky-300/25 outline-none backdrop-blur-md"
-      />
-    </label>
-  );
-}
-
-function FormSelect({ label, options = [], ...props }) {
-  return (
-    <label className="block">
-      {label && (
-        <span className="mb-2 block text-sm font-bold text-white/90 uppercase tracking-wide drop-shadow-sm">
-          {label}
-          {props.required && <span className="text-sky-300 ml-1">*</span>}
-        </span>
-      )}
-      <select
-        {...props}
-        className="block w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3.5 text-white shadow-inner transition-all focus:border-sky-300 focus:bg-white/15 focus:ring-2 focus:ring-sky-300/25 outline-none appearance-none cursor-pointer backdrop-blur-md"
-      >
-        <option value="" className="bg-slate-900 text-slate-300">
-          Selecciona industria…
-        </option>
-        {options.map((i) => (
-          <option key={i} value={i} className="bg-slate-900 text-white">
-            {i}
-          </option>
-        ))}
-        <option value="Otra" className="bg-slate-900 text-white">
-          Otra
-        </option>
-      </select>
-    </label>
-  );
-}
-
-function FormTextarea({ label, rows = 4, ...props }) {
-  return (
-    <label className="block">
-      {label && (
-        <span className="mb-2 block text-sm font-bold text-white/90 uppercase tracking-wide drop-shadow-sm">
-          {label}
-          {props.required && <span className="text-sky-300 ml-1">*</span>}
-        </span>
-      )}
-      <textarea
-        rows={rows}
-        {...props}
-        className="block w-full rounded-xl border border-white/15 bg-white/10 px-4 py-3.5 text-white placeholder:text-white/45 shadow-inner transition-all focus:border-sky-300 focus:bg-white/15 focus:ring-2 focus:ring-sky-300/25 outline-none resize-none backdrop-blur-md"
-      />
-    </label>
-  );
-}
-
-/* ========= UI Bits ========= */
-function Pill({ children }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-white/80">
-      {children}
-    </span>
-  );
-}
-
-/* ========= Icons ========= */
-function ArrowRight() {
-  return (
-    <svg
-      className="h-5 w-5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M5 12h14" />
-      <path d="M13 5l7 7-7 7" />
-    </svg>
-  );
-}
-
-function ArrowRightSmall() {
-  return (
-    <svg
-      className="h-4 w-4"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M5 12h14" />
-      <path d="M13 5l7 7-7 7" />
-    </svg>
-  );
-}
-
-function MailIcon() {
-  return (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
-    </svg>
-  );
-}
-
-function ExternalIcon() {
-  return (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z" />
-      <path d="M5 5h6v2H7v10h10v-4h2v6H5V5z" />
-    </svg>
   );
 }
