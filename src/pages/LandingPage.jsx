@@ -535,39 +535,52 @@ export default function LandingPage() {
         </div>
 
         {/* CALCULADORA INTEGRADA */}
-        <section id="calculadora-negocio" className="min-h-screen lg:min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-sans overflow-hidden py-12 sm:py-16">
+        <section id="calculadora-negocio" className="min-h-screen lg:min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-montserrat not-italic overflow-hidden py-12 sm:py-16">
           
           <div className="max-w-[1440px] mx-auto px-0 sm:px-6 w-full flex flex-col">
-            {/* Header Calculadora - HISTORIA DE ÉXITO MATEMÁTICO */}
+            {/* Header Calculadora */}
             <motion.div 
-              {...slideInRight(0, "Tu éxito, es matemática pura.")}
-              className="w-full mb-6 sm:mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 px-6 sm:px-0"
+              {...slideInRight(0, "Calcula tu rentabilidad")}
+              className="w-full mb-8 sm:mb-10 flex flex-col items-center text-center px-4 sm:px-0 max-w-4xl mx-auto"
             >
-              <div className="max-w-3xl text-left">
-                <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight mb-2 sm:mb-4">
-                  Tu éxito, <br />
-                  es <span style={{ color: CALC_BRAND.accentDark }}>matemática pura.</span>
-                </h2>
-                <p className="text-slate-500 text-base sm:text-lg font-medium leading-relaxed">
-                  Descubre el potencial real de tu inversión, las mejores decisiones comienzan con datos reales.
-                </p>
-              </div>
+              <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block text-center">
+                Proyección Financiera
+              </span>
+              <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-2 sm:mb-4 text-center">
+                <span className="text-[#031638]">Calcula tu </span>
+                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                  rentabilidad
+                </span>
+              </h2>
+              <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl text-center mb-6">
+                Ajusta los valores según tu negocio y descubre el potencial de tu inversión.
+              </p>
 
-              {/* Switch de modo discreto */}
-              <div className="bg-slate-200/50 p-1 rounded-xl flex shadow-inner border border-slate-200 shrink-0 mx-6 sm:mx-0">
-                <button 
+              {/* Switch de modo con diseño HeroBannerSlide */}
+              <div className="flex items-center gap-1 sm:gap-2 bg-slate-900/5 backdrop-blur-md p-1 rounded-full border border-slate-200/90 shadow-sm font-montserrat not-italic mx-auto">
+                <button
                   type="button"
                   onClick={() => setTipoCalc("agua")}
-                  className={`px-5 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-black rounded-lg transition-all ${tipoCalc === "agua" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                    tipoCalc === "agua"
+                      ? "bg-[#168387] text-white shadow-md"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
                 >
-                  AGUA
+                  <span className={`w-2 h-2 rounded-full ${tipoCalc === "agua" ? "bg-cyan-300" : "bg-slate-300"}`} />
+                  <span>Agua</span>
                 </button>
-                <button 
+                <button
                   type="button"
                   onClick={() => setTipoCalc("limpieza")}
-                  className={`px-5 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-black rounded-lg transition-all ${tipoCalc === "limpieza" ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                  className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                    tipoCalc === "limpieza"
+                      ? "bg-[#e7b341] text-white shadow-md"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
                 >
-                  LIMPIEZA
+                  <span className={`w-2 h-2 rounded-full ${tipoCalc === "limpieza" ? "bg-amber-200" : "bg-slate-300"}`} />
+                  <span>Limpieza</span>
                 </button>
               </div>
             </motion.div>

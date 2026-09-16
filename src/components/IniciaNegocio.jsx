@@ -344,10 +344,12 @@ import {
   LightBulbIcon,
   Cog6ToothIcon,
   ArrowRightIcon,
-  BuildingStorefrontIcon
+  BuildingStorefrontIcon,
+  ShieldCheckIcon,
+  CheckCircleIcon,
+  UserIcon
 } from "@heroicons/react/24/outline";
-import { Droplet, HandCoins } from "lucide-react";
-import { PiSprayBottle } from "react-icons/pi";
+import { Droplet, HandCoins, SprayCan } from "lucide-react";
 
 const getModelSpecs = (modeloId) => {
   if (modeloId === "Purificadora") {
@@ -359,7 +361,7 @@ const getModelSpecs = (modeloId) => {
   }
   if (modeloId === "Vending-Limpieza") {
     return [
-      { label: "Variedad", val: "Productos", icon: PiSprayBottle },
+      { label: "Variedad", val: "Productos", icon: SprayCan },
       { label: "Ingresos", val: "Adicionales", icon: HandCoins },
       { label: "Negocio", val: "Automático", icon: Cog6ToothIcon },
     ];
@@ -411,17 +413,17 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
       variants={cardVariants}
       whileHover={{ y: -6, transition: { duration: 0.25 } }}
       className={[
-        "group relative flex flex-col h-full rounded-[2rem] sm:rounded-[2.5rem] bg-white p-4 sm:p-4",
+        "group relative flex flex-col h-full rounded-[2rem] sm:rounded-[2.25rem] bg-white p-4 sm:p-5",
         "transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]",
-        "hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.12)]",
-        "w-full max-w-[300px] sm:max-w-[310px] md:max-w-[320px] mx-auto",
+        "hover:shadow-[0_24px_50px_-12px_rgba(0,0,0,0.12)]",
+        "w-full max-w-[320px] sm:max-w-[340px] md:max-w-[350px] lg:max-w-[360px] mx-auto",
         levelConfig.borderClass,
         isSelected ? "ring-2 ring-[#24d4da]" : "",
       ].join(" ")}
     >
       {/* BADGE DE NIVEL */}
       {levelConfig.label && (
-        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-1.5 ${levelConfig.badgeBg} text-white text-xs font-semibold uppercase tracking-[0.2em] rounded-full shadow-lg whitespace-nowrap font-montserrat not-italic`}>
+        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-3.5 py-1 sm:px-4 sm:py-1.5 ${levelConfig.badgeBg} text-white text-[10px] sm:text-xs font-bold uppercase tracking-[0.16em] sm:tracking-[0.2em] rounded-full shadow-md whitespace-nowrap font-montserrat not-italic`}>
           {levelConfig.label}
         </div>
       )}
@@ -429,7 +431,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
       {/* IMAGEN Y CONTROL */}
       <div 
         onClick={() => navigate(configurePath)}
-        className="relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img mb-3 sm:mb-4 transition-all duration-500 hover:shadow-inner flex items-center justify-center p-1 sm:p-1.5"
+        className="relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img mb-3 sm:mb-4 transition-all duration-500 hover:shadow-inner flex items-center justify-center p-1.5 sm:p-2"
       >
         {!errorImagen ? (
           <img
@@ -453,14 +455,14 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
             onToggleSelect(modelo.id);
           }}
           className={[
-            "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-8 w-8 sm:h-8.5 sm:w-8.5 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 backdrop-blur-xl border z-30",
+            "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-7.5 w-7.5 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 backdrop-blur-xl border z-30",
             isSelected
-              ? "bg-[#24d4da] border-[#24d4da] text-white shadow-xl shadow-cyan-500/40 rotate-90"
+              ? "bg-[#24d4da] border-[#24d4da] text-white shadow-lg shadow-cyan-500/40 rotate-90"
               : "bg-white/80 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover/img:scale-100",
           ].join(" ")}
         >
-          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {isSelected ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />}
+          <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            {isSelected ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />}
           </svg>
         </button>
       </div>
@@ -468,22 +470,22 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
       {/* CONTENIDO DE NEGOCIO */}
       <div className="flex flex-col flex-grow text-center">
         <div className="mb-1.5 sm:mb-2">
-          <h3 className="text-xl sm:text-lg lg:text-xl font-bold text-slate-900 tracking-tight leading-tight group-hover:text-[#168387] transition-colors duration-500 uppercase font-montserrat not-italic">
+          <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-snug group-hover:text-[#168387] transition-colors duration-500 uppercase font-montserrat not-italic">
             {modelo.nombre}
           </h3>
         </div>
 
         {/* BUSINESS SPECS CON SEPARADORES | */}
-        <div className="flex items-center justify-center gap-1 sm:gap-2 max-w-[285px] mx-auto w-full mb-1 py-1">
+        <div className="flex items-center justify-center gap-1 sm:gap-1.5 max-w-[285px] sm:max-w-[305px] mx-auto w-full mb-1 py-1">
           {specs.map((spec, i) => (
             <React.Fragment key={i}>
-              {i > 0 && <div className="h-6 sm:h-7 w-[1.5px] bg-slate-300 shrink-0 rounded-full" />}
+              {i > 0 && <div className="h-6 sm:h-7 w-[1.5px] bg-slate-200 shrink-0 rounded-full self-center" />}
               <div className="flex-1 flex flex-col items-center text-center min-w-0 group/spec cursor-default px-0.5">
-                <spec.icon className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-slate-500 group-hover/spec:text-[#168387] transition-colors duration-300 mb-0.5 shrink-0 stroke-[1.8]" />
-                <span className="text-[9px] sm:text-[10.5px] font-semibold text-slate-500 group-hover/spec:text-[#168387] transition-colors duration-300 uppercase tracking-wider truncate w-full font-montserrat not-italic leading-tight">
+                <spec.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 group-hover/spec:text-[#168387] transition-colors duration-300 mb-1 shrink-0 stroke-[1.6]" />
+                <span className="text-[9.5px] sm:text-[10.5px] font-semibold text-slate-400 group-hover/spec:text-slate-600 transition-colors duration-300 uppercase tracking-wider truncate w-full font-montserrat not-italic leading-tight">
                   {spec.label}
                 </span>
-                <span className="text-[9px] sm:text-[10.5px] font-bold text-slate-500 group-hover/spec:text-[#168387] transition-colors duration-300 truncate w-full font-montserrat not-italic mt-0.5 leading-tight">
+                <span className="text-[10px] sm:text-[11px] font-bold text-slate-700 group-hover/spec:text-[#168387] transition-colors duration-300 truncate w-full font-montserrat not-italic mt-0.5 leading-tight">
                   {spec.val}
                 </span>
               </div>
@@ -492,13 +494,13 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
         </div>
 
         {/* SEPARADOR HORIZONTAL QUE DIVIDE ESPECIFICACIONES DE INVERSIÓN */}
-        <div className="w-full h-[1.5px] bg-slate-200 my-3 sm:my-3.5" />
+        <div className="w-full h-px bg-slate-200/80 my-3 sm:my-3.5" />
 
         {/* FOOTER DE CONVERSIÓN */}
         <div className="mt-auto">
           <div className="relative group/price mb-3 sm:mb-4">
-            <span className="block text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-widest mb-0.5 font-montserrat not-italic">Inversión desde</span>
-            <span className="text-2xl sm:text-xl lg:text-2xl font-bold text-slate-900 tracking-tighter group-hover/price:text-[#168387] transition-colors font-montserrat not-italic">
+            <span className="block text-[10px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-0.5 font-montserrat not-italic">Inversión desde</span>
+            <span className="text-2xl sm:text-2xl lg:text-[26px] font-bold text-slate-900 tracking-tight group-hover/price:text-[#168387] transition-colors font-montserrat not-italic">
               {formatMXN(modelo.precio)}
             </span>
           </div>
@@ -508,7 +510,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate(configurePath)}
-              className="w-full h-10 px-6 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-bold uppercase tracking-widest hover:bg-[#168387] shadow-lg shadow-slate-900/10 transition-all duration-300 font-montserrat not-italic"
+              className="w-full h-10 px-5 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-bold uppercase tracking-widest hover:bg-[#168387] shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-[#168387]/20 transition-all duration-300 font-montserrat not-italic"
             >
               Configurar
             </motion.button>
@@ -516,10 +518,10 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
             <button
               type="button"
               onClick={() => navigate(modelo.rutaInfo)}
-              className="inline-flex items-center justify-center gap-1.5 py-1 text-slate-700 hover:text-[#168387] text-xs sm:text-sm font-semibold tracking-wider uppercase underline underline-offset-4 decoration-slate-300 hover:decoration-[#168387] transition-all group/link font-montserrat not-italic"
+              className="inline-flex items-center justify-center gap-1.5 py-1 text-slate-600 hover:text-[#168387] text-xs sm:text-sm font-semibold tracking-wider uppercase underline underline-offset-4 decoration-slate-300 hover:decoration-[#168387] transition-all group/link font-montserrat not-italic"
             >
               <span>Conoce más</span>
-              <ArrowRightIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] group-hover/link:translate-x-1 transition-transform" />
+              <ArrowRightIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[1.8] group-hover/link:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
@@ -551,7 +553,7 @@ function VentajasSection() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] py-20 sm:py-32 selection:bg-white selection:text-[#168387]">
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] py-16 sm:py-24 md:py-28 selection:bg-white selection:text-[#168387] font-montserrat not-italic">
       <ParallaxBackground
         depthElements={[
           {
@@ -568,14 +570,22 @@ function VentajasSection() {
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...slideInLeft(0, "Todo lo que necesitas para que tu éxito sea inevitable.")} className="max-w-3xl mb-12 sm:mb-24">
-          <span className="font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block text-cyan-100 opacity-80">
+        <motion.div {...slideInLeft(0, "Todo lo que necesitas para que tu éxito sea inevitable.")} className="max-w-5xl lg:max-w-6xl mb-12 sm:mb-16 flex flex-col items-center text-center mx-auto w-full">
+          <span className="font-montserrat not-italic text-cyan-100 font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block opacity-90 text-center">
             El Ecosistema Darmax
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tighter leading-tight">
-            Todo lo que necesitas <br />
-            <span className="text-2xl sm:text-3xl md:text-5xl text-white/90">para que tu éxito sea inevitable.</span>
+          <h2 className="font-montserrat not-italic text-3xl sm:text-4xl md:text-5xl lg:text-[54px] xl:text-6xl font-bold tracking-tight leading-tight mb-4 sm:mb-6 text-center">
+            <span className="block text-white">
+              Todo lo que necesitas
+            </span>
+            <span className="bg-gradient-to-r from-white via-cyan-100 to-cyan-200 bg-clip-text text-transparent inline-block sm:whitespace-nowrap">
+              para que tu éxito sea inevitable.
+            </span>
           </h2>
+          <div className="text-cyan-50/90 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-center space-y-0.5 sm:space-y-1 max-w-3xl">
+            <p>Soluciones integrales, tecnología confiable y acompañamiento real</p>
+            <p>en cada etapa de tu negocio.</p>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
@@ -583,19 +593,19 @@ function VentajasSection() {
             <motion.div
               key={i}
               {...slideInLeft(0.04 * (i + 1))}
-              className="group relative p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white/20 border border-white/40 backdrop-blur-md hover:bg-white/30 transition-all duration-700 shadow-2xl shadow-cyan-950/10"
+              className="group relative p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white/20 border border-white/40 backdrop-blur-md hover:bg-white/30 transition-all duration-700 shadow-2xl shadow-cyan-950/10 font-montserrat not-italic"
             >
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-6 sm:mb-8 bg-white text-[#168387] shadow-lg group-hover:scale-110 transition-transform duration-500">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mb-6 sm:mb-8 bg-white text-[#168387] shadow-lg group-hover:scale-110 transition-transform duration-500 font-montserrat not-italic">
                 <p.icon className="w-6 h-6 sm:w-8 sm:h-8" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4 tracking-tight">{p.t}</h3>
-              <p className="text-cyan-50 text-sm sm:text-base leading-relaxed font-medium">
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 tracking-tight font-montserrat not-italic">{p.t}</h3>
+              <p className="text-cyan-50 text-sm sm:text-base leading-relaxed font-normal font-montserrat not-italic">
                 {p.d}
               </p>
               
-              <div className="mt-6 sm:mt-8 flex items-center gap-2">
+              <div className="mt-6 sm:mt-8 flex items-center gap-2 font-montserrat not-italic">
                 <div className="h-px w-6 sm:w-8 bg-white/40 group-hover:w-12 transition-all duration-500" />
-                <span className="text-xs font-black uppercase tracking-widest text-cyan-100/60">Pilar 0{i+1}</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-cyan-100/70 font-montserrat not-italic">Pilar 0{i+1}</span>
               </div>
             </motion.div>
           ))}
@@ -612,6 +622,7 @@ const IniciaNegocio = () => {
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
   const [compareOpen, setCompareOpen] = useState(false);
+  const [showVendingSpecs, setShowVendingSpecs] = useState(true);
   const [modelosData, setModelosData] = useState(() => {
     const cached = getCachedConfiguradorModels();
     if (cached && Array.isArray(cached) && cached.length > 0) {
@@ -879,26 +890,26 @@ const IniciaNegocio = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 15 }}
-              className="mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-[2rem] sm:rounded-[2.5rem] border border-cyan-100 bg-white p-5 sm:p-6 shadow-xl shadow-cyan-900/5"
+              className="mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-[2rem] sm:rounded-[2.5rem] border border-cyan-100 bg-white p-5 sm:p-6 shadow-xl shadow-cyan-900/5 font-montserrat not-italic"
             >
               <div>
-                <p className="text-xs sm:text-sm font-black text-slate-900">
+                <p className="text-xs sm:text-sm font-bold text-slate-900 font-montserrat not-italic">
                   {selected.length} modelo{selected.length > 1 ? "s" : ""} seleccionado{selected.length > 1 ? "s" : ""}
                 </p>
-                <p className="text-xs text-slate-500">Comparativa técnica lista para visualizar.</p>
+                <p className="text-xs text-slate-500 font-montserrat not-italic">Comparativa técnica lista para visualizar.</p>
               </div>
 
               <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => setSelected([])}
-                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 text-slate-600 text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition"
+                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition font-montserrat not-italic"
                 >
                   Limpiar
                 </button>
 
                 <button
                   onClick={() => setCompareOpen(true)}
-                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-white text-xs font-black uppercase tracking-widest shadow-lg shadow-[#168387]/20 hover:shadow-[#168387]/40 transition"
+                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-white text-xs font-bold uppercase tracking-widest shadow-lg shadow-[#168387]/20 hover:shadow-[#168387]/40 transition font-montserrat not-italic"
                   style={{ backgroundColor: BRAND_DARK }}
                 >
                   Comparar
@@ -914,8 +925,8 @@ const IniciaNegocio = () => {
               className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
             >
               <div className="shrink-0">
-                <span className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em]">Nivel 01</span>
-                <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">Individuales</h3>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] font-montserrat not-italic">Nivel 01</span>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-montserrat not-italic">Individuales</h3>
               </div>
               <div className="h-px w-full bg-slate-200" />
             </motion.div>
@@ -948,8 +959,8 @@ const IniciaNegocio = () => {
               className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
             >
               <div className="shrink-0">
-                <span className="text-xs font-black text-[#168387] uppercase tracking-[0.2em] sm:tracking-[0.3em]">Nivel 02</span>
-                <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">Paquetes de Negocio</h3>
+                <span className="text-xs font-bold text-[#168387] uppercase tracking-[0.2em] sm:tracking-[0.3em] font-montserrat not-italic">Nivel 02</span>
+                <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-montserrat not-italic">Paquetes de Negocio</h3>
               </div>
               <div className="h-px w-full bg-[#168387]/20" />
             </motion.div>
@@ -974,6 +985,54 @@ const IniciaNegocio = () => {
                 ))}
             </motion.div>
           </div>
+
+          {/* BARRA DE BENEFICIOS Y VALOR INCLUIDO */}
+          <motion.div
+            {...slideInLeft(0.06)}
+            className="w-full max-w-5xl mx-auto mt-8 sm:mt-12 rounded-2xl sm:rounded-3xl lg:rounded-full bg-white/95 border border-slate-200/90 py-3.5 sm:py-4 px-4 sm:px-6 lg:px-8 shadow-lg shadow-slate-900/5 backdrop-blur-md not-italic"
+          >
+            <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:gap-6 lg:flex lg:items-center lg:justify-between lg:gap-2">
+              
+              {/* Instalación incluida */}
+              <div className="flex items-center gap-2 sm:gap-2.5 group justify-start sm:justify-center lg:justify-center">
+                <Cog6ToothIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-5 lg:h-5 text-[#168387] shrink-0 stroke-[1.8] group-hover:rotate-45 transition-transform duration-300" />
+                <span className="text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-800 font-montserrat not-italic tracking-tight leading-tight group-hover:text-[#168387] transition-colors duration-300">
+                  Instalación incluida
+                </span>
+              </div>
+
+              <div className="hidden lg:block h-6 w-[1.5px] bg-slate-200 rounded-full" />
+
+              {/* Capacitación y soporte */}
+              <div className="flex items-center gap-2 sm:gap-2.5 group justify-start sm:justify-center lg:justify-center">
+                <UserGroupIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-5 lg:h-5 text-[#168387] shrink-0 stroke-[1.8] group-hover:scale-110 transition-transform duration-300" />
+                <span className="text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-800 font-montserrat not-italic tracking-tight leading-tight group-hover:text-[#168387] transition-colors duration-300">
+                  Capacitación y soporte
+                </span>
+              </div>
+
+              <div className="hidden lg:block h-6 w-[1.5px] bg-slate-200 rounded-full" />
+
+              {/* Equipos de alta calidad */}
+              <div className="flex items-center gap-2 sm:gap-2.5 group justify-start sm:justify-center lg:justify-center">
+                <ShieldCheckIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-5 lg:h-5 text-[#168387] shrink-0 stroke-[1.8] group-hover:scale-110 transition-transform duration-300" />
+                <span className="text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-800 font-montserrat not-italic tracking-tight leading-tight group-hover:text-[#168387] transition-colors duration-300">
+                  Equipos de alta calidad
+                </span>
+              </div>
+
+              <div className="hidden lg:block h-6 w-[1.5px] bg-slate-200 rounded-full" />
+
+              {/* Acompañamiento en tu crecimiento */}
+              <div className="flex items-center gap-2 sm:gap-2.5 group justify-start sm:justify-center lg:justify-center">
+                <ChartBarIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-5 lg:h-5 text-[#168387] shrink-0 stroke-[1.8] group-hover:scale-110 transition-transform duration-300" />
+                <span className="text-[11px] sm:text-xs lg:text-sm font-semibold text-slate-800 font-montserrat not-italic tracking-tight leading-tight group-hover:text-[#168387] transition-colors duration-300">
+                  Acompañamiento en tu crecimiento
+                </span>
+              </div>
+
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -981,37 +1040,56 @@ const IniciaNegocio = () => {
       <motion.section
         id="experiencia-3d"
         {...fadeUp(0)}
-        className="relative bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] py-20 sm:py-32 overflow-hidden text-white"
+        className="relative pt-8 sm:pt-10 md:pt-12 pb-16 sm:pb-24 md:pb-28 overflow-hidden z-30 bg-[#f8fafc] font-montserrat not-italic"
       >
-        {/* Fondo con textura sutil */}
-        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:20px_20px]" />
+        {/* IMAGEN DE FONDO */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529491/fondo_3_l5khnn.png", 1920)} 
+            alt="Fondo Purificación Inteligente" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Difuminado superior suave desde la sección de catálogo */}
+        <div 
+          className="absolute -top-px inset-x-0 h-10 sm:h-16 bg-gradient-to-b from-[#fbfbfd] via-[#fbfbfd]/70 to-transparent pointer-events-none z-10" 
+          aria-hidden="true"
+        />
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            
-            {/* TEXTO NARRATIVO (IZQUIERDA) */}
-            <motion.div 
-              {...slideInLeft(0, "La nueva generación de purificación inteligente")}
-              className="lg:col-span-6 space-y-6 sm:space-y-10 relative z-10 lg:pr-12"
-            >
-              <div>
-                <span className="text-cyan-100 font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block opacity-80">
-                  Ingeniería de Precisión
-                </span>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter leading-tight mb-4 sm:mb-6">
-                  La nueva generación de purificación inteligente
-                </h2>
-                <p className="text-cyan-50/80 text-sm sm:text-lg font-medium leading-relaxed max-w-md">
-                  Cada detalle pensado para impulsar un negocio que nunca se detiene.
-                </p>
-              </div>
+          
+          {/* TÍTULO CENTRADO ARRIBA */}
+          <motion.div
+            {...slideInLeft(0, "La nueva generación de purificación inteligente")}
+            className="flex flex-col items-center text-center mb-8 sm:mb-12 max-w-4xl mx-auto"
+          >
+            <span className="text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block font-montserrat not-italic">
+              Ingeniería de Precisión
+            </span>
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-3 sm:mb-4 text-center font-montserrat not-italic">
+              <span className="block text-[#031638]">
+                La nueva generación de
+              </span>
+              <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                purificación inteligente
+              </span>
+            </h2>
+            <p className="text-slate-600 text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl text-center font-montserrat not-italic">
+              Cada detalle pensado para impulsar un negocio que nunca se detiene.
+            </p>
+          </motion.div>
 
-              <div className="space-y-5 sm:space-y-6">
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-12 items-center">
+            
+            {/* COLUMNA 1: APARTADOS EN FORMA DE COLUMNAS (IZQUIERDA) */}
+            <div className="lg:col-span-6 relative z-10 lg:pr-2 xl:pr-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-4 md:gap-5">
                 {[
                   { 
                     t: "Diseño Industrial", 
                     d: "Acero inoxidable y componentes de grado alimenticio para una durabilidad de años.",
-                    icon: CheckBadgeIcon 
+                    icon: Droplet 
                   },
                   { 
                     t: "Cerebro Inteligente", 
@@ -1021,65 +1099,92 @@ const IniciaNegocio = () => {
                   { 
                     t: "Interfaz de Usuario", 
                     d: "Experiencia táctil intuitiva que garantiza la recompra de tus clientes.",
-                    icon: StarIcon 
+                    icon: UserIcon 
                   }
                 ].map((item, i) => (
                   <motion.div 
                     key={i}
                     {...slideInLeft(0.03 * (i + 1), `3D: ${item.t}`)}
-                    className="flex gap-4 sm:gap-6 group"
+                    className="flex flex-col items-start group"
                   >
-                    <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl bg-white/10 text-cyan-300 flex items-center justify-center group-hover:bg-white group-hover:text-[#168387] transition-all duration-500 shadow-sm">
-                      <item.icon className="w-4 h-4 sm:w-6 sm:h-6" />
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-full bg-[#F0FCFF] border border-[#c4eef5] text-[#168387] flex items-center justify-center group-hover:bg-[#168387] group-hover:text-white transition-all duration-300 mb-3 sm:mb-4 shadow-sm group-hover:shadow-md group-hover:scale-105">
+                      <item.icon className="w-6 h-6 sm:w-6.5 sm:h-6.5 stroke-[1.8]" />
                     </div>
                     <div>
-                      <h4 className="font-black text-white text-base sm:text-xl mb-1 sm:mb-2">{item.t}</h4>
-                      <p className="text-cyan-100/60 text-sm sm:text-base leading-relaxed font-medium">{item.d}</p>
+                      <h4 className="font-bold text-[#031638] group-hover:text-[#168387] text-sm sm:text-base font-montserrat not-italic transition-colors leading-tight mb-1.5">
+                        {item.t}
+                      </h4>
+                      <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-normal font-montserrat not-italic">
+                        {item.d}
+                      </p>
                     </div>
                   </motion.div>
                 ))}
               </div>
-            </motion.div>
+            </div>
 
-            {/* MODELO 3D (DERECHA) */}
+            {/* COLUMNA 2: MODELO 3D (DERECHA) */}
             <motion.div 
               {...slideInRight(0.04, "Módulo 3D Interactivo")}
-              className="lg:col-span-6 relative w-full overflow-visible"
+              className="lg:col-span-6 relative w-full overflow-visible flex justify-center"
             >
-              <div className="relative rounded-[2rem] sm:rounded-[3rem] bg-white/5 border border-white/10 p-2 sm:p-6 shadow-2xl backdrop-blur-sm group">
-                <div className="absolute top-4 sm:top-6 right-4 sm:right-6 z-20">
-                  <div className="flex items-center gap-2 sm:gap-3 px-2 py-1 sm:px-3 sm:py-1.5 bg-white/10 rounded-lg sm:rounded-xl border border-white/20 backdrop-blur-md shadow-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest">360° Interactiva</span>
+              <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F0FCFF] border border-[#c4eef5] p-3 sm:p-5 shadow-xl shadow-cyan-950/5 backdrop-blur-md group w-full max-w-[540px] sm:max-w-[580px]">
+                
+                {/* Botón para alternar especificaciones */}
+                <div className="absolute top-3.5 sm:top-4 left-3.5 sm:left-5 z-20">
+                  <button
+                    type="button"
+                    onClick={() => setShowVendingSpecs((v) => !v)}
+                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 bg-white/90 hover:bg-[#168387] text-slate-700 hover:text-white rounded-lg sm:rounded-xl border border-slate-200/80 hover:border-[#168387] backdrop-blur-md shadow-sm transition-all text-[10px] font-semibold uppercase tracking-widest font-montserrat not-italic cursor-pointer"
+                  >
+                    <span>{showVendingSpecs ? "Ocultar detalles" : "Ver detalles"}</span>
+                  </button>
+                </div>
+
+                {/* Badge 360° Interactiva */}
+                <div className="absolute top-3.5 sm:top-4 right-3.5 sm:right-5 z-20">
+                  <div className="flex items-center gap-2 sm:gap-2.5 px-2.5 py-1 bg-white/90 rounded-lg sm:rounded-xl border border-slate-200/80 backdrop-blur-md shadow-sm">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#168387] animate-pulse" />
+                    <span className="text-[10px] font-semibold text-slate-800 uppercase tracking-widest font-montserrat not-italic">360° Interactiva</span>
                   </div>
                 </div>
 
-                <div className="h-[280px] sm:h-[400px] md:h-[480px] flex items-center justify-center overflow-visible">
-                  <VendingPrecise3D />
+                <div className="h-[280px] sm:h-[380px] md:h-[450px] flex items-center justify-center overflow-visible">
+                  <VendingPrecise3D showCallouts={showVendingSpecs} />
                 </div>
 
-                <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-black text-white uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap opacity-60">
+                <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-slate-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap font-montserrat not-italic pointer-events-none">
                   Arrastra para rotar e interactuar
                 </div>
               </div>
             </motion.div>
           </div>
         </div>
+
+        {/* Difuminado inferior suave hacia la siguiente sección */}
+        <div 
+          className="absolute -bottom-px inset-x-0 h-14 sm:h-20 bg-gradient-to-b from-transparent via-white/70 to-white pointer-events-none z-10" 
+          aria-hidden="true"
+        />
       </motion.section>
 
       {/* HISTORIAS DE ÉXITO (TESTIMONIOS) */}
-      <section id="testimonios" className="relative py-20 sm:py-32 overflow-hidden bg-white">
+      <section id="testimonios" className="relative py-20 sm:py-32 overflow-hidden bg-white font-montserrat not-italic">
         <div className="max-w-7xl mx-auto px-4 w-full relative z-10">
           <motion.div
             {...slideInRight(0, "Más que clientes, historias de éxito")}
-            className="text-center mb-16 sm:mb-24"
+            className="flex flex-col items-center text-center mb-12 sm:mb-20 max-w-4xl mx-auto"
           >
-            <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
+            <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block">
               Resultados Reales
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight">
-              Más que clientes, <br />
-              <span className="text-slate-900/90">historias de <span className="underline decoration-[#24d4da]/30 underline-offset-[8px] sm:underline-offset-[12px] decoration-2">éxito</span></span>
+            <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-4 sm:mb-6 text-center">
+              <span className="block text-[#031638]">
+                Más que clientes,
+              </span>
+              <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                historias de éxito
+              </span>
             </h2>
           </motion.div>
 
@@ -1116,8 +1221,8 @@ const IniciaNegocio = () => {
               <motion.div
                 key={i}
                 {...slideInRight(testimonio.delay)}
-                whileHover={{ y: -12, scale: 1.02 }}
-                className="group relative overflow-hidden p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3.5rem] bg-white border border-slate-100 flex flex-col transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(13,90,94,0.3)] shadow-xl shadow-slate-900/5 cursor-default"
+                whileHover={{ y: -8, transition: { duration: 0.25 } }}
+                className="group relative overflow-hidden p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3.5rem] bg-white border border-slate-100 flex flex-col transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(13,90,94,0.3)] shadow-xl shadow-slate-900/5 cursor-default font-montserrat not-italic"
               >
                 {/* Capa de fondo para el hover (Gradiente de Anatomía 3D) */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -1126,11 +1231,11 @@ const IniciaNegocio = () => {
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:20px_20px] transition-opacity duration-700" />
 
                 <div className="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8 relative z-10">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-slate-50 group-hover:bg-white/10 text-[#168387] group-hover:text-white flex items-center justify-center text-lg sm:text-xl font-black shadow-sm group-hover:rotate-6 transition-all duration-500">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-slate-50 group-hover:bg-white/10 text-[#168387] group-hover:text-white flex items-center justify-center text-lg sm:text-xl font-bold shadow-sm group-hover:rotate-6 transition-all duration-500 font-montserrat not-italic">
                     {testimonio.initials}
                   </div>
                   <div>
-                    <h4 className="font-black text-slate-900 group-hover:text-white text-base sm:text-lg leading-tight transition-colors duration-500">
+                    <h4 className="font-bold text-slate-900 group-hover:text-white text-base sm:text-lg leading-tight transition-colors duration-500 font-montserrat not-italic">
                       {testimonio.name}
                     </h4>
                     <div className="flex gap-0.5 my-1 sm:my-1.5">
@@ -1138,20 +1243,20 @@ const IniciaNegocio = () => {
                         <StarIcon key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)] group-hover:drop-shadow-[0_0_12px_rgba(251,191,36,0.6)] transition-all" />
                       ))}
                     </div>
-                    <p className="text-xs font-bold text-[#168387] group-hover:text-cyan-200 uppercase tracking-widest opacity-80 transition-colors duration-500">
+                    <p className="text-xs font-bold text-[#168387] group-hover:text-cyan-200 uppercase tracking-widest opacity-80 transition-colors duration-500 font-montserrat not-italic">
                       {testimonio.role}
                     </p>
                   </div>
                 </div>
 
-                <p className="text-slate-600 group-hover:text-white text-sm sm:text-base leading-relaxed font-medium italic mb-6 sm:mb-10 opacity-90 relative z-10 transition-colors duration-500">
+                <p className="text-slate-600 group-hover:text-white text-sm sm:text-base leading-relaxed font-normal mb-6 sm:mb-10 opacity-90 relative z-10 transition-colors duration-500 font-montserrat not-italic">
                   {testimonio.text}
                 </p>
 
-                <div className="mt-auto pt-6 sm:pt-8 border-t border-slate-50 group-hover:border-white/10 relative z-10 transition-colors duration-500">
+                <div className="mt-auto pt-6 sm:pt-8 border-t border-slate-100 group-hover:border-white/10 relative z-10 transition-colors duration-500">
                   <div className="flex items-center gap-3">
                     <testimonio.Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#24d4da] group-hover:text-cyan-300 transition-colors duration-500" />
-                    <span className="text-xs font-black text-slate-400 group-hover:text-cyan-100/60 uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-colors duration-500">
+                    <span className="text-xs font-bold text-slate-400 group-hover:text-cyan-100/60 uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-colors duration-500 font-montserrat not-italic">
                       {testimonio.badge}
                     </span>
                   </div>

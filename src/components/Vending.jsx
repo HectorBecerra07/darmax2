@@ -2,10 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-const VendingPrecise3D = () => {
+const VendingPrecise3D = ({ showCallouts: propShowCallouts }) => {
   const [rotation, setRotation] = useState({ x: -10, y: -12 });
   const [isDragging, setIsDragging] = useState(false);
-  const [showCallouts, setShowCallouts] = useState(true);
+  const [internalShowCallouts, setInternalShowCallouts] = useState(true);
+  const showCallouts = propShowCallouts !== undefined ? propShowCallouts : internalShowCallouts;
   const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
 
   useEffect(() => {
@@ -21,10 +22,10 @@ const VendingPrecise3D = () => {
   const inertiaRafRef = useRef(null);
   const frameRafRef = useRef(null);
 
-  // Determinar escala dinámica
+  // Determinar escala dinamica equilibrada para que quepa con sus tarjetas dentro del recuadro
   const isMobile = windowWidth < 640;
   const isTablet = windowWidth >= 640 && windowWidth < 1024;
-  const sc = isMobile ? 2.2 : isTablet ? 3.5 : 4;
+  const sc = isMobile ? 2.0 : isTablet ? 2.45 : 2.65;
   
   const totalS = 80.5 * sc;
   const fThick = 2 * sc;
@@ -210,45 +211,45 @@ const VendingPrecise3D = () => {
   const TEX_LR = 90;
   const TEX_TB = 0;
 
-  // Callouts optimizados para no ser tapados
+  // Callouts optimizados para mantenerse contenidos y no desbordar
   const CALLOUTS = [
     {
       id: "agua",
       title: "Módulo Agua",
       body: "Despacho automático de garrafón.",
       side: "left",
-      bubble: { x: 5, y: 45 },
-      to: { x: 30, y: 45 },
+      bubble: { x: -2, y: 44 },
+      to: { x: 30, y: 44 },
     },
     {
       id: "monedas",
       title: "Monedero",
       body: "Validación multimoneda.",
       side: "right",
-      bubble: { x: 95, y: 15 },
-      to: { x: 82, y: 18 },
+      bubble: { x: 102, y: 16 },
+      to: { x: 78, y: 16 },
     },
     {
       id: "pantalla",
       title: "Pantalla Touch",
       body: "Interfaz táctil guiada.",
       side: "right",
-      bubble: { x: 105, y: 45 },
-      to: { x: 75, y: 38 },
+      bubble: { x: 102, y: 48 },
+      to: { x: 76, y: 48 },
     },
     {
       id: "tapas",
       title: "Dispensador Tapas",
       body: "Entrega automática de tapas.",
       side: "right",
-      bubble: { x: 95, y: 80 },
-      to: { x: 75, y: 82 },
+      bubble: { x: 102, y: 80 },
+      to: { x: 76, y: 80 },
     },
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center font-sans py-4 w-full">
-      <div className="relative mx-auto" style={{ width: isMobile ? totalS + 20 : totalS + 200, maxWidth: "100%" }}>
+    <div className="flex flex-col items-center justify-center font-montserrat not-italic w-full h-full">
+      <div className="relative mx-auto w-full flex items-center justify-center">
         <div
           className="relative mx-auto"
           style={{
@@ -264,22 +265,6 @@ const VendingPrecise3D = () => {
           onPointerCancel={endDrag}
           onPointerLeave={endDrag}
         >
-          {/* ✅ UI LAYER (no se captura el pointer) - Visible solo en MD+ */}
-          <div className="hidden md:block">
-            <button
-              type="button"
-              data-ui="true"
-              onClick={(ev) => {
-                ev.stopPropagation();
-                setShowCallouts((v) => !v);
-              }}
-              className="absolute left-0 -top-12 z-[60] rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest
-                        bg-white border border-slate-200 text-slate-900 hover:bg-[#168387] hover:text-white hover:border-[#168387] transition-all shadow-sm"
-              style={{ pointerEvents: "auto" }}
-            >
-              {showCallouts ? "Ocultar especificaciones" : "Ver especificaciones"}
-            </button>
-          </div>
 
           <div
             className="relative w-full h-full"
@@ -381,10 +366,12 @@ const VendingPrecise3D = () => {
                       y1={c.bubble.y}
                       x2={c.to.x}
                       y2={c.to.y}
-                      stroke="rgba(71,85,105,0.4)"
-                      strokeWidth="0.6"
+                      stroke="rgba(22,131,135,0.45)"
+                      strokeWidth="0.8"
+                      strokeDasharray="2 1.5"
                     />
-                    <circle cx={c.to.x} cy={c.to.y} r="1.1" fill="#0ea5e9" />
+                    <circle cx={c.to.x} cy={c.to.y} r="1.4" fill="#168387" />
+                    <circle cx={c.bubble.x} cy={c.bubble.y} r="1.1" fill="#168387" />
                   </g>
                 ))}
               </svg>
@@ -401,9 +388,9 @@ const VendingPrecise3D = () => {
                     pointerEvents: "auto",
                   }}
                 >
-                  <div className="max-w-[220px] rounded-2xl border border-slate-200 bg-white/90 backdrop-blur px-4 py-3 shadow-lg shadow-slate-200/50">
-                    <div className="text-[12px] font-bold text-slate-900 leading-tight">{c.title}</div>
-                    <div className="text-[11px] text-slate-600 leading-snug mt-1">{c.body}</div>
+                  <div className="w-[124px] sm:w-[132px] rounded-xl border border-slate-200/90 bg-white/95 backdrop-blur px-2.5 py-1.5 shadow-md shadow-slate-900/5 transition-transform hover:scale-105">
+                    <div className="text-[11px] font-bold text-slate-900 leading-tight font-montserrat not-italic whitespace-nowrap">{c.title}</div>
+                    <div className="text-[9.5px] text-slate-500 leading-snug mt-0.5 font-montserrat not-italic">{c.body}</div>
                   </div>
                 </div>
               ))}
