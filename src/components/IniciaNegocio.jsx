@@ -165,7 +165,7 @@ const INITIAL_MODELOS = [
   },
   {
     id: "Purificadora",
-    nombre: "Mostrador Darmax",
+    nombre: "Mostrador",
     imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/2mostrador_iajzgl.png", 700),
     precio: 52950,
     descripcion:
@@ -340,8 +340,36 @@ import {
   CheckBadgeIcon,
   WrenchScrewdriverIcon,
   UserGroupIcon,
-  SparklesIcon
+  SparklesIcon,
+  LightBulbIcon,
+  Cog6ToothIcon,
+  ArrowRightIcon,
+  BuildingStorefrontIcon
 } from "@heroicons/react/24/outline";
+import { Droplet, HandCoins } from "lucide-react";
+import { PiSprayBottle } from "react-icons/pi";
+
+const getModelSpecs = (modeloId) => {
+  if (modeloId === "Purificadora") {
+    return [
+      { label: "Atención", val: "Personalizada", icon: BuildingStorefrontIcon },
+      { label: "Más", val: "Capacidad", icon: Droplet },
+      { label: "Mayor", val: "Rentabilidad", icon: ChartBarIcon },
+    ];
+  }
+  if (modeloId === "Vending-Limpieza") {
+    return [
+      { label: "Variedad", val: "Productos", icon: PiSprayBottle },
+      { label: "Ingresos", val: "Adicionales", icon: HandCoins },
+      { label: "Negocio", val: "Automático", icon: Cog6ToothIcon },
+    ];
+  }
+  return [
+    { label: "Autonomía", val: "24/7", icon: CpuChipIcon },
+    { label: "Demanda", val: "Alta", icon: ArrowTrendingUpIcon },
+    { label: "ROI Est.", val: "12m", icon: CurrencyDollarIcon },
+  ];
+};
 
 const getLevelConfig = (modelId, isBundle) => {
   if (modelId === "Vending" || modelId === "Vending-Limpieza") {
@@ -358,7 +386,7 @@ const getLevelConfig = (modelId, isBundle) => {
     };
   } else if (isBundle) {
     return {
-      label: "Ecosistema Premium",
+      label: "Premium",
       badgeBg: "bg-gradient-to-r from-amber-500 to-amber-600 shadow-amber-500/30",
       borderClass: "border-2 border-slate-200 hover:border-amber-500 shadow-sm hover:shadow-lg hover:shadow-amber-950/5",
     };
@@ -376,6 +404,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
   const isBundle = BUNDLE_IDS.has(modelo.id);
   const configurePath = getConfigurePath(modelo.id);
   const levelConfig = useMemo(() => getLevelConfig(modelo.id, isBundle), [modelo.id, isBundle]);
+  const specs = useMemo(() => getModelSpecs(modelo.id), [modelo.id]);
 
   return (
     <motion.article
@@ -385,14 +414,14 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
         "group relative flex flex-col h-full rounded-[2rem] sm:rounded-[2.5rem] bg-white p-4 sm:p-4",
         "transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]",
         "hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.12)]",
-        "lg:max-w-[360px] lg:mx-auto",
+        "w-full max-w-[300px] sm:max-w-[310px] md:max-w-[320px] mx-auto",
         levelConfig.borderClass,
         isSelected ? "ring-2 ring-[#24d4da]" : "",
       ].join(" ")}
     >
       {/* BADGE DE NIVEL */}
       {levelConfig.label && (
-        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-1.5 ${levelConfig.badgeBg} text-white text-xs font-black uppercase tracking-[0.2em] rounded-full shadow-lg whitespace-nowrap`}>
+        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-4 py-1.5 ${levelConfig.badgeBg} text-white text-xs font-semibold uppercase tracking-[0.2em] rounded-full shadow-lg whitespace-nowrap font-montserrat not-italic`}>
           {levelConfig.label}
         </div>
       )}
@@ -400,18 +429,18 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
       {/* IMAGEN Y CONTROL */}
       <div 
         onClick={() => navigate(configurePath)}
-        className="relative aspect-video overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50 isolate cursor-pointer group/img mb-3 sm:mb-4 transition-all duration-500 hover:shadow-inner"
+        className="relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img mb-3 sm:mb-4 transition-all duration-500 hover:shadow-inner flex items-center justify-center p-1 sm:p-1.5"
       >
         {!errorImagen ? (
           <img
             src={optimizeCloudinaryUrl(modelo.imagen, 700)}
             alt={modelo.nombre}
             decoding="async"
-            className="h-full w-full object-contain p-1 sm:p-2 transition-transform duration-700 group-hover/img:scale-108"
+            className="w-full h-full object-contain object-center transition-transform duration-500 group-hover/img:scale-105"
             onError={() => setErrorImagen(true)}
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-slate-300 text-sm font-bold uppercase">
+          <div className="flex h-full items-center justify-center text-slate-300 text-sm font-semibold uppercase font-montserrat not-italic">
             Vista previa
           </div>
         )}
@@ -424,7 +453,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
             onToggleSelect(modelo.id);
           }}
           className={[
-            "absolute top-2 sm:top-3 right-2 sm:right-3 h-8 w-8 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 backdrop-blur-xl border z-30",
+            "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-8 w-8 sm:h-8.5 sm:w-8.5 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 backdrop-blur-xl border z-30",
             isSelected
               ? "bg-[#24d4da] border-[#24d4da] text-white shadow-xl shadow-cyan-500/40 rotate-90"
               : "bg-white/80 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover/img:scale-100",
@@ -439,57 +468,59 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
       {/* CONTENIDO DE NEGOCIO */}
       <div className="flex flex-col flex-grow text-center">
         <div className="mb-1.5 sm:mb-2">
-          <h3 className="text-xl sm:text-lg lg:text-xl font-black text-slate-900 tracking-tight leading-tight group-hover:text-[#168387] transition-colors duration-500 uppercase">
+          <h3 className="text-xl sm:text-lg lg:text-xl font-bold text-slate-900 tracking-tight leading-tight group-hover:text-[#168387] transition-colors duration-500 uppercase font-montserrat not-italic">
             {modelo.nombre}
           </h3>
         </div>
 
-        {/* BUSINESS SPECS */}
-        <div className="grid grid-cols-3 gap-2 mb-3 sm:mb-4">
-          {[
-            { label: "Autonomía", val: "24/7", icon: CpuChipIcon },
-            { label: "Demanda", val: "Alta", icon: ArrowTrendingUpIcon },
-            { label: "ROI Est.", val: "12m", icon: CurrencyDollarIcon }
-          ].map((spec, i) => (
-            <div key={i} className="p-1.5 sm:p-2 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center text-center group/spec hover:bg-white hover:shadow-sm transition-all min-w-0">
-              <spec.icon className="w-3.5 h-3.5 text-slate-400 group-hover/spec:text-[#168387] transition-colors mb-0.5" />
-              <span className="text-[7px] sm:text-xs font-black text-slate-400 uppercase tracking-wider truncate w-full">{spec.label}</span>
-              <span className="text-[10px] sm:text-xs font-bold text-slate-800 truncate w-full">{spec.val}</span>
-            </div>
+        {/* BUSINESS SPECS CON SEPARADORES | */}
+        <div className="flex items-center justify-center gap-1 sm:gap-2 max-w-[285px] mx-auto w-full mb-1 py-1">
+          {specs.map((spec, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <div className="h-6 sm:h-7 w-[1.5px] bg-slate-300 shrink-0 rounded-full" />}
+              <div className="flex-1 flex flex-col items-center text-center min-w-0 group/spec cursor-default px-0.5">
+                <spec.icon className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-slate-500 group-hover/spec:text-[#168387] transition-colors duration-300 mb-0.5 shrink-0 stroke-[1.8]" />
+                <span className="text-[9px] sm:text-[10.5px] font-semibold text-slate-500 group-hover/spec:text-[#168387] transition-colors duration-300 uppercase tracking-wider truncate w-full font-montserrat not-italic leading-tight">
+                  {spec.label}
+                </span>
+                <span className="text-[9px] sm:text-[10.5px] font-bold text-slate-500 group-hover/spec:text-[#168387] transition-colors duration-300 truncate w-full font-montserrat not-italic mt-0.5 leading-tight">
+                  {spec.val}
+                </span>
+              </div>
+            </React.Fragment>
           ))}
         </div>
 
-        <p className="text-sm text-slate-500 leading-relaxed mb-3 sm:mb-4 font-medium line-clamp-2 px-1">
-          {modelo.descripcion}
-        </p>
+        {/* SEPARADOR HORIZONTAL QUE DIVIDE ESPECIFICACIONES DE INVERSIÓN */}
+        <div className="w-full h-[1.5px] bg-slate-200 my-3 sm:my-3.5" />
 
         {/* FOOTER DE CONVERSIÓN */}
-        <div className="mt-auto pt-3 sm:pt-4 border-t border-slate-100">
+        <div className="mt-auto">
           <div className="relative group/price mb-3 sm:mb-4">
-            <span className="block text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest mb-0.5">Inversión desde</span>
-            <span className="text-2xl sm:text-xl lg:text-2xl font-black text-slate-900 tracking-tighter group-hover/price:text-[#168387] transition-colors">
+            <span className="block text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-widest mb-0.5 font-montserrat not-italic">Inversión desde</span>
+            <span className="text-2xl sm:text-xl lg:text-2xl font-bold text-slate-900 tracking-tighter group-hover/price:text-[#168387] transition-colors font-montserrat not-italic">
               {formatMXN(modelo.precio)}
             </span>
           </div>
 
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col gap-2.5 w-full items-center">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate(configurePath)}
-              className="w-full h-10 px-6 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-black uppercase tracking-widest hover:bg-[#168387] shadow-lg shadow-slate-900/10 transition-all duration-300"
+              className="w-full h-10 px-6 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-bold uppercase tracking-widest hover:bg-[#168387] shadow-lg shadow-slate-900/10 transition-all duration-300 font-montserrat not-italic"
             >
               Configurar
             </motion.button>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
+              type="button"
               onClick={() => navigate(modelo.rutaInfo)}
-              className="w-full h-10 px-6 rounded-xl border border-slate-200 text-slate-900 text-xs sm:text-sm font-black uppercase tracking-widest hover:border-[#168387] hover:text-[#168387] hover:bg-slate-50 transition-all duration-300"
+              className="inline-flex items-center justify-center gap-1.5 py-1 text-slate-700 hover:text-[#168387] text-xs sm:text-sm font-semibold tracking-wider uppercase underline underline-offset-4 decoration-slate-300 hover:decoration-[#168387] transition-all group/link font-montserrat not-italic"
             >
-              Conoce más
-            </motion.button>
+              <span>Conoce más</span>
+              <ArrowRightIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] group-hover/link:translate-x-1 transition-transform" />
+            </button>
           </div>
         </div>
       </div>
@@ -660,148 +691,184 @@ const IniciaNegocio = () => {
       {/* ROI */}
       <section
         id="ROI"
-        className="relative py-20 sm:py-40 min-h-[600px] sm:min-h-[760px] overflow-hidden z-30 bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] text-white"
+        className="relative py-12 sm:py-16 md:py-20 overflow-hidden z-30 bg-[#f8fafc] not-italic"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e]" />
-
-        {/* Círculos de luz mejorados para el nuevo fondo */}
-        <div className="absolute top-[8%] left-[10%] w-[250px] sm:w-[420px] h-[250px] sm:h-[420px] rounded-full bg-white/10 blur-[80px] sm:blur-[120px]" />
-        <div className="absolute bottom-[5%] right-[8%] w-[200px] sm:w-[380px] h-[200px] sm:h-[380px] rounded-full bg-cyan-200/10 blur-[80px] sm:blur-[120px]" />
-        
-        <div className="absolute inset-0 opacity-[0.05] bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:26px_26px]" />
-
-        <div
-          ref={roiSceneRef}
-          className="absolute inset-0 z-0 pointer-events-none"
-        >
-          <div data-depth="0.10" className="absolute top-[10%] left-[4%]">
-            <div className="w-40 sm:w-72 h-40 sm:h-72 rounded-full bg-white/5 blur-2xl sm:blur-3xl" />
-          </div>
-          <div data-depth="0.35" className="absolute top-[18%] right-[18%]">
-            <div className="w-10 sm:w-14 h-10 sm:h-14 rounded-xl sm:rounded-2xl border border-white/20 rotate-12 bg-white/10 backdrop-blur-sm" />
-          </div>
+        {/* IMAGEN DE FONDO */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529491/fondo_2_rugkl2.png", 1920)} 
+            alt="Fondo Historia de Éxito y Retorno de Inversión" 
+            className="w-full h-full object-cover"
+          />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <motion.div
             {...slideInLeft(0, "Una historia de libertad financiera")}
-            className="text-center mb-12 sm:mb-16"
+            className="text-center mb-8 sm:mb-12"
           >
-            <span className="text-cyan-100 font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block opacity-80">
+            <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block">
               Tu camino al éxito
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white tracking-tighter leading-tight">
-              Una historia de <span className="text-white underline decoration-cyan-400/30 underline-offset-[8px] sm:underline-offset-[12px] decoration-2">libertad financiera</span>
+            <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight">
+              <span className="block text-[#031638]">
+                Una historia de
+              </span>
+              <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                libertad financiera
+              </span>
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch">
-            {/* PASO 1 */}
-            <motion.div
-              {...slideInLeft(0.02)}
-              className="p-6 sm:p-8 rounded-[2.5rem] bg-white/20 border border-white/40 backdrop-blur-md group hover:bg-white/30 transition-all text-center shadow-xl shadow-cyan-950/10"
-            >
-              <motion.div 
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 bg-white text-[#168387] shadow-lg group-hover:scale-110 transition-transform"
-              >
-                <span className="text-xl sm:text-2xl font-black">
-                  <Counter value="1" prefix="0" />
-                </span>
-              </motion.div>
-              <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4 tracking-tight">La Visión</h3>
-              <p className="text-cyan-50 text-base sm:text-lg font-medium leading-relaxed">
-                Transformas tu capital inicial en un activo inteligente que no descansa.
-              </p>
-            </motion.div>
+          {/* CONTENEDOR DE TARJETAS COMPACTAS CON LINEA CONECTORA */}
+          <div className="relative pt-8 sm:pt-9 max-w-4xl mx-auto">
+            {/* LINEA CONECTORA EN MEDIO DE LAS TARJETAS (Escritorio / Tablet) */}
+            <div 
+              className="hidden md:block absolute top-[calc(50%+14px)] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-[#288EB9]/20 via-[#1DB3BA]/60 to-[#288EB9]/20 -translate-y-1/2 z-0 pointer-events-none" 
+            />
 
-            {/* PASO 2 */}
-            <motion.div
-              {...slideInLeft(0.04)}
-              className="p-6 sm:p-8 rounded-[2.5rem] bg-white/20 border border-white/40 backdrop-blur-md group hover:bg-white/30 transition-all text-center shadow-xl shadow-cyan-950/10"
-            >
-              <motion.div 
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-white text-[#168387] shadow-lg flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform"
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-5 lg:gap-6 items-stretch relative z-10">
+              {/* TARJETA 1: VISIÓN */}
+              <motion.div
+                {...slideInLeft(0.02)}
+                className="relative pt-9 pb-3.5 px-2 sm:pt-11 sm:pb-4 sm:px-2.5 max-w-[270px] w-full mx-auto rounded-[2rem] bg-white/80 border border-slate-200/90 backdrop-blur-md group hover:bg-white/95 hover:border-slate-300 transition-all text-center shadow-lg shadow-slate-900/5 flex flex-col items-center justify-between not-italic"
               >
-                <span className="text-xl sm:text-2xl font-black">
-                  <Counter value="2" prefix="0" />
-                </span>
-              </motion.div>
-              <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4 tracking-tight">La Operación</h3>
-              <p className="text-cyan-50 text-base sm:text-lg font-medium leading-relaxed">
-                Tecnología 24/7 trabajando para ti mientras disfrutas de lo que importa.
-              </p>
-            </motion.div>
+                {/* Circulo flotante sin borde blanco */}
+                <div className="absolute -top-7 sm:-top-8 left-1/2 -translate-x-1/2 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-lg shadow-[#1DB3BA]/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <LightBulbIcon className="w-6 h-6 sm:w-7 sm:h-7 text-white stroke-[1.8]" />
+                </div>
 
-            {/* PASO 3 */}
-            <motion.div
-              {...slideInLeft(0.06)}
-              className="p-6 sm:p-8 rounded-[2.5rem] bg-white/20 border border-white/40 backdrop-blur-md group hover:bg-white/30 transition-all text-center shadow-xl shadow-cyan-950/10"
-            >
-              <motion.div 
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-                className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-white text-[#168387] shadow-lg flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform"
-              >
-                <span className="text-xl sm:text-2xl font-black">
-                  <Counter value="3" prefix="0" />
-                </span>
+                {/* Contenido centrado con Montserrat */}
+                <div className="flex flex-col items-center text-center w-full">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#031638] font-montserrat not-italic mb-1 sm:mb-1.5 tracking-tight">
+                    Visión
+                  </h3>
+                  <div className="text-slate-600 text-xs sm:text-sm font-normal leading-relaxed text-center space-y-0.5 font-montserrat not-italic">
+                    <p>Transformas tu capital inicial</p>
+                    <p>en un activo inteligente</p>
+                    <p>que no descansa.</p>
+                  </div>
+                </div>
               </motion.div>
-              <h3 className="text-xl sm:text-2xl font-black text-white mb-3 sm:mb-4 tracking-tight">El Resultado</h3>
-              <p className="text-cyan-50 text-base sm:text-lg font-medium leading-relaxed">
-                Recuperas tu inversión y escalas tu negocio a nuevos niveles.
-              </p>
-            </motion.div>
+
+              {/* TARJETA 2: OPERACIÓN */}
+              <motion.div
+                {...slideInLeft(0.04)}
+                className="relative pt-9 pb-3.5 px-2 sm:pt-11 sm:pb-4 sm:px-2.5 max-w-[270px] w-full mx-auto rounded-[2rem] bg-white/80 border border-slate-200/90 backdrop-blur-md group hover:bg-white/95 hover:border-slate-300 transition-all text-center shadow-lg shadow-slate-900/5 flex flex-col items-center justify-between not-italic"
+              >
+                {/* Circulo flotante sin borde blanco */}
+                <div className="absolute -top-7 sm:-top-8 left-1/2 -translate-x-1/2 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-lg shadow-[#1DB3BA]/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Cog6ToothIcon className="w-6 h-6 sm:w-7 sm:h-7 text-white stroke-[1.8]" />
+                </div>
+
+                {/* Contenido centrado con Montserrat */}
+                <div className="flex flex-col items-center text-center w-full">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#031638] font-montserrat not-italic mb-1 sm:mb-1.5 tracking-tight">
+                    Operación
+                  </h3>
+                  <div className="text-slate-600 text-xs sm:text-sm font-normal leading-relaxed text-center space-y-0.5 font-montserrat not-italic">
+                    <p>Tecnología 24/7 trabajando</p>
+                    <p>para ti mientras disfrutas</p>
+                    <p>de lo que importa.</p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* TARJETA 3: RESULTADO */}
+              <motion.div
+                {...slideInLeft(0.06)}
+                className="relative pt-9 pb-3.5 px-2 sm:pt-11 sm:pb-4 sm:px-2.5 max-w-[270px] w-full mx-auto rounded-[2rem] bg-white/80 border border-slate-200/90 backdrop-blur-md group hover:bg-white/95 hover:border-slate-300 transition-all text-center shadow-lg shadow-slate-900/5 flex flex-col items-center justify-between not-italic"
+              >
+                {/* Circulo flotante sin borde blanco */}
+                <div className="absolute -top-7 sm:-top-8 left-1/2 -translate-x-1/2 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-lg shadow-[#1DB3BA]/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <ChartBarIcon className="w-6 h-6 sm:w-7 sm:h-7 text-white stroke-[1.8]" />
+                </div>
+
+                {/* Contenido centrado con Montserrat */}
+                <div className="flex flex-col items-center text-center w-full">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#031638] font-montserrat not-italic mb-1 sm:mb-1.5 tracking-tight">
+                    Resultado
+                  </h3>
+                  <div className="text-slate-600 text-xs sm:text-sm font-normal leading-relaxed text-center space-y-0.5 font-montserrat not-italic">
+                    <p>Recuperas tu inversión</p>
+                    <p>y escalas tu negocio</p>
+                    <p>a nuevos niveles.</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
 
-          <div className="mt-12 sm:mt-20 text-center">
+          <div className="mt-8 sm:mt-12 flex justify-center px-4">
             <motion.div 
               {...slideInLeft(0.08)}
-              className="inline-flex items-center gap-3 sm:gap-6 p-4 sm:p-8 rounded-3xl sm:rounded-[3rem] bg-white/20 border border-white/40 text-white text-lg sm:text-3xl font-black backdrop-blur-xl shadow-[0_15px_40px_rgba(0,0,0,0.15)]"
+              className="w-full max-w-md sm:max-w-lg md:max-w-[620px] flex items-center justify-center gap-3.5 sm:gap-6 py-4 px-6 sm:px-10 rounded-2xl sm:rounded-[2rem] bg-[#CAEAEF] border border-[#a6dce4] backdrop-blur-md shadow-md shadow-cyan-950/5 text-left not-italic"
             >
-              <div className="w-3 h-3 sm:w-5 sm:h-5 rounded-full animate-pulse bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]" />
-              ROI Proyectado: 12 meses para el retorno total de inversión
+              {/* Icono de flecha de subida en círculo temático */}
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-md shadow-[#1DB3BA]/30 flex items-center justify-center shrink-0">
+                <ArrowTrendingUpIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white stroke-[2.2]" />
+              </div>
+
+              {/* Separador vertical */}
+              <div className="h-8 sm:h-10 w-[1.5px] bg-[#031638]/20 shrink-0 rounded-full" />
+
+              <div className="flex flex-col">
+                <h4 className="text-sm sm:text-lg md:text-xl font-bold text-[#031638] font-montserrat not-italic tracking-tight leading-tight">
+                  ROI Proyectado: 12 meses
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-700 font-medium font-montserrat not-italic mt-0.5 sm:mt-1">
+                  para el retorno total de tu inversión.
+                </p>
+              </div>
             </motion.div>
           </div>
         </div>
+
+        {/* Difuminado suave para difuminar la línea divisoria con la siguiente sección */}
+        <div 
+          className="absolute -bottom-px inset-x-0 h-12 sm:h-20 bg-gradient-to-b from-transparent via-[#fbfbfd]/70 to-[#fbfbfd] pointer-events-none z-10" 
+          aria-hidden="true"
+        />
       </section>
 
       <section
         id="catalogo"
-        className="min-h-screen flex items-center py-16 sm:py-24 bg-[#fbfbfd] overflow-hidden scroll-mt-16 sm:scroll-mt-20"
+        className="pt-6 sm:pt-8 md:pt-10 pb-16 sm:pb-24 bg-[#fbfbfd] overflow-hidden scroll-mt-16 sm:scroll-mt-20 not-italic"
       >
         <div className="max-w-7xl mx-auto px-4 w-full">
           {/* NARRATIVA DE ENTRADA */}
           <motion.div
             {...slideInRight(0, "Elige la escala de tu próximo éxito")}
-            className="flex flex-col items-center text-center mb-12 sm:mb-20 gap-6 sm:gap-8 mx-auto"
+            className="flex flex-col items-center text-center mb-10 sm:mb-16 mx-auto"
           >
             <div className="max-w-4xl flex flex-col items-center">
-              <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
+              <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block">
                 Diseña tu futuro
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight mb-4 sm:mb-6">
-                Elige la escala de tu <br />
-                <span className="text-[#168387]">próximo éxito</span>
+              <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-4 sm:mb-6 text-center">
+                <span className="block text-[#031638]">
+                  Elige la escala de tu
+                </span>
+                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                  próximo éxito
+                </span>
               </h2>
-              <p className="text-slate-400 text-sm sm:text-lg font-medium leading-relaxed mb-6 sm:mb-10">
-                Desde unidades autónomas hasta modelos híbridos. <span className="text-[#168387] font-bold">Todo diseñado para crecer contigo.</span>
-              </p>
-              <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <div className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-center space-y-1 mb-4 sm:mb-6">
+                <p>Desde una solución hasta un modelo premium.</p>
+                <p>Todo diseñado para crecer contigo.</p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-2 sm:mt-4">
                 <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-blue-50/80 rounded-xl border border-blue-200 shadow-sm">
                   <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                  <span className="text-xs font-black text-blue-700 uppercase tracking-widest">Esencial</span>
+                  <span className="text-xs font-bold text-blue-700 uppercase tracking-widest font-montserrat not-italic">Esencial</span>
                 </div>
                 <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-teal-50/80 rounded-xl border border-[#168387]/30 shadow-sm">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#168387]" />
-                  <span className="text-xs font-black text-[#168387] uppercase tracking-widest">Escalable</span>
+                  <span className="text-xs font-bold text-[#168387] uppercase tracking-widest font-montserrat not-italic">Escalable</span>
                 </div>
                 <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-amber-50/80 rounded-xl border border-amber-300 shadow-sm">
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-                  <span className="text-xs font-black text-amber-700 uppercase tracking-widest">Ecosistema Premium</span>
+                  <span className="text-xs font-bold text-amber-700 uppercase tracking-widest font-montserrat not-italic">Premium</span>
                 </div>
               </div>
             </div>
@@ -841,7 +908,7 @@ const IniciaNegocio = () => {
           )}
 
           {/* GRUPO 1: INICIO */}
-          <div className="mb-12 sm:mb-20 pt-8 border-t border-slate-200">
+          <div className="mb-12 sm:mb-20">
             <motion.div
               {...slideInRight(0.08)}
               className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
