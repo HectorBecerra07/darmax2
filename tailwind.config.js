@@ -19,6 +19,7 @@ export default {
       },
       fontFamily: {
         bangers: ['Bangers', 'cursive'],
+        montserrat: ['Montserrat', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-negocio': 
