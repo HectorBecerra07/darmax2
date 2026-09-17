@@ -133,7 +133,7 @@ export default function NavBar() {
         ref={navRef}
         className={`
           fixed top-0 left-0 right-0 z-50 w-full flex items-center h-[72px]
-          transition-all duration-700 border-b
+          transition-all duration-700 border-b font-montserrat not-italic
           ${bgClass}
           ${isScrolled ? 'shadow-[0_8px_32px_rgba(0,0,0,0.08)]' : ''}
         `}
@@ -160,8 +160,8 @@ export default function NavBar() {
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={`nav-link-item px-5 py-2 rounded-full font-black transition-all duration-500 text-[10px] tracking-[0.2em] uppercase whitespace-nowrap relative group ${
-                    isActive ? activeBgClass : `hover:opacity-100 opacity-60`
+                  className={`nav-link-item px-4 lg:px-5 py-2 rounded-full font-bold transition-all duration-500 text-[10.5px] lg:text-[11px] tracking-[0.16em] uppercase whitespace-nowrap relative group ${
+                    isActive ? activeBgClass : `hover:opacity-100 opacity-70`
                   }`}
                   style={isActive ? accentStyle : {}}
                 >
@@ -218,7 +218,7 @@ export default function NavBar() {
       </nav>
 
       {/* Menú Lateral Móvil */}
-      <div className={`fixed top-0 right-0 h-full w-full max-w-xs bg-slate-950/95 backdrop-blur-2xl z-[60] transform transition-transform duration-700 ease-in-out shadow-2xl border-l border-white/5 ${navOpen ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`fixed top-0 right-0 h-full w-full max-w-xs bg-slate-950/95 backdrop-blur-2xl z-[60] transform transition-transform duration-700 ease-in-out shadow-2xl border-l border-white/5 font-montserrat not-italic ${navOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex justify-between items-center px-8 h-20 border-b border-white/5">
           <img src="/img/logos/logoblanco.png" alt="Logo Darmax" className="h-9 w-auto object-contain" />
           <button onClick={() => setNavOpen(false)} className="text-white/50 hover:text-white hover:rotate-90 transition-all duration-500">
@@ -232,7 +232,7 @@ export default function NavBar() {
               <Link 
                 key={link.href} 
                 to={link.href} 
-                className={`px-6 py-4 rounded-2xl font-black text-[11px] tracking-[0.2em] transition-all duration-300 uppercase ${isActive ? `${activeBgClass}` : "text-slate-400 hover:text-white hover:bg-white/5"}`} 
+                className={`px-6 py-4 rounded-2xl font-bold text-xs tracking-[0.18em] transition-all duration-300 uppercase ${isActive ? `${activeBgClass}` : "text-slate-400 hover:text-white hover:bg-white/5"}`} 
                 style={isActive ? accentStyle : {}}
                 onClick={() => setNavOpen(false)}
               >

@@ -269,7 +269,7 @@ export default function WizardGeneral() {
   };
 
   return (
-    <div ref={wizardRef} className="bg-slate-50 min-h-screen pt-20 sm:pt-24 lg:pt-28 pb-32">
+    <div ref={wizardRef} className="bg-[#fbfbfd] min-h-screen pt-20 sm:pt-24 lg:pt-28 pb-32 font-montserrat not-italic">
       {/* NAVEGACIÓN Y BREADCRUMBS ADAPTADOS */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 sm:mb-8">
         <Breadcrumbs

@@ -132,17 +132,17 @@ const Container = ({ children, className = "" }) => (
 const MetricCard = ({ title, value, suffix, icon: Icon, delay = 0 }) => (
   <motion.div 
     {...fadeUp(delay)}
-    className="relative p-8 rounded-[2.5rem] bg-white border border-teal-100 shadow-xl shadow-teal-900/5 group overflow-hidden"
+    className="relative p-7 sm:p-8 rounded-2xl sm:rounded-3xl bg-white border border-teal-100 shadow-xl shadow-teal-900/5 group overflow-hidden font-montserrat not-italic"
   >
     <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-teal-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
-    <div className="relative z-10 flex flex-col items-center text-center">
-      <div className="w-16 h-16 rounded-2xl bg-teal-600 text-white flex items-center justify-center mb-6 shadow-lg shadow-teal-600/20 group-hover:rotate-12 transition-transform">
-        <Icon className="w-8 h-8" />
+    <div className="relative z-10 flex flex-col items-center text-center font-montserrat not-italic">
+      <div className="w-14 h-14 rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-5 shadow-lg shadow-teal-600/20 group-hover:rotate-12 transition-transform">
+        <Icon className="w-7 h-7 stroke-[1.8]" />
       </div>
-      <div className="text-4xl md:text-5xl font-black text-teal-900 tracking-tighter mb-2">
+      <div className="text-4xl md:text-5xl font-extrabold text-[#031638] tracking-tight mb-1.5 font-montserrat not-italic">
         <Counter value={value} suffix={suffix} />
       </div>
-      <p className="text-teal-700/60 font-bold uppercase tracking-widest text-[10px]">{title}</p>
+      <p className="text-slate-500 font-bold uppercase tracking-widest text-[11px] font-montserrat not-italic">{title}</p>
     </div>
   </motion.div>
 );
@@ -170,7 +170,7 @@ const Counter = ({ value, suffix = "", duration = 2 }) => {
     }
   }, [isInView, value, duration]);
 
-  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+  return <span ref={ref} className="font-montserrat not-italic">{count.toLocaleString()}{suffix}</span>;
 };
 
 const GlassCard = ({ title, desc, icon: Icon, delay = 0 }) => (
@@ -179,18 +179,18 @@ const GlassCard = ({ title, desc, icon: Icon, delay = 0 }) => (
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ duration: 0.7, delay, ease }}
-    whileHover={{ y: -10, transition: { duration: 0.3 } }}
-    className="p-8 rounded-[2.5rem] bg-white/20 border border-white/40 backdrop-blur-md hover:bg-white/30 transition-all group shadow-xl shadow-cyan-950/5 h-full"
+    whileHover={{ y: -6, transition: { duration: 0.3 } }}
+    className="p-7 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/10 border border-white/20 backdrop-blur-md hover:bg-white/20 transition-all group shadow-xl h-full font-montserrat not-italic"
   >
     <motion.div 
-      animate={{ y: [0, -5, 0] }}
+      animate={{ y: [0, -4, 0] }}
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay }}
-      className="w-14 h-14 rounded-2xl bg-white text-[#168387] flex items-center justify-center mb-6 shadow-lg"
+      className="w-13 h-13 rounded-2xl bg-white text-[#168387] flex items-center justify-center mb-5 shadow-lg"
     >
-      <Icon className="w-8 h-8" />
+      <Icon className="w-7 h-7 stroke-[1.8]" />
     </motion.div>
-    <h3 className="text-xl font-black mb-3 text-white">{title}</h3>
-    <p className="text-white text-sm leading-relaxed font-medium">{desc}</p>
+    <h3 className="text-xl font-bold mb-2.5 text-white font-montserrat not-italic">{title}</h3>
+    <p className="text-cyan-50/90 text-sm leading-relaxed font-normal font-montserrat not-italic">{desc}</p>
   </motion.div>
 );
 
@@ -234,10 +234,10 @@ export default function Nosotros() {
         <meta name="description" content="Descubre la historia de Darmax y por qué somos tu mejor opción en tecnología vending de agua y emprendimiento automatizado." />
       </Helmet>
 
-      <main className="min-h-screen bg-white text-slate-900 selection:bg-[#24d4da] selection:text-white overflow-x-hidden italic">
+      <main className="min-h-screen bg-white text-slate-900 selection:bg-[#24d4da] selection:text-white overflow-x-hidden font-montserrat not-italic">
         
         {/* SECTION 1: HERO */}
-        <section className="relative pt-24 pb-20 lg:pt-20 lg:pb-32 overflow-hidden bg-white">
+        <section className="relative pt-24 pb-20 lg:pt-20 lg:pb-32 overflow-hidden bg-white font-montserrat not-italic">
           <div className="absolute inset-0 z-0">
             <img 
               src="https://res.cloudinary.com/defkuaytw/image/upload/v1776407496/fondo_gotas_jrtijk.png" 
@@ -248,33 +248,32 @@ export default function Nosotros() {
             <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white" />
           </div>
 
-          <Container className="relative z-10">
+          <Container className="relative z-10 font-montserrat not-italic">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-              <motion.div style={{ y: yHero, opacity: opacityHero }} className="text-left lg:pr-8">
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-[1.1] text-slate-950">
-                  <AnimatedText text="Darmax Agua comenzó con una idea clara" className="block mb-2" delay={0.2} />
-                  <motion.span 
-                    animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-[#168387] via-[#24d4da] to-[#168387] bg-[length:200%_auto] inline"
-                  >
-                    <AnimatedText text="Reinventar la manera de emprender en el negocio del agua." delay={1.8} />
-                  </motion.span>
+              <motion.div style={{ y: yHero, opacity: opacityHero }} className="text-left lg:pr-8 font-montserrat not-italic">
+                <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block">
+                  Nuestra Filosofía
+                </span>
+                <h1 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight text-[#031638]">
+                  Darmax Agua comenzó con una idea clara:{" "}
+                  <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                    Reinventar la manera de emprender en el negocio del agua.
+                  </span>
                 </h1>
                 
-                <p className="mt-8 text-lg md:text-xl text-slate-500 font-medium leading-relaxed max-w-2xl">
-                  <AnimatedText text="Porque emprender en el negocio del agua merece ser más simple, inteligente y alcanzable." delay={3.2} />
+                <p className="mt-6 text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl">
+                  Porque emprender en el negocio del agua merece ser más simple, inteligente y alcanzable para todos.
                 </p>
                 
-                <motion.div {...fadeUp(5.2)} className="mt-10">
+                <motion.div {...fadeUp(0.3)} className="mt-8 sm:mt-10 font-montserrat not-italic">
                   <motion.a 
                     whileHover={{ scale: 1.05 }} 
                     whileTap={{ scale: 0.95 }} 
                     href="#historia" 
-                    className="inline-flex items-center gap-4 px-8 py-4 bg-white border-2 border-[#24d4da] text-[#168387] font-black rounded-2xl shadow-xl shadow-cyan-500/10 group transition-all"
+                    className="inline-flex items-center gap-3 px-7 py-3.5 sm:px-8 sm:py-4 bg-white border-2 border-[#24d4da] text-[#168387] font-bold text-xs sm:text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-cyan-500/10 group transition-all font-montserrat not-italic"
                   >
-                    <span className="h-px w-8 bg-[#24d4da] group-hover:w-12 transition-all" />
-                    NUESTRA FILOSOFÍA
+                    <span className="h-px w-6 sm:w-8 bg-[#24d4da] group-hover:w-10 sm:group-hover:w-12 transition-all" />
+                    CONOCE NUESTRA HISTORIA
                   </motion.a>
                 </motion.div>
               </motion.div>
@@ -302,10 +301,10 @@ export default function Nosotros() {
           </Container>
         </section>
 
-        {/* SECTION 2: MÉTTRICAS */}
-        <section className="py-20 bg-teal-50/50 border-y border-teal-100/50">
+        {/* SECTION 2: MÉTRICAS */}
+        <section className="py-16 sm:py-20 bg-teal-50/50 border-y border-teal-100/50 font-montserrat not-italic">
           <Container>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-6 sm:gap-8 font-montserrat not-italic">
               <MetricCard title="Equipos Instalados" value="350" suffix="+" icon={CheckBadgeIcon} delay={0.1} />
               <MetricCard title="Negocios Rentables" value="280" suffix="+" icon={ChartBarIcon} delay={0.2} />
               <MetricCard title="Litros Purificados" value="10" suffix="M+" icon={BeakerIcon} delay={0.3} />
@@ -314,18 +313,22 @@ export default function Nosotros() {
         </section>
 
         {/* SECTION 3: HISTORIA / ORIGEN */}
-        <section id="historia" className="py-24 bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] text-white relative overflow-hidden shadow-[inset_0_-20px_50px_rgba(0,0,0,0.1)]">
-          <Container className="relative z-10">
-            <div className="grid lg:grid-cols-12 gap-16 items-center">
-              <motion.div {...fadeUp(0)} className="lg:col-span-5">
-                <span className="inline-block px-4 py-1.5 bg-white/20 text-white font-black rounded-full text-[10px] uppercase tracking-[0.2em] mb-6 border border-white/20 backdrop-blur-sm">Nuestra historia</span>
-                <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-white leading-none mb-8">El origen de Darmax</h2>
-                <div className="space-y-6 text-base md:text-lg text-cyan-50 font-medium leading-relaxed">
+        <section id="historia" className="py-20 sm:py-24 bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] text-white relative overflow-hidden shadow-[inset_0_-20px_50px_rgba(0,0,0,0.1)] font-montserrat not-italic">
+          <Container className="relative z-10 font-montserrat not-italic">
+            <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              <motion.div {...fadeUp(0)} className="lg:col-span-5 font-montserrat not-italic">
+                <span className="font-montserrat not-italic text-cyan-300 font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-2 sm:mb-2.5 block">
+                  Nuestra Trayectoria
+                </span>
+                <h2 className="font-montserrat not-italic text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight mb-6">
+                  El origen de Darmax
+                </h2>
+                <div className="space-y-5 text-sm sm:text-base text-cyan-50/90 font-normal leading-relaxed font-montserrat not-italic">
                   <p>
-                    Darmax nació con un sueño: transformar la manera en que las personas acceden al agua y a productos esenciales, creando soluciones que generen bienestar y nuevas oportunidades. Detrás de este sueño está <strong className="text-white drop-shadow-sm">Max</strong>, un joven emprendedor que, con solo 17 años, se inició en la venta de purificadores caseros y suministros para purificadoras. Su curiosidad y determinación lo llevaron a conocer a fondo el negocio, hasta descubrir el potencial de las máquinas vending de agua purificada. Fue entonces cuando comprendió que este modelo no solo resolvía una necesidad básica, sino que abría la puerta al emprendimiento local.
+                    Darmax nació con un sueño: transformar la manera en que las personas acceden al agua y a productos esenciales, creando soluciones que generen bienestar y nuevas oportunidades. Detrás de este sueño está <strong className="text-white drop-shadow-sm font-bold">Max</strong>, un joven emprendedor que, con solo 17 años, se inició en la venta de purificadores caseros y suministros para purificadoras. Su curiosidad y determinación lo llevaron a conocer a fondo el negocio, hasta descubrir el potencial de las máquinas vending de agua purificada. Fue entonces cuando comprendió que este modelo no solo resolvía una necesidad básica, sino que abría la puerta al emprendimiento local.
                   </p>
                   <p>
-                    Con los ahorros generados por su trabajo y el apoyo de su familia, adquirió su primera purificadora: <strong>DARMAX</strong>. Desde entonces, diseñar soluciones a la medida se convirtió en su filosofía, y conectar con las personas, en su mayor fortaleza. Hoy, esa visión sigue viva en cada producto y servicio de Darmax.
+                    Con los ahorros generados por su trabajo y el apoyo de su familia, adquirió su primera purificadora: <strong className="text-white">DARMAX</strong>. Desde entonces, diseñar soluciones a la medida se convirtió en su filosofía, y conectar con las personas, en su mayor fortaleza. Hoy, esa visión sigue viva en cada producto y servicio de Darmax.
                   </p>
                   <p>
                     Más que vender tecnología, creamos oportunidades. Impulsamos a personas a emprender, a cuidar el agua y a mejorar su entorno, con disciplina, integridad, compromiso y pasión. En Darmax creemos que, con las herramientas correctas, una sola idea puede cambiar una vida, y una vida puede transformar una comunidad.
@@ -333,7 +336,7 @@ export default function Nosotros() {
                 </div>
               </motion.div>
 
-              <div className="lg:col-span-7 grid sm:grid-cols-2 gap-6">
+              <div className="lg:col-span-7 grid sm:grid-cols-2 gap-6 font-montserrat not-italic">
                 {[
                   { 
                     t: "Misión", 
@@ -349,25 +352,25 @@ export default function Nosotros() {
                   <motion.div 
                     key={i}
                     {...fadeUp(0.2 * i)}
-                    className="p-8 rounded-[2.5rem] bg-white/10 border border-white/20 backdrop-blur-md group hover:bg-white/20 transition-all shadow-xl flex flex-col justify-start"
+                    className="p-7 sm:p-8 rounded-3xl bg-white/10 border border-white/20 backdrop-blur-md group hover:bg-white/20 transition-all shadow-xl flex flex-col justify-start font-montserrat not-italic"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-white text-[#168387] shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shrink-0">
-                      <card.icon className="w-6 h-6" />
+                    <div className="w-12 h-12 rounded-xl bg-white text-[#168387] shadow-sm flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shrink-0 font-montserrat not-italic">
+                      <card.icon className="w-6 h-6 stroke-[1.8]" />
                     </div>
-                    <h4 className="text-xl font-black text-white mb-3">{card.t}</h4>
-                    <p className="text-cyan-50/90 font-medium text-sm leading-relaxed">{card.d}</p>
+                    <h4 className="text-xl font-bold text-white mb-2.5 font-montserrat not-italic">{card.t}</h4>
+                    <p className="text-cyan-50/90 font-normal text-sm leading-relaxed font-montserrat not-italic">{card.d}</p>
                   </motion.div>
                 ))}
                 <motion.div 
                   {...fadeUp(0.4)}
-                  className="sm:col-span-2 p-8 rounded-[2.5rem] bg-[#0d2e35] text-white relative overflow-hidden group shadow-2xl border border-white/10"
+                  className="sm:col-span-2 p-7 sm:p-8 rounded-3xl bg-[#0d2e35] text-white relative overflow-hidden group shadow-2xl border border-white/10 font-montserrat not-italic"
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-[#168387]/20 to-transparent pointer-events-none" />
-                  <div className="relative z-10">
-                    <h4 className="text-xl font-black mb-2 flex items-center gap-3 text-[#24d4da]">
+                  <div className="relative z-10 font-montserrat not-italic">
+                    <h4 className="text-xl font-bold mb-2 flex items-center gap-2.5 text-[#24d4da] font-montserrat not-italic">
                       <SparklesIcon className="w-6 h-6 text-[#24d4da]" /> Nuestra promesa
                     </h4>
-                    <p className="text-cyan-50/90 font-medium text-lg leading-snug">
+                    <p className="text-cyan-50/90 font-medium text-base sm:text-lg leading-snug font-montserrat not-italic">
                       Convertimos una inversión en un negocio listo para crecer.
                     </p>
                   </div>
@@ -378,25 +381,28 @@ export default function Nosotros() {
         </section>
 
         {/* SECTION 4: LO QUE HACEMOS DIFERENTE */}
-        <section className="py-20 sm:py-32 bg-white relative overflow-hidden">
+        <section className="py-20 sm:py-28 bg-white relative overflow-hidden font-montserrat not-italic">
           <Container>
             <motion.div
               {...fadeUp(0)}
-              className="text-center mb-16 sm:mb-24"
+              className="text-center mb-14 sm:mb-20 max-w-4xl mx-auto font-montserrat not-italic"
             >
-              <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
+              <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block text-center">
                 Nuestro valor diferencial
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-950 tracking-tighter leading-tight">
-                Lo que hacemos <span className="underline decoration-[#24d4da]/30 underline-offset-[8px] sm:underline-offset-[12px] decoration-2">diferente</span>
+              <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-3 sm:mb-4 text-center">
+                <span className="text-[#031638]">Lo que hacemos </span>
+                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                  diferente
+                </span>
               </h2>
-              <p className="mt-6 text-slate-500 text-lg sm:text-xl font-medium leading-relaxed max-w-3xl mx-auto">
-                Creamos oportunidades reales para que más personas <strong className="text-slate-900">construyan un negocio propio y rentable.</strong>
+              <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl mx-auto text-center">
+                Creamos oportunidades reales para que más personas construyan un negocio propio y rentable.
               </p>
             </motion.div>
 
             <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-              {/* COLUMNA IZQUIERDA: LOGO */}
+              {/* COLUMNA IZQUIERDA: FOTO */}
               <motion.div 
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -414,7 +420,7 @@ export default function Nosotros() {
               </motion.div>
 
               {/* COLUMNA DERECHA: LOS PUNTOS (TARJETAS) */}
-              <div className="lg:col-span-7 space-y-6 order-1 lg:order-2">
+              <div className="lg:col-span-7 space-y-4 sm:space-y-5 order-1 lg:order-2 font-montserrat not-italic">
                 {[
                   { t: "Personalización Real", d: "Tú eliges cómo construir tu negocio según tu zona y objetivos.", icon: SparklesIcon, step: "01" },
                   { t: "Enfoque en Rentabilidad", d: "Herramientas para entender cuánto ganas, no solo cuánto inviertes.", icon: ChartBarIcon, step: "02" },
@@ -423,27 +429,27 @@ export default function Nosotros() {
                   <motion.div 
                     key={i} 
                     {...fadeUp(0.1 * i)}
-                    whileHover={{ x: 15 }}
-                    className="group relative overflow-hidden flex items-start gap-5 p-6 sm:p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(13,90,94,0.2)] cursor-default"
+                    whileHover={{ x: 10 }}
+                    className="group relative overflow-hidden flex items-start gap-4 sm:gap-5 p-5 sm:p-7 rounded-2xl sm:rounded-3xl bg-[#F7FAFD] border border-slate-200/90 transition-all duration-500 hover:shadow-lg cursor-default font-montserrat not-italic"
                   >
                     {/* Capa de fondo para el hover (Gradiente Premium) */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     
                     <motion.div 
-                      className="relative z-10 w-14 h-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-[#168387] group-hover:bg-white/10 group-hover:text-white transition-all duration-500 shrink-0 group-hover:rotate-12"
+                      className="relative z-10 w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-[#168387] group-hover:bg-white/10 group-hover:text-white transition-all duration-500 shrink-0 group-hover:rotate-12"
                     >
-                      <item.icon className="w-7 h-7" />
+                      <item.icon className="w-6 h-6 stroke-[1.8]" />
                     </motion.div>
                     
-                    <div className="relative z-10">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className="text-[10px] font-black text-[#24d4da] group-hover:text-cyan-300 uppercase tracking-[0.2em]">{item.step}</span>
-                        <h4 className="font-black text-slate-900 group-hover:text-white text-lg sm:text-xl transition-colors duration-500">{item.t}</h4>
+                    <div className="relative z-10 font-montserrat not-italic">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-bold text-[#168387] group-hover:text-cyan-300 uppercase tracking-widest font-montserrat not-italic">{item.step}</span>
+                        <h4 className="font-bold text-[#031638] group-hover:text-white text-base sm:text-lg transition-colors duration-500 font-montserrat not-italic">{item.t}</h4>
                       </div>
-                      <p className="text-slate-500 group-hover:text-cyan-50 text-sm sm:text-base leading-relaxed font-medium transition-colors duration-500">{item.d}</p>
+                      <p className="text-slate-600 group-hover:text-cyan-50 text-xs sm:text-sm leading-relaxed font-normal transition-colors duration-500 font-montserrat not-italic">{item.d}</p>
                     </div>
 
-                    <div className="absolute top-6 right-8 text-slate-200 group-hover:text-white/5 font-black text-5xl transition-colors duration-700 select-none">
+                    <div className="absolute top-5 right-6 text-slate-200/80 group-hover:text-white/5 font-extrabold text-4xl transition-colors duration-500 select-none font-montserrat not-italic">
                       {item.step}
                     </div>
                   </motion.div>
@@ -454,43 +460,50 @@ export default function Nosotros() {
         </section>
 
         {/* SECTION 5: EVOLUCIÓN & VISIÓN */}
-        <section className="py-24 bg-slate-50 overflow-hidden relative">
+        <section className="py-20 sm:py-24 bg-slate-50/50 overflow-hidden relative font-montserrat not-italic">
           <Container>
-            <div className="grid lg:grid-cols-12 gap-16 items-start">
+            <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
               <div className="lg:col-span-5 relative flex justify-center lg:block">
                 <motion.div style={{ scale: scaleImage }} className="relative group w-full max-w-sm lg:max-w-none">
-                  <div className="relative aspect-[4/5] rounded-[4rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)] border-[12px] border-white bg-slate-950">
+                  <div className="relative aspect-[4/5] rounded-[3rem] sm:rounded-[3.5rem] overflow-hidden shadow-2xl border-8 border-white bg-slate-950">
                     <img src="https://res.cloudinary.com/defkuaytw/image/upload/v1776662291/ChatGPT_Image_19_abr_2026_07_16_41_p.m._wx55yy.png" alt="Darmax Noche" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent pointer-events-none" />
                   </div>
                   <motion.div 
                     {...fadeUp(0.4)} 
-                    className="absolute -bottom-12 left-0 right-0 mx-auto w-[92%] sm:w-[80%] lg:w-auto lg:max-w-xs lg:left-auto lg:-right-8 lg:translate-x-0 bg-white/10 backdrop-blur-xl text-white p-8 rounded-[2.5rem] shadow-2xl z-20 border border-white/20"
+                    className="absolute -bottom-10 left-0 right-0 mx-auto w-[92%] sm:w-[85%] lg:w-auto lg:max-w-xs lg:left-auto lg:-right-6 lg:translate-x-0 bg-slate-900/90 backdrop-blur-xl text-white p-6 sm:p-7 rounded-2xl sm:rounded-3xl shadow-2xl z-20 border border-white/15 font-montserrat not-italic"
                   >
-                    <p className="text-xl lg:text-2xl font-black leading-tight italic text-center lg:text-left drop-shadow-md">
+                    <p className="text-base sm:text-lg font-bold leading-snug text-center lg:text-left drop-shadow-md font-montserrat not-italic">
                       “Mientras otros venden equipos, nosotros construimos negocios.”
                     </p>
-                    <div className="mt-4 w-12 h-1.5 bg-[#24d4da] rounded-full mx-auto lg:mx-0 shadow-[0_0_10px_#24d4da]" />
+                    <div className="mt-3 w-10 h-1 bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] rounded-full mx-auto lg:mx-0" />
                   </motion.div>
                 </motion.div>
               </div>
 
-              <div className="lg:col-span-7 lg:pl-10 pt-16 lg:pt-0">
-                <motion.div {...fadeUp(0)} className="mb-16">
-                  <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-950">Nuestra evolución</h2>
-                  <p className="mt-4 text-slate-500 text-lg font-medium">Un camino de innovación constante para tu éxito.</p>
+              <div className="lg:col-span-7 lg:pl-8 pt-12 lg:pt-0 font-montserrat not-italic">
+                <motion.div {...fadeUp(0)} className="mb-12 font-montserrat not-italic">
+                  <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 block">
+                    Trayectoria
+                  </span>
+                  <h2 className="font-montserrat not-italic text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#031638] leading-tight">
+                    Nuestra evolución
+                  </h2>
+                  <p className="mt-3 text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed">
+                    Un camino de innovación constante para tu éxito.
+                  </p>
                 </motion.div>
-                <div className="relative">
-                  <div className="absolute left-6 top-0 w-1 h-full bg-gradient-to-b from-[#24d4da] via-[#168387] to-cyan-100 rounded-full" />
-                  <div className="space-y-12">
+                <div className="relative font-montserrat not-italic">
+                  <div className="absolute left-6 top-0 w-0.5 h-full bg-gradient-to-b from-[#288EB9] via-[#1DB3BA] to-cyan-100 rounded-full" />
+                  <div className="space-y-8 sm:space-y-10">
                     {TIMELINE.map((item, i) => (
-                      <motion.div key={i} {...fadeUp(0.1 * i)} className="relative pl-16 group">
-                        <div className="absolute left-0 top-0 w-12 h-12 rounded-full bg-white border-4 border-[#24d4da] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform z-10">
-                          <span className="font-black text-[#168387] text-sm">{item.year}</span>
+                      <motion.div key={i} {...fadeUp(0.1 * i)} className="relative pl-14 sm:pl-16 group font-montserrat not-italic">
+                        <div className="absolute left-0 top-0 w-12 h-12 rounded-full bg-white border-4 border-[#288EB9] flex items-center justify-center shadow-md group-hover:scale-110 transition-transform z-10 font-montserrat not-italic">
+                          <span className="font-bold text-[#168387] text-xs sm:text-sm font-montserrat not-italic">{item.year}</span>
                         </div>
-                        <div className="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-xl shadow-slate-200/40 group-hover:border-[#24d4da] transition-all">
-                          <h4 className="text-xl font-black text-slate-950 mb-2">{item.title}</h4>
-                          <p className="text-slate-500 font-medium text-sm leading-relaxed">{item.desc}</p>
+                        <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm group-hover:border-[#1DB3BA] transition-all font-montserrat not-italic">
+                          <h4 className="text-base sm:text-lg font-bold text-[#031638] mb-1.5 font-montserrat not-italic">{item.title}</h4>
+                          <p className="text-slate-600 font-normal text-xs sm:text-sm leading-relaxed font-montserrat not-italic">{item.desc}</p>
                         </div>
                       </motion.div>
                     ))}
@@ -502,15 +515,20 @@ export default function Nosotros() {
         </section>
 
         {/* SECTION 6: POR QUÉ DARMAX */}
-        <section className="py-24 bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] text-white relative overflow-hidden shadow-[inset_0_20px_50px_rgba(0,0,0,0.1)]">
-          <Container className="relative z-10">
-            <motion.div {...fadeUp(0)} className="text-center mb-16">
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white">¿Por qué Darmax es tu mejor opción?</h2>
-              <p className="mt-6 text-cyan-50 max-w-2xl mx-auto text-xl font-medium leading-relaxed">
+        <section className="py-20 sm:py-24 bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] text-white relative overflow-hidden shadow-[inset_0_20px_50px_rgba(0,0,0,0.1)] font-montserrat not-italic">
+          <Container className="relative z-10 font-montserrat not-italic">
+            <motion.div {...fadeUp(0)} className="text-center mb-12 sm:mb-16 font-montserrat not-italic">
+              <span className="font-montserrat not-italic text-cyan-300 font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 block text-center">
+                Propuesta de Valor
+              </span>
+              <h2 className="font-montserrat not-italic text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight mb-3 text-center">
+                ¿Por qué Darmax es tu mejor opción?
+              </h2>
+              <p className="text-cyan-50/90 font-montserrat not-italic max-w-2xl mx-auto text-sm sm:text-base md:text-lg font-normal leading-relaxed text-center">
                 Impulsamos emprendedores con tecnología inteligente y acompañamiento real.
               </p>
             </motion.div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 font-montserrat not-italic">
               <GlassCard title="Modelo Híbrido" desc="Mostrador + vending + limpieza: maximizamos tu alcance comercial y fuentes de ingreso." icon={GlobeAltIcon} delay={0.2} />
               <GlassCard title="Control de Inversión" desc="Negocios inteligentes y escalables donde tú tienes el control real sobre cada peso ganado." icon={CheckBadgeIcon} delay={0.4} />
               <GlassCard title="Visión Escalable" desc="Diseñamos sistemas que crecen conforme tus metas se expanden. El agua es tu oportunidad." icon={RocketLaunchIcon} delay={0.6} />
@@ -518,54 +536,54 @@ export default function Nosotros() {
           </Container>
         </section>
 
-        {/* SECTION 7: VALORES (CARDS MEJORADAS) */}
-        <section className="py-20 sm:py-32 bg-white relative overflow-hidden">
+        {/* SECTION 7: VALORES */}
+        <section className="py-20 sm:py-28 bg-white relative overflow-hidden font-montserrat not-italic">
           <Container>
             <motion.div
               {...fadeUp(0)}
-              className="text-center mb-16 sm:mb-24"
+              className="text-center mb-14 sm:mb-20 max-w-4xl mx-auto font-montserrat not-italic"
             >
-              <span className="text-[#24d4da] font-black tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-3 sm:mb-4 block">
+              <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block text-center">
                 Nuestra esencia
               </span>
-              <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-tight">
-                Lo que nos <span className="underline decoration-[#24d4da]/30 underline-offset-[8px] sm:underline-offset-[12px] decoration-2">mueve</span>
+              <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-3 sm:mb-4 text-center">
+                <span className="text-[#031638]">Lo que nos </span>
+                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                  mueve
+                </span>
               </h2>
-              <p className="mt-6 text-slate-500 max-w-2xl mx-auto text-lg sm:text-xl font-medium italic">
+              <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl mx-auto text-center">
                 Nuestros valores se reflejan en cada proyecto, cada instalación y cada negocio que ayudamos a crecer.
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 font-montserrat not-italic">
               {VALORES.map((v, i) => (
                 <motion.div 
                   key={i}
                   {...fadeUp(0.1 * i)}
-                  whileHover={{ y: -12, scale: 1.02 }}
-                  className="group relative overflow-hidden p-8 rounded-[2.5rem] sm:rounded-[3.5rem] bg-white border border-slate-100 flex flex-col transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(13,90,94,0.3)] shadow-xl shadow-slate-900/5 cursor-default"
+                  whileHover={{ y: -8, scale: 1.01 }}
+                  className="group relative overflow-hidden p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 flex flex-col transition-all duration-500 hover:shadow-xl shadow-slate-900/5 cursor-default font-montserrat not-italic"
                 >
-                  {/* Capa de fondo para el hover (Gradiente de Anatomía 3D) */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  {/* Capa de fondo para el hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#0d5a5e] via-[#168387] to-[#24d4da] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
-                  {/* Textura sutil en hover */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:20px_20px] transition-opacity duration-700" />
-
-                  <div className="relative z-10">
-                    <div className={`w-14 h-14 rounded-2xl bg-slate-50 group-hover:bg-white/10 text-[#168387] group-hover:text-white flex items-center justify-center mb-6 shadow-sm group-hover:rotate-12 transition-all duration-500`}>
-                      <v.icon className="w-8 h-8 stroke-[1.5]" />
+                  <div className="relative z-10 font-montserrat not-italic">
+                    <div className="w-12 h-12 rounded-xl bg-slate-50 group-hover:bg-white/10 text-[#168387] group-hover:text-white flex items-center justify-center mb-5 shadow-sm group-hover:rotate-12 transition-all duration-500">
+                      <v.icon className="w-6 h-6 stroke-[1.8]" />
                     </div>
                     
-                    <h4 className="text-2xl font-black text-slate-950 group-hover:text-white mb-3 tracking-tight transition-colors duration-500">
+                    <h4 className="text-lg sm:text-xl font-bold text-[#031638] group-hover:text-white mb-2 tracking-tight transition-colors duration-500 font-montserrat not-italic">
                       {v.t}
                     </h4>
                     
-                    <p className="text-slate-500 group-hover:text-cyan-50 font-medium text-sm leading-relaxed transition-colors duration-500">
+                    <p className="text-slate-600 group-hover:text-cyan-50 font-normal text-xs sm:text-sm leading-relaxed transition-colors duration-500 font-montserrat not-italic">
                       {v.d}
                     </p>
                     
-                    <div className="mt-8 flex items-center gap-2">
-                      <div className="h-px w-8 bg-slate-200 group-hover:bg-white/20 group-hover:w-12 transition-all duration-500" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-cyan-300 transition-colors duration-500">Valor {i+1}</span>
+                    <div className="mt-6 flex items-center gap-2">
+                      <div className="h-px w-6 bg-slate-200 group-hover:bg-white/20 group-hover:w-10 transition-all duration-500" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-cyan-300 transition-colors duration-500 font-montserrat not-italic">Valor {i+1}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -575,35 +593,41 @@ export default function Nosotros() {
         </section>
 
         {/* SECTION 8: CTA FINAL (BRAND GRADIENT) */}
-        <section className="py-24 bg-white">
+        <section className="py-16 sm:py-24 bg-white font-montserrat not-italic">
           <Container>
             <motion.div 
               {...fadeUp(0)} 
-              className="bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] rounded-[4rem] p-12 md:p-20 text-center text-white relative overflow-hidden shadow-[0_40px_100px_-15px_rgba(22,131,135,0.4)]"
+              className="bg-gradient-to-br from-[#24d4da] via-[#168387] to-[#0d5a5e] rounded-3xl sm:rounded-[3.5rem] p-8 sm:p-14 md:p-16 text-center text-white relative overflow-hidden shadow-2xl font-montserrat not-italic"
             >
-              {/* Overlay de luz para profundidad */}
               <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-black/10 pointer-events-none" />
               
-              <div className="relative z-10 max-w-4xl mx-auto">
-                <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-8 drop-shadow-sm">Más que clientes, aliados</h2>
-                <p className="text-xl md:text-2xl text-cyan-50 font-medium leading-relaxed mb-12">
+              <div className="relative z-10 max-w-3xl mx-auto font-montserrat not-italic">
+                <span className="font-montserrat not-italic text-cyan-300 font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-2 sm:mb-2.5 block text-center">
+                  Alianzas que Crecen
+                </span>
+                <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 drop-shadow-sm text-white">
+                  Más que clientes, aliados
+                </h2>
+                <p className="text-sm sm:text-base md:text-lg text-cyan-50 font-normal leading-relaxed mb-8 max-w-2xl mx-auto font-montserrat not-italic">
                   Acompañamos a cada emprendedor en la construcción de un negocio pensado para crecer.<br />
-                  <span className="font-black text-white mt-4 block uppercase tracking-widest text-lg bg-white/10 py-2 rounded-full border border-white/10 backdrop-blur-sm">Porque cuando tu negocio crece, nosotros también.</span>
+                  <span className="font-bold text-white mt-3 block uppercase tracking-wider text-xs sm:text-sm bg-white/10 py-2 px-4 rounded-full border border-white/15 backdrop-blur-sm">
+                    Porque cuando tu negocio crece, nosotros también.
+                  </span>
                 </p>
-                <div className="flex flex-wrap justify-center gap-6">
+                <div className="flex flex-wrap justify-center gap-4 sm:gap-5 font-montserrat not-italic">
                   <motion.a 
-                    whileHover={{ scale: 1.05, y: -5 }} 
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.04, y: -2 }} 
+                    whileTap={{ scale: 0.96 }}
                     href="/contacto" 
-                    className="px-10 py-5 bg-slate-950 text-white font-black rounded-2xl shadow-2xl text-lg transition-all border border-slate-800"
+                    className="px-8 py-3.5 sm:px-9 sm:py-4 bg-slate-950 text-white font-bold rounded-2xl shadow-xl text-xs sm:text-sm uppercase tracking-wider transition-all border border-slate-800 font-montserrat not-italic"
                   >
                     INICIA TU PROYECTO
                   </motion.a>
                   <motion.a 
-                    whileHover={{ scale: 1.05, bg: "rgba(255,255,255,0.2)" }} 
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.04, bg: "rgba(255,255,255,0.2)" }} 
+                    whileTap={{ scale: 0.96 }}
                     href="https://wa.me/525519655369" 
-                    className="px-10 py-5 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-black rounded-2xl text-lg transition-all"
+                    className="px-8 py-3.5 sm:px-9 sm:py-4 bg-white/15 backdrop-blur-xl border border-white/25 text-white font-bold rounded-2xl text-xs sm:text-sm uppercase tracking-wider transition-all font-montserrat not-italic"
                   >
                     HABLAR CON UN ASESOR
                   </motion.a>

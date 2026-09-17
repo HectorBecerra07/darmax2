@@ -67,17 +67,21 @@ export default function Step1SelectModel({ modelos, vendingType, categoryId, onS
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight px-2">
-          Elige tu modelo <br className="sm:hidden" />
-          <span className="text-[#168387]">
+    <div className="space-y-6 sm:space-y-8 font-montserrat not-italic">
+      <div className="text-center mb-6 sm:mb-8">
+        <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 block">
+          Configuración Inicial
+        </span>
+        <h2 className="font-montserrat not-italic text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-tight px-2 mb-2 sm:mb-3">
+          <span className="text-[#031638]">Elige tu modelo </span>
+          <br className="sm:hidden" />
+          <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
             {vendingType === VendingTypeEnum.TOUCH ? "Touch" : 
              vendingType === VendingTypeEnum.TRADICIONAL ? "Tradicional" : 
              "Especializado"}
           </span>
         </h2>
-        <p className="text-slate-500 text-xs sm:text-sm font-medium max-w-md mx-auto px-4">
+        <p className="text-slate-600 font-montserrat not-italic text-xs sm:text-sm md:text-base font-normal leading-relaxed max-w-md mx-auto px-4">
           Selecciona la base tecnológica que impulsará tu negocio. Cada modelo está diseñado para máxima eficiencia.
         </p>
       </div>

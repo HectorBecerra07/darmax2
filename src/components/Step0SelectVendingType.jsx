@@ -95,16 +95,21 @@ export default function Step0SelectVendingType({ onSelect, availableVendingTypes
   };
 
   return (
-    <div className="flex items-start min-h-[calc(100vh-250px)] sm:min-h-[calc(100vh-350px)] w-full pt-1 sm:pt-4 pb-12">
+    <div className="flex items-start min-h-[calc(100vh-250px)] sm:min-h-[calc(100vh-350px)] w-full pt-1 sm:pt-4 pb-12 font-montserrat not-italic">
       <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center lg:items-start gap-10 lg:gap-16 px-4 sm:px-8">
         
         {/* Titulo a la Izquierda */}
-        <div className="w-full lg:w-[35%] text-center lg:text-left space-y-4 lg:sticky lg:top-40">
-          <h2 className="text-3xl sm:text-6xl font-black text-slate-900 tracking-tighter leading-[0.9] sm:leading-tight">
+        <div className="w-full lg:w-[35%] text-center lg:text-left space-y-3 lg:sticky lg:top-40">
+          <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 block">
+            Tecnología de Despacho
+          </span>
+          <h2 className="font-montserrat not-italic text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-[#031638]">
             Selecciona tu <br />
-            <span className="text-[#168387]">vending</span>
+            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+              vending
+            </span>
           </h2>
-          <p className="text-slate-500 text-sm sm:text-lg font-medium max-w-md mx-auto lg:mx-0">
+          <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base font-normal leading-relaxed max-w-md mx-auto lg:mx-0">
             Cada tecnología está diseñada para objetivos de negocio diferentes. Elige la que mejor se adapte a tu visión.
           </p>
 

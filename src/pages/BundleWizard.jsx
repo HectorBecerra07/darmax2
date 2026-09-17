@@ -186,13 +186,13 @@ const ModelCard = ({ model, onSelect, isSelected, imageType }) => {
           </div>
       )}
       <div className="flex-grow">
-        <h3 className="text-xl font-bold text-gray-900">{model.name}</h3>
-        <p className="text-sm text-gray-600 mt-2">
+        <h3 className="font-montserrat not-italic text-lg sm:text-xl font-bold text-[#031638] leading-snug">{model.name}</h3>
+        <p className="font-montserrat not-italic text-xs sm:text-sm text-slate-600 mt-2 line-clamp-3">
           {model.description}
         </p>
       </div>
       <div className="mt-4">
-        <p className="text-xl font-extrabold text-gray-800">
+        <p className="font-montserrat not-italic text-xl font-bold text-[#168387]">
           {formatCurrency(model.basePrice)}
         </p>
       </div>
@@ -208,8 +208,15 @@ const ModelSelectionStep = ({
   selectedModelId,
   imageType,
 }) => (
-  <div className="space-y-6">
-    <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center">{title}</h2>
+  <div className="space-y-6 font-montserrat not-italic">
+    <div className="text-center mb-6">
+      <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-2 block">
+        Selección de Equipo
+      </span>
+      <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-4xl font-bold text-[#031638] tracking-tight leading-tight">
+        {title}
+      </h2>
+    </div>
     {models.length > 0 ? (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         {models.map((model) => (
@@ -259,10 +266,18 @@ const BundleSummary = ({ config, extras, steps, onEdit }) => {
     );
   
     return (
-      <div className="space-y-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center">
-          Resumen de tu Paquete
-        </h2>
+      <div className="space-y-8 font-montserrat not-italic">
+        <div className="text-center mb-6">
+          <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-2 block">
+            Paso Final
+          </span>
+          <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-4xl font-bold text-[#031638] tracking-tight leading-tight">
+            Resumen de tu{" "}
+            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+              Paquete
+            </span>
+          </h2>
+        </div>
         <div className="max-w-3xl mx-auto space-y-4">
           {summaryItems.map((item, index) => (
             <div key={item.modelType} className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5">
@@ -702,17 +717,25 @@ export default function BundleWizard() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-12 sm:pt-16 pb-32">
+    <div className="bg-[#fbfbfd] min-h-screen pt-12 sm:pt-16 pb-32 font-montserrat not-italic">
       <Helmet>
         <title>Configurador de Paquete - Darmax</title>
         <meta name="description" content="Configura tu paquete de purificadora y vending a la medida de tus necesidades." />
       </Helmet>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="text-center mb-8 sm:mb-12">
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-            Configurador de Paquete
+            <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 block">
+              Solución Combo
+            </span>
+            <h1 className="font-montserrat not-italic text-3xl sm:text-4xl md:text-5xl font-bold text-[#031638] tracking-tight leading-tight mb-2">
+              Configurador de{" "}
+              <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                Paquete
+              </span>
             </h1>
-            <p className="mt-2 text-base sm:text-lg text-cyan-600 font-semibold">{id}</p>
+            <p className="font-montserrat not-italic text-sm sm:text-base text-[#168387] font-semibold tracking-wide uppercase">
+              {id?.replace(/-/g, ' ')}
+            </p>
         </div>
 
         <div className="max-w-2xl mx-auto mb-10">
@@ -792,9 +815,9 @@ export default function BundleWizard() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">¡Configuración Terminada!</h2>
-                <p className="text-gray-600">Gracias por configurar tu paquete.</p>
-                <p className="mt-3 text-sm text-gray-500 animate-pulse">Serás redirigido en unos segundos...</p>
+                <h2 className="font-montserrat not-italic text-2xl font-bold text-[#031638] mb-2">¡Configuración Terminada!</h2>
+                <p className="font-montserrat not-italic text-slate-600 text-sm">Gracias por configurar tu paquete.</p>
+                <p className="font-montserrat not-italic mt-3 text-xs text-slate-400 font-medium animate-pulse">Serás redirigido en unos segundos...</p>
             </motion.div>
         </div>
       )}

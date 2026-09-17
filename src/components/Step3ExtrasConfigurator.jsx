@@ -369,13 +369,19 @@ export default function Step3ExtrasConfigurator({
       {/* Listado de Extras: Añadimos padding-top en móvil para compensar el FIXED */}
       <div className={`
         ${hasAnyPreview ? "lg:w-[60%] pt-[200px] lg:pt-0" : "w-full max-w-3xl"} 
-        flex flex-col
+        flex flex-col font-montserrat not-italic
       `}>
-        <div className="space-y-1 mb-6">
-          <h2 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tighter">
-            Extras <span className="text-[#168387]">Opcionales</span>
+        <div className="mb-6">
+          <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-1.5 block">
+            Personalización
+          </span>
+          <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight text-[#031638] mb-2">
+            Extras{" "}
+            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+              Opcionales
+            </span>
           </h2>
-          <p className="text-slate-500 text-xs sm:text-sm font-medium">
+          <p className="text-slate-600 font-montserrat not-italic text-xs sm:text-sm md:text-base font-normal leading-relaxed">
             Personaliza tu unidad con componentes de alto rendimiento.
           </p>
         </div>

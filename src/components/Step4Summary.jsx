@@ -467,19 +467,22 @@ export default function Step4Summary({
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto pb-8 font-sans">
+    <div className="space-y-8 max-w-5xl mx-auto pb-8 font-montserrat not-italic">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 -mt-4 sm:-mt-6">
         <div>
-          <span className="text-xs font-black uppercase tracking-[0.25em] text-[#168387] block mb-1">
+          <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-1.5 block">
             Paso Final del Configurador
           </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tighter">
-            Resumen de tu Configuración
+          <h2 className="font-montserrat not-italic text-2xl sm:text-4xl font-bold tracking-tight leading-tight text-[#031638]">
+            Resumen de tu{" "}
+            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+              Configuración
+            </span>
           </h2>
         </div>
         <button
           onClick={onBack}
-          className="self-start sm:self-auto px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-black uppercase tracking-wider hover:bg-slate-50 transition"
+          className="self-start sm:self-auto px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider hover:bg-slate-50 transition"
         >
           ← Regresar y Modificar
         </button>
