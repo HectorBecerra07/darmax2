@@ -17,12 +17,90 @@ import {
   InformationCircleIcon,
   CheckBadgeIcon,
   ChartBarIcon,
-  RocketLaunchIcon
+  RocketLaunchIcon,
+  TruckIcon,
+  CalendarDaysIcon,
+  WifiIcon
 } from "@heroicons/react/24/outline";
+import { FaCoins } from "react-icons/fa6";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const IniciaNegocio = lazy(() => import("../components/IniciaNegocio"));
+
+/* Icono de camión cisterna / pipa de agua */
+const PipaTruckIcon = React.memo((props) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="1.8" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    {...props}
+  >
+    <rect x="2" y="6" width="11" height="8.5" rx="4" />
+    <path d="M5.5 6V4.5h4V6" />
+    <path d="M13 9.5h3.2a1.5 1.5 0 0 1 1.2.6l2.3 3a1.5 1.5 0 0 1 .3.9v3.5a.5.5 0 0 1-.5.5h-1" />
+    <path d="M13.5 13.5H20" />
+    <path d="M2 17.5h1" />
+    <path d="M7 17.5h8" />
+    <circle cx="5" cy="17.5" r="2" />
+    <circle cx="17.5" cy="17.5" r="2" />
+  </svg>
+));
+
+/* Icono de dos montones de monedas en puro trazo outline (sin relleno) */
+const TwoCoinStacksOutlineIcon = React.memo((props) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="1.8" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    {...props}
+  >
+    {/* Pila izquierda */}
+    <ellipse cx="7.5" cy="7" rx="4.5" ry="2" />
+    <path d="M3 7v3c0 1.1 2 2 4.5 2s4.5-.9 4.5-2V7" />
+    <path d="M3 10v3c0 1.1 2 2 4.5 2s4.5-.9 4.5-2v-3" />
+    <path d="M3 13v3c0 1.1 2 2 4.5 2s4.5-.9 4.5-2v-3" />
+    
+    {/* Pila derecha (segundo montón de monedas) */}
+    <path d="M12 7.3c.7-.8 1.9-1.3 3.5-1.3 2.5 0 4.5.9 4.5 2s-1.8 1.9-4 2" />
+    <path d="M12 10.3c.7.4 1.8.7 3.5.7 2.5 0 4.5-.9 4.5-2v-2" />
+    <path d="M12 13.3c.7.4 1.8.7 3.5.7 2.5 0 4.5-.9 4.5-2v-2" />
+    <path d="M12 16.3c.7.4 1.8.7 3.5.7 2.5 0 4.5-.9 4.5-2v-2" />
+    <path d="M20 17v-8" />
+  </svg>
+));
+
+/* Icono de tapa de garrafón con estrías y precinto de seguridad */
+const BottleCapIcon = React.memo((props) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="1.8" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    {...props}
+  >
+    <ellipse cx="12" cy="7.5" rx="7.5" ry="3" />
+    <ellipse cx="12" cy="7.5" rx="4" ry="1.6" />
+    <path d="M4.5 7.5v6.5c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V7.5" />
+    <path d="M7 9v6" />
+    <path d="M9.5 9.8v6.4" />
+    <path d="M12 10.2v6.6" />
+    <path d="M14.5 9.8v6.4" />
+    <path d="M17 9v6" />
+    <path d="M5.5 16.5v1.2c0 1.2 2.9 2.3 6.5 2.3s6.5-1.1 6.5-2.3v-1.2" />
+  </svg>
+));
 
 /* =========================================
    ANIMATION & PREMIUM HELPERS
@@ -95,7 +173,8 @@ const MetricCard = React.memo(({ title, value, suffix, icon: Icon, delay = 0 }) 
    CALCULADORA: UTILIDADES
 ========================================================= */
 const CALC_BRAND = {
-  accent: "#24d4da",
+  accent: "#288EB9",
+  accentSecondary: "#1DB3BA",
   accentDark: "#168387"
 };
 
@@ -111,56 +190,123 @@ const formatCurrency = (amount) => {
 /* =========================================================
    CALCULADORA: COMPONENTES UI
 ========================================================= */
-const CompactInput = React.memo(({ label, value, setValue, color, suffix = "", prefix = "$", icon: Icon, help }) => {
+const CompactInput = React.memo(({ label, value, setValue, color, suffix = "", prefix = "$", icon: Icon, help, sideIcon = false }) => {
   const handleChange = (e) => {
     const cleanValue = e.target.value.replace(/[^0-9.]/g, "");
     setValue(cleanValue);
   };
 
+  if (sideIcon) {
+    return (
+      <div className="group w-full bg-[#F7FAFD] border border-slate-300 rounded-xl sm:rounded-2xl py-1.5 px-2.5 sm:py-2 sm:px-3 shadow-xs flex items-center justify-between gap-2.5 sm:gap-3 font-montserrat not-italic transition-all duration-200 hover:border-slate-400">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+          {Icon && <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#288EB9] shrink-0 stroke-[1.8]" />}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1">
+              <label className="text-[10px] sm:text-[10.5px] font-bold uppercase tracking-wider text-slate-600 truncate block group-focus-within:text-[#288EB9] transition-colors font-montserrat not-italic">
+                {label}
+              </label>
+              {help && (
+                <div className="relative group/help shrink-0">
+                  <InformationCircleIcon className="w-3.5 h-3.5 text-slate-300 cursor-help hover:text-[#288EB9] transition-colors" />
+                  <div className="absolute bottom-full left-0 sm:left-auto sm:right-0 mb-2 w-52 sm:w-56 p-3 bg-slate-900 text-white text-[11px] rounded-xl opacity-0 pointer-events-none group-hover/help:opacity-100 transition-all z-50 shadow-xl leading-relaxed border border-white/10 font-montserrat not-italic">
+                    {help}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="relative w-20 sm:w-24 shrink-0 font-montserrat not-italic">
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs font-montserrat not-italic pointer-events-none">{prefix}</span>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={value}
+            onChange={handleChange}
+            className="w-full bg-white border border-slate-200/90 rounded-lg sm:rounded-xl py-1 sm:py-1.5 pl-5 sm:pl-6 pr-2 text-slate-900 font-bold transition-all outline-none focus:bg-white focus:ring-2 focus:ring-[#288EB9]/25 focus:border-[#288EB9] text-xs sm:text-[12.5px] font-montserrat not-italic shadow-2xs"
+          />
+          {suffix && <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] font-bold font-montserrat not-italic pointer-events-none">{suffix}</span>}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="group w-full">
-      <div className="flex items-center justify-between mb-1">
-        <label className="flex items-center gap-1.5 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 group-focus-within:text-slate-600 transition-colors">
-          {Icon && <Icon className="w-3.5 h-3.5" />}
-          {label}
+    <div className="group w-full bg-[#F7FAFD] border border-slate-300 rounded-xl sm:rounded-2xl py-1.5 px-3 sm:py-2 sm:px-3 shadow-xs flex flex-col justify-between font-montserrat not-italic transition-all duration-200 hover:border-slate-400">
+      <div className="flex items-center justify-between mb-0.5 sm:mb-1 gap-1">
+        <label className="flex items-center gap-1.5 text-[10px] sm:text-[10.5px] font-bold uppercase tracking-wider text-slate-500 group-focus-within:text-[#288EB9] transition-colors font-montserrat not-italic truncate">
+          {Icon && <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[#288EB9] shrink-0 stroke-[1.8]" />}
+          <span className="truncate">{label}</span>
         </label>
         {help && (
-          <div className="relative group/help">
-            <InformationCircleIcon className="w-4 h-4 text-slate-300 cursor-help hover:text-cyan-500 transition-colors" />
-            <div className="absolute bottom-full right-0 mb-2 w-52 sm:w-56 p-3 bg-slate-900 text-white text-[10px] rounded-xl opacity-0 pointer-events-none group-hover/help:opacity-100 transition-all z-50 shadow-xl leading-relaxed border border-white/10">
+          <div className="relative group/help shrink-0">
+            <InformationCircleIcon className="w-3.5 h-3.5 text-slate-300 cursor-help hover:text-[#288EB9] transition-colors" />
+            <div className="absolute bottom-full right-0 mb-2 w-52 sm:w-56 p-3 bg-slate-900 text-white text-[11px] rounded-xl opacity-0 pointer-events-none group-hover/help:opacity-100 transition-all z-50 shadow-xl leading-relaxed border border-white/10 font-montserrat not-italic">
               {help}
             </div>
           </div>
         )}
       </div>
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">{prefix}</span>
+      <div className="relative font-montserrat not-italic">
+        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs font-montserrat not-italic pointer-events-none">{prefix}</span>
         <input
           type="text"
           inputMode="numeric"
           value={value}
           onChange={handleChange}
-          className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-7 pr-10 text-slate-900 font-bold transition-all outline-none focus:bg-white focus:ring-2 focus:ring-opacity-20 text-sm"
-          style={{ "--tw-ring-color": color }}
+          className="w-full bg-white border border-slate-200/90 rounded-lg sm:rounded-xl py-1 sm:py-1.5 pl-5 sm:pl-6 pr-2 text-slate-900 font-bold transition-all outline-none focus:bg-white focus:ring-2 focus:ring-[#288EB9]/25 focus:border-[#288EB9] text-xs sm:text-[12.5px] font-montserrat not-italic shadow-2xs"
         />
-        {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] font-black">{suffix}</span>}
+        {suffix && <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] font-bold font-montserrat not-italic pointer-events-none">{suffix}</span>}
       </div>
     </div>
   );
 });
 
-const CompactSlider = React.memo(({ value, min, max, onChange, color, label }) => {
+const CompactSlider = React.memo(({ value, min, max, onChange, color, label, icon: Icon = TwoCoinStacksOutlineIcon }) => {
   const percentage = ((value - min) / (max - min)) * 100;
   return (
-    <div className="w-full">
-      <div className="flex justify-between items-end mb-1.5">
-         <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400">{label}</span>
-         <span className="text-xl sm:text-2xl font-black text-slate-800">${value}</span>
-      </div>
-      <div className="relative w-full h-1.5 bg-slate-100 rounded-full">
-        <div className="absolute h-full rounded-full" style={{ width: `${percentage}%`, backgroundColor: color }} />
-        <input type="range" min={min} max={max} value={value} onChange={onChange} className="absolute w-full h-full opacity-0 cursor-pointer z-10" />
-        <div className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-md border-2 transition-transform active:scale-125" style={{ left: `${percentage}%`, borderColor: color, transform: 'translate(-50%, -50%)' }} />
+    <div className="w-full bg-[#F7FAFD] border border-slate-300 rounded-xl sm:rounded-2xl py-2 px-3 sm:py-2.5 sm:px-3.5 shadow-xs font-montserrat not-italic transition-all duration-200 hover:border-slate-400">
+      <div className="flex items-center gap-2.5 sm:gap-3">
+        {Icon && <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#288EB9] shrink-0 stroke-[1.8]" />}
+        <div className="flex-1 min-w-0">
+          <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 font-montserrat not-italic block mb-1">
+            {label}
+          </span>
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Barra del slider */}
+            <div className="relative flex-1 h-2 bg-slate-200/80 rounded-full">
+              <div 
+                className="absolute h-full rounded-full bg-gradient-to-r from-[#288EB9] to-[#1DB3BA]" 
+                style={{ width: `${percentage}%` }} 
+              />
+              <input 
+                type="range" 
+                min={min} 
+                max={max} 
+                value={value} 
+                onChange={onChange} 
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                aria-label={label}
+              />
+              <div 
+                className="absolute top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full shadow-md border-2 border-[#288EB9] transition-transform active:scale-125 pointer-events-none" 
+                style={{ left: `${percentage}%`, transform: 'translate(-50%, -50%)' }} 
+              />
+            </div>
+
+            {/* Precio a un lado de la barra */}
+            <div className="shrink-0 flex items-baseline gap-1 min-w-[70px] sm:min-w-[85px] justify-end">
+              <span className="text-lg sm:text-2xl font-extrabold text-[#031638] font-montserrat not-italic leading-none">
+                ${value}
+              </span>
+              <span className="text-[10px] sm:text-[11px] font-bold text-slate-400 font-montserrat not-italic">
+                MXN
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -191,12 +337,12 @@ const DashboardCard = React.memo(({ title, amount, sub }) => {
   }, [amount]);
 
   return (
-    <div className="p-3 sm:p-3.5 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm group hover:bg-white/10 transition-colors duration-500">
-      <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/30 mb-1 group-hover:text-cyan-400/50 transition-colors">{title}</p>
-      <p className="text-base sm:text-lg font-black text-white tracking-tight leading-none">
+    <div className="p-2 sm:p-2.5 rounded-xl bg-gradient-to-br from-[#288EB9]/20 to-[#1DB3BA]/10 border border-[#288EB9]/30 backdrop-blur-sm group hover:border-[#1DB3BA]/50 hover:bg-[#288EB9]/25 transition-all duration-300 font-montserrat not-italic">
+      <p className="text-[9.5px] font-bold uppercase tracking-wider text-cyan-300/80 mb-0.5 group-hover:text-cyan-200 transition-colors font-montserrat not-italic">{title}</p>
+      <p className="text-sm sm:text-base font-extrabold text-white tracking-tight leading-none font-montserrat not-italic">
         <span ref={el}>{formatCurrency(amount || 0)}</span>
       </p>
-      {sub && <p className="text-[8px] text-white/20 uppercase font-bold mt-0.5 tracking-wider">{sub}</p>}
+      {sub && <p className="text-[8.5px] text-[#1DB3BA]/70 uppercase font-semibold mt-0.5 tracking-wider font-montserrat not-italic">{sub}</p>}
     </div>
   );
 });
@@ -224,67 +370,67 @@ const GSAPCurrencyCounter = React.memo(({ value }) => {
 
 const DashboardResults = React.memo(function DashboardResults({ data }) {
   return (
-    <div className="h-full bg-[#0f172a] px-5 py-6 sm:p-6 lg:p-8 flex flex-col justify-between relative overflow-hidden">
-      {/* Luces de fondo dinámicas */}
-      <div className="absolute top-0 right-0 w-80 h-80 blur-[100px] -mr-40 -mt-40 animate-pulse pointer-events-none" style={{ backgroundColor: `${CALC_BRAND.accent}15` }}></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 blur-[100px] -ml-32 -mb-32 pointer-events-none" style={{ backgroundColor: `${CALC_BRAND.accent}10` }}></div>
+    <div className="h-full bg-[#0f172a] px-4 py-3 sm:p-4 lg:py-3.5 lg:px-5 flex flex-col justify-between relative overflow-hidden font-montserrat not-italic">
+      {/* Luces de fondo dinamicas */}
+      <div className="absolute top-0 right-0 w-80 h-80 blur-[100px] -mr-40 -mt-40 animate-pulse pointer-events-none" style={{ backgroundColor: `${CALC_BRAND.accent}25` }}></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 blur-[100px] -ml-32 -mb-32 pointer-events-none" style={{ backgroundColor: `${CALC_BRAND.accentSecondary}20` }}></div>
       
-      <div className="relative z-10 space-y-4 sm:space-y-5">
-        <div className="flex items-center gap-4">
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shadow-inner border transition-transform duration-500 hover:rotate-12" style={{ backgroundColor: `${CALC_BRAND.accent}20`, color: CALC_BRAND.accent, borderColor: `${CALC_BRAND.accent}20` }}>
-            <ArrowTrendingUpIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+      <div className="relative z-10 space-y-2 sm:space-y-2.5 font-montserrat not-italic">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shadow-inner border transition-transform duration-500 hover:rotate-12 bg-gradient-to-br from-[#288EB9]/25 to-[#1DB3BA]/15 text-[#1DB3BA] border-[#288EB9]/30 shrink-0 font-montserrat not-italic">
+            <ArrowTrendingUpIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2]" />
           </div>
           <div>
-            <h3 className="text-white font-black text-base sm:text-lg tracking-tight leading-none mb-1">Utilidad Proyectada</h3>
-            <p className="text-white/30 text-[9px] sm:text-[10px] uppercase tracking-widest font-black">Análisis de Retorno Mensual</p>
+            <h3 className="text-white font-extrabold text-sm sm:text-base tracking-tight leading-tight mb-0.5 font-montserrat not-italic">Utilidad Proyectada</h3>
+            <p className="text-white/40 text-[9px] uppercase tracking-widest font-semibold font-montserrat not-italic">Análisis de Retorno Mensual</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-2.5 font-montserrat not-italic">
           <DashboardCard title="Ingreso Bruto" amount={data.ingresosBrutos} sub={`${data.ventasMes} vtas/mes`} />
           <DashboardCard title="Producción" amount={data.costosProduccion} sub="Insumos" />
           <DashboardCard title="Gastos Fijos" amount={data.gastosFijos} sub="Operación" />
           <DashboardCard title="Costo x Unidad" amount={data.costoUnitario} sub="Promedio" />
           
           {/* CONTENEDOR GARRAFON TÉCNICO */}
-          <div className="col-span-2 mt-2 sm:mt-4 relative flex items-center justify-center min-h-[220px] sm:min-h-[320px] group overflow-hidden">
+          <div className="col-span-2 mt-1 sm:mt-1.5 relative flex items-center justify-center min-h-[190px] sm:min-h-[220px] lg:min-h-[235px] group overflow-hidden font-montserrat not-italic">
             {/* SVG GARRAFON TÉCNICO */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-2 sm:p-4">
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-1 sm:p-2">
               <svg 
                 viewBox="0 0 200 300" 
                 fill="none" 
                 xmlns="http://www.w3.org/2000/svg" 
-                className="w-auto h-full max-h-[360px] sm:max-h-[400px] transition-all duration-1000 drop-shadow-[0_0_50px_rgba(36,212,218,0.3)] scale-[1.8] sm:scale-[1.2] translate-y-[20%] sm:translate-y-[15%]"
+                className="w-auto h-full max-h-[300px] sm:max-h-[320px] transition-all duration-1000 drop-shadow-[0_0_50px_rgba(40,142,185,0.35)] scale-[1.5] sm:scale-[1.15] translate-y-[15%] sm:translate-y-[10%]"
               >
                 <path 
                   d="M85 30 H115 V50 C160 50 195 60 195 90 v 40 q -5 0 -5 3 v 14 q 0 3 5 3 v 20 q -5 0 -5 3 v 14 q 0 3 5 3 v 20 q -5 0 -5 3 v 14 q 0 3 5 3 v 45 C195 286 186 295 175 295 H25 C14 295 5 286 5 275 v -45 q 5 0 5 -3 v -14 q 0 -3 -5 -3 v -20 q 5 0 5 -3 v -14 q 0 -3 -5 -3 v -20 q 5 0 5 -3 v -14 q 0 -3 -5 -3 v -40 C5 60 40 50 85 50 V30 Z" 
                   fill="url(#garrafonGradient)"
-                  stroke="#24d4da"
+                  stroke="#288EB9"
                   strokeWidth="2"
-                  strokeOpacity="0.4"
+                  strokeOpacity="0.5"
                 />
-                <rect x="85" y="10" width="30" height="20" rx="3" fill="#24d4da" fillOpacity="0.2" stroke="#24d4da" strokeWidth="2" strokeOpacity="0.6" />
+                <rect x="85" y="10" width="30" height="20" rx="3" fill="#1DB3BA" fillOpacity="0.25" stroke="#1DB3BA" strokeWidth="2" strokeOpacity="0.7" />
                 <defs>
                   <linearGradient id="garrafonGradient" x1="100" y1="30" x2="100" y2="290" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#24d4da" stopOpacity="0.15" />
-                    <stop offset="1" stopColor="#24d4da" stopOpacity="0.05" />
+                    <stop stopColor="#1DB3BA" stopOpacity="0.2" />
+                    <stop offset="1" stopColor="#288EB9" stopOpacity="0.05" />
                   </linearGradient>
                 </defs>
               </svg>
             </div>
             
             {/* CONTENIDO DE DATOS */}
-            <div className="relative z-10 w-full flex flex-col items-center justify-center text-center gap-1 sm:gap-2 translate-y-2 sm:translate-y-4">
-              <div className="mb-2 sm:mb-2">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-white/70 drop-shadow-sm">Utilidad Mensual Neta</p>
-                <div className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter leading-none drop-shadow-md">
+            <div className="relative z-10 w-full flex flex-col items-center justify-center text-center gap-0.5 sm:gap-1 font-montserrat not-italic">
+              <div className="mb-0.5 font-montserrat not-italic">
+                <p className="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-[0.22em] text-white/70 drop-shadow-sm font-montserrat not-italic">Utilidad Mensual Neta</p>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-none drop-shadow-md font-montserrat not-italic mt-0.5">
                   <GSAPCurrencyCounter value={data.utilidadMensual} />
                 </div>
               </div>
               
-              <div>
-                <p className="text-[8px] sm:text-[9px] font-black text-white/60 uppercase tracking-widest drop-shadow-sm">Utilidad Anual Estimada</p>
-                <div className="text-lg sm:text-2xl md:text-2xl font-black text-white/80 leading-none drop-shadow-md">
+              <div className="font-montserrat not-italic">
+                <p className="text-[8.5px] sm:text-[9.5px] font-semibold text-white/60 uppercase tracking-widest drop-shadow-sm font-montserrat not-italic">Utilidad Anual Estimada</p>
+                <div className="text-base sm:text-xl lg:text-xl font-bold text-white/80 leading-none drop-shadow-md font-montserrat not-italic mt-0.5">
                   <GSAPCurrencyCounter value={data.utilidadAnual} />
                 </div>
               </div>
@@ -293,9 +439,9 @@ const DashboardResults = React.memo(function DashboardResults({ data }) {
         </div>
       </div>
 
-      <div className="relative z-10 mt-6 flex items-center justify-between border-t border-white/5 pt-4">
-        <div className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em]">
-          Margen Neto: <span className="font-black ml-1.5" style={{ color: CALC_BRAND.accent }}>
+      <div className="relative z-10 mt-2 sm:mt-2.5 flex items-center justify-between border-t border-white/10 pt-2 sm:pt-2.5 font-montserrat not-italic">
+        <div className="text-[10px] sm:text-[10.5px] text-white/50 font-semibold uppercase tracking-wider font-montserrat not-italic">
+          Margen Neto: <span className="font-extrabold ml-1.5 text-[#1DB3BA] font-montserrat not-italic">
             {data.ingresosBrutos > 0 ? Math.round((data.utilidadMensual / data.ingresosBrutos) * 100) : 0}%
           </span>
         </div>
@@ -353,54 +499,80 @@ const AguaView = React.memo(function AguaView() {
   }, [ventasDia, diasOp, osmosis, costoPipa, costoTapa, renta, luz, internet, otros, precioVenta]);
 
   return (
-    <div className="flex flex-col lg:flex-row h-full">
+    <div className="flex flex-col lg:flex-row h-full font-montserrat not-italic">
       {/* SECCIÓN CONFIGURACIÓN (IZQUIERDA) */}
-      <div className="w-full lg:w-[62%] p-5 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 overflow-y-auto custom-scrollbar-thin bg-white">
+      <div className="w-full lg:w-[62%] p-3.5 sm:p-5 lg:px-6 lg:py-4 flex flex-col justify-center space-y-2 sm:space-y-2.5 overflow-y-auto custom-scrollbar-thin bg-white font-montserrat not-italic">
+        {/* Precio de venta sugerido (cuadro individual con el precio al lado de la barra) */}
+        <CompactSlider label="Precio de Venta Sugerido" value={precioVenta} min={10} max={60} onChange={handlePrecioVentaChange} color={CALC_BRAND.accent} />
         
-        <div className="space-y-6 sm:space-y-8">
-          <CompactSlider label="Precio de Venta Sugerido" value={precioVenta} min={10} max={60} onChange={handlePrecioVentaChange} color={CALC_BRAND.accent} />
-          
-          <div className="grid grid-cols-2 gap-4 sm:gap-6 bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200 shadow-inner">
-            <CompactInput label="Ventas / Día" value={ventasDia} setValue={setVentasDia} color={CALC_BRAND.accent} prefix="#" icon={CurrencyDollarIcon} help="Promedio de garrafones vendidos cada 24h." />
-            <CompactInput label="Días de Operación" value={diasOp} setValue={setDiasOp} color={CALC_BRAND.accent} prefix="#" icon={GlobeAltIcon} help="Vending: 30 días. Mostrador: 22-26 días considerando descansos semanales." />
-          </div>
+        {/* Ventas/dia y dias de operacion (cada uno en su propio cuadro individual con icono a la izquierda) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-1.5 gap-x-2.5 sm:gap-x-3 font-montserrat not-italic">
+          <CompactInput label="Ventas / Día" value={ventasDia} setValue={setVentasDia} color={CALC_BRAND.accent} prefix="#" icon={CurrencyDollarIcon} help="Promedio de garrafones vendidos cada 24h." sideIcon={true} />
+          <CompactInput label="Días de Operación" value={diasOp} setValue={setDiasOp} color={CALC_BRAND.accent} prefix="#" icon={CalendarDaysIcon} help="Vending: 30 días. Mostrador: 22-26 días considerando descansos semanales." sideIcon={true} />
+        </div>
 
-          <div className="space-y-4 sm:space-y-5">
-            <p className="text-xs sm:text-sm font-black uppercase text-slate-400 tracking-[0.2em] border-b border-slate-200 pb-2 flex items-center gap-2">
-                <CircleStackIcon className="w-4 h-4 sm:w-5 sm:h-5" /> Producción e Insumos
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-              <CompactInput label="Costo Pipa (10k L)" value={costoPipa} setValue={setCostoPipa} color={CALC_BRAND.accent} icon={CircleStackIcon} help="Recomendación: Pipa acero inoxidable con agua de pozo certificado ($2,700 promedio)." />
-              <CompactInput label="Millar de Tapas" value={costoTapa} setValue={setCostoTapa} color={CALC_BRAND.accent} icon={BeakerIcon} help="Insumo por garrafón: Tapa con liner de garantía ($370 el millar)." />
-            </div>
-            
-            <div className="p-4 sm:p-4 rounded-xl bg-cyan-50/30 border border-cyan-200/50 space-y-1.5 sm:space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm font-black uppercase text-cyan-700 tracking-widest">Sistema de Ósmosis Inversa</span>
-                <button 
-                  type="button"
-                  onClick={handleOsmosisToggle} 
-                  className={`w-9 h-5 sm:w-10 sm:h-5.5 rounded-full transition-colors duration-300 ${osmosis ? 'bg-cyan-500 shadow-sm' : 'bg-slate-300'} relative cursor-pointer`}
-                >
-                  <div className={`absolute top-0.5 sm:top-0.75 left-0.5 sm:left-0.75 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-md ${osmosis ? 'translate-x-4 sm:translate-x-4.5' : 'translate-x-0'}`} />
-                </button>
-              </div>
-              <p className="text-[11px] sm:text-xs text-cyan-800/60 leading-relaxed font-medium">
-                *Este proceso garantiza la máxima calidad, considerando un 25% de merma técnica por rechazo de sales y lavado de membranas.
+        {/* Producción e Insumos */}
+        <div className="space-y-1.5 sm:space-y-2 font-montserrat not-italic">
+          <div>
+            <div className="flex items-center mb-1">
+              <span className="w-4 sm:w-5 shrink-0" aria-hidden="true" />
+              <p className="text-[10px] sm:text-[11px] font-bold uppercase text-slate-500 tracking-[0.18em] font-montserrat not-italic">
+                Producción e Insumos
               </p>
             </div>
-          </div>
-
-          <div className="space-y-4 sm:space-y-5">
-            <p className="text-xs sm:text-sm font-black uppercase text-slate-400 tracking-[0.2em] border-b border-slate-200 pb-2 flex items-center gap-2">
-                <HomeIcon className="w-4 h-4 sm:w-5 sm:h-5" /> Gastos Operativos Mensuales
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              <CompactInput label="Renta" value={renta} setValue={setRenta} color={CALC_BRAND.accent} icon={HomeIcon} />
-              <CompactInput label="Luz" value={luz} setValue={setLuz} color={CALC_BRAND.accent} icon={LightBulbIcon} />
-              <CompactInput label="Internet" value={internet} setValue={setInternet} color={CALC_BRAND.accent} icon={GlobeAltIcon} />
-              <CompactInput label="Otros" value={otros} setValue={setOtros} color={CALC_BRAND.accent} icon={WrenchScrewdriverIcon} />
+            
+            {/* Cuadros individuales para Costo Pipa y Millar de Tapas con icono a la izquierda */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-1.5 gap-x-2.5 sm:gap-x-3 font-montserrat not-italic">
+              <CompactInput label="Costo Pipa (10k L)" value={costoPipa} setValue={setCostoPipa} color={CALC_BRAND.accent} icon={PipaTruckIcon} help="Recomendación: Pipa acero inoxidable con agua de pozo certificado ($2,700 promedio)." sideIcon={true} />
+              <CompactInput label="Millar de Tapas" value={costoTapa} setValue={setCostoTapa} color={CALC_BRAND.accent} icon={BottleCapIcon} help="Insumo por garrafón: Tapa con liner de garantía ($370 el millar)." sideIcon={true} />
             </div>
+          </div>
+          
+          {/* Sistema de Ósmosis Inversa (cuadro individual con switch interactivo) */}
+          <div className="bg-[#F7FAFD] border border-slate-300 rounded-xl sm:rounded-2xl py-1.5 px-3 sm:py-2 sm:px-3.5 shadow-xs space-y-1 font-montserrat not-italic transition-all duration-200 hover:border-slate-400">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase text-slate-700 tracking-wider font-montserrat not-italic">
+                Sistema de Ósmosis Inversa
+              </span>
+              {/* Switch interactivo */}
+              <button 
+                type="button"
+                onClick={handleOsmosisToggle} 
+                className={`w-11 h-5.5 p-0.5 rounded-full transition-colors duration-300 flex items-center shrink-0 cursor-pointer ${
+                  osmosis 
+                    ? 'bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] shadow-sm' 
+                    : 'bg-slate-300'
+                }`}
+                aria-label="Alternar sistema de ósmosis inversa"
+              >
+                <div 
+                  className={`w-4.5 h-4.5 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                    osmosis ? 'translate-x-5.5' : 'translate-x-0'
+                  }`} 
+                />
+              </button>
+            </div>
+            <p className="text-[9px] sm:text-[9.5px] text-slate-500 leading-snug font-normal font-montserrat not-italic">
+              *Este proceso garantiza la máxima calidad, considerando un 25% de merma técnica por rechazo de sales y lavado de membranas.
+            </p>
+          </div>
+        </div>
+
+        {/* Gastos Operativos Mensuales (cada uno en su propio cuadro individual) */}
+        <div className="space-y-1 font-montserrat not-italic">
+          <div className="flex items-center">
+            <span className="w-4 sm:w-5 shrink-0" aria-hidden="true" />
+            <p className="text-[10px] sm:text-[11px] font-bold uppercase text-slate-500 tracking-[0.18em] font-montserrat not-italic">
+              Gastos Operativos Mensuales
+            </p>
+          </div>
+          
+          {/* 4 cuadros independientes para cada gasto */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-1.5 gap-x-2 sm:gap-x-2.5 font-montserrat not-italic">
+            <CompactInput label="Renta" value={renta} setValue={setRenta} color={CALC_BRAND.accent} icon={HomeIcon} />
+            <CompactInput label="Luz" value={luz} setValue={setLuz} color={CALC_BRAND.accent} icon={LightBulbIcon} />
+            <CompactInput label="Internet" value={internet} setValue={setInternet} color={CALC_BRAND.accent} icon={WifiIcon} />
+            <CompactInput label="Otros" value={otros} setValue={setOtros} color={CALC_BRAND.accent} icon={WrenchScrewdriverIcon} />
           </div>
         </div>
       </div>
@@ -535,24 +707,24 @@ export default function LandingPage() {
         </div>
 
         {/* CALCULADORA INTEGRADA */}
-        <section id="calculadora-negocio" className="min-h-screen lg:min-h-screen bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-montserrat not-italic overflow-hidden py-12 sm:py-16">
+        <section id="calculadora-negocio" className="bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-montserrat not-italic overflow-hidden py-8 sm:py-12">
           
           <div className="max-w-[1440px] mx-auto px-0 sm:px-6 w-full flex flex-col">
             {/* Header Calculadora */}
             <motion.div 
               {...slideInRight(0, "Calcula tu rentabilidad")}
-              className="w-full mb-8 sm:mb-10 flex flex-col items-center text-center px-4 sm:px-0 max-w-4xl mx-auto"
+              className="w-full mb-5 sm:mb-6 flex flex-col items-center text-center px-4 sm:px-0 max-w-4xl mx-auto"
             >
-              <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block text-center">
+              <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-1.5 sm:mb-2 block text-center">
                 Proyección Financiera
               </span>
-              <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-2 sm:mb-4 text-center">
+              <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-2 sm:mb-3 text-center">
                 <span className="text-[#031638]">Calcula tu </span>
                 <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
                   rentabilidad
                 </span>
               </h2>
-              <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl text-center mb-6">
+              <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl text-center mb-4">
                 Ajusta los valores según tu negocio y descubre el potencial de tu inversión.
               </p>
 
@@ -561,19 +733,19 @@ export default function LandingPage() {
                 <button
                   type="button"
                   onClick={() => setTipoCalc("agua")}
-                  className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer font-montserrat not-italic ${
                     tipoCalc === "agua"
-                      ? "bg-[#168387] text-white shadow-md"
+                      ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-md"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
-                  <span className={`w-2 h-2 rounded-full ${tipoCalc === "agua" ? "bg-cyan-300" : "bg-slate-300"}`} />
+                  <span className={`w-2 h-2 rounded-full ${tipoCalc === "agua" ? "bg-white" : "bg-slate-300"}`} />
                   <span>Agua</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setTipoCalc("limpieza")}
-                  className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer font-montserrat not-italic ${
                     tipoCalc === "limpieza"
                       ? "bg-[#e7b341] text-white shadow-md"
                       : "text-slate-600 hover:text-slate-900"
@@ -587,7 +759,7 @@ export default function LandingPage() {
 
             <motion.div 
               {...slideInRight(0.04)}
-              className="w-full bg-white rounded-none sm:rounded-[3rem] shadow-2xl shadow-slate-900/10 overflow-hidden border-y sm:border border-slate-200 flex flex-col lg:h-[620px] min-h-0"
+              className="w-full bg-white rounded-none sm:rounded-2xl shadow-2xl shadow-slate-900/10 overflow-hidden border-y sm:border border-slate-200 flex flex-col lg:h-[485px] min-h-0"
             >
               <div className="flex-1 min-h-0">
                 {/* Contenedor persistente para no perder datos al alternar de pestana */}
@@ -595,12 +767,12 @@ export default function LandingPage() {
                   <AguaView />
                 </div>
                 {tipoCalc === "limpieza" && (
-                  <div className="h-full flex items-center justify-center p-8 sm:p-12 text-center animate-fade-in bg-slate-50/20">
-                    <div className="space-y-6 sm:space-y-8">
+                  <div className="h-full flex items-center justify-center p-8 sm:p-12 text-center animate-fade-in bg-slate-50/20 font-montserrat not-italic">
+                    <div className="space-y-6 sm:space-y-8 font-montserrat not-italic">
                       <div className="w-20 h-20 sm:w-24 sm:h-24 bg-amber-50 text-amber-400 rounded-[2.5rem] flex items-center justify-center mx-auto text-3xl sm:text-4xl shadow-sm border border-amber-100">✨</div>
-                      <div>
-                        <h3 className="text-slate-900 font-black text-2xl sm:text-3xl tracking-tight">Vending Limpieza</h3>
-                        <p className="text-slate-400 text-base sm:text-lg max-w-[300px] mx-auto mt-3 leading-relaxed">Módulo de alta demanda en calibración de costos variables e insumos químicos.</p>
+                      <div className="font-montserrat not-italic">
+                        <h3 className="text-slate-900 font-extrabold text-2xl sm:text-3xl tracking-tight font-montserrat not-italic">Vending Limpieza</h3>
+                        <p className="text-slate-500 text-base sm:text-lg max-w-[300px] mx-auto mt-3 leading-relaxed font-montserrat not-italic">Módulo de alta demanda en calibración de costos variables e insumos químicos.</p>
                       </div>
                     </div>
                   </div>
@@ -610,10 +782,13 @@ export default function LandingPage() {
 
             <motion.div 
               {...slideInRight(0.06)}
-              className="mt-6 sm:mt-8 flex items-center gap-3 text-xs sm:text-sm text-slate-400 font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] opacity-70 shrink-0 px-6 sm:px-0"
+              className="flex items-center justify-center gap-3 sm:gap-4 mt-4 sm:mt-5 select-none px-4"
             >
-              <InformationCircleIcon className="w-5 h-5 shrink-0" style={{ color: CALC_BRAND.accentDark }} />
-              <span>Valores sugeridos basados en el mercado mexicano actual</span>
+              <div className="h-[1.5px] w-8 sm:w-12 bg-slate-300/80 rounded-full shrink-0" aria-hidden="true" />
+              <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-center">
+                Valores sugeridos basados en el mercado mexicano actual.
+              </p>
+              <div className="h-[1.5px] w-8 sm:w-12 bg-slate-300/80 rounded-full shrink-0" aria-hidden="true" />
             </motion.div>
           </div>
         </section>
