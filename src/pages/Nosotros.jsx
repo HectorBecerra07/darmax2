@@ -22,6 +22,7 @@ import {
   FingerPrintIcon
 } from "@heroicons/react/24/outline";
 import { Handshake } from "lucide-react";
+import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 
 /* =========================================
    Data Constants
@@ -234,18 +235,17 @@ export default function Nosotros() {
         <meta name="description" content="Descubre la historia de Darmax y por qué somos tu mejor opción en tecnología vending de agua y emprendimiento automatizado." />
       </Helmet>
 
-      <main className="min-h-screen bg-white text-slate-900 selection:bg-[#24d4da] selection:text-white overflow-x-hidden font-montserrat not-italic">
+      <div className="min-h-screen bg-white text-slate-900 selection:bg-[#24d4da] selection:text-white font-montserrat not-italic">
         
         {/* SECTION 1: HERO */}
-        <section className="relative pt-24 pb-20 lg:pt-20 lg:pb-32 overflow-hidden bg-white font-montserrat not-italic">
+        <section className="relative pt-24 pb-16 lg:pt-24 lg:pb-24 overflow-hidden bg-white font-montserrat not-italic">
           <div className="absolute inset-0 z-0">
             <img 
-              src="https://res.cloudinary.com/defkuaytw/image/upload/v1776407496/fondo_gotas_jrtijk.png" 
-              alt="Fondo Gotas" 
-              className="w-full h-full object-cover opacity-80"
+              src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529491/fondo_1_h1gpyz.png", 1920)} 
+              alt="Fondo Darmax Agua" 
+              className="w-full h-full object-cover opacity-90"
             />
-            <div className="absolute inset-0 bg-[#24d4da]/15 mix-blend-overlay" />
-            <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-white" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white pointer-events-none" />
           </div>
 
           <Container className="relative z-10 font-montserrat not-italic">
@@ -254,14 +254,14 @@ export default function Nosotros() {
                 <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block">
                   Nuestra Filosofía
                 </span>
-                <h1 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight text-[#031638]">
+                <h1 className="font-montserrat not-italic text-2xl sm:text-3xl lg:text-4xl xl:text-[38px] font-bold tracking-tight leading-snug sm:leading-tight text-[#031638]">
                   Darmax Agua comenzó con una idea clara:{" "}
                   <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
                     Reinventar la manera de emprender en el negocio del agua.
                   </span>
                 </h1>
                 
-                <p className="mt-6 text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl">
+                <p className="mt-4 sm:mt-5 text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl">
                   Porque emprender en el negocio del agua merece ser más simple, inteligente y alcanzable para todos.
                 </p>
                 
@@ -636,7 +636,7 @@ export default function Nosotros() {
             </motion.div>
           </Container>
         </section>
-      </main>
+      </div>
     </>
   );
 }

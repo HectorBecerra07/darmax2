@@ -257,7 +257,7 @@ export default function ProyectosEmpresariales() {
         />
       </Helmet>
 
-      <main className="min-h-screen bg-white selection:bg-[#24d4da] selection:text-white text-slate-900 overflow-x-hidden font-montserrat not-italic">
+      <div className="min-h-screen bg-white selection:bg-[#24d4da] selection:text-white text-slate-900 font-montserrat not-italic">
         
         {/* =========================================================
             SECCION 1: HERO LUMINOSO DARMAX (BLANCO & TURQUESA)
@@ -816,7 +816,7 @@ export default function ProyectosEmpresariales() {
           </div>
         </section>
 
-      </main>
+      </div>
     </>
   );
 }

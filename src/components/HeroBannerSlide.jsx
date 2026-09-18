@@ -20,20 +20,33 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
     offset: ["start start", "end start"]
   });
 
+  const [timerKey, setTimerKey] = useState(0);
+
+  const resetTimer = useCallback(() => {
+    setTimerKey(prev => prev + 1);
+  }, []);
+
+  const handleSetMode = useCallback((newMode) => {
+    setBrandingMode(newMode);
+    resetTimer();
+  }, [setBrandingMode, resetTimer]);
+
   const toggleMode = useCallback(() => {
     setBrandingMode(prev => prev === 'agua' ? 'clean' : 'agua');
-  }, [setBrandingMode]);
+    resetTimer();
+  }, [setBrandingMode, resetTimer]);
 
   // Alternar modo automaticamente cada 9 segundos solo si no hay scroll y no esta pausado
+  // Se reinicia el intervalo si el usuario cambia el modo manualmente (timerKey)
   useEffect(() => {
     if (isScrolled || isPaused) return;
 
     const interval = setInterval(() => {
-      toggleMode();
+      setBrandingMode(prev => prev === 'agua' ? 'clean' : 'agua');
     }, 9000);
 
     return () => clearInterval(interval);
-  }, [isScrolled, isPaused, toggleMode]);
+  }, [isScrolled, isPaused, timerKey, setBrandingMode]);
 
   // Animaciones de Scroll
   const videoY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
@@ -81,12 +94,12 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2 }}
             style={{ y: videoY, scale: videoScaleBase }}
-            className="absolute inset-0 z-0 bg-[#f8fafc] flex items-center justify-center will-change-transform"
+            className="absolute inset-0 z-0 bg-[#f8fafc] flex items-center justify-center will-change-transform overflow-hidden"
           >
             <img 
               src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529491/fondo_1_h1gpyz.png", 1920)} 
               alt="Fondo Negocio de Agua" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
             />
           </motion.div>
         ) : (
@@ -97,12 +110,12 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2 }}
             style={{ y: videoY, scale: videoScaleBase }}
-            className="absolute inset-0 z-0 bg-[#f8fafc] flex items-center justify-center will-change-transform"
+            className="absolute inset-0 z-0 bg-[#f8fafc] flex items-center justify-center will-change-transform overflow-hidden"
           >
             <img 
               src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529491/fondo_1_1_lqepd7.png", 1920)} 
               alt="Fondo Darmax Clean" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
             />
           </motion.div>
         )}
@@ -113,15 +126,15 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
       {/* CONTENIDO PRINCIPAL ESTÁTICO (Sin movimiento parallax en las imágenes ni texto) */}
       <div className="relative z-20 w-full h-full max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-10 lg:px-16 flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-6 sm:gap-10 lg:gap-8 pt-28 sm:pt-32 lg:pt-0 pb-28 sm:pb-32 lg:pb-[6vh] pointer-events-none">
         {/* COLUMNA IZQUIERDA: TEXTOS Y CTA */}
-        <div className="w-full lg:w-1/2 pointer-events-auto">
+        <div className="w-full lg:w-1/2 pointer-events-auto lg:pl-6 xl:pl-8 2xl:pl-10">
           <motion.div style={{ y: textY, opacity: textOpacity }} className="text-center lg:text-left flex flex-col items-center lg:items-start">
             
             {/* CONTROL DE CARRUSEL: SWITCH DE MODO */}
-            <div className="flex items-center gap-1 sm:gap-2 bg-slate-900/5 backdrop-blur-md p-1 rounded-full border border-slate-200/90 mb-3 sm:mb-5 shadow-sm font-montserrat not-italic">
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-900/5 backdrop-blur-md p-1 sm:p-1.5 rounded-full border border-slate-200/90 mb-2.5 sm:mb-4 shadow-sm font-montserrat not-italic">
               <button
                 type="button"
-                onClick={() => setBrandingMode('agua')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold transition-all ${
+                onClick={() => handleSetMode('agua')}
+                className={`flex items-center gap-1.5 px-3.5 sm:px-4.5 py-1.5 sm:py-2 rounded-full text-xs sm:text-[13px] font-semibold transition-all cursor-pointer ${
                   mode === 'agua'
                     ? 'bg-[#168387] text-white shadow-md'
                     : 'text-slate-600 hover:text-slate-900'
@@ -132,8 +145,8 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
               </button>
               <button
                 type="button"
-                onClick={() => setBrandingMode('clean')}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold transition-all ${
+                onClick={() => handleSetMode('clean')}
+                className={`flex items-center gap-1.5 px-3.5 sm:px-4.5 py-1.5 sm:py-2 rounded-full text-xs sm:text-[13px] font-semibold transition-all cursor-pointer ${
                   mode === 'clean'
                     ? 'bg-[#e7b341] text-white shadow-md'
                     : 'text-slate-600 hover:text-slate-900'
@@ -146,11 +159,11 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
               <button
                 type="button"
                 onClick={toggleMode}
-                className="p-1 text-slate-400 hover:text-slate-700 transition-colors ml-0.5"
+                className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors ml-0.5 cursor-pointer"
                 title="Cambiar modelo"
                 aria-label="Cambiar modelo"
               >
-                <ChevronRightIcon className="w-3.5 h-3.5" />
+                <ChevronRightIcon className="w-4 h-4" />
               </button>
             </div>
 
@@ -171,7 +184,7 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                     : "Limpieza Disponible 24/7"}
                 </p>
 
-                <h1 className="font-montserrat not-italic max-w-[360px] sm:max-w-none text-[32px] sm:text-[42px] md:text-5xl lg:text-[60px] xl:text-[64px] font-bold tracking-normal uppercase mb-2 sm:mb-4 text-slate-900 leading-[1.1]">
+                <h1 className="font-montserrat not-italic max-w-[360px] sm:max-w-none text-[28px] sm:text-[36px] md:text-[42px] lg:text-[50px] xl:text-[54px] font-bold tracking-normal uppercase mb-2 sm:mb-4 text-slate-900 leading-[1.1]">
                   {mode === 'agua' ? (
                     <>
                       Emprende Tu <br />
@@ -268,23 +281,23 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
         </div>
       </div>
 
-      {/* FLECHAS LATERALES DE NAVEGACION DE CARRUSEL (Escritorio y Tablet) */}
+      {/* FLECHAS LATERALES DE NAVEGACION DE CARRUSEL (Separación balanceada sin encimarse en texto o imagen) */}
       <button 
         type="button"
         onClick={toggleMode}
-        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white/70 hover:bg-white backdrop-blur-md border border-slate-200 shadow-md items-center justify-center text-slate-700 hover:text-slate-900 transition-all hover:scale-110 active:scale-95 pointer-events-auto"
+        className="hidden md:flex absolute left-3 sm:left-5 lg:left-7 xl:left-10 2xl:left-12 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/85 hover:bg-white backdrop-blur-md border border-slate-200/90 shadow-lg items-center justify-center text-slate-700 hover:text-slate-900 transition-all hover:scale-110 active:scale-95 pointer-events-auto cursor-pointer group"
         aria-label="Modelo anterior"
       >
-        <ChevronLeftIcon className="w-5 h-5" />
+        <ChevronLeftIcon className="w-5 h-5 sm:w-6 sm:h-6 group-hover:-translate-x-0.5 transition-transform" />
       </button>
 
       <button 
         type="button"
         onClick={toggleMode}
-        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white/70 hover:bg-white backdrop-blur-md border border-slate-200 shadow-md items-center justify-center text-slate-700 hover:text-slate-900 transition-all hover:scale-110 active:scale-95 pointer-events-auto"
+        className="hidden md:flex absolute right-3 sm:right-5 lg:right-7 xl:right-10 2xl:right-12 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/85 hover:bg-white backdrop-blur-md border border-slate-200/90 shadow-lg items-center justify-center text-slate-700 hover:text-slate-900 transition-all hover:scale-110 active:scale-95 pointer-events-auto cursor-pointer group"
         aria-label="Siguiente modelo"
       >
-        <ChevronRightIcon className="w-5 h-5" />
+        <ChevronRightIcon className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-0.5 transition-transform" />
       </button>
 
       {/* CUADROS INFERIORES: DISPONIBLES EN ESCRITORIO Y MOVIL */}

@@ -11,6 +11,7 @@ import { useCarrito } from "../context/CarritoContext";
 import { useUser } from "../context/UserContext";
 import { useSettings } from "../context/SettingsContext";
 import CarritoLateral from "./CarritoLateral";
+import ShatterLogo from "./ShatterLogo";
 
 /* --- Temas Dinámicos por Ruta --- */
 const PATH_THEMES = {
@@ -57,18 +58,18 @@ export default function NavBar() {
     return () => ctx.revert();
   }, [location.pathname]);
 
+  const isHome = location.pathname === "/";
+
   useEffect(() => {
-    if (!isScrolled) {
-      setLocalMode(globalMode);
-    }
-  }, [globalMode, isScrolled]);
+    setLocalMode(globalMode);
+  }, [globalMode]);
 
   const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      setIsScrolled(scrollY > 10);
+      setIsScrolled(scrollY > 20);
 
       const darkSections = ["/purificadores-caseros"];
       if (location.pathname === "/") {
@@ -106,26 +107,30 @@ export default function NavBar() {
   
   const textClass = isDarkTheme ? "text-white" : "text-slate-900";
   
-  // Lógica de color de acento (Prioridad: Ruta Info > Branding Mode > Default)
+  // Logica de color de acento y gradiente activo (Negocio de Agua vs Darmax Clean)
   let accentStyle = { color: isDarkTheme ? "#24d4da" : "#168387" };
-  let activeBgClass = "bg-cyan-500/10";
-  let hoverLineColor = "#24d4da";
+  let activeBgClass = "bg-gradient-to-r from-[#288EB9]/15 to-[#1DB3BA]/15 border border-[#288EB9]/25 shadow-sm";
+  let activeTextClass = "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent";
+  let hoverLineColor = "#288EB9";
 
   if (currentTheme) {
     accentStyle = { color: currentTheme.accent };
     activeBgClass = currentTheme.bg;
+    activeTextClass = "";
     hoverLineColor = currentTheme.accent;
   } else if (isClean) {
-    accentStyle = { color: "#e7b341" }; // Dorado/Amarillo
-    activeBgClass = "bg-[#e7b341]/10";
-    hoverLineColor = "#e7b341";
+    accentStyle = { color: "#7FB32A" };
+    activeBgClass = "bg-gradient-to-r from-[#7FB32A]/15 to-[#F3AD13]/15 border border-[#7FB32A]/25 shadow-sm";
+    activeTextClass = "bg-gradient-to-r from-[#7FB32A] to-[#F3AD13] bg-clip-text text-transparent";
+    hoverLineColor = "#7FB32A";
   }
 
-  const logoSrc = isDarkTheme 
+  const normalLogoSrc = isDarkTheme 
     ? "/img/logos/logoblanco.png" 
     : "/img/logos/logonegro.png";
 
-  const isHome = location.pathname === "/";
+  const isCleanActive = isHome && !isScrolled && globalMode === "clean";
+  const currentLogoSrc = isCleanActive ? "/img/LogoClean.png" : normalLogoSrc;
 
   return (
     <>
@@ -140,16 +145,14 @@ export default function NavBar() {
       >
         <div className="w-full max-w-7xl mx-auto flex items-center justify-between h-full px-6 lg:px-10">
           
-          <div className="shrink-0 flex items-center">
+          <div className="shrink-0 flex items-center min-w-[125px] sm:min-w-[135px]">
             <Link 
               to="/" 
               onClick={scrollToTop} 
-              className={`
-                transition-all duration-1000 cubic-bezier(0.22, 1, 0.36, 1)
-                ${isScrolled || !isHome ? 'opacity-100 scale-100' : 'opacity-0 scale-95 blur-md pointer-events-none'}
-              `}
+              className="inline-flex items-center transition-transform duration-300 hover:scale-105 active:scale-95"
+              aria-label="Darmax Home"
             >
-              <img src={logoSrc} alt="Logo Darmax" className="h-10 md:h-11 w-auto object-contain" />
+              <ShatterLogo currentSrc={currentLogoSrc} alt="Logo Darmax" className="h-10 md:h-11" />
             </Link>
           </div>
 
@@ -163,9 +166,11 @@ export default function NavBar() {
                   className={`nav-link-item px-4 lg:px-5 py-2 rounded-full font-bold transition-all duration-500 text-[10.5px] lg:text-[11px] tracking-[0.16em] uppercase whitespace-nowrap relative group ${
                     isActive ? activeBgClass : `hover:opacity-100 opacity-70`
                   }`}
-                  style={isActive ? accentStyle : {}}
+                  style={isActive && currentTheme ? accentStyle : {}}
                 >
-                  {link.text}
+                  <span className={isActive && !currentTheme ? activeTextClass : ""}>
+                    {link.text}
+                  </span>
                   {!isActive && (
                     <span 
                       className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-[2px] transition-all duration-500 group-hover:w-1/2 opacity-50" 
@@ -233,10 +238,12 @@ export default function NavBar() {
                 key={link.href} 
                 to={link.href} 
                 className={`px-6 py-4 rounded-2xl font-bold text-xs tracking-[0.18em] transition-all duration-300 uppercase ${isActive ? `${activeBgClass}` : "text-slate-400 hover:text-white hover:bg-white/5"}`} 
-                style={isActive ? accentStyle : {}}
+                style={isActive && currentTheme ? accentStyle : {}}
                 onClick={() => setNavOpen(false)}
               >
-                {link.text}
+                <span className={isActive && !currentTheme ? activeTextClass : ""}>
+                  {link.text}
+                </span>
               </Link>
             );
           })}
