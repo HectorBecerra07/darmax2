@@ -22,10 +22,10 @@ const VendingPrecise3D = ({ showCallouts: propShowCallouts }) => {
   const inertiaRafRef = useRef(null);
   const frameRafRef = useRef(null);
 
-  // Determinar escala dinamica equilibrada para que quepa con sus tarjetas dentro del recuadro
+  // Determinar escala dinamica equilibrada para que el modelo 3D luzca significativamente mas grande
   const isMobile = windowWidth < 640;
   const isTablet = windowWidth >= 640 && windowWidth < 1024;
-  const sc = isMobile ? 2.0 : isTablet ? 2.45 : 2.65;
+  const sc = isMobile ? 2.55 : isTablet ? 3.15 : windowWidth >= 1280 ? 3.85 : 3.55;
   
   const totalS = 80.5 * sc;
   const fThick = 2 * sc;

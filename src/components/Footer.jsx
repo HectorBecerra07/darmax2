@@ -203,9 +203,9 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Columna 6: Frase en la esquina inferior derecha */}
-          <div className="sm:col-span-2 md:col-span-1 lg:col-span-1 flex flex-col justify-end items-end text-right h-full pt-5 lg:pt-0">
-            <div className="inline-flex flex-col items-end space-y-0.5">
+          {/* Columna 6: Frase en la esquina inferior */}
+          <div className="sm:col-span-2 md:col-span-1 lg:col-span-1 flex flex-col justify-end items-start sm:items-end text-left sm:text-right h-full pt-4 sm:pt-5 lg:pt-0">
+            <div className="inline-flex flex-col items-start sm:items-end space-y-0.5">
               <span className="text-white font-light text-[8px] sm:text-[8.5px] xl:text-[9px] tracking-[0.2em] uppercase leading-tight">
                 AGUA PARA
               </span>
@@ -213,7 +213,7 @@ const Footer = () => {
                 UN MEJOR{' '}
                 <span className="relative inline-block">
                   MAÑANA
-                  <span className="absolute -bottom-1 right-0 w-3.5 sm:w-4 h-[1.5px] sm:h-[2px] bg-[#24d4da] rounded-full" />
+                  <span className="absolute -bottom-1 left-0 sm:left-auto sm:right-0 w-3.5 sm:w-4 h-[1.5px] sm:h-[2px] bg-[#24d4da] rounded-full" />
                 </span>
               </p>
             </div>
@@ -222,38 +222,40 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* BARRA INFERIOR ADICIONAL (#0f172a, mas alta y espaciosa) */}
-      <div className="w-full bg-[#0f172a] py-6 sm:py-7 px-6 sm:px-8 lg:px-12 border-t border-white/10 font-montserrat not-italic">
-        <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] sm:text-[11px] font-light leading-relaxed">
+      {/* BARRA INFERIOR ADICIONAL (#0f172a, adaptada a móvil y escritorio) */}
+      <div className="w-full bg-[#0f172a] py-5 sm:py-7 px-5 sm:px-8 lg:px-12 border-t border-white/10 font-montserrat not-italic">
+        <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-5 text-[10px] sm:text-[11px] font-light leading-relaxed">
           
-          {/* Copyright dinámico */}
-          <p className="text-white text-center md:text-left text-[10px] sm:text-[11px] font-light">
-            &copy; {currentYear} Darmax Agua. Todos los derechos reservados.
-          </p>
+          {/* Métodos de pago adaptados con iconos fijos w-4 en móvil y w-5 en desktop */}
+          <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4 text-white justify-center font-light order-1 md:order-3 w-full md:w-auto">
+            <span className="text-[9.5px] sm:text-[11px] font-medium uppercase tracking-[0.16em] text-white/80 text-center">
+              MÉTODOS DE PAGO:
+            </span>
+            <div className="flex items-center gap-2 sm:gap-3.5 flex-wrap justify-center">
+              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-2.5 py-1 sm:p-0 rounded-lg sm:rounded-none border border-white/10 sm:border-0 shrink-0">
+                <BanknotesIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white shrink-0" />
+                <span>Efectivo</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-2.5 py-1 sm:p-0 rounded-lg sm:rounded-none border border-white/10 sm:border-0 shrink-0">
+                <ArrowsRightLeftIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white shrink-0" />
+                <span>Transferencia</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-2.5 py-1 sm:p-0 rounded-lg sm:rounded-none border border-white/10 sm:border-0 shrink-0">
+                <CreditCardIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white shrink-0" />
+                <span>Tarjeta</span>
+              </span>
+            </div>
+          </div>
 
           {/* Lema central */}
-          <p className="text-white font-light text-center tracking-wider text-[10px] sm:text-[11px]">
+          <p className="text-white/80 font-light text-center tracking-wider text-[10px] sm:text-[11px] order-2 md:order-2">
             Innovación <span className="text-white/40 mx-1.5">|</span> Calidad <span className="text-white/40 mx-1.5">|</span> Confianza
           </p>
 
-          {/* Métodos de pago con texto e iconos sin relleno (borde) agrandados */}
-          <div className="flex items-center gap-3 sm:gap-4 text-white flex-wrap justify-center font-light">
-            <span className="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.16em] text-white">
-              METODOS DE PAGO:
-            </span>
-            <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-white">
-              <BanknotesIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-white shrink-0" />
-              <span>Efectivo</span>
-            </span>
-            <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-white">
-              <ArrowsRightLeftIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-white shrink-0" />
-              <span>Transferencias</span>
-            </span>
-            <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-white">
-              <CreditCardIcon className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-white shrink-0" />
-              <span>Tarjeta</span>
-            </span>
-          </div>
+          {/* Copyright dinámico */}
+          <p className="text-white/70 text-center md:text-left text-[10px] sm:text-[11px] font-light order-3 md:order-1">
+            &copy; {currentYear} Darmax Agua. Todos los derechos reservados.
+          </p>
 
         </div>
       </div>

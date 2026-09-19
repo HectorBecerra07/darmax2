@@ -418,7 +418,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
         "group relative flex flex-col h-full rounded-[2rem] sm:rounded-[2.25rem] bg-white p-4 sm:p-5",
         "transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]",
         "hover:shadow-[0_24px_50px_-12px_rgba(0,0,0,0.12)]",
-        "w-full max-w-[320px] sm:max-w-[340px] md:max-w-[350px] lg:max-w-[360px] mx-auto",
+        "w-full max-w-[335px] sm:max-w-[345px] md:max-w-[350px] lg:max-w-[360px] mx-auto",
         levelConfig.borderClass,
         isSelected ? "ring-2 ring-[#24d4da]" : "",
       ].join(" ")}
@@ -457,7 +457,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
             onToggleSelect(modelo.id);
           }}
           className={[
-            "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-7.5 w-7.5 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 backdrop-blur-xl border z-30",
+            "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-8 w-8 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 backdrop-blur-xl border z-30",
             isSelected
               ? "bg-[#24d4da] border-[#24d4da] text-white shadow-lg shadow-cyan-500/40 rotate-90"
               : "bg-white/80 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover/img:scale-100",
@@ -512,7 +512,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate(configurePath)}
-              className="inline-flex items-center justify-center gap-2 w-full max-w-[240px] sm:max-w-[260px] h-9.5 sm:h-10 px-6 rounded-2xl bg-slate-900 text-white text-xs sm:text-[13px] font-bold uppercase tracking-wider hover:bg-[#168387] shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-[#168387]/20 transition-all duration-300 font-montserrat not-italic group/btn cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 w-full max-w-[260px] sm:max-w-[270px] h-11 sm:h-11 px-6 rounded-2xl bg-slate-900 text-white text-xs sm:text-[13px] font-bold uppercase tracking-wider hover:bg-[#168387] shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-[#168387]/20 transition-all duration-300 font-montserrat not-italic group/btn cursor-pointer"
             >
               <span>Configurar</span>
               <ArrowRightIcon className="w-4 h-4 stroke-[2] group-hover/btn:translate-x-0.5 transition-transform" />
@@ -521,7 +521,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
             <button
               type="button"
               onClick={() => navigate(modelo.rutaInfo)}
-              className="inline-flex items-center justify-center py-1 text-slate-500 hover:text-[#168387] text-xs sm:text-[13px] font-semibold tracking-wider uppercase underline underline-offset-4 decoration-slate-300 hover:decoration-[#168387] transition-all font-montserrat not-italic cursor-pointer"
+              className="inline-flex items-center justify-center py-1.5 text-slate-500 hover:text-[#168387] text-xs sm:text-[13px] font-semibold tracking-wider uppercase underline underline-offset-4 decoration-slate-300 hover:decoration-[#168387] transition-all font-montserrat not-italic cursor-pointer"
             >
               <span>Conoce más</span>
             </button>
@@ -555,40 +555,43 @@ function VentajasSection() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[#f8fafc] pt-8 sm:pt-10 md:pt-12 pb-12 sm:pb-16 md:pb-20 font-montserrat not-italic">
-      {/* IMAGEN DE FONDO */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529491/fondo_4_bvpiur.png", 1920)} 
-          alt="Fondo El Ecosistema Darmax" 
-          className="w-full h-full object-cover object-center"
-        />
-      </div>
-
-      {/* Difuminado superior suave desde la sección 3D */}
-      <div 
-        className="absolute -top-px inset-x-0 h-12 sm:h-20 bg-gradient-to-b from-[#f8fafc] via-[#f8fafc]/70 to-transparent pointer-events-none z-10" 
-        aria-hidden="true"
-      />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...slideInLeft(0, "Todo lo que necesitas para que tu éxito sea inevitable.")} className="max-w-5xl lg:max-w-6xl mb-10 sm:mb-14 flex flex-col items-center text-center mx-auto w-full">
-          <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block text-center">
-            El Ecosistema Darmax
-          </span>
-          <h2 className="font-montserrat not-italic text-3xl sm:text-4xl md:text-5xl lg:text-[54px] xl:text-6xl font-bold tracking-tight leading-tight mb-3 sm:mb-5 text-center">
-            <span className="block text-[#031638]">
-              Todo lo que necesitas
+    <section className="relative overflow-hidden bg-white pt-8 sm:pt-10 md:pt-12 pb-12 sm:pb-16 md:pb-20 font-montserrat not-italic">
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
+        {/* CABECERA: TÍTULO A LA IZQUIERDA Y TEXTO DESTACADO A LA DERECHA */}
+        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 sm:gap-7 lg:gap-8 mb-8 sm:mb-12">
+          {/* LADO IZQUIERDO: TÍTULO Y SUBTÍTULO */}
+          <motion.div 
+            {...slideInLeft(0, "Todo lo que necesitas para que tu éxito sea inevitable.")} 
+            className="flex flex-col items-start text-left max-w-2xl xl:max-w-3xl"
+          >
+            <span className="text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-sm uppercase mb-2 block font-montserrat not-italic text-left">
+              El Ecosistema Darmax
             </span>
-            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block sm:whitespace-nowrap">
-              para que tu éxito sea inevitable.
-            </span>
-          </h2>
-          <div className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-center space-y-0.5 sm:space-y-1 max-w-3xl">
-            <p>Soluciones integrales, tecnología confiable y acompañamiento real</p>
-            <p>en cada etapa de tu negocio.</p>
-          </div>
-        </motion.div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[44px] xl:text-[50px] font-bold tracking-tight leading-[1.12] mb-3.5 sm:mb-4 font-montserrat not-italic text-left overflow-visible">
+              <span className="block text-[#031638]">
+                Todo lo que necesitas
+              </span>
+              <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 pt-0.5">
+                para que tu éxito sea inevitable.
+              </span>
+            </h2>
+            <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-left max-w-2xl">
+              Soluciones integrales, tecnología confiable y acompañamiento real en cada etapa de tu negocio.
+            </p>
+          </motion.div>
+
+          {/* LADO DERECHO: TEXTO A LA ALTURA DEL TÍTULO EN MONTSERRAT LIGHT */}
+          <motion.div
+            {...slideInRight(0.04, "Agua que impulsa grandes historias")}
+            className="flex items-center gap-2.5 sm:gap-3 shrink-0 self-start lg:mt-7 xl:mt-8"
+          >
+            <div className="w-[2px] h-6 sm:h-7 bg-gradient-to-b from-[#288EB9] to-[#1DB3BA] rounded-full shrink-0" />
+            <p className="font-montserrat not-italic font-light text-[10px] sm:text-[11px] tracking-[0.2em] sm:tracking-[0.25em] uppercase text-[#031638] leading-tight select-none">
+              AGUA QUE IMPULSA <br />
+              GRANDES HISTORIAS
+            </p>
+          </motion.div>
+        </div>
 
         <div className="max-w-4xl lg:max-w-[960px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
           {pilares.map((p, i) => (
@@ -1016,7 +1019,7 @@ const IniciaNegocio = () => {
           {/* BARRA DE BENEFICIOS Y VALOR INCLUIDO */}
           <motion.div
             {...slideInLeft(0.06)}
-            className="w-full max-w-5xl mx-auto mt-8 sm:mt-12 rounded-2xl sm:rounded-3xl lg:rounded-full bg-white/95 border border-slate-200/90 py-3.5 sm:py-4 px-4 sm:px-6 lg:px-8 shadow-lg shadow-slate-900/5 backdrop-blur-md not-italic"
+            className="w-full max-w-5xl mx-auto mt-8 sm:mt-12 rounded-xl sm:rounded-2xl bg-[#e9f5fb] border border-[#cde5f1] py-3.5 sm:py-4 px-4 sm:px-6 lg:px-8 shadow-sm shadow-slate-900/5 backdrop-blur-md not-italic"
           >
             <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:gap-6 lg:flex lg:items-center lg:justify-between lg:gap-2">
               
@@ -1028,7 +1031,7 @@ const IniciaNegocio = () => {
                 </span>
               </div>
 
-              <div className="hidden lg:block h-6 w-[1.5px] bg-slate-200 rounded-full" />
+              <div className="hidden lg:block h-6 w-[1.5px] bg-[#c5dfed] rounded-full" />
 
               {/* Capacitación y soporte */}
               <div className="flex items-center gap-2 sm:gap-2.5 group justify-start sm:justify-center lg:justify-center">
@@ -1038,7 +1041,7 @@ const IniciaNegocio = () => {
                 </span>
               </div>
 
-              <div className="hidden lg:block h-6 w-[1.5px] bg-slate-200 rounded-full" />
+              <div className="hidden lg:block h-6 w-[1.5px] bg-[#c5dfed] rounded-full" />
 
               {/* Equipos de alta calidad */}
               <div className="flex items-center gap-2 sm:gap-2.5 group justify-start sm:justify-center lg:justify-center">
@@ -1048,7 +1051,7 @@ const IniciaNegocio = () => {
                 </span>
               </div>
 
-              <div className="hidden lg:block h-6 w-[1.5px] bg-slate-200 rounded-full" />
+              <div className="hidden lg:block h-6 w-[1.5px] bg-[#c5dfed] rounded-full" />
 
               {/* Acompañamiento en tu crecimiento */}
               <div className="flex items-center gap-2 sm:gap-2.5 group justify-start sm:justify-center lg:justify-center">
@@ -1091,77 +1094,78 @@ const IniciaNegocio = () => {
         />
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          
-          {/* TÍTULO CENTRADO ARRIBA */}
-          <motion.div
-            {...slideInLeft(0, "La nueva generación de purificación inteligente")}
-            className="flex flex-col items-center text-center mb-8 sm:mb-12 max-w-4xl mx-auto"
-          >
-            <span className="text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block font-montserrat not-italic">
-              Ingeniería de Precisión
-            </span>
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-3 sm:mb-4 text-center font-montserrat not-italic">
-              <span className="block text-[#031638]">
-                La nueva generación de
-              </span>
-              <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
-                purificación inteligente
-              </span>
-            </h2>
-            <p className="text-slate-600 text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl text-center font-montserrat not-italic">
-              Cada detalle pensado para impulsar un negocio que nunca se detiene.
-            </p>
-          </motion.div>
-
-          <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 items-center">
             
-            {/* COLUMNA 1: APARTADOS EN FORMA DE COLUMNAS (IZQUIERDA) */}
-            <div className="lg:col-span-6 relative z-10 lg:pr-2 xl:pr-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-4 md:gap-5">
+            {/* COLUMNA IZQUIERDA: TÍTULO, SUBTÍTULO Y 3 COLUMNAS (50%) */}
+            <motion.div 
+              {...slideInLeft(0.02, "Purificación Inteligente")}
+              className="w-full relative z-10 lg:pr-2 flex flex-col justify-center"
+            >
+              {/* TÍTULO Y SUBTÍTULO */}
+              <div className="flex flex-col items-start text-left mb-7 sm:mb-9 lg:mb-8">
+                <span className="text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-sm uppercase mb-2 block font-montserrat not-italic">
+                  Ingeniería de Precisión
+                </span>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[44px] xl:text-[50px] font-bold tracking-tight leading-[1.12] mb-3.5 sm:mb-4 font-montserrat not-italic text-left overflow-visible">
+                  <span className="block text-[#031638]">
+                    La nueva generación de
+                  </span>
+                  <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 pt-0.5">
+                    purificación inteligente
+                  </span>
+                </h2>
+                <p className="text-slate-600 text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-xl text-left font-montserrat not-italic">
+                  Cada detalle pensado para impulsar un negocio <br />
+                  que nunca se detiene.
+                </p>
+              </div>
+
+              {/* 3 COLUMNAS DE CARACTERÍSTICAS */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-3.5 xl:gap-5">
                 {[
                   { 
                     t: "Diseño Industrial", 
-                    d: "Acero inoxidable y componentes de grado alimenticio para una durabilidad de años.",
+                    d: "Acero inoxidable y grado alimenticio para máxima durabilidad.",
                     icon: Droplet 
                   },
                   { 
                     t: "Cerebro Inteligente", 
-                    d: "Sistema de gestión que monitorea ventas y niveles en tiempo real.",
+                    d: "Sistema inteligente que monitorea ventas y niveles en tiempo real.",
                     icon: CpuChipIcon 
                   },
                   { 
                     t: "Interfaz de Usuario", 
-                    d: "Experiencia táctil intuitiva que garantiza la recompra de tus clientes.",
+                    d: "Experiencia táctil intuitiva que garantiza la recompra de clientes.",
                     icon: UserIcon 
                   }
                 ].map((item, i) => (
                   <motion.div 
                     key={i}
-                    {...slideInLeft(0.03 * (i + 1), `3D: ${item.t}`)}
-                    className="flex flex-col items-start group"
+                    {...slideInLeft(0.04 * (i + 1), `3D: ${item.t}`)}
+                    className="flex flex-col items-start group w-full"
                   >
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-full bg-[#F0FCFF] border border-[#c4eef5] text-[#168387] flex items-center justify-center group-hover:bg-[#168387] group-hover:text-white transition-all duration-300 mb-3 sm:mb-4 shadow-sm group-hover:shadow-md group-hover:scale-105">
-                      <item.icon className="w-6 h-6 sm:w-6.5 sm:h-6.5 stroke-[1.8]" />
+                    <div className="w-12 h-12 sm:w-[50px] sm:h-[50px] xl:w-14 xl:h-14 shrink-0 rounded-full bg-[#F0FCFF] border border-[#c4eef5] text-[#168387] flex items-center justify-center group-hover:bg-[#168387] group-hover:text-white transition-all duration-300 mb-2.5 sm:mb-3 shadow-sm group-hover:shadow-md group-hover:scale-105">
+                      <item.icon className="w-6 h-6 sm:w-6.5 sm:h-6.5 xl:w-7 xl:h-7 stroke-[1.8]" />
                     </div>
-                    <div>
-                      <h4 className="font-bold text-[#031638] group-hover:text-[#168387] text-sm sm:text-base font-montserrat not-italic transition-colors leading-tight mb-1.5">
+                    <div className="w-full">
+                      <h4 className="font-bold text-[#031638] group-hover:text-[#168387] text-xs sm:text-[13.5px] xl:text-[14.5px] font-montserrat not-italic transition-colors leading-tight mb-1.5 tracking-tight">
                         {item.t}
                       </h4>
-                      <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-normal font-montserrat not-italic">
+                      <p className="text-slate-600 text-xs sm:text-[12.5px] leading-relaxed font-normal font-montserrat not-italic">
                         {item.d}
                       </p>
                     </div>
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            {/* COLUMNA 2: MODELO 3D (DERECHA) */}
+            {/* COLUMNA DERECHA: MODELO 3D (50%) */}
             <motion.div 
               {...slideInRight(0.04, "Módulo 3D Interactivo")}
-              className="lg:col-span-6 relative w-full overflow-visible flex justify-center"
+              className="w-full relative overflow-visible flex justify-center lg:justify-end"
             >
-              <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F0FCFF] border border-[#c4eef5] p-3 sm:p-4 shadow-xl shadow-cyan-950/5 backdrop-blur-md group w-full max-w-[540px] sm:max-w-[580px]">
+              <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F0FCFF] border border-[#c4eef5] p-3.5 sm:p-4 shadow-xl shadow-cyan-950/5 backdrop-blur-md group w-full max-w-[580px] xl:max-w-[620px]">
                 
                 {/* Botón para alternar especificaciones (solo en tablet y escritorio) */}
                 <div className="hidden sm:block absolute top-3 sm:top-3.5 left-3.5 sm:left-5 z-20">
@@ -1182,7 +1186,7 @@ const IniciaNegocio = () => {
                   </div>
                 </div>
 
-                <div className="h-[250px] sm:h-[310px] md:h-[350px] lg:h-[360px] flex items-center justify-center overflow-visible">
+                <div className="h-[300px] sm:h-[360px] md:h-[400px] lg:h-[430px] xl:h-[450px] flex items-center justify-center overflow-visible">
                   <VendingPrecise3D showCallouts={showVendingSpecs} />
                 </div>
 
@@ -1196,7 +1200,7 @@ const IniciaNegocio = () => {
 
         {/* Difuminado inferior suave hacia la siguiente sección */}
         <div 
-          className="absolute -bottom-px inset-x-0 h-14 sm:h-20 bg-gradient-to-b from-transparent via-[#f8fafc]/70 to-[#f8fafc] pointer-events-none z-10" 
+          className="absolute -bottom-px inset-x-0 h-14 sm:h-20 bg-gradient-to-b from-transparent via-white/70 to-white pointer-events-none z-10" 
           aria-hidden="true"
         />
       </motion.section>

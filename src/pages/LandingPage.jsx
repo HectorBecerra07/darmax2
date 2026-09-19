@@ -20,7 +20,10 @@ import {
   RocketLaunchIcon,
   TruckIcon,
   CalendarDaysIcon,
-  WifiIcon
+  WifiIcon,
+  HandThumbUpIcon,
+  ChartPieIcon,
+  ReceiptPercentIcon
 } from "@heroicons/react/24/outline";
 import { FaCoins } from "react-icons/fa6";
 
@@ -233,33 +236,33 @@ const CompactInput = React.memo(({ label, value, setValue, color, suffix = "", p
   }
 
   return (
-    <div className="group w-full min-h-[64px] sm:min-h-[68px] bg-[#F7FAFD] border border-slate-300 rounded-lg sm:rounded-xl py-2 px-2.5 sm:py-2.5 sm:px-3 shadow-xs flex items-center gap-2 sm:gap-2.5 font-montserrat not-italic transition-all duration-200 hover:border-slate-400">
-      {Icon && <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#288EB9] shrink-0 stroke-[1.8]" />}
-      <div className="min-w-0 flex-1 flex flex-col justify-center">
-        <div className="flex items-center justify-between mb-1 gap-1">
+    <div className="group w-full min-h-[64px] sm:min-h-[68px] bg-[#F7FAFD] border border-slate-300 rounded-lg sm:rounded-xl py-2 px-2.5 sm:py-2.5 sm:px-3 shadow-xs flex flex-col justify-center font-montserrat not-italic transition-all duration-200 hover:border-slate-400">
+      <div className="flex items-center justify-between mb-1 gap-1 w-full">
+        <div className="flex items-center gap-1.5 min-w-0">
+          {Icon && <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#288EB9] shrink-0 stroke-[1.8]" />}
           <label className="text-[10px] sm:text-[11px] font-normal uppercase tracking-wider text-slate-800 group-focus-within:text-[#288EB9] transition-colors font-montserrat not-italic truncate">
             {label}
           </label>
-          {help && (
-            <div className="relative group/help shrink-0">
-              <InformationCircleIcon className="w-3.5 h-3.5 text-slate-400 cursor-help hover:text-[#288EB9] transition-colors" />
-              <div className="absolute bottom-full right-0 mb-2 w-52 sm:w-56 p-3 bg-slate-900 text-white text-[11px] rounded-xl opacity-0 pointer-events-none group-hover/help:opacity-100 transition-all z-50 shadow-xl leading-relaxed border border-white/10 font-montserrat not-italic font-normal">
-                {help}
-              </div>
+        </div>
+        {help && (
+          <div className="relative group/help shrink-0">
+            <InformationCircleIcon className="w-3.5 h-3.5 text-slate-400 cursor-help hover:text-[#288EB9] transition-colors" />
+            <div className="absolute bottom-full right-0 mb-2 w-52 sm:w-56 p-3 bg-slate-900 text-white text-[11px] rounded-xl opacity-0 pointer-events-none group-hover/help:opacity-100 transition-all z-50 shadow-xl leading-relaxed border border-white/10 font-montserrat not-italic font-normal">
+              {help}
             </div>
-          )}
-        </div>
-        <div className="relative font-montserrat not-italic">
-          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500 font-normal text-xs font-montserrat not-italic pointer-events-none">{prefix}</span>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={value}
-            onChange={handleChange}
-            className="w-full bg-white border border-slate-200/90 rounded-md sm:rounded-lg py-1 sm:py-1.5 pl-4 sm:pl-5 pr-1.5 text-slate-900 font-bold transition-all outline-none focus:bg-white focus:ring-2 focus:ring-[#288EB9]/25 focus:border-[#288EB9] text-xs sm:text-[12.5px] font-montserrat not-italic shadow-2xs"
-          />
-          {suffix && <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] sm:text-[11px] font-normal font-montserrat not-italic pointer-events-none">{suffix}</span>}
-        </div>
+          </div>
+        )}
+      </div>
+      <div className="relative w-full font-montserrat not-italic">
+        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 font-normal text-xs font-montserrat not-italic pointer-events-none">{prefix}</span>
+        <input
+          type="text"
+          inputMode="numeric"
+          value={value}
+          onChange={handleChange}
+          className="w-full bg-white border border-slate-200/90 rounded-md sm:rounded-lg py-1 sm:py-1.5 pl-5 sm:pl-5.5 pr-2 text-slate-900 font-bold transition-all outline-none focus:bg-white focus:ring-2 focus:ring-[#288EB9]/25 focus:border-[#288EB9] text-xs sm:text-[12.5px] font-montserrat not-italic shadow-2xs"
+        />
+        {suffix && <span className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] sm:text-[11px] font-normal font-montserrat not-italic pointer-events-none">{suffix}</span>}
       </div>
     </div>
   );
@@ -316,8 +319,8 @@ const CompactSlider = React.memo(({ value, min, max, onChange, color, label, ico
    CALCULADORA: PANEL DE RESULTADOS
 ========================================================= */
 const DashboardCard = React.memo(({ title, amount, sub }) => {
-  const el = useRef();
   const count = useRef({ value: 0 });
+  const el = useRef();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -336,11 +339,12 @@ const DashboardCard = React.memo(({ title, amount, sub }) => {
   }, [amount]);
 
   return (
-    <div className="relative overflow-hidden p-2.5 sm:p-3 rounded-xl bg-gradient-to-r from-slate-950/90 via-slate-900/85 to-slate-950/90 border border-white/10 backdrop-blur-md group hover:border-[#1DB3BA]/40 transition-all duration-300 font-montserrat not-italic shadow-sm flex flex-col items-center justify-center text-center">
-      {/* Efecto de luz sutil de izquierda a derecha con los colores de rentabilidad (#288EB9 a #1DB3BA) */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#288EB9]/25 via-[#1DB3BA]/10 to-transparent pointer-events-none" />
-      <div className="absolute -left-3 top-0 bottom-0 w-8 bg-[#288EB9]/15 blur-sm pointer-events-none" />
-
+    <div 
+      style={{
+        background: 'radial-gradient(circle at 15% 50%, rgba(70, 93, 117, 0.35), transparent 45%), linear-gradient(100deg, #20364c 0%, #102b43 55%, #031f39 100%)'
+      }}
+      className="relative overflow-hidden p-2.5 sm:p-3 rounded-xl border border-white/10 backdrop-blur-md group hover:border-[#1DB3BA]/40 transition-all duration-300 font-montserrat not-italic shadow-sm flex flex-col items-center justify-center text-center"
+    >
       <div className="relative z-10 flex flex-col items-center justify-center text-center w-full">
         <p className="text-[10px] sm:text-[10.5px] font-bold uppercase tracking-wider text-white/70 mb-0.5 group-hover:text-white transition-colors font-montserrat not-italic text-center">{title}</p>
         <p className="text-sm sm:text-base md:text-[17px] font-extrabold text-white tracking-tight leading-none font-montserrat not-italic text-center">
@@ -402,12 +406,9 @@ const DashboardResults = React.memo(function DashboardResults({ data }) {
           <DashboardCard title="Gastos Fijos" amount={data.gastosFijos} sub="Operación" />
           <DashboardCard title="Costo x Unidad" amount={data.costoUnitario} sub="Promedio" />
           
-          {/* Tarjeta de utilidad compacta, pegada a la izquierda, a mitad de ancho con borde neón perimetral fino */}
-          <div className="col-span-2 flex justify-start w-full mt-1.5 sm:mt-2">
-            <div className="w-full sm:w-[60%] lg:w-[58%] max-w-[280px] relative rounded-xl sm:rounded-2xl bg-gradient-to-r from-slate-950/90 via-slate-900/85 to-slate-950/90 border border-[#24d4da] shadow-[0_0_14px_rgba(36,212,218,0.3),inset_0_0_14px_rgba(36,212,218,0.12)] overflow-hidden py-2.5 px-3.5 sm:py-3.5 sm:px-4 flex flex-col items-center justify-center text-center font-montserrat not-italic backdrop-blur-md">
-              
-              {/* Resplandor neón ambiental central */}
-              <div className="absolute inset-0 bg-[#24d4da]/5 pointer-events-none" />
+          {/* Tarjeta de utilidad 100% transparente: borde con ligero brillo y contenido interior */}
+          <div className="col-span-2 flex justify-start w-full mt-2 sm:mt-2.5">
+            <div className="w-full sm:w-[68%] lg:w-[66%] sm:max-w-[328px] relative rounded-xl sm:rounded-2xl border border-[#24d4da] shadow-[0_0_12px_rgba(36,212,218,0.35)] py-3 px-3.5 sm:py-3.5 sm:px-4 flex flex-col items-center justify-center text-center font-montserrat not-italic">
 
               {/* SVG GARRAFON TÉCNICO (Comentado temporalmente) */}
               {/*
@@ -436,24 +437,37 @@ const DashboardResults = React.memo(function DashboardResults({ data }) {
               </div>
               */}
               
-              {/* Contenido de datos compacto */}
-              <div className="relative z-10 w-full flex flex-col items-center justify-center text-center gap-0.5 sm:gap-1 font-montserrat not-italic">
-                <div className="font-montserrat not-italic">
-                  <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-[#24d4da] drop-shadow-sm font-montserrat not-italic">
-                    Utilidad Mensual Neta
-                  </p>
-                  <div className="text-2xl sm:text-3xl lg:text-[28px] font-extrabold text-white tracking-tight leading-tight drop-shadow-md font-montserrat not-italic mt-0.5">
-                    <GSAPCurrencyCounter value={data.utilidadMensual} />
+              {/* Contenido de datos */}
+              <div className="relative z-10 w-full flex flex-col items-center justify-center font-montserrat not-italic">
+                {/* Fila superior: icono de manita like en círculo con degradado y a un lado el texto con su costo */}
+                <div className="flex items-center justify-center gap-3 sm:gap-3.5 w-full">
+                  <div 
+                    style={{
+                      background: 'radial-gradient(circle at 15% 50%, rgba(70, 93, 117, 0.35), transparent 45%), linear-gradient(100deg, #20364c 0%, #102b43 55%, #031f39 100%)'
+                    }}
+                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-white/20 flex items-center justify-center shrink-0 shadow-md"
+                  >
+                    <HandThumbUpIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[#24d4da] stroke-[2]" />
+                  </div>
+                  <div className="text-left flex flex-col justify-center">
+                    <p className="text-[8.5px] sm:text-[9px] font-bold uppercase tracking-[0.16em] text-white drop-shadow-sm font-montserrat not-italic leading-tight">
+                      Utilidad Mensual Neta
+                    </p>
+                    <div className="text-[28px] sm:text-[31px] lg:text-[33px] font-black italic text-white tracking-tight leading-tight drop-shadow-md font-montserrat mt-0.5">
+                      <GSAPCurrencyCounter value={data.utilidadMensual} />
+                    </div>
                   </div>
                 </div>
                 
-                <div className="w-14 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-1" />
+                {/* Línea divisoria más blanca y más grande */}
+                <div className="w-full max-w-[240px] sm:max-w-[260px] h-[1.5px] bg-gradient-to-r from-transparent via-white/80 to-transparent my-2 sm:my-2.5" />
 
-                <div className="font-montserrat not-italic">
-                  <p className="text-[8px] sm:text-[8.5px] font-semibold text-white/50 uppercase tracking-wider drop-shadow-sm font-montserrat not-italic">
-                    Utilidad Anual Estimada
+                {/* Fila inferior: Utilidad anual neta y su precio en color #b6feff */}
+                <div className="font-montserrat not-italic text-center flex flex-col items-center justify-center">
+                  <p className="text-[9px] sm:text-[9.5px] font-semibold uppercase tracking-[0.16em] text-[#b6feff] drop-shadow-sm font-montserrat not-italic leading-tight">
+                    Utilidad Anual Neta
                   </p>
-                  <div className="text-sm sm:text-base md:text-[17px] font-bold text-white/85 leading-tight drop-shadow-md font-montserrat not-italic mt-0.5">
+                  <div className="text-sm sm:text-base md:text-[18px] font-bold italic leading-tight drop-shadow-md font-montserrat mt-0.5 text-[#b6feff]">
                     <GSAPCurrencyCounter value={data.utilidadAnual} />
                   </div>
                 </div>
@@ -464,8 +478,8 @@ const DashboardResults = React.memo(function DashboardResults({ data }) {
       </div>
 
       <div className="relative z-10 mt-2.5 sm:mt-3.5 flex items-center justify-between border-t border-white/10 pt-2.5 sm:pt-3.5 font-montserrat not-italic">
-        <div className="text-[11px] sm:text-xs text-white/50 font-semibold uppercase tracking-wider font-montserrat not-italic">
-          Margen Neto: <span className="font-extrabold ml-1.5 text-[#1DB3BA] font-montserrat not-italic">
+        <div className="text-[11px] sm:text-xs text-white font-semibold uppercase tracking-wider font-montserrat not-italic">
+          Margen Neto: <span className="font-extrabold ml-1.5 text-white font-montserrat not-italic">
             {data.ingresosBrutos > 0 ? Math.round((data.utilidadMensual / data.ingresosBrutos) * 100) : 0}%
           </span>
         </div>
@@ -551,14 +565,14 @@ const AguaView = React.memo(function AguaView() {
           </div>
         </div>
 
-        {/* Sistema de Ósmosis Inversa (recuadro con tono azul turquesa distintivo) */}
-        <div className={`w-full min-h-[64px] sm:min-h-[68px] flex flex-col justify-center rounded-lg sm:rounded-xl py-2 px-3.5 sm:py-2.5 sm:px-4 shadow-xs space-y-1 font-montserrat not-italic transition-all duration-300 ${
+        {/* Sistema de Ósmosis Inversa (recuadro con tono azul distintivo) */}
+        <div className={`w-full min-h-[64px] sm:min-h-[68px] flex flex-col justify-center rounded-lg sm:rounded-xl py-2 px-3.5 sm:py-2.5 sm:px-4 shadow-xs space-y-1 font-montserrat not-italic transition-all duration-300 bg-[#f1fbfd] ${
           osmosis 
-            ? 'bg-gradient-to-r from-[#ebfbfb] via-[#e2f9fa] to-[#ebfbfb] border border-[#24d4da]/60 shadow-[0_2px_10px_rgba(36,212,218,0.12)]' 
-            : 'bg-[#f0fafb] border border-[#24d4da]/35 hover:border-[#24d4da]/60'
+            ? 'border border-[#288EB9]/50 shadow-[0_2px_10px_rgba(40,142,185,0.12)]' 
+            : 'border border-[#288EB9]/25 hover:border-[#288EB9]/50'
         }`}>
           <div className="flex items-center justify-between gap-3">
-            <span className="text-[10.5px] sm:text-[11.5px] font-normal uppercase text-[#043e45] tracking-wider font-montserrat not-italic">
+            <span className="text-[10.5px] sm:text-[11.5px] font-bold uppercase text-[#288EB9] tracking-wider font-montserrat not-italic">
               Sistema de Ósmosis Inversa
             </span>
             {/* Switch interactivo */}
@@ -567,7 +581,7 @@ const AguaView = React.memo(function AguaView() {
               onClick={handleOsmosisToggle} 
               className={`w-11 h-6 p-0.5 rounded-full transition-colors duration-300 flex items-center shrink-0 cursor-pointer focus:outline-none ${
                 osmosis 
-                  ? 'bg-gradient-to-r from-[#168387] to-[#24d4da] shadow-sm' 
+                  ? 'bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] shadow-sm' 
                   : 'bg-slate-300'
               }`}
               aria-label="Alternar sistema de ósmosis inversa"
