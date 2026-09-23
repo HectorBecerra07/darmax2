@@ -26,6 +26,13 @@ const Footer = () => {
     navigate(randomRoute);
   };
 
+  const socialLinks = [
+    { href: "https://www.facebook.com/Darmaxagua/", Icon: FaFacebookF, label: "Facebook", hoverColor: "hover:bg-blue-600 hover:border-blue-600" },
+    { href: "https://www.instagram.com/darmaxagua/", Icon: FaInstagram, label: "Instagram", hoverColor: "hover:bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 hover:border-transparent" },
+    { href: "https://wa.me/525519655369", Icon: FaWhatsapp, label: "WhatsApp", hoverColor: "hover:bg-green-500 hover:border-green-500" },
+    { href: "https://www.tiktok.com/@darmax_agua", Icon: FaTiktok, label: "TikTok", hoverColor: "hover:bg-slate-900 hover:border-slate-900" },
+  ];
+
   return (
     <footer className="relative bg-[#172a38] text-white font-montserrat not-italic overflow-hidden font-light">
       {/* Linea decorativa superior con identidad dual */}
@@ -39,8 +46,110 @@ const Footer = () => {
       <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-[#e7b341]/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* CUERPO PRINCIPAL DEL FOOTER */}
-      <div className="max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 pt-16 pb-14 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr_1.2fr_0.8fr] gap-8 lg:gap-5 xl:gap-7">
+      <div className="max-w-screen-2xl mx-auto px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 pb-12 sm:pb-14 relative z-10">
+        
+        {/* VISTA MÓVIL (2 COLUMNAS SEGÚN DISEÑO) */}
+        <div className="grid grid-cols-2 gap-x-4 min-[380px]:gap-x-5 gap-y-6 sm:hidden">
+          {/* COLUMNA IZQUIERDA MÓVIL: Logo, Frases, Iconos y Frase Izquierda */}
+          <div className="flex flex-col justify-between space-y-4">
+            <div>
+              {/* Logo y frase debajo */}
+              <div className="space-y-1 w-fit">
+                <Link to="/" className="inline-block">
+                  <img src="/img/logos/logoblanco.png" alt="Darmax Logo" className="h-[48px] min-[380px]:h-[54px] w-auto object-contain block" />
+                </Link>
+                <p className="text-white font-light text-[6.5px] min-[380px]:text-[7.5px] tracking-[0.16em] font-montserrat not-italic uppercase leading-tight">
+                  CALIDAD AL BEBER, RETORNO AL INVERTIR
+                </p>
+              </div>
+
+              {/* Segunda frase */}
+              <p className="text-white/90 font-light text-[9px] min-[380px]:text-[10px] leading-snug font-montserrat not-italic mt-2.5">
+                Soluciones en agua para tu hogar, tu negocio y un mejor mañana.
+              </p>
+
+              {/* Iconos de redes sociales */}
+              <div className="flex items-center gap-1.5 min-[380px]:gap-2 pt-2.5">
+                {socialLinks.map(({ href, Icon, label, hoverColor }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className={`w-7 h-7 min-[380px]:w-8 min-[380px]:h-8 rounded-full border border-white flex items-center justify-center text-white transition-all duration-300 ${hoverColor} hover:scale-110 shadow-md shadow-black/20`}
+                  >
+                    <Icon className="text-xs min-[380px]:text-sm" />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Frase de lado izquierdo */}
+            <div className="relative inline-flex flex-col items-start pt-2 pb-2">
+              <span className="text-white font-light text-[7.5px] min-[380px]:text-[8px] tracking-[0.2em] uppercase leading-tight">
+                AGUA PARA
+              </span>
+              <p className="text-white font-light text-[7.5px] min-[380px]:text-[8px] tracking-[0.2em] uppercase leading-tight">
+                UN MEJOR MAÑANA
+              </p>
+              {/* Línea decorativa: sale del lado izquierdo y más larga */}
+              <span className="absolute bottom-0 left-0 w-10 min-[380px]:w-12 h-[2px] bg-[#24d4da] rounded-full" />
+            </div>
+          </div>
+
+          {/* COLUMNA DERECHA MÓVIL: Contáctanos y Mapa */}
+          <div className="flex flex-col space-y-4">
+            {/* Contáctanos */}
+            <div>
+              <h3 className="text-white font-light uppercase tracking-[0.2em] text-[10px] min-[380px]:text-[11px]">
+                CONTACTANOS
+              </h3>
+              <div className="w-5 h-[2px] bg-[#24d4da] mt-1.5 mb-2.5 rounded-full" />
+              <ul className="space-y-2 text-[9px] min-[380px]:text-[10px] font-extralight text-white leading-snug">
+                <li className="flex items-start gap-1.5 leading-snug">
+                  <MapPinIcon className="w-3.5 h-3.5 text-[#24d4da] shrink-0 mt-0.5" />
+                  <span className="leading-snug text-white">Blvd. de los Continentes 85, Bosques de Aragón, Nezahualcóyotl, Méx.</span>
+                </li>
+                <li>
+                  <a href="tel:+525653751129" className="flex items-center gap-1.5 hover:text-[#24d4da] transition-colors text-white">
+                    <PhoneIcon className="w-3.5 h-3.5 text-[#24d4da] shrink-0" />
+                    <span>+52 56 5375 1129</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="mailto:ventas@darmaxagua.com.mx" className="flex items-center gap-1.5 hover:text-[#24d4da] transition-colors break-all text-white">
+                    <EnvelopeIcon className="w-3.5 h-3.5 text-[#24d4da] shrink-0" />
+                    <span>ventas@darmaxagua.com.mx</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Mapa Ubicación */}
+            <div>
+              <h3 className="text-white font-light uppercase tracking-[0.2em] text-[10px] min-[380px]:text-[11px]">
+                UBICACIÓN
+              </h3>
+              <div className="w-5 h-[2px] bg-[#24d4da] mt-1.5 mb-2 rounded-full" />
+              <div className="relative group overflow-hidden rounded-xl border border-white/10 shadow-lg">
+                <iframe
+                  title="Mapa Darmax Móvil"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.537503078147!2d-99.0543406!3d19.4687422!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1fb77a5cc739b%3A0x67aef19c3c1e2d65!2sPurificadora%20De%20Agua%20Darmax%20Agua!5e0!3m2!1ses!2smx!4v1720137621960!5m2!1ses!2smx"
+                  width="100%"
+                  height="105"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  className="transition-all duration-700 scale-105 group-hover:scale-100"
+                />
+                <div className="absolute inset-0 pointer-events-none border border-white/10 rounded-xl" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* VISTA ESCRITORIO / TABLET (sm en adelante: 6 columnas) */}
+        <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr_1.2fr_0.8fr] gap-8 lg:gap-5 xl:gap-7">
           
           {/* Columna 1: Marca, Eslogan, Subtexto y Redes Sociales */}
           <div className="space-y-6 sm:space-y-7 sm:col-span-2 md:col-span-1 lg:col-span-1">
@@ -48,26 +157,17 @@ const Footer = () => {
               <Link to="/" className="inline-block">
                 <img src="/img/logos/logoblanco.png" alt="Darmax Logo" className="h-[72px] sm:h-[80px] lg:h-[86px] w-auto object-contain block" />
               </Link>
-
-              {/* Eslogan oficial pegado al logo y alineado a su ancho */}
               <p className="text-white font-light text-[8px] sm:text-[8.5px] tracking-[0.25em] font-montserrat not-italic uppercase leading-relaxed">
                 CALIDAD AL BEBER, RETORNO AL INVERTIR
               </p>
             </div>
 
-            {/* Titular descriptivo con mayor interlineado y tipografia delgada */}
             <h3 className="text-white font-light text-[11px] sm:text-xs leading-loose font-montserrat not-italic max-w-sm">
               Soluciones en agua para tu hogar, tu negocio y un mejor mañana.
             </h3>
 
-            {/* Redes sociales redondas con borde blanco y mayor tamano */}
             <div className="flex items-center gap-2.5 sm:gap-3 pt-2 sm:pt-3">
-              {[
-                { href: "https://www.facebook.com/Darmaxagua/", Icon: FaFacebookF, label: "Facebook", hoverColor: "hover:bg-blue-600 hover:border-blue-600" },
-                { href: "https://www.instagram.com/darmaxagua/", Icon: FaInstagram, label: "Instagram", hoverColor: "hover:bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 hover:border-transparent" },
-                { href: "https://wa.me/525519655369", Icon: FaWhatsapp, label: "WhatsApp", hoverColor: "hover:bg-green-500 hover:border-green-500" },
-                { href: "https://www.tiktok.com/@darmax_agua", Icon: FaTiktok, label: "TikTok", hoverColor: "hover:bg-slate-900 hover:border-slate-900" },
-              ].map(({ href, Icon, label, hoverColor }) => (
+              {socialLinks.map(({ href, Icon, label, hoverColor }) => (
                 <a
                   key={label}
                   href={href}
@@ -204,18 +304,16 @@ const Footer = () => {
           </div>
 
           {/* Columna 6: Frase en la esquina inferior */}
-          <div className="sm:col-span-2 md:col-span-1 lg:col-span-1 flex flex-col justify-end items-start sm:items-end text-left sm:text-right h-full pt-4 sm:pt-5 lg:pt-0">
-            <div className="inline-flex flex-col items-start sm:items-end space-y-0.5">
+          <div className="sm:col-span-2 md:col-span-1 lg:col-span-1 flex flex-col justify-end items-end text-right h-full pt-4 sm:pt-5 lg:pt-0">
+            <div className="relative inline-flex flex-col items-end space-y-0.5 pb-2.5">
               <span className="text-white font-light text-[8px] sm:text-[8.5px] xl:text-[9px] tracking-[0.2em] uppercase leading-tight">
                 AGUA PARA
               </span>
               <p className="text-white font-light text-[8px] sm:text-[8.5px] xl:text-[9px] tracking-[0.2em] uppercase leading-tight">
-                UN MEJOR{' '}
-                <span className="relative inline-block">
-                  MAÑANA
-                  <span className="absolute -bottom-1 left-0 sm:left-auto sm:right-0 w-3.5 sm:w-4 h-[1.5px] sm:h-[2px] bg-[#24d4da] rounded-full" />
-                </span>
+                UN MEJOR MAÑANA
               </p>
+              {/* Línea decorativa saliendo del lado derecho en escritorio */}
+              <span className="absolute bottom-0 right-0 w-8 lg:w-10 h-[2px] bg-[#24d4da] rounded-full" />
             </div>
           </div>
 
@@ -226,29 +324,29 @@ const Footer = () => {
       <div className="w-full bg-[#0f172a] py-5 sm:py-7 px-5 sm:px-8 lg:px-12 border-t border-white/10 font-montserrat not-italic">
         <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-5 text-[10px] sm:text-[11px] font-light leading-relaxed">
           
-          {/* Métodos de pago adaptados con iconos fijos w-4 en móvil y w-5 en desktop */}
-          <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4 text-white justify-center font-light order-1 md:order-3 w-full md:w-auto">
-            <span className="text-[9.5px] sm:text-[11px] font-medium uppercase tracking-[0.16em] text-white/80 text-center">
+          {/* Métodos de pago en una sola línea en móvil y desktop */}
+          <div className="flex flex-row items-center justify-center gap-1.5 min-[360px]:gap-2 sm:gap-4 text-white font-light order-1 md:order-3 w-full md:w-auto flex-nowrap whitespace-nowrap overflow-x-auto sm:overflow-visible py-0.5">
+            <span className="text-[7.5px] min-[360px]:text-[8.5px] min-[390px]:text-[9px] sm:text-[11px] font-medium uppercase tracking-[0.14em] sm:tracking-[0.16em] text-white/80 shrink-0">
               MÉTODOS DE PAGO:
             </span>
-            <div className="flex items-center gap-2 sm:gap-3.5 flex-wrap justify-center">
-              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-2.5 py-1 sm:p-0 rounded-lg sm:rounded-none border border-white/10 sm:border-0 shrink-0">
-                <BanknotesIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white shrink-0" />
+            <div className="flex items-center gap-1 min-[360px]:gap-1.5 sm:gap-3.5 flex-nowrap shrink-0">
+              <span className="inline-flex items-center gap-1 min-[360px]:gap-1.5 text-[7.5px] min-[360px]:text-[8.5px] min-[390px]:text-[9.5px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-1.5 min-[360px]:px-2 py-0.5 sm:p-0 rounded-md sm:rounded-none border border-white/10 sm:border-0 shrink-0">
+                <BanknotesIcon className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-white shrink-0" />
                 <span>Efectivo</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-2.5 py-1 sm:p-0 rounded-lg sm:rounded-none border border-white/10 sm:border-0 shrink-0">
-                <ArrowsRightLeftIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white shrink-0" />
+              <span className="inline-flex items-center gap-1 min-[360px]:gap-1.5 text-[7.5px] min-[360px]:text-[8.5px] min-[390px]:text-[9.5px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-1.5 min-[360px]:px-2 py-0.5 sm:p-0 rounded-md sm:rounded-none border border-white/10 sm:border-0 shrink-0">
+                <ArrowsRightLeftIcon className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-white shrink-0" />
                 <span>Transferencia</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-2.5 py-1 sm:p-0 rounded-lg sm:rounded-none border border-white/10 sm:border-0 shrink-0">
-                <CreditCardIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white shrink-0" />
+              <span className="inline-flex items-center gap-1 min-[360px]:gap-1.5 text-[7.5px] min-[360px]:text-[8.5px] min-[390px]:text-[9.5px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-1.5 min-[360px]:px-2 py-0.5 sm:p-0 rounded-md sm:rounded-none border border-white/10 sm:border-0 shrink-0">
+                <CreditCardIcon className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-white shrink-0" />
                 <span>Tarjeta</span>
               </span>
             </div>
           </div>
 
-          {/* Lema central */}
-          <p className="text-white/80 font-light text-center tracking-wider text-[10px] sm:text-[11px] order-2 md:order-2">
+          {/* Lema central (oculto en móvil, visible en escritorio) */}
+          <p className="hidden sm:block text-white/80 font-light text-center tracking-wider text-[10px] sm:text-[11px] order-2 md:order-2">
             Innovación <span className="text-white/40 mx-1.5">|</span> Calidad <span className="text-white/40 mx-1.5">|</span> Confianza
           </p>
 

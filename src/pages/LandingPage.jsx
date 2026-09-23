@@ -21,17 +21,15 @@ import {
   TruckIcon,
   CalendarDaysIcon,
   WifiIcon,
-  HandThumbUpIcon,
-  ChartPieIcon,
-  ReceiptPercentIcon
+  HandThumbUpIcon
 } from "@heroicons/react/24/outline";
-import { FaCoins } from "react-icons/fa6";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const IniciaNegocio = lazy(() => import("../components/IniciaNegocio"));
 import TestimoniosSection from "../components/TestimoniosSection";
 import { optimizeCloudinaryUrl } from "../utils/cloudinary";
+import { Droplet } from "lucide-react";
 
 /* Icono de camión cisterna / pipa de agua */
 const PipaTruckIcon = React.memo((props) => (
@@ -159,17 +157,17 @@ const MetricCard = React.memo(({ title, value, suffix, icon: Icon, delay = 0 }) 
     viewport={{ once: true, amount: 0.15 }}
     transition={{ duration: 0.55, delay, ease: "easeOut" }}
     whileHover={{ y: -6, transition: { duration: 0.25 } }}
-    className="relative p-6 sm:p-8 rounded-[2.5rem] bg-white border border-cyan-100 shadow-xl shadow-cyan-900/5 group overflow-hidden cursor-default transition-shadow hover:shadow-2xl hover:shadow-cyan-900/10"
+    className="relative px-5 py-4 sm:px-6 sm:py-6 rounded-[1.75rem] sm:rounded-3xl bg-white border border-cyan-100 shadow-xl shadow-cyan-900/5 group overflow-hidden cursor-default transition-shadow hover:shadow-2xl hover:shadow-cyan-900/10 max-w-[265px] min-[380px]:max-w-[285px] sm:max-w-none mx-auto w-full flex flex-col justify-center items-center font-montserrat not-italic"
   >
-    <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-cyan-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
+    <div className="absolute top-0 right-0 -mr-10 -mt-10 w-28 h-28 sm:w-28 sm:h-28 bg-cyan-50 rounded-full group-hover:scale-150 transition-transform duration-700 opacity-50" />
     <div className="relative z-10 flex flex-col items-center text-center">
-      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-4 sm:mb-6 shadow-lg shadow-cyan-600/20 group-hover:rotate-12 group-hover:scale-110 transition-all duration-300">
-        <Icon className="w-7 h-7 sm:w-8 sm:h-8" />
+      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-[#168387] text-white flex items-center justify-center mb-2 sm:mb-4 shadow-lg shadow-cyan-600/20 group-hover:rotate-12 group-hover:scale-110 transition-all duration-300">
+        <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
       </div>
-      <div className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-2">
+      <div className="text-3xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-1 sm:mb-1.5 font-montserrat not-italic">
         <GSAPCounter value={value} suffix={suffix} />
       </div>
-      <p className="text-[#168387] font-bold uppercase tracking-widest text-xs sm:text-sm">{title}</p>
+      <p className="text-[#168387] font-semibold uppercase tracking-wider text-xs sm:text-[13px] font-montserrat not-italic">{title}</p>
     </div>
   </motion.div>
 ));
@@ -406,9 +404,9 @@ const DashboardResults = React.memo(function DashboardResults({ data }) {
           <DashboardCard title="Gastos Fijos" amount={data.gastosFijos} sub="Operación" />
           <DashboardCard title="Costo x Unidad" amount={data.costoUnitario} sub="Promedio" />
           
-          {/* Tarjeta de utilidad 100% transparente: borde con ligero brillo y contenido interior */}
+          {/* Tarjeta de utilidad: no a lo grande en móvil sino a la mitad (w-[66%]), igual que en escritorio */}
           <div className="col-span-2 flex justify-start w-full mt-2 sm:mt-2.5">
-            <div className="w-full sm:w-[68%] lg:w-[66%] sm:max-w-[328px] relative rounded-xl sm:rounded-2xl border border-[#24d4da] shadow-[0_0_12px_rgba(36,212,218,0.35)] py-3 px-3.5 sm:py-3.5 sm:px-4 flex flex-col items-center justify-center text-center font-montserrat not-italic">
+            <div className="w-[66%] sm:w-[68%] lg:w-[66%] sm:max-w-[328px] relative rounded-xl sm:rounded-2xl border border-[#24d4da] shadow-[0_0_12px_rgba(36,212,218,0.35)] py-2.5 px-3 sm:py-3.5 sm:px-4 flex flex-col items-center justify-center text-center font-montserrat not-italic">
 
               {/* SVG GARRAFON TÉCNICO (Comentado temporalmente) */}
               {/*
@@ -440,34 +438,34 @@ const DashboardResults = React.memo(function DashboardResults({ data }) {
               {/* Contenido de datos */}
               <div className="relative z-10 w-full flex flex-col items-center justify-center font-montserrat not-italic">
                 {/* Fila superior: icono de manita like en círculo con degradado y a un lado el texto con su costo */}
-                <div className="flex items-center justify-center gap-3 sm:gap-3.5 w-full">
+                <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 w-full">
                   <div 
                     style={{
                       background: 'radial-gradient(circle at 15% 50%, rgba(70, 93, 117, 0.35), transparent 45%), linear-gradient(100deg, #20364c 0%, #102b43 55%, #031f39 100%)'
                     }}
-                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-white/20 flex items-center justify-center shrink-0 shadow-md"
+                    className="w-9 h-9 min-[380px]:w-10 min-[380px]:h-10 sm:w-12 sm:h-12 rounded-full border border-white/20 flex items-center justify-center shrink-0 shadow-md"
                   >
-                    <HandThumbUpIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[#24d4da] stroke-[2]" />
+                    <HandThumbUpIcon className="w-4 h-4 min-[380px]:w-5 min-[380px]:h-5 sm:w-6 sm:h-6 text-[#24d4da] stroke-[2]" />
                   </div>
-                  <div className="text-left flex flex-col justify-center">
-                    <p className="text-[8.5px] sm:text-[9px] font-bold uppercase tracking-[0.16em] text-white drop-shadow-sm font-montserrat not-italic leading-tight">
+                  <div className="text-left flex flex-col justify-center min-w-0">
+                    <p className="text-[7.5px] min-[380px]:text-[8.5px] sm:text-[9px] font-bold uppercase tracking-[0.14em] sm:tracking-[0.16em] text-white drop-shadow-sm font-montserrat not-italic leading-tight truncate">
                       Utilidad Mensual Neta
                     </p>
-                    <div className="text-[28px] sm:text-[31px] lg:text-[33px] font-black italic text-white tracking-tight leading-tight drop-shadow-md font-montserrat mt-0.5">
+                    <div className="text-[22px] min-[380px]:text-[26px] sm:text-[31px] lg:text-[33px] font-black italic text-white tracking-tight leading-tight drop-shadow-md font-montserrat mt-0.5">
                       <GSAPCurrencyCounter value={data.utilidadMensual} />
                     </div>
                   </div>
                 </div>
                 
-                {/* Línea divisoria más blanca y más grande */}
-                <div className="w-full max-w-[240px] sm:max-w-[260px] h-[1.5px] bg-gradient-to-r from-transparent via-white/80 to-transparent my-2 sm:my-2.5" />
+                {/* Línea divisoria */}
+                <div className="w-full max-w-[180px] sm:max-w-[260px] h-[1.5px] bg-gradient-to-r from-transparent via-white/80 to-transparent my-1.5 sm:my-2.5" />
 
                 {/* Fila inferior: Utilidad anual neta y su precio en color #b6feff */}
                 <div className="font-montserrat not-italic text-center flex flex-col items-center justify-center">
-                  <p className="text-[9px] sm:text-[9.5px] font-semibold uppercase tracking-[0.16em] text-[#b6feff] drop-shadow-sm font-montserrat not-italic leading-tight">
+                  <p className="text-[8px] min-[380px]:text-[9px] sm:text-[9.5px] font-semibold uppercase tracking-[0.14em] sm:tracking-[0.16em] text-[#b6feff] drop-shadow-sm font-montserrat not-italic leading-tight">
                     Utilidad Anual Neta
                   </p>
-                  <div className="text-sm sm:text-base md:text-[18px] font-bold italic leading-tight drop-shadow-md font-montserrat mt-0.5 text-[#b6feff]">
+                  <div className="text-xs min-[380px]:text-sm sm:text-base md:text-[18px] font-bold italic leading-tight drop-shadow-md font-montserrat mt-0.5 text-[#b6feff]">
                     <GSAPCurrencyCounter value={data.utilidadAnual} />
                   </div>
                 </div>
@@ -725,12 +723,12 @@ export default function LandingPage() {
         <HeroBannerSlide onOpenTouchModal={handleOpenTouchModal} />
 
         {/* SECCIÓN DE AUTORIDAD (Conecta fluidamente con ROI) */}
-        <section className="py-12 sm:py-16 bg-[#f8fafc] border-t border-slate-200/80 relative">
-          <div className="max-w-7xl mx-auto px-4 sm:px-10">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <section className="py-12 sm:py-14 bg-[#f8fafc] border-t border-slate-200/80 relative">
+          <div className="max-w-5xl mx-auto px-4 sm:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-6 lg:gap-8">
               <MetricCard title="Equipos Instalados" value="350" suffix="+" icon={CheckBadgeIcon} delay={0} />
               <MetricCard title="Negocios Rentables" value="280" suffix="+" icon={ChartBarIcon} delay={0.12} />
-              <MetricCard title="Litros Purificados" value="10" suffix="M+" icon={RocketLaunchIcon} delay={0.24} />
+              <MetricCard title="Litros Purificados" value="10" suffix="M+" icon={Droplet} delay={0.24} />
             </div>
           </div>
         </section>
@@ -750,50 +748,55 @@ export default function LandingPage() {
         <section id="calculadora-negocio" className="bg-[#fbfbfd] flex flex-col items-center justify-center w-full font-montserrat not-italic overflow-hidden py-8 sm:py-12">
           
           <div className="max-w-6xl mx-auto px-0 sm:px-6 w-full flex flex-col">
-            {/* Header Calculadora */}
+            {/* Header Calculadora: Título a la izquierda y Switch a la derecha */}
             <motion.div 
-              {...slideInRight(0, "Calcula tu rentabilidad")}
-              className="w-full mb-5 sm:mb-6 flex flex-col items-center text-center px-4 sm:px-0 max-w-4xl mx-auto"
+              {...slideInRight(0, "Calcula tu rentabilidad con una proyeccion real")}
+              className="w-full mb-4 sm:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 px-4 sm:px-0"
             >
-              <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-1.5 sm:mb-2 block text-center">
-                Proyección Financiera
-              </span>
-              <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-2 sm:mb-3 text-center">
-                <span className="text-[#031638]">Calcula tu </span>
-                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
-                  rentabilidad
+              <div className="flex flex-col items-start text-left flex-1 min-w-0">
+                <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-sm uppercase mb-1.5 sm:mb-2 block text-left">
+                  Proyección Financiera
                 </span>
-              </h2>
-              <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-2xl text-center mb-4">
-                Ajusta los valores según tu negocio y descubre el potencial de tu inversión.
-              </p>
+                <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-3xl lg:text-[34px] xl:text-[40px] font-bold tracking-tight leading-tight mb-2 sm:mb-2.5 text-left text-[#031638] whitespace-normal xl:whitespace-nowrap">
+                  <span>Calcula tu </span>
+                  <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                    rentabilidad
+                  </span>
+                  <span> con una proyección real</span>
+                </h2>
+                <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base font-normal leading-relaxed text-left max-w-2xl">
+                  Ajusta los valores según tu negocio y descubre el potencial de tu inversión.
+                </p>
+              </div>
 
-              {/* Switch de modo con diseño HeroBannerSlide */}
-              <div className="flex items-center gap-1 sm:gap-2 bg-slate-900/5 backdrop-blur-md p-1 rounded-full border border-slate-200/90 shadow-sm font-montserrat not-italic mx-auto">
-                <button
-                  type="button"
-                  onClick={() => setTipoCalc("agua")}
-                  className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer font-montserrat not-italic ${
-                    tipoCalc === "agua"
-                      ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-md"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  <span className={`w-2 h-2 rounded-full ${tipoCalc === "agua" ? "bg-white" : "bg-slate-300"}`} />
-                  <span>Agua</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTipoCalc("limpieza")}
-                  className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer font-montserrat not-italic ${
-                    tipoCalc === "limpieza"
-                      ? "bg-[#e7b341] text-white shadow-md"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                >
-                  <span className={`w-2 h-2 rounded-full ${tipoCalc === "limpieza" ? "bg-amber-200" : "bg-slate-300"}`} />
-                  <span>Limpieza</span>
-                </button>
+              {/* Switch de modo a la derecha: bajado para acercarlo a la calculadora */}
+              <div className="shrink-0 flex items-center justify-start md:justify-end self-start md:self-end md:translate-y-2.5 pb-0">
+                <div className="flex items-center gap-1 sm:gap-2 bg-slate-900/5 backdrop-blur-md p-1 rounded-full border border-slate-200/90 shadow-sm font-montserrat not-italic">
+                  <button
+                    type="button"
+                    onClick={() => setTipoCalc("agua")}
+                    className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer font-montserrat not-italic ${
+                      tipoCalc === "agua"
+                        ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-md"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    <span className={`w-2 h-2 rounded-full ${tipoCalc === "agua" ? "bg-white" : "bg-slate-300"}`} />
+                    <span>Agua</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTipoCalc("limpieza")}
+                    className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer font-montserrat not-italic ${
+                      tipoCalc === "limpieza"
+                        ? "bg-[#e7b341] text-white shadow-md"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    <span className={`w-2 h-2 rounded-full ${tipoCalc === "limpieza" ? "bg-amber-200" : "bg-slate-300"}`} />
+                    <span>Limpieza</span>
+                  </button>
+                </div>
               </div>
             </motion.div>
 

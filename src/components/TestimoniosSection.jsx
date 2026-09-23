@@ -284,18 +284,18 @@ export default function TestimoniosSection() {
 
       <div className="max-w-7xl mx-auto px-4 w-full relative z-10">
         <motion.div
-          {...slideInRight(0, "Más que clientes, historias de éxito")}
-          className="flex flex-col items-center text-center mb-8 sm:mb-10 max-w-4xl mx-auto"
+          {...slideInRight(0, "Únete a la familia Darmax")}
+          className="flex flex-col items-center text-center mb-8 sm:mb-10 max-w-5xl mx-auto"
         >
           <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block">
             Resultados Reales
           </span>
-          <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-3 sm:mb-4 text-center">
-            <span className="block text-[#031638]">
-              Más que clientes,
+          <h2 className="font-montserrat not-italic text-2xl sm:text-4xl md:text-5xl lg:text-[44px] font-bold tracking-tight leading-tight mb-3 sm:mb-4 text-center">
+            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent block pb-1">
+              Únete a la familia Darmax
             </span>
-            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
-              historias de éxito
+            <span className="block text-[#031638] mt-1">
+              y forma parte de nuestras historias de éxito
             </span>
           </h2>
           <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-center max-w-2xl">

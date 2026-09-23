@@ -403,7 +403,7 @@ const getLevelConfig = (modelId, isBundle) => {
   };
 };
 
-const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect }) => {
+const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect, isCompact = false }) => {
   const [errorImagen, setErrorImagen] = useState(false);
   const isBundle = BUNDLE_IDS.has(modelo.id);
   const configurePath = getConfigurePath(modelo.id);
@@ -415,17 +415,19 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
       variants={cardVariants}
       whileHover={{ y: -6, transition: { duration: 0.25 } }}
       className={[
-        "group relative flex flex-col h-full rounded-[2rem] sm:rounded-[2.25rem] bg-white p-4 sm:p-5",
+        "group relative flex flex-col h-full rounded-[2rem] sm:rounded-[2.25rem] bg-white",
         "transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]",
-        "hover:shadow-[0_24px_50px_-12px_rgba(0,0,0,0.12)]",
-        "w-full max-w-[335px] sm:max-w-[345px] md:max-w-[350px] lg:max-w-[360px] mx-auto",
+        "hover:shadow-[0_24px_50px_-12px_rgba(0,0,0,0.12)] mx-auto",
+        isCompact 
+          ? "p-3.5 w-[270px]" 
+          : "p-4 sm:p-5 w-full max-w-[335px] sm:max-w-[345px] md:max-w-[350px] lg:max-w-[360px]",
         levelConfig.borderClass,
         isSelected ? "ring-2 ring-[#24d4da]" : "",
       ].join(" ")}
     >
       {/* BADGE DE NIVEL */}
       {levelConfig.label && (
-        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 px-3.5 py-1 sm:px-4 sm:py-1.5 ${levelConfig.badgeBg} text-white text-[10px] sm:text-xs font-bold uppercase tracking-[0.16em] sm:tracking-[0.2em] rounded-full shadow-md whitespace-nowrap font-montserrat not-italic`}>
+        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 ${isCompact ? "px-3 py-0.5 text-[9px]" : "px-3.5 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs"} ${levelConfig.badgeBg} text-white font-bold uppercase tracking-[0.16em] sm:tracking-[0.2em] rounded-full shadow-md whitespace-nowrap font-montserrat not-italic`}>
           {levelConfig.label}
         </div>
       )}
@@ -433,7 +435,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
       {/* IMAGEN Y CONTROL */}
       <div 
         onClick={() => navigate(configurePath)}
-        className="relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img mb-3 sm:mb-4 transition-all duration-500 hover:shadow-inner flex items-center justify-center p-1.5 sm:p-2"
+        className={`relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img ${isCompact ? "mb-2.5 p-1.5" : "mb-3 sm:mb-4 p-1.5 sm:p-2"} transition-all duration-500 hover:shadow-inner flex items-center justify-center`}
       >
         {!errorImagen ? (
           <img
@@ -471,23 +473,23 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
 
       {/* CONTENIDO DE NEGOCIO */}
       <div className="flex flex-col flex-grow text-center">
-        <div className="mb-1.5 sm:mb-2">
-          <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-snug group-hover:text-[#168387] transition-colors duration-500 uppercase font-montserrat not-italic">
+        <div className={isCompact ? "mb-1" : "mb-1.5 sm:mb-2"}>
+          <h3 className={`${isCompact ? "text-base leading-tight" : "text-lg sm:text-xl leading-snug"} font-bold text-slate-900 tracking-tight group-hover:text-[#168387] transition-colors duration-500 uppercase font-montserrat not-italic`}>
             {modelo.nombre}
           </h3>
         </div>
 
         {/* BUSINESS SPECS CON SEPARADORES | */}
-        <div className="flex items-center justify-center gap-1 sm:gap-1.5 max-w-[285px] sm:max-w-[305px] mx-auto w-full mb-1 py-1">
+        <div className={`flex items-center justify-center gap-1 sm:gap-1.5 ${isCompact ? "max-w-[250px] mb-0.5 py-0.5" : "max-w-[285px] sm:max-w-[305px] mb-1 py-1"} mx-auto w-full`}>
           {specs.map((spec, i) => (
             <React.Fragment key={i}>
-              {i > 0 && <div className="h-6 sm:h-7 w-[1.5px] bg-slate-200 shrink-0 rounded-full self-center" />}
+              {i > 0 && <div className={`${isCompact ? "h-5" : "h-6 sm:h-7"} w-[1.5px] bg-slate-200 shrink-0 rounded-full self-center`} />}
               <div className="flex-1 flex flex-col items-center text-center min-w-0 group/spec cursor-default px-0.5">
-                <spec.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 group-hover/spec:text-[#168387] transition-colors duration-300 mb-1 shrink-0 stroke-[1.6]" />
-                <span className="text-[9.5px] sm:text-[10.5px] font-semibold text-slate-400 group-hover/spec:text-slate-600 transition-colors duration-300 uppercase tracking-wider truncate w-full font-montserrat not-italic leading-tight">
+                <spec.icon className={`${isCompact ? "w-3 h-3 mb-0.5" : "w-3.5 h-3.5 sm:w-4 sm:h-4 mb-1"} text-slate-400 group-hover/spec:text-[#168387] transition-colors duration-300 shrink-0 stroke-[1.6]`} />
+                <span className={`${isCompact ? "text-[8.5px]" : "text-[9.5px] sm:text-[10.5px]"} font-semibold text-slate-400 group-hover/spec:text-slate-600 transition-colors duration-300 uppercase tracking-wider truncate w-full font-montserrat not-italic leading-tight`}>
                   {spec.label}
                 </span>
-                <span className="text-[10px] sm:text-[11px] font-bold text-slate-700 group-hover/spec:text-[#168387] transition-colors duration-300 truncate w-full font-montserrat not-italic mt-0.5 leading-tight">
+                <span className={`${isCompact ? "text-[9px]" : "text-[10px] sm:text-[11px]"} font-bold text-slate-700 group-hover/spec:text-[#168387] transition-colors duration-300 truncate w-full font-montserrat not-italic mt-0.5 leading-tight`}>
                   {spec.val}
                 </span>
               </div>
@@ -496,32 +498,32 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
         </div>
 
         {/* SEPARADOR HORIZONTAL QUE DIVIDE ESPECIFICACIONES DE INVERSIÓN */}
-        <div className="w-full h-px bg-slate-200/80 my-3 sm:my-3.5" />
+        <div className={`w-full h-px bg-slate-200/80 ${isCompact ? "my-2" : "my-3 sm:my-3.5"}`} />
 
         {/* FOOTER DE CONVERSIÓN */}
         <div className="mt-auto">
-          <div className="relative group/price mb-3 sm:mb-4">
-            <span className="block text-[10px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-0.5 font-montserrat not-italic">Inversión desde</span>
-            <span className="text-2xl sm:text-2xl lg:text-[26px] font-bold text-slate-900 tracking-tight group-hover/price:text-[#168387] transition-colors font-montserrat not-italic">
+          <div className={`relative group/price ${isCompact ? "mb-2" : "mb-3 sm:mb-4"}`}>
+            <span className="block text-[9.5px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-0.5 font-montserrat not-italic">Inversión desde</span>
+            <span className={`${isCompact ? "text-xl" : "text-2xl sm:text-2xl lg:text-[26px]"} font-bold text-slate-900 tracking-tight group-hover/price:text-[#168387] transition-colors font-montserrat not-italic`}>
               {formatMXN(modelo.precio)}
             </span>
           </div>
 
-          <div className="flex flex-col gap-2.5 w-full items-center">
+          <div className={`flex flex-col ${isCompact ? "gap-1.5" : "gap-2.5"} w-full items-center`}>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate(configurePath)}
-              className="inline-flex items-center justify-center gap-2 w-full max-w-[260px] sm:max-w-[270px] h-11 sm:h-11 px-6 rounded-2xl bg-slate-900 text-white text-xs sm:text-[13px] font-bold uppercase tracking-wider hover:bg-[#168387] shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-[#168387]/20 transition-all duration-300 font-montserrat not-italic group/btn cursor-pointer"
+              className={`inline-flex items-center justify-center gap-1.5 w-full ${isCompact ? "max-w-[240px] h-9 text-xs" : "max-w-[260px] sm:max-w-[270px] h-11 sm:h-11 text-xs sm:text-[13px]"} px-5 rounded-2xl bg-slate-900 text-white font-bold uppercase tracking-wider hover:bg-[#168387] shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-[#168387]/20 transition-all duration-300 font-montserrat not-italic group/btn cursor-pointer`}
             >
               <span>Configurar</span>
-              <ArrowRightIcon className="w-4 h-4 stroke-[2] group-hover/btn:translate-x-0.5 transition-transform" />
+              <ArrowRightIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2] group-hover/btn:translate-x-0.5 transition-transform" />
             </motion.button>
 
             <button
               type="button"
               onClick={() => navigate(modelo.rutaInfo)}
-              className="inline-flex items-center justify-center py-1.5 text-slate-500 hover:text-[#168387] text-xs sm:text-[13px] font-semibold tracking-wider uppercase underline underline-offset-4 decoration-slate-300 hover:decoration-[#168387] transition-all font-montserrat not-italic cursor-pointer"
+              className="inline-flex items-center justify-center py-1 text-slate-500 hover:text-[#168387] text-xs font-semibold tracking-wider uppercase underline underline-offset-4 decoration-slate-300 hover:decoration-[#168387] transition-all font-montserrat not-italic cursor-pointer"
             >
               <span>Conoce más</span>
             </button>
@@ -539,7 +541,7 @@ function VentajasSection() {
   const pilares = [
     {
       t: "Soporte Total",
-      d: "Desde la capacitación hasta la puesta en marcha. Nunca caminas solo.",
+      d: "Asesoramiento personalizado, capacitación y puesta en marcha. Nunca caminas solo.",
       icon: UserGroupIcon
     },
     {
@@ -557,38 +559,31 @@ function VentajasSection() {
   return (
     <section className="relative overflow-hidden bg-white pt-8 sm:pt-10 md:pt-12 pb-12 sm:pb-16 md:pb-20 font-montserrat not-italic">
       <div className="max-w-7xl mx-auto px-4 relative z-10">
-        {/* CABECERA: TÍTULO A LA IZQUIERDA Y TEXTO DESTACADO A LA DERECHA */}
-        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 sm:gap-7 lg:gap-8 mb-8 sm:mb-12">
-          {/* LADO IZQUIERDO: TÍTULO Y SUBTÍTULO */}
+        {/* CABECERA CENTRADA: DINASTÍA DARMAX */}
+        <div className="flex flex-col items-center text-center max-w-5xl xl:max-w-6xl mx-auto mb-8 sm:mb-12">
           <motion.div 
-            {...slideInLeft(0, "Todo lo que necesitas para que tu éxito sea inevitable.")} 
-            className="flex flex-col items-start text-left max-w-2xl xl:max-w-3xl"
+            {...slideInLeft(0, "Más que un socio seremos tu mejor aliado")} 
+            className="flex flex-col items-center text-center w-full"
           >
-            <span className="text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-sm uppercase mb-2 block font-montserrat not-italic text-left">
-              El Ecosistema Darmax
+            <span className="text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-sm uppercase mb-2 block font-montserrat not-italic text-center">
+              DINASTÍA DARMAX
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[44px] xl:text-[50px] font-bold tracking-tight leading-[1.12] mb-3.5 sm:mb-4 font-montserrat not-italic text-left overflow-visible">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[44px] xl:text-[50px] font-bold tracking-tight leading-[1.15] mb-3.5 sm:mb-4 font-montserrat not-italic text-center overflow-visible">
               <span className="block text-[#031638]">
-                Todo lo que necesitas
+                Más que un{" "}
+                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-1 pt-0.5">
+                  socio
+                </span>
               </span>
-              <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 pt-0.5">
-                para que tu éxito sea inevitable.
+              <span className="block text-[#031638]">
+                seremos tu mejor{" "}
+                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-1 pt-0.5">
+                  aliado
+                </span>
               </span>
             </h2>
-            <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-left max-w-2xl">
-              Soluciones integrales, tecnología confiable y acompañamiento real en cada etapa de tu negocio.
-            </p>
-          </motion.div>
-
-          {/* LADO DERECHO: TEXTO A LA ALTURA DEL TÍTULO EN MONTSERRAT LIGHT */}
-          <motion.div
-            {...slideInRight(0.04, "Agua que impulsa grandes historias")}
-            className="flex items-center gap-2.5 sm:gap-3 shrink-0 self-start lg:mt-7 xl:mt-8"
-          >
-            <div className="w-[2px] h-6 sm:h-7 bg-gradient-to-b from-[#288EB9] to-[#1DB3BA] rounded-full shrink-0" />
-            <p className="font-montserrat not-italic font-light text-[10px] sm:text-[11px] tracking-[0.2em] sm:tracking-[0.25em] uppercase text-[#031638] leading-tight select-none">
-              AGUA QUE IMPULSA <br />
-              GRANDES HISTORIAS
+            <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-center max-w-4xl lg:max-w-5xl xl:max-w-6xl px-1 sm:px-2">
+              Cada proyecto es único para nosotros y los resultados finales reflejan nuestra esencia como marca.
             </p>
           </motion.div>
         </div>
@@ -620,14 +615,30 @@ function VentajasSection() {
           ))}
         </div>
 
-        {/* Frase entre lineas horizontales cortas */}
-        <div className="flex items-center justify-center gap-2.5 sm:gap-4 mt-8 sm:mt-12 select-none px-4">
-          <div className="h-[1.5px] w-6 sm:w-10 bg-slate-300/80 rounded-full shrink-0" aria-hidden="true" />
-          <p className="text-slate-500 font-montserrat not-italic text-[11px] sm:text-xs md:text-[13px] font-medium tracking-wider uppercase leading-relaxed text-center">
-            MÁS QUE EQUIPOS, OPORTUNIDADES REALES.
+        {/* BLOQUE INFERIOR DEBAJO DE LAS TARJETAS */}
+        <motion.div 
+          {...slideInLeft(0.08, "Todo lo que necesitas para que tu éxito sea inevitable")}
+          className="mt-12 sm:mt-16 text-center flex flex-col items-center max-w-5xl xl:max-w-6xl w-full mx-auto px-4"
+        >
+          <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] xl:text-[38px] font-bold tracking-tight text-[#031638] font-montserrat not-italic mb-2.5 sm:mb-3 whitespace-normal md:whitespace-nowrap">
+            <span>Todo lo que necesitas </span>
+            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-1">
+              para que tu éxito sea inevitable
+            </span>
+          </h3>
+          <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-center max-w-none whitespace-normal md:whitespace-nowrap mb-8 sm:mb-10">
+            Soluciones integrales, tecnología confiable y acompañamiento real en cada etapa de tu negocio.
           </p>
-          <div className="h-[1.5px] w-6 sm:w-10 bg-slate-300/80 rounded-full shrink-0" aria-hidden="true" />
-        </div>
+
+          {/* Frase entre lineas horizontales cortas */}
+          <div className="flex items-center justify-center gap-2.5 sm:gap-4 select-none">
+            <div className="h-[1.5px] w-6 sm:w-10 bg-slate-300/80 rounded-full shrink-0" aria-hidden="true" />
+            <p className="text-slate-500 font-montserrat not-italic text-[11px] sm:text-xs md:text-[13px] font-bold tracking-widest uppercase leading-relaxed text-center">
+              CONFIANZA = RESULTADOS
+            </p>
+            <div className="h-[1.5px] w-6 sm:w-10 bg-slate-300/80 rounded-full shrink-0" aria-hidden="true" />
+          </div>
+        </motion.div>
       </div>
 
       {/* Difuminado inferior suave hacia la siguiente sección */}
@@ -714,6 +725,60 @@ const IniciaNegocio = () => {
 
   const selectedModels = modelosData.filter((m) => selected.includes(m.id));
 
+  // Estado y orden para acordeón de modelos en vista móvil
+  const [activeMobileIndex, setActiveMobileIndex] = useState(0);
+  const mobileCarouselRef = useRef(null);
+
+  const todosLosModelos = useMemo(() => {
+    const individuales = modelosData.filter((m) => !BUNDLE_IDS.has(m.id));
+    const paquetes = modelosData.filter((m) => BUNDLE_IDS.has(m.id));
+    return [...individuales, ...paquetes];
+  }, [modelosData]);
+
+  const numIndividuales = useMemo(
+    () => modelosData.filter((m) => !BUNDLE_IDS.has(m.id)).length,
+    [modelosData]
+  );
+
+  const isNivelDos = activeMobileIndex >= numIndividuales;
+
+  const handleMobileScroll = useCallback(() => {
+    if (!mobileCarouselRef.current) return;
+    const container = mobileCarouselRef.current;
+    const center = container.scrollLeft + container.offsetWidth / 2;
+    const cardNodes = container.querySelectorAll(".modelo-card-item");
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    cardNodes.forEach((node, idx) => {
+      const nodeCenter = node.offsetLeft + node.offsetWidth / 2;
+      const diff = Math.abs(center - nodeCenter);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = idx;
+      }
+    });
+    setActiveMobileIndex(closestIdx);
+  }, []);
+
+  const scrollToCard = useCallback((index) => {
+    if (!mobileCarouselRef.current) return;
+    const container = mobileCarouselRef.current;
+    const cardNodes = container.querySelectorAll(".modelo-card-item");
+    const targetCard = cardNodes[index];
+    if (targetCard) {
+      const cardCenter = targetCard.offsetLeft + targetCard.offsetWidth / 2;
+      const targetScroll = cardCenter - container.offsetWidth / 2;
+      container.scrollTo({ left: targetScroll, behavior: "smooth" });
+    }
+  }, []);
+
+  // Centrar la primera tarjeta al montar en vista móvil
+  useEffect(() => {
+    if (mobileCarouselRef.current) {
+      mobileCarouselRef.current.scrollLeft = 0;
+    }
+  }, []);
+
   return (
     <>
       <SEO
@@ -745,7 +810,7 @@ const IniciaNegocio = () => {
 
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <motion.div
-            {...slideInLeft(0, "Una historia de libertad financiera")}
+            {...slideInLeft(0, "Inicia tu libertad financiera")}
             className="text-center mb-8 sm:mb-12"
           >
             <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block">
@@ -753,7 +818,7 @@ const IniciaNegocio = () => {
             </span>
             <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight">
               <span className="block text-[#031638]">
-                Una historia de
+                Inicia Tu
               </span>
               <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
                 libertad financiera
@@ -772,7 +837,7 @@ const IniciaNegocio = () => {
               {/* TARJETA 1: VISIÓN */}
               <motion.div
                 {...slideInLeft(0.02)}
-                className="relative pt-9 pb-3.5 px-2 sm:pt-11 sm:pb-4 sm:px-2.5 max-w-[270px] w-full mx-auto rounded-[2rem] bg-white/80 border border-slate-200/90 backdrop-blur-md group hover:bg-white/95 hover:border-slate-300 transition-all text-center shadow-lg shadow-slate-900/5 flex flex-col items-center justify-between not-italic"
+                className="relative pt-10 pb-5 px-4 sm:pt-12 sm:pb-6 sm:px-5 max-w-[320px] md:max-w-none w-full mx-auto rounded-[2rem] bg-white/80 border border-slate-200/90 backdrop-blur-md group hover:bg-white/95 hover:border-slate-300 transition-all text-center shadow-lg shadow-slate-900/5 flex flex-col items-center justify-start not-italic"
               >
                 {/* Circulo flotante sin borde blanco */}
                 <div className="absolute -top-7 sm:-top-8 left-1/2 -translate-x-1/2 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-lg shadow-[#1DB3BA]/30 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -781,21 +846,19 @@ const IniciaNegocio = () => {
 
                 {/* Contenido centrado con Montserrat */}
                 <div className="flex flex-col items-center text-center w-full">
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#031638] font-montserrat not-italic mb-1 sm:mb-1.5 tracking-tight">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#031638] font-montserrat not-italic mb-2 sm:mb-2.5 tracking-tight">
                     Visión
                   </h3>
-                  <div className="text-slate-600 text-xs sm:text-sm font-normal leading-relaxed text-center space-y-0.5 font-montserrat not-italic">
-                    <p>Transformas tu capital inicial</p>
-                    <p>en un activo inteligente</p>
-                    <p>que no descansa.</p>
-                  </div>
+                  <p className="text-slate-600 text-xs sm:text-[13px] font-normal leading-relaxed text-center font-montserrat not-italic">
+                    Crear una comunidad de emprendedores que ofrezcan productos de alto valor y excelente calidad, impulsando la rentabilidad de sus negocios mediante la innovación y un servicio excepcional.
+                  </p>
                 </div>
               </motion.div>
 
               {/* TARJETA 2: OPERACIÓN */}
               <motion.div
                 {...slideInLeft(0.04)}
-                className="relative pt-9 pb-3.5 px-2 sm:pt-11 sm:pb-4 sm:px-2.5 max-w-[270px] w-full mx-auto rounded-[2rem] bg-white/80 border border-slate-200/90 backdrop-blur-md group hover:bg-white/95 hover:border-slate-300 transition-all text-center shadow-lg shadow-slate-900/5 flex flex-col items-center justify-between not-italic"
+                className="relative pt-10 pb-5 px-4 sm:pt-12 sm:pb-6 sm:px-5 max-w-[320px] md:max-w-none w-full mx-auto rounded-[2rem] bg-white/80 border border-slate-200/90 backdrop-blur-md group hover:bg-white/95 hover:border-slate-300 transition-all text-center shadow-lg shadow-slate-900/5 flex flex-col items-center justify-start not-italic"
               >
                 {/* Circulo flotante sin borde blanco */}
                 <div className="absolute -top-7 sm:-top-8 left-1/2 -translate-x-1/2 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-lg shadow-[#1DB3BA]/30 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -804,21 +867,19 @@ const IniciaNegocio = () => {
 
                 {/* Contenido centrado con Montserrat */}
                 <div className="flex flex-col items-center text-center w-full">
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#031638] font-montserrat not-italic mb-1 sm:mb-1.5 tracking-tight">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#031638] font-montserrat not-italic mb-2 sm:mb-2.5 tracking-tight">
                     Operación
                   </h3>
-                  <div className="text-slate-600 text-xs sm:text-sm font-normal leading-relaxed text-center space-y-0.5 font-montserrat not-italic">
-                    <p>Tecnología 24/7 trabajando</p>
-                    <p>para ti mientras disfrutas</p>
-                    <p>de lo que importa.</p>
-                  </div>
+                  <p className="text-slate-600 text-xs sm:text-[13px] font-normal leading-relaxed text-center font-montserrat not-italic">
+                    Te acompañamos en cada etapa de tu emprendimiento, desde la elección del local ideal hasta la selección y configuración de tu modelo de negocio, con instalación profesional y capacitación especializada.
+                  </p>
                 </div>
               </motion.div>
 
               {/* TARJETA 3: RESULTADO */}
               <motion.div
                 {...slideInLeft(0.06)}
-                className="relative pt-9 pb-3.5 px-2 sm:pt-11 sm:pb-4 sm:px-2.5 max-w-[270px] w-full mx-auto rounded-[2rem] bg-white/80 border border-slate-200/90 backdrop-blur-md group hover:bg-white/95 hover:border-slate-300 transition-all text-center shadow-lg shadow-slate-900/5 flex flex-col items-center justify-between not-italic"
+                className="relative pt-10 pb-5 px-4 sm:pt-12 sm:pb-6 sm:px-5 max-w-[320px] md:max-w-none w-full mx-auto rounded-[2rem] bg-white/80 border border-slate-200/90 backdrop-blur-md group hover:bg-white/95 hover:border-slate-300 transition-all text-center shadow-lg shadow-slate-900/5 flex flex-col items-center justify-start not-italic"
               >
                 {/* Circulo flotante sin borde blanco */}
                 <div className="absolute -top-7 sm:-top-8 left-1/2 -translate-x-1/2 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-lg shadow-[#1DB3BA]/30 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -827,14 +888,12 @@ const IniciaNegocio = () => {
 
                 {/* Contenido centrado con Montserrat */}
                 <div className="flex flex-col items-center text-center w-full">
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#031638] font-montserrat not-italic mb-1 sm:mb-1.5 tracking-tight">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#031638] font-montserrat not-italic mb-2 sm:mb-2.5 tracking-tight">
                     Resultado
                   </h3>
-                  <div className="text-slate-600 text-xs sm:text-sm font-normal leading-relaxed text-center space-y-0.5 font-montserrat not-italic">
-                    <p>Recuperas tu inversión</p>
-                    <p>y escalas tu negocio</p>
-                    <p>a nuevos niveles.</p>
-                  </div>
+                  <p className="text-slate-600 text-xs sm:text-[13px] font-normal leading-relaxed text-center font-montserrat not-italic">
+                    Genera ingresos diarios y recupera tu inversión a corto plazo con un negocio fácil de operar. Brinda seguridad y confianza a tus clientes con el respaldo y la calidad de Darmax Agua.
+                  </p>
                 </div>
               </motion.div>
             </div>
@@ -884,19 +943,18 @@ const IniciaNegocio = () => {
           >
             <div className="max-w-4xl flex flex-col items-center">
               <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 sm:mb-2.5 block">
-                Diseña tu futuro
+                TU PRÓXIMO ÉXITO SE VE ASÍ
               </span>
-              <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-4 sm:mb-6 text-center">
-                <span className="block text-[#031638]">
-                  Elige la escala de tu
+              <h2 className="font-montserrat not-italic text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.2] sm:leading-tight mb-4 sm:mb-6 text-center">
+                <span className="block text-[#031638] pb-1">
+                  Elige tu futuro
                 </span>
-                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
-                  próximo éxito
+                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 sm:pb-3 pt-0.5">
+                  configura tu negocio
                 </span>
               </h2>
-              <div className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-center space-y-1 mb-4 sm:mb-6">
-                <p>Desde una solución hasta un modelo premium.</p>
-                <p>Todo diseñado para crecer contigo.</p>
+              <div className="text-slate-600 font-montserrat not-italic text-sm sm:text-base md:text-lg font-normal leading-relaxed text-center mb-4 sm:mb-6 max-w-2xl">
+                <p>Desde modelos de negocio totalmente automáticos hasta modelos híbridos para generar más ingresos.</p>
               </div>
               <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-2 sm:mt-4">
                 <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-blue-50/80 rounded-xl border border-blue-200 shadow-sm">
@@ -948,72 +1006,175 @@ const IniciaNegocio = () => {
             </motion.div>
           )}
 
-          {/* GRUPO 1: INICIO */}
-          <div className="mb-12 sm:mb-20">
-            <motion.div
-              {...slideInRight(0.08)}
-              className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
-            >
-              <div className="shrink-0">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] font-montserrat not-italic">Nivel 01</span>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-montserrat not-italic">Individuales</h3>
+          {/* ========================================================
+              VISTA MÓVIL: FORMATO ACORDEÓN HORIZONTAL CON HEADER DINÁMICO
+             ======================================================== */}
+          <div className="block sm:hidden mb-12">
+            {/* Header dinámico: cambia de Nivel 01 a Nivel 02 según la tarjeta activa */}
+            <div className="flex items-center justify-between gap-3 mb-2 px-1">
+              <div className="shrink-0 transition-all duration-300">
+                <span 
+                  className={`text-xs font-bold uppercase tracking-[0.2em] font-montserrat not-italic transition-colors duration-300 block ${
+                    isNivelDos ? "text-[#168387]" : "text-slate-400"
+                  }`}
+                >
+                  {isNivelDos ? "Nivel 02" : "Nivel 01"}
+                </span>
+                <h3 className="text-lg font-bold text-slate-900 tracking-tight font-montserrat not-italic transition-all duration-300">
+                  {isNivelDos ? "Paquetes de Negocio" : "Individuales"}
+                </h3>
               </div>
-              <div className="h-px w-full bg-slate-200" />
-            </motion.div>
+              <div 
+                className={`h-px flex-1 transition-colors duration-300 ${
+                  isNivelDos ? "bg-[#168387]/30" : "bg-slate-200"
+                }`} 
+              />
+              <span className="text-[10.5px] font-semibold text-slate-400 tracking-wider shrink-0 font-montserrat not-italic">
+                {activeMobileIndex + 1}/{todosLosModelos.length}
+              </span>
+            </div>
 
-            <motion.div 
-              variants={gridContainerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.05 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+            {/* Contenedor acordeón de tarjetas con snap y peeking */}
+            <div 
+              ref={mobileCarouselRef}
+              onScroll={handleMobileScroll}
+              className="flex gap-3.5 overflow-x-auto snap-x snap-mandatory scroll-smooth pt-7 pb-4 -mx-4 px-0 no-scrollbar items-center"
+              style={{
+                WebkitOverflowScrolling: "touch",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none"
+              }}
             >
-              {modelosData
-                .filter((m) => !BUNDLE_IDS.has(m.id))
-                .map((modelo) => (
-                  <TarjetaModelo
-                    key={modelo.id}
-                    modelo={modelo}
-                    navigate={navigate}
-                    isSelected={selected.includes(modelo.id)}
-                    onToggleSelect={toggleSelect}
+              {/* Espaciador inicial para centrar la primera tarjeta */}
+              <div 
+                className="shrink-0 pointer-events-none" 
+                style={{ width: "calc(50vw - 149px)" }} 
+                aria-hidden="true" 
+              />
+
+              {todosLosModelos.map((modelo, idx) => {
+                const isActive = activeMobileIndex === idx;
+                return (
+                  <div 
+                    key={modelo.id} 
+                    className={`modelo-card-item snap-center shrink-0 w-[270px] transition-all duration-300 ${
+                      isActive ? "scale-100 opacity-100" : "scale-[0.96] opacity-85"
+                    }`}
+                  >
+                    <TarjetaModelo
+                      modelo={modelo}
+                      navigate={navigate}
+                      isSelected={selected.includes(modelo.id)}
+                      onToggleSelect={toggleSelect}
+                      isCompact={true}
+                    />
+                  </div>
+                );
+              })}
+
+              {/* Espaciador final para centrar la última tarjeta */}
+              <div 
+                className="shrink-0 pointer-events-none" 
+                style={{ width: "calc(50vw - 149px)" }} 
+                aria-hidden="true" 
+              />
+            </div>
+
+            {/* Indicadores de posición */}
+            <div className="flex items-center justify-center gap-1.5 mt-4">
+              {todosLosModelos.map((m, idx) => {
+                const isActive = activeMobileIndex === idx;
+                const isBundle = BUNDLE_IDS.has(m.id);
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => scrollToCard(idx)}
+                    aria-label={`Ver modelo ${m.nombre}`}
+                    className={`transition-all duration-300 rounded-full cursor-pointer ${
+                      isActive
+                        ? isBundle
+                          ? "w-6 h-2 bg-[#168387]"
+                          : "w-6 h-2 bg-slate-800"
+                        : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
+                    }`}
                   />
-                ))}
-            </motion.div>
+                );
+              })}
+            </div>
           </div>
 
-          {/* GRUPO 2: ESCALA */}
-          <div className="mb-16 sm:mb-24">
-            <motion.div
-              {...slideInRight(0.08)}
-              className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
-            >
-              <div className="shrink-0">
-                <span className="text-xs font-bold text-[#168387] uppercase tracking-[0.2em] sm:tracking-[0.3em] font-montserrat not-italic">Nivel 02</span>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-montserrat not-italic">Paquetes de Negocio</h3>
-              </div>
-              <div className="h-px w-full bg-[#168387]/20" />
-            </motion.div>
+          {/* ========================================================
+              VISTA ESCRITORIO / TABLET: 2 GRUPOS EN GRID CLÁSICO
+             ======================================================== */}
+          <div className="hidden sm:block">
+            {/* GRUPO 1: INICIO */}
+            <div className="mb-12 sm:mb-20">
+              <motion.div
+                {...slideInRight(0.08)}
+                className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
+              >
+                <div className="shrink-0">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] font-montserrat not-italic">Nivel 01</span>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-montserrat not-italic">Individuales</h3>
+                </div>
+                <div className="h-px w-full bg-slate-200" />
+              </motion.div>
 
-            <motion.div 
-              variants={gridContainerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.05 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
-            >
-              {modelosData
-                .filter((m) => BUNDLE_IDS.has(m.id))
-                .map((modelo) => (
-                  <TarjetaModelo
-                    key={modelo.id}
-                    modelo={modelo}
-                    navigate={navigate}
-                    isSelected={selected.includes(modelo.id)}
-                    onToggleSelect={toggleSelect}
-                  />
-                ))}
-            </motion.div>
+              <motion.div 
+                variants={gridContainerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.05 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+              >
+                {modelosData
+                  .filter((m) => !BUNDLE_IDS.has(m.id))
+                  .map((modelo) => (
+                    <TarjetaModelo
+                      key={modelo.id}
+                      modelo={modelo}
+                      navigate={navigate}
+                      isSelected={selected.includes(modelo.id)}
+                      onToggleSelect={toggleSelect}
+                    />
+                  ))}
+              </motion.div>
+            </div>
+
+            {/* GRUPO 2: ESCALA */}
+            <div className="mb-16 sm:mb-24">
+              <motion.div
+                {...slideInRight(0.08)}
+                className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
+              >
+                <div className="shrink-0">
+                  <span className="text-xs font-bold text-[#168387] uppercase tracking-[0.2em] sm:tracking-[0.3em] font-montserrat not-italic">Nivel 02</span>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-montserrat not-italic">Paquetes de Negocio</h3>
+                </div>
+                <div className="h-px w-full bg-[#168387]/20" />
+              </motion.div>
+
+              <motion.div 
+                variants={gridContainerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.05 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+              >
+                {modelosData
+                  .filter((m) => BUNDLE_IDS.has(m.id))
+                  .map((modelo) => (
+                    <TarjetaModelo
+                      key={modelo.id}
+                      modelo={modelo}
+                      navigate={navigate}
+                      isSelected={selected.includes(modelo.id)}
+                      onToggleSelect={toggleSelect}
+                    />
+                  ))}
+              </motion.div>
+            </div>
           </div>
 
           {/* BARRA DE BENEFICIOS Y VALOR INCLUIDO */}
@@ -1104,19 +1265,21 @@ const IniciaNegocio = () => {
               {/* TÍTULO Y SUBTÍTULO */}
               <div className="flex flex-col items-start text-left mb-7 sm:mb-9 lg:mb-8">
                 <span className="text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-sm uppercase mb-2 block font-montserrat not-italic">
-                  Ingeniería de Precisión
+                  ÚNICOS EN EL MERCADO
                 </span>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[44px] xl:text-[50px] font-bold tracking-tight leading-[1.12] mb-3.5 sm:mb-4 font-montserrat not-italic text-left overflow-visible">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[44px] xl:text-[50px] font-bold tracking-tight leading-[1.14] mb-3.5 sm:mb-4 font-montserrat not-italic text-left overflow-visible">
                   <span className="block text-[#031638]">
-                    La nueva generación de
+                    Invierte en una
                   </span>
-                  <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 pt-0.5">
-                    purificación inteligente
+                  <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent block whitespace-nowrap pb-1 pt-0.5">
+                    Máquina Premium
+                  </span>
+                  <span className="block text-[#031638]">
+                    y sé diferente al resto
                   </span>
                 </h2>
                 <p className="text-slate-600 text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-xl text-left font-montserrat not-italic">
-                  Cada detalle pensado para impulsar un negocio <br />
-                  que nunca se detiene.
+                  Conoce los beneficios e innovación detrás de cada máquina. Darmax Agua fabrica sus propios gabinetes y ensambla sus propias tarjetas.
                 </p>
               </div>
 
@@ -1125,17 +1288,17 @@ const IniciaNegocio = () => {
                 {[
                   { 
                     t: "Diseño Industrial", 
-                    d: "Acero inoxidable y grado alimenticio para máxima durabilidad.",
+                    d: "Fabricacion completa en acero inoxidable 304 cortado a laser y pulido.",
                     icon: Droplet 
                   },
                   { 
                     t: "Cerebro Inteligente", 
-                    d: "Sistema inteligente que monitorea ventas y niveles en tiempo real.",
+                    d: "Nuestra tarjeta cuenta con animaciones, instrucciones de llenado y bocina que guia al cliente en su proceso de compra.",
                     icon: CpuChipIcon 
                   },
                   { 
                     t: "Interfaz de Usuario", 
-                    d: "Experiencia táctil intuitiva que garantiza la recompra de clientes.",
+                    d: "Diseñado para ser facil de operar, cuenta con contador de ingresos, conteo de garrafones y diagnostico de fallas.",
                     icon: UserIcon 
                   }
                 ].map((item, i) => (
