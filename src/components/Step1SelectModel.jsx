@@ -97,7 +97,6 @@ export default function Step1SelectModel({ modelos, vendingType, categoryId, onS
       {/* NOTA IMPORTANTE PARA VENDING: DUREZA EN PPM (EXPANDIBLE EN HOVER O CLIC) */}
       {isVending && (
         <motion.div
-          layout
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35 }}
@@ -188,8 +187,6 @@ export default function Step1SelectModel({ modelos, vendingType, categoryId, onS
           return (
             <motion.div
               key={item.slug}
-              layout
-              transition={{ layout: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } }}
               variants={itemVariants}
               whileHover={{ x: 5 }}
               whileTap={{ scale: 0.99 }}
@@ -217,7 +214,7 @@ export default function Step1SelectModel({ modelos, vendingType, categoryId, onS
 
                   {/* Reemplazo dinamico de descripcion en hover o toque movil */}
                   <div className="w-full relative">
-                    <AnimatePresence initial={false} mode="popLayout">
+                    <AnimatePresence initial={false}>
                       {isExpanded ? (
                         <motion.div
                           key={hasOsmosis ? "osmosis" : "six-processes"}
@@ -254,13 +251,13 @@ export default function Step1SelectModel({ modelos, vendingType, categoryId, onS
                     </AnimatePresence>
                   </div>
 
-                  {/* Boton tactil exclusivo para movil en modelos con informacion de purificacion */}
+                  {/* Boton tactil para movil e indicador en desktop */}
                   {hasDynamicText && (
-                    <div className="mt-2.5 sm:hidden">
+                    <div className="mt-2.5">
                       <button
                         type="button"
                         onClick={(e) => toggleMobileOsmosis(e, item.slug)}
-                        className={`inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all active:scale-95 ${
+                        className={`sm:hidden inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all active:scale-95 ${
                           isMobileExpanded
                             ? "bg-[#168387] text-white shadow-sm"
                             : "bg-[#168387]/10 text-[#168387] border border-[#168387]/20"
@@ -269,10 +266,15 @@ export default function Step1SelectModel({ modelos, vendingType, categoryId, onS
                         <InformationCircleIcon className="w-3.5 h-3.5 shrink-0" />
                         <span>
                           {hasOsmosis
-                            ? (isMobileExpanded ? "Ocultar detalle de ósmosis" : "¿Qué incluye la ósmosis?")
-                            : (isMobileExpanded ? "Ocultar procesos" : "¿Cuántos procesos incluye?")}
+                            ? (isMobileExpanded ? "Ocultar detalle de ósmosis" : "¿Qué incluye la ósmosis? (Pulse aquí)")
+                            : (isMobileExpanded ? "Ocultar procesos" : "¿Cuántos procesos incluye? (Pulse aquí)")}
                         </span>
                       </button>
+
+                      <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-slate-400 group-hover:text-[#168387] transition-colors font-medium">
+                        <InformationCircleIcon className="w-3.5 h-3.5 shrink-0 text-[#168387]/70" />
+                        <span>Pasa el cursor para ver procesos</span>
+                      </span>
                     </div>
                   )}
                 </div>

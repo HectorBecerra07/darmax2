@@ -260,13 +260,9 @@ export default function WizardGeneral() {
   }
 
   const stepVariants = {
-    initial: { opacity: 0, x: 20 },
-    animate: { 
-      opacity: 1, 
-      x: 0,
-      transitionEnd: { x: "none" } // Elimina el transform al terminar para no romper el sticky
-    },
-    exit: { opacity: 0, x: -20 },
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
   };
 
   return (
@@ -311,7 +307,7 @@ export default function WizardGeneral() {
 
             {step === 1 && (
               <>
-                <div className="w-full lg:sticky lg:top-28 space-y-3">
+                <div className="w-full lg:sticky lg:top-28 lg:self-start space-y-3">
                   <CarouselImages images={landingImages} />
 
                   {/* Botón para conocer más sobre ósmosis inversa */}
@@ -333,11 +329,19 @@ export default function WizardGeneral() {
                             <SparklesIcon className="w-5 h-5" />
                           </div>
                           <div className="text-left min-w-0">
-                            <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#168387] transition-colors">
-                              ¿Quieres conocer más sobre ósmosis inversa?
-                            </p>
+                            <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                              <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#168387] transition-colors">
+                                ¿Quieres conocer más sobre ósmosis inversa?
+                              </p>
+                              <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#168387]/10 text-[#168387] border border-[#168387]/20 group-hover:bg-[#168387] group-hover:text-white transition-colors shrink-0">
+                                <span className="sm:hidden">Pulse aquí</span>
+                                <span className="hidden sm:inline">Da clic aquí</span>
+                              </span>
+                            </div>
                             <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium block truncate">
-                              Descubre cómo funciona y por qué es el estándar de oro en purificación
+                              <span className="sm:hidden font-semibold text-[#168387]">Pulse aquí</span>
+                              <span className="hidden sm:inline font-semibold text-[#168387]">Da clic aquí</span>
+                              {" "}para descubrir cómo funciona y por qué es el estándar de oro en purificación
                             </span>
                           </div>
                         </div>
@@ -363,7 +367,7 @@ export default function WizardGeneral() {
             {/* Paso 2 para NO-Vending: Detalles del modelo */}
             {id !== "Vending" && step === 2 && selectedModel && (
               <>
-                <div className="w-full lg:sticky lg:top-28 space-y-3">
+                <div className="w-full lg:sticky lg:top-28 lg:self-start space-y-3">
                   <CarouselImages
                     images={selectedModel.images
                       .filter(img => img.context === 'CAROUSEL' && img.url)
@@ -391,11 +395,19 @@ export default function WizardGeneral() {
                             <SparklesIcon className="w-5 h-5" />
                           </div>
                           <div className="text-left min-w-0">
-                            <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#168387] transition-colors">
-                              ¿Quieres conocer más sobre ósmosis inversa?
-                            </p>
+                            <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                              <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#168387] transition-colors">
+                                ¿Quieres conocer más sobre ósmosis inversa?
+                              </p>
+                              <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#168387]/10 text-[#168387] border border-[#168387]/20 group-hover:bg-[#168387] group-hover:text-white transition-colors shrink-0">
+                                <span className="sm:hidden">Pulse aquí</span>
+                                <span className="hidden sm:inline">Da clic aquí</span>
+                              </span>
+                            </div>
                             <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium block truncate">
-                              Descubre cómo funciona y por qué es el estándar de oro en purificación
+                              <span className="sm:hidden font-semibold text-[#168387]">Pulse aquí</span>
+                              <span className="hidden sm:inline font-semibold text-[#168387]">Da clic aquí</span>
+                              {" "}para descubrir cómo funciona y por qué es el estándar de oro en purificación
                             </span>
                           </div>
                         </div>

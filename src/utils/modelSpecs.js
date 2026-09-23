@@ -12,9 +12,9 @@ export const MODEL_SPECS = {
     ],
     requirements: [
       { title: "Espacio", desc: "Área mínima sugerida de 12 m²." },
-      { title: "Muro de Empotre", desc: "Levantamiento de muro de 80.5 x 80.5 cm." },
-      { title: "Electricidad", desc: "Línea 127V con tierra y regulador." },
-      { title: "Hidráulico", desc: "Toma de agua de red y drenaje de 2\"." },
+      { title: "Muro de Empotre", desc: "Medida de empotre a (81 x 81 cm) a la altura de 90 cm." },
+      { title: "Electricidad", desc: "Contactos a 127v y regulador de voltaje." },
+      { title: "Hidráulico", desc: "Drenaje con reducción a ¾ y toma directa de la red dentro del local." },
     ],
     note: "El precio no incluye obra civil (muro), adecuaciones hidráulicas/eléctricas del local, ni fletes/viáticos fuera de la zona metropolitana."
   },
@@ -30,9 +30,9 @@ export const MODEL_SPECS = {
     ],
     requirements: [
       { title: "Espacio", desc: "Área mínima sugerida de 12 m²." },
-      { title: "Muro de Empotre", desc: "Levantamiento de muro de 80.5 x 80.5 cm." },
-      { title: "Electricidad", desc: "Línea 127V con tierra y regulador." },
-      { title: "Hidráulico", desc: "Toma de agua de red y drenaje de 2\"." },
+      { title: "Muro de Empotre", desc: "Medida de empotre a (81 x 81 cm) a la altura de 90 cm." },
+      { title: "Electricidad", desc: "Contactos a 127v y regulador de voltaje." },
+      { title: "Hidráulico", desc: "Drenaje con reducción a ¾ y toma directa de la red dentro del local." },
     ],
     note: "El precio no incluye obra civil (muro), adecuaciones hidráulicas/eléctricas del local, ni fletes/viáticos fuera de la zona metropolitana."
   },
@@ -48,9 +48,9 @@ export const MODEL_SPECS = {
     ],
     requirements: [
       { title: "Espacio", desc: "Área mínima sugerida de 12 m²." },
-      { title: "Muro de Empotre", desc: "Levantamiento de muro de 80.5 x 80.5 cm." },
-      { title: "Electricidad", desc: "Línea 127V con tierra y regulador." },
-      { title: "Hidráulico", desc: "Toma de agua de red y drenaje de 2\"." },
+      { title: "Muro de Empotre", desc: "Medida de empotre a (81 x 81 cm) a la altura de 90 cm." },
+      { title: "Electricidad", desc: "Contactos a 127v y regulador de voltaje." },
+      { title: "Hidráulico", desc: "Drenaje con reducción a ¾ y toma directa de la red dentro del local." },
     ],
     note: "El precio no incluye obra civil (muro), adecuaciones hidráulicas/eléctricas del local, ni fletes/viáticos fuera de la zona metropolitana."
   },
@@ -66,9 +66,9 @@ export const MODEL_SPECS = {
     ],
     requirements: [
       { title: "Espacio", desc: "Área mínima sugerida de 12 m²." },
-      { title: "Muro de Empotre", desc: "Levantamiento de muro de 80.5 x 80.5 cm." },
-      { title: "Electricidad", desc: "Línea 127V con tierra y regulador." },
-      { title: "Hidráulico", desc: "Toma de agua de red y drenaje de 2\"." },
+      { title: "Muro de Empotre", desc: "Medida de empotre a (81 x 81 cm) a la altura de 90 cm." },
+      { title: "Electricidad", desc: "Contactos a 127v y regulador de voltaje." },
+      { title: "Hidráulico", desc: "Drenaje con reducción a ¾ y toma directa de la red dentro del local." },
     ],
     note: "El precio no incluye obra civil (muro), adecuaciones hidráulicas/eléctricas del local, ni fletes/viáticos fuera de la zona metropolitana."
   },

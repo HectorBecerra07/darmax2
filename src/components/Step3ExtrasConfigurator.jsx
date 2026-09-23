@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { optimizeCloudinaryUrl } from "../utils/cloudinary";
+import FormattedDescription from "../utils/formatDescription";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,7 +19,16 @@ export default function Step3ExtrasConfigurator({
   const [modelData, setModelData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [seleccionados, setSeleccionados] = useState([]);
-  const [openAccordion, setOpenAccordion] = useState("otros");
+  const [openSections, setOpenSections] = useState(["otros"]);
+  const [activeView, setActiveView] = useState("primary");
+
+  const toggleSection = (sectionId) => {
+    setOpenSections((prev) =>
+      prev.includes(sectionId)
+        ? prev.filter((id) => id !== sectionId)
+        : [...prev, sectionId]
+    );
+  };
 
   useEffect(() => {
     const fetchModelDetails = async () => {
@@ -206,6 +216,10 @@ export default function Step3ExtrasConfigurator({
     return image;
   }, [modelData, hasAguaAlcalina, getRelevantImage, isMostrador, displayImageSrc]);
 
+  useEffect(() => {
+    setActiveView("primary");
+  }, [displayImageSrc]);
+
   const currentDisplayString = useMemo(() => {
     if (!modelData) return "Cargando...";
     const baseText = `Configuración base de ${modelData.name}`;
@@ -217,21 +231,64 @@ export default function Step3ExtrasConfigurator({
     return `${baseText} + ${parts.join(" + ")}`;
   }, [seleccionados, modelData, extras]);
 
-  const tinacoExtras = extras.filter((me) => me.extra?.isTinaco);
-  const alcalinaExtra = extras.find((me) => me.extra?.code === "agua-alcalina");
-  const otherExtras = extras.filter(
-    (me) => !me.extra?.isTinaco && me.extra?.code !== "agua-alcalina"
+  const getExtraPriority = (modelExtra) => {
+    const extraCode = modelExtra.extra?.code?.toLowerCase() || "";
+    const extraName = modelExtra.extra?.name?.toLowerCase() || "";
+
+    // 1. Indispensable (Violeta)
+    if (
+      extraCode.includes("aviso") ||
+      extraCode.includes("funcionamiento") ||
+      extraName.includes("aviso") ||
+      extraName.includes("funcionamiento")
+    ) {
+      return 1;
+    }
+
+    // 2. Altamente Recomendado (Ámbar)
+    if (
+      extraCode.includes("insumo") ||
+      (extraName.includes("insumo") && (extraName.includes("anual") || extraName.includes("kit"))) ||
+      extraCode.includes("pipa") ||
+      extraName.includes("pipa")
+    ) {
+      return 2;
+    }
+
+    // 3. Recomendado (Turquesa)
+    if (
+      extraCode === "agua-alcalina" ||
+      extraName.includes("alcalina")
+    ) {
+      return 3;
+    }
+
+    // 4. Opcional (Esmeralda)
+    if (
+      extraCode.includes("seguro") ||
+      extraName.includes("seguro") ||
+      extraCode.includes("mantenimiento") ||
+      extraName.includes("mantenimiento")
+    ) {
+      return 4;
+    }
+
+    // 5. Demás adicionales estándar
+    return 5;
+  };
+
+  const tinacoExtras = useMemo(
+    () => extras.filter((me) => me.extra?.isTinaco),
+    [extras]
   );
 
-  const estaDeshabilitado = (modelExtra) => {
-    if (!modelExtra?.extra?.isTinaco) return false;
+  const adicionalesExtras = useMemo(() => {
+    const items = extras.filter((me) => !me.extra?.isTinaco);
+    return [...items].sort((a, b) => getExtraPriority(a) - getExtraPriority(b));
+  }, [extras]);
 
-    const hayTinacoSeleccionado = seleccionados.some((id) => {
-      const selectedMe = extras.find((me) => me.id === id);
-      return selectedMe?.extra?.isTinaco;
-    });
-
-    return hayTinacoSeleccionado && !seleccionados.includes(modelExtra.id);
+  const estaDeshabilitado = (_modelExtra) => {
+    return false;
   };
 
   const toggleExtra = (modelExtraId) => {
@@ -273,36 +330,175 @@ export default function Step3ExtrasConfigurator({
     if (onChange && buildPayload) onChange(buildPayload);
   }, [onChange, buildPayload]);
 
-  const renderExtraItem = (modelExtra) => (
-    <li
-      key={modelExtra.id}
-      className={`list-none border rounded-lg p-4 cursor-pointer transition shadow-md ${
-        seleccionados.includes(modelExtra.id)
-          ? "border-gray-900 bg-gray-50"
-          : "border-gray-300 hover:border-gray-500"
-      } ${estaDeshabilitado(modelExtra) ? "opacity-50 cursor-not-allowed" : ""}`}
-      onClick={() => {
-        if (!estaDeshabilitado(modelExtra)) toggleExtra(modelExtra.id);
-      }}
-    >
-      <div className="flex justify-between items-center gap-4">
-        <div className="min-w-0">
-          <p className="font-medium text-gray-800 break-words">{modelExtra.extra?.name}</p>
-          <p className="text-gray-500 text-sm">{modelExtra.extra?.description}</p>
-          <p className="text-sm font-bold text-gray-700">
-            ${(modelExtra.priceOverride ?? modelExtra.extra?.basePrice ?? 0).toLocaleString()} MXN
-          </p>
+  const renderExtraItem = (modelExtra) => {
+    const isSelected = seleccionados.includes(modelExtra.id);
+    const disabled = estaDeshabilitado(modelExtra);
+    const extraCode = modelExtra.extra?.code?.toLowerCase() || "";
+    const extraName = modelExtra.extra?.name?.toLowerCase() || "";
+
+    const isAlcalina =
+      extraCode === "agua-alcalina" ||
+      extraName.includes("alcalina");
+
+    const isAltamenteRecomendado =
+      extraCode.includes("insumo") ||
+      (extraName.includes("insumo") && (extraName.includes("anual") || extraName.includes("kit"))) ||
+      extraCode.includes("pipa") ||
+      extraName.includes("pipa");
+
+    const isAviso =
+      extraCode.includes("aviso") ||
+      extraCode.includes("funcionamiento") ||
+      extraName.includes("aviso") ||
+      extraName.includes("funcionamiento");
+
+    const isOpcional =
+      extraCode.includes("seguro") ||
+      extraName.includes("seguro") ||
+      extraCode.includes("mantenimiento") ||
+      extraName.includes("mantenimiento");
+
+    const isTinaco = Boolean(modelExtra.extra?.isTinaco);
+
+    let containerClasses = "border-gray-200 hover:border-gray-400 bg-white";
+    if (isAlcalina) {
+      containerClasses = isSelected
+        ? "bg-gradient-to-r from-[#288EB9]/20 via-[#1DB3BA]/20 to-teal-50/80 border-[#168387] shadow-md shadow-[#168387]/15 ring-1 ring-[#168387]"
+        : "bg-gradient-to-r from-[#288EB9]/10 via-[#1DB3BA]/10 to-teal-50/40 border-[#1DB3BA]/40 hover:border-[#1DB3BA] hover:shadow-md";
+    } else if (isAltamenteRecomendado) {
+      containerClasses = isSelected
+        ? "bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-50/90 border-amber-500 shadow-md shadow-amber-500/15 ring-1 ring-amber-500"
+        : "bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-50/40 border-amber-300/60 hover:border-amber-400 hover:shadow-md";
+    } else if (isAviso) {
+      containerClasses = isSelected
+        ? "bg-gradient-to-r from-violet-600/20 via-indigo-600/20 to-purple-50/90 border-violet-600 shadow-md shadow-violet-600/15 ring-1 ring-violet-600"
+        : "bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-purple-50/40 border-violet-300/60 hover:border-violet-400 hover:shadow-md";
+    } else if (isOpcional) {
+      containerClasses = isSelected
+        ? "bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-50/90 border-emerald-600 shadow-md shadow-emerald-500/15 ring-1 ring-emerald-600"
+        : "bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-50/40 border-emerald-300/60 hover:border-emerald-400 hover:shadow-md";
+    } else if (isTinaco && isSelected) {
+      containerClasses = "border-[#168387] bg-teal-50/50 shadow-sm ring-1 ring-[#168387]";
+    } else if (isSelected) {
+      containerClasses = "border-gray-900 bg-gray-50 shadow-md";
+    }
+
+    return (
+      <li
+        key={modelExtra.id}
+        className={`list-none relative overflow-hidden border rounded-xl p-4 cursor-pointer transition-all duration-300 shadow-sm ${containerClasses} ${
+          disabled ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+        onClick={() => {
+          if (!disabled) toggleExtra(modelExtra.id);
+        }}
+      >
+        {/* Difuminado suave decorativo exclusivo para Agua Alcalina */}
+        {isAlcalina && (
+          <>
+            <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-[#288EB9]/25 to-[#1DB3BA]/30 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -left-6 -top-6 w-24 h-24 bg-[#1DB3BA]/20 rounded-full blur-xl pointer-events-none" />
+          </>
+        )}
+
+        {/* Difuminado suave decorativo exclusivo para Altamente Recomendado (Insumos Anuales y Toma de pipa) */}
+        {isAltamenteRecomendado && (
+          <>
+            <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-amber-400/25 to-orange-500/25 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -left-6 -top-6 w-24 h-24 bg-amber-400/20 rounded-full blur-xl pointer-events-none" />
+          </>
+        )}
+
+        {/* Difuminado suave decorativo exclusivo para Aviso de Funcionamiento */}
+        {isAviso && (
+          <>
+            <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-violet-500/25 to-indigo-600/25 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -left-6 -top-6 w-24 h-24 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
+          </>
+        )}
+
+        {/* Difuminado suave decorativo exclusivo para Opcional (Seguro y Plan de Mantenimiento) */}
+        {isOpcional && (
+          <>
+            <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-emerald-400/25 to-teal-500/25 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -left-6 -top-6 w-24 h-24 bg-emerald-400/20 rounded-full blur-xl pointer-events-none" />
+          </>
+        )}
+
+        <div className="relative z-10 flex justify-between items-center gap-4">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p
+                className={`font-semibold break-words ${
+                  isAlcalina || isAltamenteRecomendado || isAviso || isOpcional ? "text-[#031638] font-bold" : "text-gray-800"
+                }`}
+              >
+                {modelExtra.extra?.name}
+              </p>
+              {isAlcalina && (
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-xs">
+                  Recomendado
+                </span>
+              )}
+              {isAltamenteRecomendado && (
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xs">
+                  Altamente Recomendado
+                </span>
+              )}
+              {isAviso && (
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-xs">
+                  Indispensable
+                </span>
+              )}
+              {isOpcional && (
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-xs">
+                  Opcional
+                </span>
+              )}
+            </div>
+            {!isSelected && (
+              <FormattedDescription text={modelExtra.extra?.description} className="mt-1" />
+            )}
+            <p
+              className={`text-sm font-bold mt-1 ${
+                isAlcalina
+                  ? "text-[#168387]"
+                  : isAltamenteRecomendado
+                  ? "text-amber-700"
+                  : isAviso
+                  ? "text-violet-700"
+                  : isOpcional
+                  ? "text-emerald-700"
+                  : "text-gray-700"
+              }`}
+            >
+              ${(modelExtra.priceOverride ?? modelExtra.extra?.basePrice ?? 0).toLocaleString()} MXN
+            </p>
+          </div>
+          <input
+            type={isTinaco ? "radio" : "checkbox"}
+            name={isTinaco ? "tinaco-selector" : undefined}
+            checked={isSelected}
+            readOnly
+            disabled={disabled}
+            className={`w-5 h-5 shrink-0 ${
+              isTinaco
+                ? "accent-[#168387]"
+                : isAlcalina
+                ? "accent-[#168387]"
+                : isAltamenteRecomendado
+                ? "accent-amber-600"
+                : isAviso
+                ? "accent-violet-600"
+                : isOpcional
+                ? "accent-emerald-600"
+                : "accent-black"
+            }`}
+          />
         </div>
-        <input
-          type="checkbox"
-          checked={seleccionados.includes(modelExtra.id)}
-          readOnly
-          disabled={estaDeshabilitado(modelExtra)}
-          className="w-5 h-5 accent-black shrink-0"
-        />
-      </div>
-    </li>
-  );
+      </li>
+    );
+  };
 
   if (loading || !modelData) {
     return (
@@ -319,52 +515,70 @@ export default function Step3ExtrasConfigurator({
       {/* Panel de Vista Previa: FIXED en Móvil, STICKY en Desktop */}
       {hasAnyPreview && (
         <div className="
-          fixed top-[72px] left-0 right-0 z-40 bg-slate-50 border-b border-cyan-500/20 px-4 pt-2 pb-4 shadow-md
-          lg:static lg:w-[40%] lg:sticky lg:top-24 lg:bg-transparent lg:border-none lg:p-0 lg:m-0 lg:shadow-none
+          fixed top-[72px] left-0 right-0 z-40 bg-slate-50 border-b border-cyan-500/20 px-4 pt-2 pb-3 shadow-md
+          lg:static lg:w-[40%] lg:sticky lg:top-24 lg:self-start lg:bg-transparent lg:border-none lg:p-0 lg:m-0 lg:shadow-none
         ">
-          <div className="flex flex-col gap-3 max-w-7xl mx-auto">
-            {displayImageSrc && (
-              <div className="bg-white border-2 border-[#24d4da]/30 rounded-2xl p-2 lg:p-4 shadow-sm lg:shadow-xl overflow-hidden">
-                <div className="h-32 sm:h-56 lg:h-auto lg:aspect-video w-full overflow-hidden rounded-xl bg-slate-50/50 flex items-center justify-center">
-                  <motion.img
-                    key={displayImageSrc}
-                    initial={{ scale: 0.95, opacity: 0.8 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    src={optimizeCloudinaryUrl(displayImageSrc, 800)}
-                    alt={`Imagen de ${modelData.name}`}
-                    className="max-h-full w-auto object-contain"
-                    loading="lazy"
-                    decoding="async"
-                  />
+          <div className="flex flex-col gap-2.5 max-w-7xl mx-auto">
+            {/* Contenedor de Imagen única (reactiva con switch) */}
+            <div className="bg-white border-2 border-[#24d4da]/30 rounded-2xl p-2 lg:p-3 shadow-sm lg:shadow-xl overflow-hidden relative">
+              {/* Barra superior con switch para alternar vistas si existen ambas */}
+              {Boolean(displayImageSrc && secondaryImageSrc) && (
+                <div className="flex items-center justify-between gap-2 mb-2 px-1">
+                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
+                    {activeView === "primary" ? "Configuración actual" : "Vista complementaria"}
+                  </span>
+                  <div className="inline-flex items-center p-0.5 bg-slate-100 rounded-lg border border-slate-200 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setActiveView("primary")}
+                      className={`px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-bold rounded-md transition-all duration-200 cursor-pointer ${
+                        activeView === "primary"
+                          ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-xs"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
+                    >
+                      Principal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveView("secondary")}
+                      className={`px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-bold rounded-md transition-all duration-200 cursor-pointer ${
+                        activeView === "secondary"
+                          ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-xs"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
+                    >
+                      Adicional
+                    </button>
+                  </div>
                 </div>
+              )}
+
+              <div className="h-32 sm:h-56 lg:h-auto lg:aspect-video w-full overflow-hidden rounded-xl bg-slate-50/50 flex items-center justify-center">
+                <motion.img
+                  key={activeView === "secondary" && secondaryImageSrc ? secondaryImageSrc : displayImageSrc}
+                  initial={{ scale: 0.96, opacity: 0.85 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.25 }}
+                  src={optimizeCloudinaryUrl(
+                    activeView === "secondary" && secondaryImageSrc ? secondaryImageSrc : displayImageSrc,
+                    800
+                  )}
+                  alt={`Imagen de ${modelData.name}`}
+                  className="max-h-full w-auto object-contain"
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
-            )}
+            </div>
 
             {/* Configuración actual (solo visible si hay espacio o en desktop) */}
-            <div className="hidden sm:block bg-[#168387]/5 border border-[#168387]/10 rounded-xl p-3">
+            <div className="hidden sm:block bg-[#168387]/5 border border-[#168387]/10 rounded-xl p-2.5">
               <p className="text-[10px] sm:text-xs font-bold text-[#168387] leading-tight">
                 <span className="font-black uppercase tracking-wider block mb-1 opacity-60 text-[8px]">Modelo actual:</span>
                 {currentDisplayString}
               </p>
             </div>
-
-            {/* Imagen secundaria solo visible en Desktop */}
-            {secondaryImageSrc && (
-              <div className="hidden lg:block bg-white border border-slate-100 rounded-2xl p-4 shadow-lg">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">
-                  Vista Adicional
-                </span>
-                <div className="aspect-video w-full overflow-hidden rounded-xl bg-slate-50/50 flex items-center justify-center">
-                  <img
-                    src={optimizeCloudinaryUrl(secondaryImageSrc, 800)}
-                    alt="Imagen secundaria"
-                    className="max-h-full w-auto object-contain"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
@@ -379,9 +593,9 @@ export default function Step3ExtrasConfigurator({
             Personalización
           </span>
           <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight text-[#031638] mb-2">
-            Extras{" "}
+            Añade extras{" "}
             <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
-              Opcionales
+              adicionales
             </span>
           </h2>
           <p className="text-slate-600 font-montserrat not-italic text-xs sm:text-sm md:text-base font-normal leading-relaxed">
@@ -391,35 +605,41 @@ export default function Step3ExtrasConfigurator({
 
         {/* Los extras fluyen con el scroll normal de la página en móvil, interno en desktop */}
         <div className="space-y-2 mb-8 lg:flex-1 lg:overflow-y-auto lg:pr-2 lg:max-h-[calc(100vh-280px)] scrollbar-thin">
-          {alcalinaExtra && renderExtraItem(alcalinaExtra)}
-
           {[
-            { id: "tinacos", title: "Tinacos (Almacenamiento)", items: tinacoExtras },
-            { id: "otros", title: "Otros Componentes", items: otherExtras }
-          ].map((section) => (
-            section.items.length > 0 && (
-              <div key={section.id} className="border border-slate-100 rounded-xl overflow-hidden bg-white shadow-sm">
-                <button
-                  onClick={() => setOpenAccordion(openAccordion === section.id ? null : section.id)}
-                  className="w-full flex justify-between items-center p-3 sm:p-4 hover:bg-slate-50 transition-colors"
-                >
-                  <span className="text-[9px] sm:text-xs font-black text-slate-700 uppercase tracking-[0.2em]">
-                    {section.title}
-                  </span>
-                  <div className={`p-1 rounded-md transition-all ${openAccordion === section.id ? 'bg-[#168387] text-white rotate-180' : 'bg-slate-100 text-slate-400'}`}>
-                    <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </button>
-                {openAccordion === section.id && (
-                  <ul className="p-2 space-y-2 border-t border-slate-50">
-                    {section.items.map(renderExtraItem)}
-                  </ul>
-                )}
-              </div>
-            )
-          ))}
+            { id: "otros", title: "Adicionales", items: adicionalesExtras },
+            { id: "tinacos", title: "Tinacos (Almacenamiento)", items: tinacoExtras }
+          ].map((section) => {
+            const isOpen = openSections.includes(section.id);
+            return (
+              section.items.length > 0 && (
+                <div key={section.id} className="border border-slate-100 rounded-xl overflow-hidden bg-white shadow-sm">
+                  <button
+                    onClick={() => toggleSection(section.id)}
+                    className="w-full flex justify-between items-center p-3 sm:p-4 hover:bg-slate-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] sm:text-xs font-black text-slate-700 uppercase tracking-[0.2em]">
+                        {section.title}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-semibold px-2 py-0.5 rounded-full bg-slate-100">
+                        {section.items.length}
+                      </span>
+                    </div>
+                    <div className={`p-1 rounded-md transition-all ${isOpen ? 'bg-[#168387] text-white rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                      <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </button>
+                  {isOpen && (
+                    <ul className="p-2 space-y-2 border-t border-slate-50">
+                      {section.items.map(renderExtraItem)}
+                    </ul>
+                  )}
+                </div>
+              )
+            );
+          })}
         </div>
 
         {/* Footer Actions: Siempre visible al final */}

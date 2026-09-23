@@ -321,25 +321,25 @@ const Footer = () => {
       </div>
 
       {/* BARRA INFERIOR ADICIONAL (#0f172a, adaptada a móvil y escritorio) */}
-      <div className="w-full bg-[#0f172a] py-5 sm:py-7 px-5 sm:px-8 lg:px-12 border-t border-white/10 font-montserrat not-italic">
+      <div className="w-full bg-[#0f172a] py-5 sm:py-7 px-3 sm:px-8 lg:px-12 border-t border-white/10 font-montserrat not-italic overflow-hidden">
         <div className="max-w-screen-2xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-5 text-[10px] sm:text-[11px] font-light leading-relaxed">
           
-          {/* Métodos de pago en una sola línea en móvil y desktop */}
-          <div className="flex flex-row items-center justify-center gap-1.5 min-[360px]:gap-2 sm:gap-4 text-white font-light order-1 md:order-3 w-full md:w-auto flex-nowrap whitespace-nowrap overflow-x-auto sm:overflow-visible py-0.5">
-            <span className="text-[7.5px] min-[360px]:text-[8.5px] min-[390px]:text-[9px] sm:text-[11px] font-medium uppercase tracking-[0.14em] sm:tracking-[0.16em] text-white/80 shrink-0">
+          {/* Métodos de pago en una sola línea compacta sin generar scroll horizontal */}
+          <div className="flex flex-row items-center justify-center gap-1 min-[360px]:gap-1.5 sm:gap-4 text-white font-light order-1 md:order-3 w-full md:w-auto flex-nowrap whitespace-nowrap overflow-hidden py-0.5">
+            <span className="text-[7px] min-[360px]:text-[7.5px] min-[390px]:text-[8.5px] sm:text-[11px] font-medium uppercase tracking-[0.1em] sm:tracking-[0.16em] text-white/80 shrink-0">
               MÉTODOS DE PAGO:
             </span>
-            <div className="flex items-center gap-1 min-[360px]:gap-1.5 sm:gap-3.5 flex-nowrap shrink-0">
-              <span className="inline-flex items-center gap-1 min-[360px]:gap-1.5 text-[7.5px] min-[360px]:text-[8.5px] min-[390px]:text-[9.5px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-1.5 min-[360px]:px-2 py-0.5 sm:p-0 rounded-md sm:rounded-none border border-white/10 sm:border-0 shrink-0">
-                <BanknotesIcon className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-white shrink-0" />
+            <div className="flex items-center gap-1 min-[360px]:gap-1.5 sm:gap-3 flex-nowrap shrink-0">
+              <span className="inline-flex items-center gap-0.5 min-[360px]:gap-1 text-[7px] min-[360px]:text-[7.5px] min-[390px]:text-[8.5px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-1 min-[360px]:px-1.5 py-0.5 sm:p-0 rounded-md sm:rounded-none border border-white/10 sm:border-0 shrink-0">
+                <BanknotesIcon className="w-2.5 h-2.5 min-[380px]:w-3 min-[380px]:h-3 sm:w-5 sm:h-5 text-white shrink-0" />
                 <span>Efectivo</span>
               </span>
-              <span className="inline-flex items-center gap-1 min-[360px]:gap-1.5 text-[7.5px] min-[360px]:text-[8.5px] min-[390px]:text-[9.5px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-1.5 min-[360px]:px-2 py-0.5 sm:p-0 rounded-md sm:rounded-none border border-white/10 sm:border-0 shrink-0">
-                <ArrowsRightLeftIcon className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-white shrink-0" />
+              <span className="inline-flex items-center gap-0.5 min-[360px]:gap-1 text-[7px] min-[360px]:text-[7.5px] min-[390px]:text-[8.5px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-1 min-[360px]:px-1.5 py-0.5 sm:p-0 rounded-md sm:rounded-none border border-white/10 sm:border-0 shrink-0">
+                <ArrowsRightLeftIcon className="w-2.5 h-2.5 min-[380px]:w-3 min-[380px]:h-3 sm:w-5 sm:h-5 text-white shrink-0" />
                 <span>Transferencia</span>
               </span>
-              <span className="inline-flex items-center gap-1 min-[360px]:gap-1.5 text-[7.5px] min-[360px]:text-[8.5px] min-[390px]:text-[9.5px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-1.5 min-[360px]:px-2 py-0.5 sm:p-0 rounded-md sm:rounded-none border border-white/10 sm:border-0 shrink-0">
-                <CreditCardIcon className="w-3 h-3 min-[360px]:w-3.5 min-[360px]:h-3.5 sm:w-5 sm:h-5 text-white shrink-0" />
+              <span className="inline-flex items-center gap-0.5 min-[360px]:gap-1 text-[7px] min-[360px]:text-[7.5px] min-[390px]:text-[8.5px] sm:text-[11px] text-white bg-white/5 sm:bg-transparent px-1 min-[360px]:px-1.5 py-0.5 sm:p-0 rounded-md sm:rounded-none border border-white/10 sm:border-0 shrink-0">
+                <CreditCardIcon className="w-2.5 h-2.5 min-[380px]:w-3 min-[380px]:h-3 sm:w-5 sm:h-5 text-white shrink-0" />
                 <span>Tarjeta</span>
               </span>
             </div>

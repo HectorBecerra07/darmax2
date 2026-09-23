@@ -79,11 +79,92 @@ const TESTIMONIOS_DATA = [
   },
 ];
 
+function TestimonioCard({ testimonio, isMobile = false, isActive = false }) {
+  const IconComponent = testimonio.Icon;
+  return (
+    <div
+      className={`group relative overflow-hidden h-full p-5 sm:p-6 rounded-2xl sm:rounded-[1.5rem] bg-white flex flex-col justify-between transition-all duration-300 cursor-default min-h-[235px] sm:min-h-[235px] ${
+        isMobile
+          ? isActive
+            ? "border border-[#288EB9]/50 shadow-[0_10px_25px_rgba(40,142,185,0.18)]"
+            : "border border-slate-200/80 shadow-[0_4px_16px_rgba(0,0,0,0.05)]"
+          : "border-[0.5px] border-slate-200/80 group-hover:border-transparent hover:shadow-[0_10px_30px_rgba(40,142,185,0.18)] hover:-translate-y-1 shadow-[0_4px_20px_rgba(0,0,0,0.05)]"
+      }`}
+    >
+      {/* Marca de agua de comillas */}
+      <svg 
+        className={`absolute top-4 right-4 sm:right-5 w-12 h-12 sm:w-14 sm:h-14 transition-colors duration-500 pointer-events-none select-none z-0 ${
+          isMobile && isActive ? "text-[#288EB9]/10" : "text-slate-100/90 group-hover:text-white/10"
+        }`} 
+        fill="currentColor" 
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path d="M19.4167 6.67891C20.4469 7.77257 21.0001 9 21.0001 10.9897C21.0001 14.4891 18.5436 17.6263 14.9695 19.1768L14.0768 17.7992C17.4121 15.9946 18.0639 13.6539 18.3245 12.178C17.7875 12.4557 17.0845 12.5533 16.3954 12.4895C14.591 12.3222 13.1689 10.8409 13.1689 9C13.1689 7.067 14.7359 5.5 16.6689 5.5C17.742 5.5 18.7681 5.99045 19.4167 6.67891ZM9.41669 6.67891C10.4469 7.77257 11.0001 9 11.0001 10.9897C11.0001 14.4891 8.54359 17.6263 4.96951 19.1768L4.07682 17.7992C7.41206 15.9946 8.06392 13.6539 8.32447 12.178C7.78747 12.4557 7.08452 12.5533 6.39539 12.4895C4.59102 12.3222 3.16895 10.8409 3.16895 9C3.16895 7.067 4.73595 5.5 6.66895 5.5C7.742 5.5 8.76814 5.99045 9.41669 6.67891Z" />
+      </svg>
+
+      {/* Capa de fondo para hover en escritorio */}
+      {!isMobile && (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:20px_20px] transition-opacity duration-500 pointer-events-none z-0" />
+        </>
+      )}
+
+      <div className="relative z-10 flex flex-col flex-grow">
+        <div className="mb-3 sm:mb-3.5 pr-10 sm:pr-12">
+          <h4 className={`font-bold text-base sm:text-[17px] leading-snug transition-colors duration-500 font-montserrat not-italic truncate ${
+            isMobile ? "text-slate-900" : "text-slate-900 group-hover:text-white"
+          }`}>
+            {testimonio.name}
+          </h4>
+          <div className="flex gap-0.5 my-1 sm:my-1.5">
+            {[...Array(5)].map((_, idx) => (
+              <StarIcon key={idx} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.3)] group-hover:drop-shadow-[0_0_10px_rgba(251,191,36,0.6)] transition-all" />
+            ))}
+          </div>
+          <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider opacity-90 transition-colors duration-500 font-montserrat not-italic truncate ${
+            isMobile ? "text-[#288EB9]" : "text-[#288EB9] group-hover:text-cyan-100"
+          }`}>
+            {testimonio.role}
+          </p>
+        </div>
+
+        <p className={`font-montserrat italic text-xs sm:text-[13px] md:text-[13.5px] leading-relaxed mb-4 opacity-95 relative z-10 transition-colors duration-500 line-clamp-4 ${
+          isMobile ? "text-slate-600" : "text-slate-600 group-hover:text-white/95"
+        }`}>
+          {testimonio.text}
+        </p>
+      </div>
+
+      <div className={`mt-auto pt-3.5 sm:pt-4 border-t-2 relative z-10 transition-colors duration-500 ${
+        isMobile
+          ? isActive ? "border-[#288EB9]/25" : "border-slate-100"
+          : "border-slate-200 group-hover:border-white/30"
+      }`}>
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          <IconComponent className={`w-4 h-4 transition-colors duration-500 shrink-0 stroke-[1.8] ${
+            isMobile ? "text-[#288EB9]" : "text-[#288EB9] group-hover:text-cyan-200"
+          }`} />
+          <span className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-colors duration-500 font-montserrat not-italic truncate ${
+            isMobile ? "text-slate-500" : "text-slate-500 group-hover:text-cyan-100"
+          }`}>
+            {testimonio.badge}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function TestimoniosCarousel() {
+  // Estado para vista escritorio
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(3);
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
+
+  // Estado para vista móvil con snap táctil
+  const [activeMobileIndex, setActiveMobileIndex] = useState(0);
+  const mobileCarouselRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -116,140 +197,204 @@ export function TestimoniosCarousel() {
     }
   }, [maxIndex, currentIndex]);
 
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    const diff = touchStartX.current - touchEndX.current;
-    if (Math.abs(diff) > 40) {
-      if (diff > 0) {
-        handleNext();
-      } else {
-        handlePrev();
+  // Detección de tarjeta centrada al hacer scroll en móvil
+  const handleMobileScroll = useCallback(() => {
+    if (!mobileCarouselRef.current) return;
+    const container = mobileCarouselRef.current;
+    const center = container.scrollLeft + container.offsetWidth / 2;
+    const cardNodes = container.querySelectorAll(".testimonio-card-mobile");
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    cardNodes.forEach((node, idx) => {
+      const nodeCenter = node.offsetLeft + node.offsetWidth / 2;
+      const diff = Math.abs(center - nodeCenter);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = idx;
       }
+    });
+    setActiveMobileIndex(closestIdx);
+  }, []);
+
+  // Navegación fluida por dots en móvil
+  const scrollToCard = useCallback((index) => {
+    if (!mobileCarouselRef.current) return;
+    const container = mobileCarouselRef.current;
+    const cardNodes = container.querySelectorAll(".testimonio-card-mobile");
+    const targetCard = cardNodes[index];
+    if (targetCard) {
+      const cardCenter = targetCard.offsetLeft + targetCard.offsetWidth / 2;
+      const targetScroll = cardCenter - container.offsetWidth / 2;
+      container.scrollTo({ left: targetScroll, behavior: "smooth" });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (mobileCarouselRef.current) {
+      mobileCarouselRef.current.scrollLeft = 0;
+    }
+  }, []);
 
   return (
-    <div className="relative w-full px-2 sm:px-10 lg:px-12">
-      {/* Boton Anterior a la izquierda */}
-      <button
-        type="button"
-        onClick={handlePrev}
-        disabled={currentIndex === 0}
-        className={`absolute left-0 sm:-left-2 lg:-left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white border border-slate-200/90 shadow-lg shadow-slate-900/10 flex items-center justify-center transition-all duration-300 ${
-          currentIndex === 0
-            ? "opacity-30 cursor-not-allowed bg-slate-50/50 text-slate-300"
-            : "text-slate-700 hover:text-[#288EB9] hover:border-[#288EB9] hover:shadow-xl hover:scale-105 active:scale-95 cursor-pointer bg-white"
-        }`}
-        aria-label="Testimonios anteriores"
-      >
-        <ChevronLeftIcon className="w-5 h-5 stroke-[2.2]" />
-      </button>
+    <div className="relative w-full">
+      {/* ========================================================
+          VISTA MÓVIL: FORMATO ACORDEÓN HORIZONTAL CON SNAP Y PEAKING
+         ======================================================== */}
+      <div className="block sm:hidden">
+        {/* Header dinámico con badge y contador */}
+        <div className="flex items-center justify-between gap-3 mb-2 px-1">
+          <div className="shrink-0 transition-all duration-300">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] font-montserrat not-italic text-[#168387] block">
+              {TESTIMONIOS_DATA[activeMobileIndex]?.badge || "Experiencia"}
+            </span>
+            <h3 className="text-base font-bold text-slate-900 tracking-tight font-montserrat not-italic transition-all duration-300 truncate max-w-[200px]">
+              {TESTIMONIOS_DATA[activeMobileIndex]?.name}
+            </h3>
+          </div>
+          <div className="h-px flex-1 bg-slate-200" />
+          <span className="text-[10.5px] font-semibold text-slate-400 tracking-wider shrink-0 font-montserrat not-italic">
+            {activeMobileIndex + 1}/{TESTIMONIOS_DATA.length}
+          </span>
+        </div>
 
-      {/* Contenedor del Carrusel */}
-      <div 
-        className="overflow-hidden w-full py-6 -my-6 px-1 -mx-1"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
+        {/* Contenedor carrusel móvil */}
         <div
-          className="flex transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
+          ref={mobileCarouselRef}
+          onScroll={handleMobileScroll}
+          className="flex gap-3.5 overflow-x-auto snap-x snap-mandatory scroll-smooth pt-4 pb-4 -mx-4 px-0 no-scrollbar items-center"
           style={{
-            transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)`,
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
           }}
         >
-          {TESTIMONIOS_DATA.map((testimonio) => (
-            <div
-              key={testimonio.id}
-              className="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-2.5 sm:px-3.5"
-            >
-              <div className="group relative overflow-hidden h-full p-5 sm:p-6 rounded-2xl sm:rounded-[1.5rem] bg-white border-[0.5px] border-slate-200/80 group-hover:border-transparent flex flex-col justify-between transition-all duration-500 hover:shadow-[0_10px_30px_rgba(40,142,185,0.18)] hover:-translate-y-1 shadow-[0_4px_20px_rgba(0,0,0,0.05)] cursor-default min-h-[220px] sm:min-h-[235px]">
-                
-                {/* Marca de agua de comillas */}
-                <svg 
-                  className="absolute top-4 right-4 sm:right-5 w-12 h-12 sm:w-14 sm:h-14 text-slate-100/90 group-hover:text-white/10 transition-colors duration-500 pointer-events-none select-none z-0" 
-                  fill="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path d="M19.4167 6.67891C20.4469 7.77257 21.0001 9 21.0001 10.9897C21.0001 14.4891 18.5436 17.6263 14.9695 19.1768L14.0768 17.7992C17.4121 15.9946 18.0639 13.6539 18.3245 12.178C17.7875 12.4557 17.0845 12.5533 16.3954 12.4895C14.591 12.3222 13.1689 10.8409 13.1689 9C13.1689 7.067 14.7359 5.5 16.6689 5.5C17.742 5.5 18.7681 5.99045 19.4167 6.67891ZM9.41669 6.67891C10.4469 7.77257 11.0001 9 11.0001 10.9897C11.0001 14.4891 8.54359 17.6263 4.96951 19.1768L4.07682 17.7992C7.41206 15.9946 8.06392 13.6539 8.32447 12.178C7.78747 12.4557 7.08452 12.5533 6.39539 12.4895C4.59102 12.3222 3.16895 10.8409 3.16895 9C3.16895 7.067 4.73595 5.5 6.66895 5.5C7.742 5.5 8.76814 5.99045 9.41669 6.67891Z" />
-                </svg>
+          {/* Espaciador inicial para centrar la primera tarjeta */}
+          <div
+            className="shrink-0 pointer-events-none"
+            style={{ width: "calc(50vw - 149px)" }}
+            aria-hidden="true"
+          />
 
-                {/* Capa de fondo para hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:20px_20px] transition-opacity duration-500 pointer-events-none z-0" />
-
-                <div className="relative z-10 flex flex-col flex-grow">
-                  <div className="mb-3 sm:mb-3.5 pr-10 sm:pr-12">
-                    <h4 className="font-bold text-slate-900 group-hover:text-white text-base sm:text-[17px] leading-snug transition-colors duration-500 font-montserrat not-italic truncate">
-                      {testimonio.name}
-                    </h4>
-                    <div className="flex gap-0.5 my-1 sm:my-1.5">
-                      {[...Array(5)].map((_, idx) => (
-                        <StarIcon key={idx} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.3)] group-hover:drop-shadow-[0_0_10px_rgba(251,191,36,0.6)] transition-all" />
-                      ))}
-                    </div>
-                    <p className="text-[11px] sm:text-xs font-bold text-[#288EB9] group-hover:text-cyan-100 uppercase tracking-wider opacity-90 transition-colors duration-500 font-montserrat not-italic truncate">
-                      {testimonio.role}
-                    </p>
-                  </div>
-
-                  <p className="font-montserrat italic text-slate-600 group-hover:text-white/95 text-xs sm:text-[13px] md:text-[13.5px] leading-relaxed mb-4 opacity-95 relative z-10 transition-colors duration-500 line-clamp-4">
-                    {testimonio.text}
-                  </p>
-                </div>
-
-                <div className="mt-auto pt-3.5 sm:pt-4 border-t-2 border-slate-200 group-hover:border-white/30 relative z-10 transition-colors duration-500">
-                  <div className="flex items-center gap-2 sm:gap-2.5">
-                    <testimonio.Icon className="w-4 h-4 text-[#288EB9] group-hover:text-cyan-200 transition-colors duration-500 shrink-0 stroke-[1.8]" />
-                    <span className="text-[11px] sm:text-xs font-bold text-slate-500 group-hover:text-cyan-100 uppercase tracking-wider transition-colors duration-500 font-montserrat not-italic truncate">
-                      {testimonio.badge}
-                    </span>
-                  </div>
-                </div>
+          {TESTIMONIOS_DATA.map((testimonio, idx) => {
+            const isActive = activeMobileIndex === idx;
+            return (
+              <div
+                key={testimonio.id}
+                className={`testimonio-card-mobile snap-center shrink-0 w-[270px] transition-all duration-300 ${
+                  isActive ? "scale-100 opacity-100" : "scale-[0.96] opacity-85"
+                }`}
+              >
+                <TestimonioCard
+                  testimonio={testimonio}
+                  isMobile={true}
+                  isActive={isActive}
+                />
               </div>
-            </div>
-          ))}
+            );
+          })}
+
+          {/* Espaciador final para centrar la última tarjeta */}
+          <div
+            className="shrink-0 pointer-events-none"
+            style={{ width: "calc(50vw - 149px)" }}
+            aria-hidden="true"
+          />
+        </div>
+
+        {/* Dots interactivos para móvil */}
+        <div className="flex items-center justify-center gap-1.5 mt-3">
+          {TESTIMONIOS_DATA.map((t, idx) => {
+            const isActive = activeMobileIndex === idx;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => scrollToCard(idx)}
+                aria-label={`Ver testimonio de ${t.name}`}
+                className={`transition-all duration-300 rounded-full cursor-pointer ${
+                  isActive
+                    ? "w-6 h-2 bg-gradient-to-r from-[#288EB9] to-[#1DB3BA]"
+                    : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
+                }`}
+              />
+            );
+          })}
         </div>
       </div>
 
-      {/* Boton Siguiente a la derecha */}
-      <button
-        type="button"
-        onClick={handleNext}
-        disabled={currentIndex === maxIndex}
-        className={`absolute right-0 sm:-right-2 lg:-right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white border border-slate-200/90 shadow-lg shadow-slate-900/10 flex items-center justify-center transition-all duration-300 ${
-          currentIndex === maxIndex
-            ? "opacity-30 cursor-not-allowed bg-slate-50/50 text-slate-300"
-            : "text-slate-700 hover:text-[#288EB9] hover:border-[#288EB9] hover:shadow-xl hover:scale-105 active:scale-95 cursor-pointer bg-white"
-        }`}
-        aria-label="Siguientes testimonios"
-      >
-        <ChevronRightIcon className="w-5 h-5 stroke-[2.2]" />
-      </button>
+      {/* ========================================================
+          VISTA ESCRITORIO / TABLET: CARRUSEL MULTICOLUMNA CON FLECHAS
+         ======================================================== */}
+      <div className="hidden sm:block relative px-10 lg:px-12">
+        {/* Boton Anterior a la izquierda */}
+        <button
+          type="button"
+          onClick={handlePrev}
+          disabled={currentIndex === 0}
+          className={`absolute -left-2 lg:-left-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white border border-slate-200/90 shadow-lg shadow-slate-900/10 flex items-center justify-center transition-all duration-300 ${
+            currentIndex === 0
+              ? "opacity-30 cursor-not-allowed bg-slate-50/50 text-slate-300"
+              : "text-slate-700 hover:text-[#288EB9] hover:border-[#288EB9] hover:shadow-xl hover:scale-105 active:scale-95 cursor-pointer bg-white"
+          }`}
+          aria-label="Testimonios anteriores"
+        >
+          <ChevronLeftIcon className="w-5 h-5 stroke-[2.2]" />
+        </button>
 
-      {/* Indicadores / Dots */}
-      <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-6 sm:mt-7">
-        {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
-          <button
-            key={idx}
-            type="button"
-            onClick={() => setCurrentIndex(idx)}
-            className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-              currentIndex === idx
-                ? "w-7 bg-gradient-to-r from-[#288EB9] to-[#1DB3BA]"
-                : "w-2 bg-slate-200 hover:bg-slate-300"
-            }`}
-            aria-label={`Ir al testimonio ${idx + 1}`}
-          />
-        ))}
+        {/* Contenedor del Carrusel en Escritorio */}
+        <div className="overflow-hidden w-full py-6 -my-6 px-1 -mx-1">
+          <div
+            className="flex transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]"
+            style={{
+              transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)`,
+            }}
+          >
+            {TESTIMONIOS_DATA.map((testimonio) => (
+              <div
+                key={testimonio.id}
+                className="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-2.5 sm:px-3.5"
+              >
+                <TestimonioCard
+                  testimonio={testimonio}
+                  isMobile={false}
+                  isActive={false}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Boton Siguiente a la derecha */}
+        <button
+          type="button"
+          onClick={handleNext}
+          disabled={currentIndex === maxIndex}
+          className={`absolute -right-2 lg:-right-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white border border-slate-200/90 shadow-lg shadow-slate-900/10 flex items-center justify-center transition-all duration-300 ${
+            currentIndex === maxIndex
+              ? "opacity-30 cursor-not-allowed bg-slate-50/50 text-slate-300"
+              : "text-slate-700 hover:text-[#288EB9] hover:border-[#288EB9] hover:shadow-xl hover:scale-105 active:scale-95 cursor-pointer bg-white"
+          }`}
+          aria-label="Siguientes testimonios"
+        >
+          <ChevronRightIcon className="w-5 h-5 stroke-[2.2]" />
+        </button>
+
+        {/* Indicadores / Dots de Escritorio */}
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-6 sm:mt-7">
+          {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setCurrentIndex(idx)}
+              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                currentIndex === idx
+                  ? "w-7 bg-gradient-to-r from-[#288EB9] to-[#1DB3BA]"
+                  : "w-2 bg-slate-200 hover:bg-slate-300"
+              }`}
+              aria-label={`Ir al testimonio ${idx + 1}`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Frase entre líneas horizontales cortas */}

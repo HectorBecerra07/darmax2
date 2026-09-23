@@ -1,5 +1,6 @@
 // Archivo: Step4Summary.jsx
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
@@ -17,7 +18,9 @@ import {
   EnvelopeIcon,
   MapPinIcon,
   QrCodeIcon,
-  CheckIcon
+  CheckIcon,
+  XMarkIcon,
+  InformationCircleIcon
 } from "@heroicons/react/24/outline";
 
 const BRAND_BLUE = "#168387";
@@ -87,6 +90,50 @@ export default function Step4Summary({
   const [cotizacionResult, setCotizacionResult] = useState(null);
   const [quotaError, setQuotaError] = useState(null);
 
+  // Modal de aviso de requisitos e instalación al hacer scroll
+  const [showNoticeModal, setShowNoticeModal] = useState(false);
+  const [hasDismissedNotice, setHasDismissedNotice] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (hasDismissedNotice) return;
+      if (window.scrollY > 220) {
+        setShowNoticeModal(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasDismissedNotice]);
+
+  useEffect(() => {
+    if (showNoticeModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showNoticeModal]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && showNoticeModal) {
+        handleCloseNoticeModal();
+      }
+    };
+    if (showNoticeModal) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showNoticeModal]);
+
+  const handleCloseNoticeModal = () => {
+    setShowNoticeModal(false);
+    setHasDismissedNotice(true);
+  };
+
   // Precargar datos del usuario autenticado si existen
   useEffect(() => {
     if (user) {
@@ -108,6 +155,47 @@ export default function Step4Summary({
   const realFeatures = modelData.specs || model.features || [];
   const realRequirements = modelData.requirements || [];
   const importantNote = modelData.note || "";
+
+  // Detección de modelo Vending
+  const isVending = Boolean(
+    model?.slug?.toLowerCase().includes("vending") ||
+    model?.slug?.toLowerCase().includes("atlantis") ||
+    model?.name?.toLowerCase().includes("vending") ||
+    model?.name?.toLowerCase().includes("atlantis") ||
+    (typeof model?.category === "string" && model.category.toLowerCase().includes("vending"))
+  );
+
+  // Detección de Vending Touch Atlantis 300 Max o Vending Touch Atlantis 300
+  const normalizeText = (str) =>
+    (str || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+
+  const modelNameClean = normalizeText(model?.name);
+  const modelSlugClean = normalizeText(model?.slug);
+
+  const isTouchAtlantis =
+    modelSlugClean === "atlantistouch" ||
+    modelSlugClean === "atlantismaxtouch" ||
+    modelSlugClean.includes("atlantis-touch") ||
+    modelSlugClean.includes("atlantis-max-touch") ||
+    modelSlugClean.includes("atlantis-300-touch") ||
+    modelSlugClean.includes("atlantis-300-max-touch") ||
+    (modelNameClean.includes("atlantis") && modelNameClean.includes("touch")) ||
+    modelNameClean.includes("vending touch atlantis 300");
+
+  const specsTitle = isVending
+    ? "Características técnicas del gabinete"
+    : "Características Técnicas";
+
+  const regalosPaquete = [
+    "Materiales de instalación en PVC cedula 40 (Máximo 10 mts).",
+    "Instalación con técnico especializado y fijación de vending mediante espárragos y ángulos.",
+    "Capacitación completa. Se enseña desde como lavar los tinacos, cambiar cartuchos y hacer retro lavados con ejercicios didácticos, así mismo se proporciona acceso a los videos en un blog privado de la comunidad Darmax Agua para dudas o preguntas frecuentes.",
+    "Servicio post venta. Al firmar la hoja de conformidad se le asignara un asesor personalizado para futuros requerimientos una vez finalizada su compra.",
+  ];
 
   const toMoney = (n) =>
     (Number(n) || 0).toLocaleString("es-MX", { minimumFractionDigits: 0 });
@@ -347,11 +435,25 @@ export default function Step4Summary({
         ensureSpace(20);
         autoTable(doc, {
           startY: y,
-          head: [[{ content: "Especificaciones Técnicas", colSpan: 1 }]],
+          head: [[{ content: specsTitle, colSpan: 1 }]],
           body: realFeatures.map((f) => [f]),
           theme: "striped",
           headStyles: { fillColor: BRAND_BLUE, textColor: 255, fontStyle: "bold" },
           styles: { fontSize: 9, cellPadding: 2 },
+          margin: { left: M, right: M },
+        });
+        y = doc.lastAutoTable.finalY + 10;
+      }
+
+      if (regalosPaquete.length > 0) {
+        ensureSpace(20);
+        autoTable(doc, {
+          startY: y,
+          head: [[{ content: "Regalo incluido en el paquete", colSpan: 1 }]],
+          body: regalosPaquete.map((regalo) => [`• ${regalo}`]),
+          theme: "striped",
+          headStyles: { fillColor: "#0f766e", textColor: 255, fontStyle: "bold" },
+          styles: { fontSize: 8.5, cellPadding: 2 },
           margin: { left: M, right: M },
         });
         y = doc.lastAutoTable.finalY + 10;
@@ -468,14 +570,14 @@ export default function Step4Summary({
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto pb-8 font-montserrat not-italic">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 -mt-4 sm:-mt-6">
+    <div className="space-y-8 max-w-5xl mx-auto pt-4 sm:pt-6 lg:pt-8 pb-8 font-montserrat not-italic">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-1.5 block">
             Paso Final del Configurador
           </span>
           <h2 className="font-montserrat not-italic text-2xl sm:text-4xl font-bold tracking-tight leading-tight text-[#031638]">
-            Resumen de tu{" "}
+            Resumen de{" "}
             <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
               Configuración
             </span>
@@ -508,52 +610,74 @@ export default function Step4Summary({
           </p>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          {/* Características Técnicas / Gabinete */}
           <div className="space-y-4">
             <p className="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider">
               <span className="w-1.5 h-5 bg-[#168387] rounded-full" />
-              Características Técnicas
+              {specsTitle}
             </p>
-            <ul className="grid grid-cols-1 gap-2">
+            <ul className="grid grid-cols-1 gap-2.5">
               {realFeatures.map((c, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-slate-600 font-medium">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#24d4da] mt-1.5 shrink-0" />
-                  {c}
+                <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600 font-medium">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#24d4da] mt-2 shrink-0" />
+                  <span>{c}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="space-y-4">
-            <p className="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider">
-              <span className="w-1.5 h-5 bg-slate-900 rounded-full" />
-              Vistas de Equipo
-            </p>
-            <div className="flex gap-4">
-              {displayImage && (
-                <div className="flex-1 aspect-square bg-slate-50 rounded-2xl p-4 flex items-center justify-center border border-slate-100 hover:shadow-lg transition-shadow">
-                  <img
-                    src={optimizeCloudinaryUrl(displayImage, 600)}
-                    alt={model.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="max-w-full max-h-full object-contain drop-shadow-xl"
-                  />
-                </div>
-              )}
-              {secondaryImage && (
-                <div className="flex-1 aspect-square bg-slate-50 rounded-2xl p-4 flex items-center justify-center border border-slate-100 hover:shadow-lg transition-shadow">
-                  <img
-                    src={optimizeCloudinaryUrl(secondaryImage, 600)}
-                    alt="Componente"
-                    loading="lazy"
-                    decoding="async"
-                    className="max-w-full max-h-full object-contain drop-shadow-xl"
-                  />
-                </div>
+          {/* Columna derecha al lado de Características: Imagen secondary de la vending */}
+          <div className="p-6 bg-gradient-to-b from-slate-50/90 to-white rounded-3xl border border-slate-200/80 shadow-sm flex flex-col items-center justify-between text-center space-y-4 h-full">
+            <div className="w-full flex-1 flex items-center justify-center p-2 min-h-[260px]">
+              {(secondaryImage || displayImage) ? (
+                <img
+                  src={optimizeCloudinaryUrl(secondaryImage || displayImage, 800)}
+                  alt={model.name}
+                  loading="lazy"
+                  decoding="async"
+                  className="max-h-72 sm:max-h-80 w-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <div className="text-slate-300 text-xs italic">Vista no disponible</div>
               )}
             </div>
+
+            {/* Solo se muestra si es Vending Touch Atlantis 300 Max o Vending Touch Atlantis 300 */}
+            {isTouchAtlantis && (
+              <div className="pt-3 border-t border-slate-100 w-full space-y-1.5">
+                <p className="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
+                  Garantiza agua de calidad Premium en cada gota y marca la diferencia con la innovadora pantalla touch.
+                </p>
+                <p className="text-xs font-black text-blue-600 uppercase tracking-wider">
+                  Nuevo modelo
+                </p>
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* Regalo incluido en el paquete */}
+        <div className="p-5 sm:p-6 bg-gradient-to-br from-teal-50/70 via-white to-cyan-50/50 border border-teal-100 rounded-3xl space-y-4 shadow-sm">
+          <div className="flex items-center justify-between gap-2 border-b border-teal-100/80 pb-3">
+            <p className="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider">
+              <span className="w-1.5 h-5 bg-[#24d4da] rounded-full" />
+              Regalo incluido en el paquete:
+            </p>
+            <span className="px-2.5 py-0.5 rounded-full bg-teal-600/10 text-teal-700 text-[10px] font-black uppercase tracking-wider shrink-0">
+              100% Bonificado
+            </span>
+          </div>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {regalosPaquete.map((regalo, idx) => (
+              <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                <div className="w-4 h-4 rounded-full bg-teal-100 text-[#168387] flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckIcon className="w-2.5 h-2.5 stroke-[3]" />
+                </div>
+                <span>{regalo}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {realRequirements.length > 0 && (
@@ -568,6 +692,33 @@ export default function Step4Summary({
                   <p className="text-xs font-bold text-slate-700">{r.desc}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Vistas de Equipo: Solo vista frontal a ancho completo, sin tag */}
+        {(displayImage || secondaryImage) && (
+          <div className="pt-8 border-t border-slate-100 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <p className="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider">
+                <span className="w-1.5 h-5 bg-slate-900 rounded-full" />
+                Vistas de Equipo
+              </p>
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                Detalle y configuración visual
+              </span>
+            </div>
+
+            <div className="w-full">
+              <div className="relative group bg-slate-50/80 hover:bg-slate-50 rounded-3xl p-6 sm:p-10 flex flex-col items-center justify-center border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 w-full min-h-[320px] sm:min-h-[420px]">
+                <img
+                  src={optimizeCloudinaryUrl(displayImage || secondaryImage, 1200)}
+                  alt={model.name}
+                  loading="lazy"
+                  decoding="async"
+                  className="max-h-80 sm:max-h-[420px] w-auto object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
             </div>
           </div>
         )}
@@ -965,6 +1116,88 @@ export default function Step4Summary({
           </div>
         </div>
       )}
+
+      {/* Modal de Aviso de Requisitos e Instalación por Scroll */}
+      <AnimatePresence>
+        {showNoticeModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+            {/* Fondo backdrop oscuro con desenfoque */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={handleCloseNoticeModal}
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm cursor-pointer"
+            />
+
+            {/* Tarjeta del Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 16 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="relative w-full max-w-lg bg-white border border-slate-200 rounded-3xl shadow-2xl shadow-slate-950/25 overflow-hidden z-10 p-6 sm:p-8 text-left space-y-5"
+            >
+              {/* Botón de cierre X */}
+              <button
+                type="button"
+                onClick={handleCloseNoticeModal}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer"
+                aria-label="Cerrar aviso"
+              >
+                <XMarkIcon className="w-4 h-4" />
+              </button>
+
+              {/* Encabezado */}
+              <div className="flex items-center gap-3.5 pr-8">
+                <div className="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 flex items-center justify-center shrink-0">
+                  <InformationCircleIcon className="w-6 h-6 stroke-[2.2]" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#168387] block">
+                    Información Importante
+                  </span>
+                  <h4 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
+                    Avisos de Instalación
+                  </h4>
+                </div>
+              </div>
+
+              {/* Bloques de Recordatorio e Importante */}
+              <div className="space-y-3.5 pt-1">
+                {/* Recordatorio */}
+                <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-3">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 mt-2 shrink-0" />
+                  <p className="text-xs sm:text-sm text-amber-950 leading-relaxed font-medium">
+                    <strong className="font-bold text-amber-900 block sm:inline">Recordatorio: </strong>
+                    Antes de agendar fecha de instalación mandar evidencias de los requisitos cumplidos a un asesor.
+                  </p>
+                </div>
+
+                {/* Importante */}
+                <div className="p-4 rounded-2xl bg-cyan-50/70 border border-cyan-200/80 flex items-start gap-3">
+                  <span className="w-2 h-2 rounded-full bg-[#168387] mt-2 shrink-0" />
+                  <p className="text-xs sm:text-sm text-cyan-950 leading-relaxed font-medium">
+                    <strong className="font-bold text-[#168387] block sm:inline">Importante: </strong>
+                    En caso de instalación foránea cotizar mediante el código postal proporcionándolo a un asesor.
+                  </p>
+                </div>
+              </div>
+
+              {/* Botón de acción */}
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleCloseNoticeModal}
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#24d4da] to-[#168387] text-white text-xs font-black uppercase tracking-wider hover:opacity-95 shadow-md shadow-cyan-600/20 transition-all cursor-pointer"
+                >
+                  Entendido
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
