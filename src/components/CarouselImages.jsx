@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 
 export default function CarouselImages({ images }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -28,8 +29,10 @@ export default function CarouselImages({ images }) {
       <AnimatePresence mode="wait">
         <motion.img
           key={currentIndex}
-          src={images[currentIndex]}
+          src={optimizeCloudinaryUrl(images[currentIndex], 900)}
           alt={`Imagen ${currentIndex + 1}`}
+          loading="lazy"
+          decoding="async"
           initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}

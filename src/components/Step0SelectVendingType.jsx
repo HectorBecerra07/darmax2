@@ -174,6 +174,8 @@ export default function Step0SelectVendingType({ onSelect, availableVendingTypes
                         <img 
                           src={getVendingTypeImage(type)} 
                           alt={displayNames[type]} 
+                          loading="lazy"
+                          decoding="async"
                           className="max-h-full w-auto object-contain drop-shadow-xl group-hover/img:scale-105 transition-transform duration-500" 
                         />
                       </div>

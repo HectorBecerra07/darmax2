@@ -5,6 +5,7 @@ import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
 import { MODEL_SPECS } from "../utils/modelSpecs";
 import { useUser } from "../context/UserContext";
+import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 import {
   DocumentTextIcon,
   CheckBadgeIcon,
@@ -531,12 +532,24 @@ export default function Step4Summary({
             <div className="flex gap-4">
               {displayImage && (
                 <div className="flex-1 aspect-square bg-slate-50 rounded-2xl p-4 flex items-center justify-center border border-slate-100 hover:shadow-lg transition-shadow">
-                  <img src={displayImage} alt={model.name} className="max-w-full max-h-full object-contain drop-shadow-xl" />
+                  <img
+                    src={optimizeCloudinaryUrl(displayImage, 600)}
+                    alt={model.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="max-w-full max-h-full object-contain drop-shadow-xl"
+                  />
                 </div>
               )}
               {secondaryImage && (
                 <div className="flex-1 aspect-square bg-slate-50 rounded-2xl p-4 flex items-center justify-center border border-slate-100 hover:shadow-lg transition-shadow">
-                  <img src={secondaryImage} alt="Componente" className="max-w-full max-h-full object-contain drop-shadow-xl" />
+                  <img
+                    src={optimizeCloudinaryUrl(secondaryImage, 600)}
+                    alt="Componente"
+                    loading="lazy"
+                    decoding="async"
+                    className="max-w-full max-h-full object-contain drop-shadow-xl"
+                  />
                 </div>
               )}
             </div>

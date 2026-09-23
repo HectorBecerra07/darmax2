@@ -9,6 +9,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { MODEL_SPECS } from "../utils/modelSpecs";
 import { getConfiguradorModels, getCachedConfiguradorModels } from "../services/configuradorService";
+import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -176,8 +177,10 @@ const ModelCard = ({ model, onSelect, isSelected, imageType }) => {
       )}
       {imageToShow ? (
           <img
-              src={imageToShow.url}
+              src={optimizeCloudinaryUrl(imageToShow.url, 600)}
               alt={imageToShow.alt || model.name}
+              loading="lazy"
+              decoding="async"
               className="w-full h-48 object-contain rounded-lg mb-4 shadow-md"
           />
       ) : (

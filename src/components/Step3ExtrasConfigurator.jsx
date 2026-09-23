@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -329,10 +330,11 @@ export default function Step3ExtrasConfigurator({
                     key={displayImageSrc}
                     initial={{ scale: 0.95, opacity: 0.8 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    src={displayImageSrc}
+                    src={optimizeCloudinaryUrl(displayImageSrc, 800)}
                     alt={`Imagen de ${modelData.name}`}
                     className="max-h-full w-auto object-contain"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>
@@ -354,10 +356,11 @@ export default function Step3ExtrasConfigurator({
                 </span>
                 <div className="aspect-video w-full overflow-hidden rounded-xl bg-slate-50/50 flex items-center justify-center">
                   <img
-                    src={secondaryImageSrc}
+                    src={optimizeCloudinaryUrl(secondaryImageSrc, 800)}
                     alt="Imagen secundaria"
                     className="max-h-full w-auto object-contain"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               </div>

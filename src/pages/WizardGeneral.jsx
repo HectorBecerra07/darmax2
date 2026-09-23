@@ -12,6 +12,7 @@ import CarouselImages from "../components/CarouselImages";
 import Breadcrumbs from "../components/Breadcrumbs";
 import toast from "react-hot-toast";
 import { getConfiguradorModels, getCachedConfiguradorModels } from "../services/configuradorService";
+import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 
 const VendingTypeEnum = {
   TRADICIONAL: 'TRADICIONAL',
@@ -160,7 +161,7 @@ export default function WizardGeneral() {
   const landingImages = useMemo(() => {
     if (loadingModels) return [];
     let images = modelos.flatMap((m) =>
-      (m.images || []).filter((img) => img.context === "CAROUSEL" && img.url).map((img) => img.url)
+      (m.images || []).filter((img) => img.context === "CAROUSEL" && img.url).map((img) => optimizeCloudinaryUrl(img.url, 900))
     );
     return [...new Set(images.filter((url) => url && url.trim() !== ""))];
   }, [modelos, loadingModels]);
@@ -235,19 +236,19 @@ export default function WizardGeneral() {
 
     if (model && model.images && model.images.length > 0) {
       const secondaryImg = model.images.find((img) => img.isSecondary && img.url);
-      if (secondaryImg) return secondaryImg.url;
+      if (secondaryImg) return optimizeCloudinaryUrl(secondaryImg.url, 700);
 
       const carouselImg = model.images.find((img) => img.context === "CAROUSEL" && img.url);
-      if (carouselImg) return carouselImg.url;
+      if (carouselImg) return optimizeCloudinaryUrl(carouselImg.url, 700);
 
       const baseImg = model.images.find((img) => img.url);
-      if (baseImg) return baseImg.url;
+      if (baseImg) return optimizeCloudinaryUrl(baseImg.url, 700);
     }
 
     if (type === VendingTypeEnum.TOUCH) {
-      return "https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/1touch_heazvd.png";
+      return optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/1touch_heazvd.png", 700);
     }
-    return "https://res.cloudinary.com/defkuaytw/image/upload/v1776397327/tradicional_atlantis_hbnrfy.png";
+    return optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776397327/tradicional_atlantis_hbnrfy.png", 700);
   };
 
   if (loadingModels) {
@@ -366,7 +367,7 @@ export default function WizardGeneral() {
                   <CarouselImages
                     images={selectedModel.images
                       .filter(img => img.context === 'CAROUSEL' && img.url)
-                      .map(img => img.url)
+                      .map(img => optimizeCloudinaryUrl(img.url, 900))
                       .filter(url => url && url.trim() !== "")
                     }
                   />
