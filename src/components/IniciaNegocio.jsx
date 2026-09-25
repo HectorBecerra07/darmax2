@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { motion, useInView, animate } from "framer-motion";
 import Parallax from "parallax-js";
 import SEO from "../components/SEO";
@@ -510,23 +510,20 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
           </div>
 
           <div className={`flex flex-col ${isCompact ? "gap-1.5" : "gap-2.5"} w-full items-center`}>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate(configurePath)}
+            <Link
+              to={configurePath}
               className={`inline-flex items-center justify-center gap-1.5 w-full ${isCompact ? "max-w-[240px] h-9 text-xs" : "max-w-[260px] sm:max-w-[270px] h-11 sm:h-11 text-xs sm:text-[13px]"} px-5 rounded-2xl bg-slate-900 text-white font-bold uppercase tracking-wider hover:bg-[#168387] shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-[#168387]/20 transition-all duration-300 font-montserrat not-italic group/btn cursor-pointer`}
             >
               <span>Configurar</span>
               <ArrowRightIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2] group-hover/btn:translate-x-0.5 transition-transform" />
-            </motion.button>
+            </Link>
 
-            <button
-              type="button"
-              onClick={() => navigate(modelo.rutaInfo)}
+            <Link
+              to={modelo.rutaInfo}
               className="inline-flex items-center justify-center py-1 text-slate-500 hover:text-[#168387] text-xs font-semibold tracking-wider uppercase underline underline-offset-4 decoration-slate-300 hover:decoration-[#168387] transition-all font-montserrat not-italic cursor-pointer"
             >
               <span>Conoce más</span>
-            </button>
+            </Link>
           </div>
         </div>
       </div>

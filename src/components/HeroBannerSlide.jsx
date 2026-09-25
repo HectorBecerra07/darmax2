@@ -124,9 +124,9 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
 
 
       {/* CONTENIDO PRINCIPAL ESTÁTICO (Sin movimiento parallax en las imágenes ni texto) */}
-      <div className="relative z-20 w-full h-full max-w-7xl 2xl:max-w-[1440px] mx-auto px-2.5 min-[380px]:px-4 sm:px-10 lg:px-16 flex flex-col lg:flex-row items-center justify-start lg:justify-between gap-5 [@media(min-height:750px)]:gap-7 [@media(min-height:850px)]:gap-9 sm:gap-8 lg:gap-8 pt-[92px] [@media(min-height:750px)]:pt-[98px] [@media(min-height:850px)]:pt-[106px] sm:pt-28 lg:pt-0 pb-28 sm:pb-28 lg:pb-[6vh] pointer-events-none">
-        {/* COLUMNA IZQUIERDA: TEXTOS Y CTA */}
-        <div className="w-full lg:w-1/2 pointer-events-auto lg:pl-6 xl:pl-8 2xl:pl-10">
+      <div className="relative z-20 w-full h-full max-w-7xl 2xl:max-w-[1420px] mx-auto px-4 sm:px-8 lg:px-10 2xl:px-8 flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-6 sm:gap-8 lg:gap-8 pt-[92px] sm:pt-28 lg:pt-0 pb-28 sm:pb-28 lg:pb-0 pointer-events-none">
+        {/* COLUMNA IZQUIERDA: TEXTOS Y CTA (50% exacto) */}
+        <div className="w-full lg:w-1/2 pointer-events-auto lg:pl-6 xl:pl-8 2xl:pl-12">
           <motion.div style={{ y: textY, opacity: textOpacity }} className="text-center lg:text-left flex flex-col items-center lg:items-start">
             
             {/* CONTROL DE CARRUSEL: SWITCH DE MODO */}
@@ -184,7 +184,7 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                     : "Limpieza Disponible 24/7"}
                 </p>
 
-                <h1 className="font-montserrat not-italic max-w-[360px] sm:max-w-none text-[24px] min-[380px]:text-[28px] sm:text-[36px] md:text-[42px] lg:text-[50px] xl:text-[54px] font-bold tracking-normal uppercase mb-2 sm:mb-4 text-slate-900 leading-[1.1]">
+                <h1 className="font-montserrat not-italic max-w-[360px] sm:max-w-none text-[24px] min-[380px]:text-[28px] sm:text-[36px] md:text-[42px] lg:text-[50px] xl:text-[54px] 2xl:text-[58px] font-bold tracking-normal uppercase mb-2 sm:mb-4 text-slate-900 leading-[1.1]">
                   {mode === 'agua' ? (
                     <>
                       Inicia Tu Propio <br />
@@ -201,7 +201,7 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                     </>
                   )}
                 </h1>
-                <p className="font-montserrat not-italic max-w-[275px] min-[380px]:max-w-[300px] sm:max-w-md md:max-w-lg text-slate-600 text-[13px] min-[380px]:text-sm sm:text-base md:text-lg font-normal tracking-[0.035em] mb-4 min-[380px]:mb-5 [@media(min-height:750px)]:mb-6 sm:mb-8 leading-relaxed">
+                <p className="font-montserrat not-italic max-w-[275px] min-[380px]:max-w-[300px] sm:max-w-md md:max-w-lg 2xl:max-w-xl text-slate-600 text-[13px] min-[380px]:text-sm sm:text-base md:text-lg 2xl:text-[18px] font-normal tracking-[0.035em] mb-4 min-[380px]:mb-5 [@media(min-height:750px)]:mb-6 sm:mb-8 leading-relaxed">
                   {mode === 'agua' 
                     ? "Invierte en tu futuro y genera ingresos 24/7 los 365 días del año."
                     : "Automatiza la venta de productos de limpieza con nuestra tecnología Vending Clean."}
@@ -229,9 +229,9 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
           </motion.div>
         </div>
 
-        {/* COLUMNA DERECHA: RENDERS DE MAQUINAS */}
-        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end translate-y-1 sm:translate-y-4 lg:translate-y-12 xl:translate-y-14 pointer-events-auto">
-          <div className={`w-full flex justify-center lg:justify-end transition-all duration-500 ease-in-out ${isScrolled ? 'opacity-0 scale-75 -translate-y-6' : 'opacity-100 scale-100 translate-y-0'}`}>
+        {/* COLUMNA DERECHA: RENDERS DE MAQUINAS (50% exacto) */}
+        <div className="w-full lg:w-1/2 flex justify-center items-center translate-y-1 sm:translate-y-4 lg:translate-y-4 2xl:translate-y-0 2xl:-translate-x-4 pointer-events-auto">
+          <div className={`w-full flex justify-center items-center transition-all duration-500 ease-in-out ${isScrolled ? 'opacity-0 scale-75 -translate-y-6' : 'opacity-100 scale-100 translate-y-0'}`}>
             <AnimatePresence mode="wait">
               {mode === 'agua' ? (
                 <motion.div 
@@ -250,7 +250,9 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                       transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
                       src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529494/vending_agua_f5hj2l.png", 2000)} 
                       alt="Máquina Vending de Agua Darmax"
-                      className="w-[330px] min-[380px]:w-[345px] [@media(min-height:750px)]:w-[380px] [@media(min-height:840px)]:w-[410px] max-w-[92vw] sm:w-[380px] md:w-[420px] lg:w-[490px] xl:w-[560px] 2xl:w-[620px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[72vh] object-contain drop-shadow-[0_25px_45px_rgba(0,0,0,0.28)] z-10" 
+                      fetchPriority="high"
+                      loading="eager"
+                      className="w-full max-w-[330px] min-[380px]:max-w-[345px] [@media(min-height:750px)]:max-w-[380px] [@media(min-height:840px)]:max-w-[410px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[490px] xl:max-w-[550px] 2xl:max-w-[640px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_25px_45px_rgba(0,0,0,0.28)] z-10" 
                     />
                   </div>
                 </motion.div>
@@ -271,7 +273,9 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                       transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
                       src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529494/vending_limpieza_z5u2sj.png", 2000)} 
                       alt="Máquina Vending de Productos de Limpieza Darmax Clean"
-                      className="w-[330px] min-[380px]:w-[345px] [@media(min-height:750px)]:w-[380px] [@media(min-height:840px)]:w-[410px] max-w-[92vw] sm:w-[380px] md:w-[420px] lg:w-[490px] xl:w-[560px] 2xl:w-[620px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[72vh] object-contain drop-shadow-[0_25px_45px_rgba(0,0,0,0.28)] z-10" 
+                      fetchPriority="high"
+                      loading="eager"
+                      className="w-full max-w-[330px] min-[380px]:max-w-[345px] [@media(min-height:750px)]:max-w-[380px] [@media(min-height:840px)]:max-w-[410px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[490px] xl:max-w-[550px] 2xl:max-w-[640px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_25px_45px_rgba(0,0,0,0.28)] z-10" 
                     />
                   </div>
                 </motion.div>

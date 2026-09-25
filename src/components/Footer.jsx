@@ -148,6 +148,25 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* ENLACES RÁPIDOS MÓVIL (Para navegación de usuarios e indexación de rastreadores) */}
+        <div className="mt-6 pt-5 border-t border-white/10 sm:hidden">
+          <p className="text-white font-light uppercase tracking-[0.2em] text-[9.5px] mb-3 text-center">
+            SOLUCIONES Y MODELOS
+          </p>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-[9px] font-extralight text-white/90">
+            <Link to="/vending-info" className="hover:text-[#24d4da] transition-colors">Vending de Agua</Link>
+            <Link to="/vending-limpieza-info" className="hover:text-[#24d4da] transition-colors">Vending de Limpieza</Link>
+            <Link to="/purificadora-info" className="hover:text-[#24d4da] transition-colors">Plantas Purificadoras</Link>
+            <Link to="/duo-emprendedor-info" className="hover:text-[#24d4da] transition-colors">Dúo Emprendedor</Link>
+            <Link to="/tridente-info" className="hover:text-[#24d4da] transition-colors">Paquete Tridente</Link>
+            <Link to="/megalodon-info" className="hover:text-[#24d4da] transition-colors">Paquete Megalodon</Link>
+            <Link to="/proyectos-empresariales" className="hover:text-[#24d4da] transition-colors">Proyectos Empresariales</Link>
+            <Link to="/videos" className="hover:text-[#24d4da] transition-colors">Videos y Tutoriales</Link>
+            <Link to="/nosotros" className="hover:text-[#24d4da] transition-colors">Sobre Nosotros</Link>
+            <Link to="/terminos-y-condiciones" className="hover:text-[#24d4da] transition-colors">Términos y Condiciones</Link>
+          </div>
+        </div>
+
         {/* VISTA ESCRITORIO / TABLET (sm en adelante: 6 columnas) */}
         <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr_1.2fr_0.8fr] gap-8 lg:gap-5 xl:gap-7">
           
@@ -182,13 +201,13 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Columna 2: Nuestros Servicios */}
+          {/* Columna 2: Nuestros Equipos y Paquetes */}
           <div className="sm:col-span-1 md:col-span-1 lg:col-span-1">
             <h3 className="text-white font-light uppercase tracking-[0.22em] text-[10px] sm:text-[11px]">
-              NUESTROS SERVICIOS
+              EQUIPOS Y MODELOS
             </h3>
-            <div className="w-5 h-[2px] bg-[#24d4da] mt-2 mb-5 sm:mb-6 rounded-full" />
-            <ul className="space-y-3.5 sm:space-y-4 text-[11px] sm:text-xs font-extralight sm:font-light text-white leading-relaxed">
+            <div className="w-5 h-[2px] bg-[#24d4da] mt-2 mb-4 sm:mb-5 rounded-full" />
+            <ul className="space-y-2.5 sm:space-y-3 text-[11px] sm:text-xs font-extralight sm:font-light text-white leading-relaxed">
               <li>
                 <Link to="/vending-info" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
                   Vending de Agua
@@ -205,23 +224,48 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" onClick={handleRandomBundleClick} className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
-                  Paquetes de Inversión
-                </a>
+                <Link to="/duo-emprendedor-info" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
+                  Dúo Emprendedor
+                </Link>
+              </li>
+              <li>
+                <Link to="/tridente-info" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
+                  Paquete Tridente
+                </Link>
+              </li>
+              <li>
+                <Link to="/megalodon-info" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
+                  Paquete Megalodon
+                </Link>
               </li>
             </ul>
           </div>
 
-          {/* Columna 3: Sobre Darmax */}
+          {/* Columna 3: Sobre Darmax y Soluciones */}
           <div className="sm:col-span-1 md:col-span-1 lg:col-span-1">
             <h3 className="text-white font-light uppercase tracking-[0.22em] text-[10px] sm:text-[11px]">
-              SOBRE DARMAX
+              EMPRESA Y RECURSOS
             </h3>
-            <div className="w-5 h-[2px] bg-[#24d4da] mt-2 mb-5 sm:mb-6 rounded-full" />
-            <ul className="space-y-3.5 sm:space-y-4 text-[11px] sm:text-xs font-extralight sm:font-light text-white leading-relaxed">
+            <div className="w-5 h-[2px] bg-[#24d4da] mt-2 mb-4 sm:mb-5 rounded-full" />
+            <ul className="space-y-2.5 sm:space-y-3 text-[11px] sm:text-xs font-extralight sm:font-light text-white leading-relaxed">
               <li>
                 <Link to="/nosotros" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
                   Nosotros
+                </Link>
+              </li>
+              <li>
+                <Link to="/proyectos-empresariales" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
+                  Proyectos Empresariales
+                </Link>
+              </li>
+              <li>
+                <Link to="/purificadores-caseros" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
+                  Purificadores Caseros
+                </Link>
+              </li>
+              <li>
+                <Link to="/videos" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
+                  Videos y Capacitación
                 </Link>
               </li>
               <li>
@@ -230,29 +274,14 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/contacto#faq" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
-                  Preguntas Frecuentes
-                </Link>
-              </li>
-              <li>
                 <Link to="/terminos-y-condiciones" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
-                  Términos
+                  Términos y Condiciones
                 </Link>
               </li>
               <li>
                 <Link to="/politica-de-privacidad" className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block">
-                  Privacidad
+                  Política de Privacidad
                 </Link>
-              </li>
-              <li>
-                <a
-                  href="https://policies.google.com/privacy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-[#24d4da] hover:translate-x-1 transition-all inline-block"
-                >
-                  reCAPTCHA
-                </a>
               </li>
             </ul>
           </div>
