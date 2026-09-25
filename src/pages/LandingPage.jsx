@@ -406,7 +406,7 @@ const DashboardResults = React.memo(function DashboardResults({ data }) {
           
           {/* Tarjeta de utilidad: no a lo grande en móvil sino a la mitad (w-[66%]), igual que en escritorio */}
           <div className="col-span-2 flex justify-start w-full mt-2 sm:mt-2.5">
-            <div className="w-[66%] sm:w-[68%] lg:w-[66%] sm:max-w-[328px] relative rounded-xl sm:rounded-2xl border border-[#24d4da] shadow-[0_0_12px_rgba(36,212,218,0.35)] py-2.5 px-3 sm:py-3.5 sm:px-4 flex flex-col items-center justify-center text-center font-montserrat not-italic">
+            <div className="w-[66%] sm:w-[68%] lg:w-[66%] sm:max-w-[328px] relative rounded-xl sm:rounded-2xl border-[1.5px] border-[#9cd4da] shadow-[0_0_8px_rgba(40,142,185,0.6),inset_0_0_5px_rgba(40,142,185,0.35)] py-2.5 px-3 sm:py-3.5 sm:px-4 flex flex-col items-center justify-center text-center font-montserrat not-italic">
 
               {/* SVG GARRAFON TÉCNICO (Comentado temporalmente) */}
               {/*
@@ -753,24 +753,24 @@ export default function LandingPage() {
               {...slideInRight(0, "Calcula tu rentabilidad con una proyeccion real")}
               className="w-full mb-4 sm:mb-5 flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 px-4 sm:px-0"
             >
-              <div className="flex flex-col items-start text-left flex-1 min-w-0">
-                <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-sm uppercase mb-1.5 sm:mb-2 block text-left">
+              <div className="flex flex-col items-center text-center md:items-start md:text-left flex-1 min-w-0">
+                <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-sm uppercase mb-1.5 sm:mb-2 block text-center md:text-left">
                   Proyección Financiera
                 </span>
-                <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-3xl lg:text-[34px] xl:text-[40px] font-bold tracking-tight leading-tight mb-2 sm:mb-2.5 text-left text-[#031638] whitespace-normal xl:whitespace-nowrap">
+                <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-3xl lg:text-[34px] xl:text-[40px] font-bold tracking-tight leading-tight mb-2 sm:mb-2.5 text-center md:text-left text-[#031638] whitespace-normal xl:whitespace-nowrap">
                   <span>Calcula tu </span>
                   <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
                     rentabilidad
                   </span>
                   <span> con una proyección real</span>
                 </h2>
-                <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base font-normal leading-relaxed text-left max-w-2xl">
+                <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base font-normal leading-relaxed text-center md:text-left max-w-2xl">
                   Ajusta los valores según tu negocio y descubre el potencial de tu inversión.
                 </p>
               </div>
 
-              {/* Switch de modo a la derecha: bajado para acercarlo a la calculadora */}
-              <div className="shrink-0 flex items-center justify-start md:justify-end self-start md:self-end md:translate-y-2.5 pb-0">
+              {/* Switch de modo a la derecha: centrado en movil y a la derecha en escritorio */}
+              <div className="shrink-0 flex items-center justify-center md:justify-end self-center md:self-end md:translate-y-2.5 pb-0 w-full md:w-auto">
                 <div className="flex items-center gap-1 sm:gap-2 bg-slate-900/5 backdrop-blur-md p-1 rounded-full border border-slate-200/90 shadow-sm font-montserrat not-italic">
                   <button
                     type="button"

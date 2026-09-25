@@ -349,7 +349,8 @@ import {
   BuildingStorefrontIcon,
   ShieldCheckIcon,
   CheckCircleIcon,
-  UserIcon
+  UserIcon,
+  CubeIcon
 } from "@heroicons/react/24/outline";
 import { Droplet, HandCoins, SprayCan } from "lucide-react";
 
@@ -590,23 +591,25 @@ function VentajasSection() {
             <motion.div
               key={i}
               {...slideInLeft(0.04 * (i + 1))}
-              className="group relative p-5 sm:p-6 rounded-2xl sm:rounded-[1.75rem] bg-white border-[0.5px] border-slate-200/80 hover:border-slate-300 transition-all duration-500 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-xl hover:shadow-cyan-950/10 hover:-translate-y-1.5 flex flex-col justify-between font-montserrat not-italic"
+              className="group relative p-5 sm:p-6 max-w-[320px] md:max-w-none w-full mx-auto rounded-2xl sm:rounded-[1.75rem] bg-white border-[0.5px] border-slate-200/80 hover:border-slate-300 transition-all duration-500 shadow-[0_4px_20px_rgba(0,0,0,0.05)] hover:shadow-xl hover:shadow-cyan-950/10 hover:-translate-y-1.5 flex flex-col justify-between font-montserrat not-italic"
             >
-              <div>
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-4 sm:mb-5 bg-[#E0F8F9] text-[#288EB9] group-hover:scale-105 transition-transform duration-300 shadow-xs shrink-0 font-montserrat not-italic">
-                  <p.icon className="w-7 h-7 sm:w-8 sm:h-8 stroke-[1.8]" />
+              <div className="flex flex-row-reverse items-start justify-between gap-3.5 sm:flex-col sm:gap-0 sm:justify-start w-full">
+                <div className="w-16 h-16 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-0 sm:mb-5 bg-[#E0F8F9] text-[#288EB9] group-hover:scale-105 transition-transform duration-300 shadow-xs shrink-0 font-montserrat not-italic mt-0.5 sm:mt-0">
+                  <p.icon className="w-8 h-8 sm:w-8 sm:h-8 stroke-[1.8]" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-[#031638] mb-1.5 sm:mb-2 tracking-tight font-montserrat not-italic group-hover:text-[#288EB9] transition-colors duration-300">
-                  {p.t}
-                </h3>
-                <p className="text-slate-600 text-xs sm:text-[13.5px] leading-relaxed font-normal font-montserrat not-italic">
-                  {p.d}
-                </p>
+                <div className="flex-1 text-left pr-1 sm:pr-0">
+                  <h3 className="text-[19px] sm:text-xl font-bold text-[#031638] mb-1.5 sm:mb-2 tracking-tight font-montserrat not-italic group-hover:text-[#288EB9] transition-colors duration-300 leading-tight">
+                    {p.t}
+                  </h3>
+                  <p className="text-slate-600 text-[13px] sm:text-[13.5px] leading-relaxed font-normal font-montserrat not-italic">
+                    {p.d}
+                  </p>
+                </div>
               </div>
               
-              <div className="mt-4 sm:mt-5 flex items-center gap-2 font-montserrat not-italic">
+              <div className="mt-4 sm:mt-5 flex flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-2 font-montserrat not-italic">
                 <div className="h-px w-6 sm:w-8 bg-[#288EB9]/40 group-hover:w-10 transition-all duration-300" />
-                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-[#288EB9] font-montserrat not-italic">Pilar 0{i+1}</span>
+                <span className="text-[11.5px] sm:text-xs font-bold uppercase tracking-widest text-[#288EB9] font-montserrat not-italic">Pilar 0{i+1}</span>
               </div>
             </motion.div>
           ))}
@@ -1259,12 +1262,12 @@ const IniciaNegocio = () => {
               {...slideInLeft(0.02, "Purificación Inteligente")}
               className="w-full relative z-10 lg:pr-2 flex flex-col justify-center"
             >
-              {/* TÍTULO Y SUBTÍTULO */}
-              <div className="flex flex-col items-start text-left mb-7 sm:mb-9 lg:mb-8">
-                <span className="text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-sm uppercase mb-2 block font-montserrat not-italic">
+              {/* TITULO Y SUBTITULO */}
+              <div className="flex flex-col items-center text-center sm:items-start sm:text-left mb-9 sm:mb-9 lg:mb-8">
+                <span className="text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-sm uppercase mb-2.5 sm:mb-2 block font-montserrat not-italic text-center sm:text-left">
                   ÚNICOS EN EL MERCADO
                 </span>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[44px] xl:text-[50px] font-bold tracking-tight leading-[1.14] mb-3.5 sm:mb-4 font-montserrat not-italic text-left overflow-visible">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[44px] xl:text-[50px] font-bold tracking-tight leading-[1.14] mb-4.5 sm:mb-4 font-montserrat not-italic text-center sm:text-left overflow-visible">
                   <span className="block text-[#031638]">
                     Invierte en una
                   </span>
@@ -1275,13 +1278,13 @@ const IniciaNegocio = () => {
                     y sé diferente al resto
                   </span>
                 </h2>
-                <p className="text-slate-600 text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-xl text-left font-montserrat not-italic">
+                <p className="text-slate-600 text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-xl text-center sm:text-left font-montserrat not-italic">
                   Conoce los beneficios e innovación detrás de cada máquina. Darmax Agua fabrica sus propios gabinetes y ensambla sus propias tarjetas.
                 </p>
               </div>
 
-              {/* 3 COLUMNAS DE CARACTERÍSTICAS */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-3.5 xl:gap-5">
+              {/* 3 COLUMNAS DE CARACTERISTICAS */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-3.5 xl:gap-5 px-4 sm:px-0 max-w-[340px] sm:max-w-none mx-auto">
                 {[
                   { 
                     t: "Diseño Industrial", 
@@ -1302,13 +1305,13 @@ const IniciaNegocio = () => {
                   <motion.div 
                     key={i}
                     {...slideInLeft(0.04 * (i + 1), `3D: ${item.t}`)}
-                    className="flex flex-col items-start group w-full"
+                    className="flex flex-row items-start sm:flex-col sm:items-start gap-3.5 sm:gap-0 group w-full"
                   >
-                    <div className="w-12 h-12 sm:w-[50px] sm:h-[50px] xl:w-14 xl:h-14 shrink-0 rounded-full bg-[#F0FCFF] border border-[#c4eef5] text-[#168387] flex items-center justify-center group-hover:bg-[#168387] group-hover:text-white transition-all duration-300 mb-2.5 sm:mb-3 shadow-sm group-hover:shadow-md group-hover:scale-105">
+                    <div className="w-12 h-12 sm:w-[50px] sm:h-[50px] xl:w-14 xl:h-14 shrink-0 rounded-full bg-white border border-[#c4eef5] text-[#1c79a6] flex items-center justify-center group-hover:bg-[#1c79a6] group-hover:border-[#1c79a6] group-hover:text-white transition-all duration-300 mb-0 sm:mb-2.5 xl:mb-3 shadow-sm group-hover:shadow-md group-hover:scale-105 mt-0.5 sm:mt-0">
                       <item.icon className="w-6 h-6 sm:w-6.5 sm:h-6.5 xl:w-7 xl:h-7 stroke-[1.8]" />
                     </div>
-                    <div className="w-full">
-                      <h4 className="font-bold text-[#031638] group-hover:text-[#168387] text-xs sm:text-[13.5px] xl:text-[14.5px] font-montserrat not-italic transition-colors leading-tight mb-1.5 tracking-tight">
+                    <div className="w-full text-left">
+                      <h4 className="font-bold text-[#031638] group-hover:text-[#1c79a6] text-xs sm:text-[13.5px] xl:text-[14.5px] font-montserrat not-italic transition-colors leading-tight mb-1 sm:mb-1.5 tracking-tight">
                         {item.t}
                       </h4>
                       <p className="text-slate-600 text-xs sm:text-[12.5px] leading-relaxed font-normal font-montserrat not-italic">
@@ -1327,22 +1330,20 @@ const IniciaNegocio = () => {
             >
               <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F0FCFF] border border-[#c4eef5] p-3.5 sm:p-4 shadow-xl shadow-cyan-950/5 backdrop-blur-md group w-full max-w-[580px] xl:max-w-[620px]">
                 
-                {/* Botón para alternar especificaciones (solo en tablet y escritorio) */}
-                <div className="hidden sm:block absolute top-3 sm:top-3.5 left-3.5 sm:left-5 z-20">
-                  <button
-                    type="button"
-                    onClick={() => setShowVendingSpecs((v) => !v)}
-                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 bg-white/90 hover:bg-[#168387] text-slate-700 hover:text-white rounded-lg sm:rounded-xl border border-slate-200/80 hover:border-[#168387] backdrop-blur-md shadow-sm transition-all text-[10px] font-semibold uppercase tracking-widest font-montserrat not-italic cursor-pointer"
-                  >
-                    <span>{showVendingSpecs ? "Ocultar detalles" : "Ver detalles"}</span>
-                  </button>
+                {/* Lado izquierdo: Frase en 3 líneas */}
+                <div className="absolute top-3.5 sm:top-4 left-5 sm:left-7 z-20">
+                  <div className="text-[7.5px] sm:text-[8px] font-semibold text-slate-600 uppercase tracking-widest font-montserrat not-italic leading-[1.35] text-left">
+                    <span className="block">TECNOLOGÍA</span>
+                    <span className="block">QUE GENERA</span>
+                    <span className="block">OPORTUNIDADES</span>
+                  </div>
                 </div>
 
                 {/* Badge 360° Interactiva */}
-                <div className="absolute top-3 sm:top-3.5 right-3.5 sm:right-5 z-20">
-                  <div className="flex items-center gap-2 sm:gap-2.5 px-2.5 py-1 bg-white/90 rounded-lg sm:rounded-xl border border-slate-200/80 backdrop-blur-md shadow-sm">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#168387] animate-pulse" />
-                    <span className="text-[10px] font-semibold text-slate-800 uppercase tracking-widest font-montserrat not-italic">360° Interactiva</span>
+                <div className="absolute top-3.5 sm:top-4 right-5 sm:right-7 z-20">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 bg-[#b5e0ef] rounded-full border border-[#94cbde] backdrop-blur-md shadow-sm">
+                    <CubeIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#1c79a6] stroke-[2]" />
+                    <span className="text-[8.5px] sm:text-[9px] font-semibold text-slate-800 uppercase tracking-widest font-montserrat not-italic">360° Interactiva</span>
                   </div>
                 </div>
 
@@ -1350,8 +1351,20 @@ const IniciaNegocio = () => {
                   <VendingPrecise3D showCallouts={showVendingSpecs} />
                 </div>
 
-                <div className="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-slate-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap font-montserrat not-italic pointer-events-none">
-                  Arrastra para rotar e interactuar
+                {/* Parte inferior: Boton de especificaciones y texto de interaccion */}
+                <div className="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 sm:gap-2 pointer-events-none">
+                  {/* Boton para alternar especificaciones (solo en tablet y escritorio) */}
+                  <button
+                    type="button"
+                    onClick={() => setShowVendingSpecs((v) => !v)}
+                    className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-white/95 hover:bg-[#1c79a6] text-slate-700 hover:text-white rounded-full border border-slate-200/90 hover:border-[#1c79a6] backdrop-blur-md shadow-sm hover:shadow transition-all text-[10px] font-semibold uppercase tracking-widest font-montserrat not-italic cursor-pointer pointer-events-auto"
+                  >
+                    <span>{showVendingSpecs ? "Ocultar detalles" : "Ver detalles"}</span>
+                  </button>
+
+                  <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap font-montserrat not-italic">
+                    Arrastra para rotar e interactuar
+                  </div>
                 </div>
               </div>
             </motion.div>
