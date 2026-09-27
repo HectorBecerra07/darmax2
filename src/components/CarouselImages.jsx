@@ -22,21 +22,31 @@ export default function CarouselImages({ images }) {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  if (!images || images.length === 0) return null;
+  useEffect(() => {
+    if (images && images.length > 0 && currentIndex >= images.length) {
+      setCurrentIndex(0);
+    }
+  }, [images, currentIndex]);
+
+  if (!images || images.length === 0) {
+    return (
+      <div className="relative w-full max-w-3xl h-[220px] sm:h-[300px] md:h-[400px] rounded-2xl border-2 border-[#24d4da]/20 mx-auto bg-slate-50/50 animate-pulse" />
+    );
+  }
 
   return (
     <div className="relative w-full max-w-3xl h-[220px] sm:h-[300px] md:h-[400px] overflow-hidden rounded-2xl shadow-2xl border-2 border-[#24d4da]/20 mx-auto group bg-white">
       <AnimatePresence mode="wait">
         <motion.img
-          key={currentIndex}
+          key={images[currentIndex] || currentIndex}
           src={optimizeCloudinaryUrl(images[currentIndex], 900)}
           alt={`Imagen ${currentIndex + 1}`}
-          loading="lazy"
+          loading="eager"
           decoding="async"
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.7, ease: "easeInOut" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
           className="w-full h-full object-contain bg-slate-50/30"
         />
       </AnimatePresence>

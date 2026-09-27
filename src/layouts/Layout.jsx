@@ -11,10 +11,16 @@ const Layout = ({ children }) => {
 
   // Rutas donde NO debe mostrarse el footer
   const rutasExactas = ["/videos", "/inicia-tu-negocio"];
-  const rutasDinamicas = ["/videos/:id"];
+  const rutasDinamicas = [
+    "/videos/:id",
+    "/configurar/:id",
+    "/configurar-maquina/:id",
+    "/configurar-paquete/:id",
+  ];
 
   const hideFooter =
     rutasExactas.includes(location.pathname) ||
+    location.pathname.startsWith("/configurar") ||
     rutasDinamicas.some((ruta) =>
       matchPath({ path: ruta, end: false }, location.pathname)
     );

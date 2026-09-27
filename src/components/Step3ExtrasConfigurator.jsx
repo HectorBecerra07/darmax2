@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 import FormattedDescription from "../utils/formatDescription";
@@ -8,27 +8,17 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Step3ExtrasConfigurator({
   selectedModelId,
-  onSelect,     // se usa cuando SI quieres que el propio componente “finalice”
+  onSelect,
   onNext,
   onBack,
-
-  // ✅ NUEVO
   hideFooterActions = false,
-  onChange, // (payload) => void  (se llama en cada cambio)
+  onChange,
 }) {
   const [modelData, setModelData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [seleccionados, setSeleccionados] = useState([]);
-  const [openSections, setOpenSections] = useState(["otros"]);
+  const [currentSubStepIndex, setCurrentSubStepIndex] = useState(0);
   const [activeView, setActiveView] = useState("primary");
-
-  const toggleSection = (sectionId) => {
-    setOpenSections((prev) =>
-      prev.includes(sectionId)
-        ? prev.filter((id) => id !== sectionId)
-        : [...prev, sectionId]
-    );
-  };
 
   useEffect(() => {
     const fetchModelDetails = async () => {
@@ -222,7 +212,7 @@ export default function Step3ExtrasConfigurator({
 
   const currentDisplayString = useMemo(() => {
     if (!modelData) return "Cargando...";
-    const baseText = `Configuración base de ${modelData.name}`;
+    const baseText = `Configuración de ${modelData.name}`;
 
     const selectedModelExtras = extras.filter((me) => seleccionados.includes(me.id));
     if (!selectedModelExtras.length) return baseText;
@@ -277,15 +267,117 @@ export default function Step3ExtrasConfigurator({
     return 5;
   };
 
+  const alcalinaExtra = useMemo(() => {
+    if (!extras.length) return null;
+    return extras.find((me) => {
+      const code = me.extra?.code?.toLowerCase() || "";
+      const name = me.extra?.name?.toLowerCase() || "";
+      return code === "agua-alcalina" || name.includes("alcalina");
+    });
+  }, [extras]);
+
+  const hasAlcalinaExtra = Boolean(alcalinaExtra);
+
   const tinacoExtras = useMemo(
     () => extras.filter((me) => me.extra?.isTinaco),
     [extras]
   );
 
   const adicionalesExtras = useMemo(() => {
-    const items = extras.filter((me) => !me.extra?.isTinaco);
+    const items = extras.filter(
+      (me) => !me.extra?.isTinaco && me.id !== alcalinaExtra?.id
+    );
     return [...items].sort((a, b) => getExtraPriority(a) - getExtraPriority(b));
-  }, [extras]);
+  }, [extras, alcalinaExtra]);
+
+  const subSteps = useMemo(() => {
+    const list = [];
+    if (hasAlcalinaExtra) {
+      list.push({
+        id: "agua",
+        badge: "Tipo de Agua",
+        navLabel: "Tipo de Agua",
+        titlePrefix: "Selecciona si deseas agregar",
+        titleHighlight: "otro tipo de agua",
+        subtitle: "",
+      });
+    }
+    if (tinacoExtras.length > 0) {
+      list.push({
+        id: "almacenamiento",
+        badge: "Almacenamiento",
+        navLabel: "Almacenamiento",
+        titlePrefix: "Selecciona tu",
+        titleHighlight: "almacenamiento",
+        subtitle: "Elige la capacidad de almacenamiento adecuada para tu modelo.",
+      });
+    }
+    if (adicionalesExtras.length > 0 || list.length === 0) {
+      list.push({
+        id: "adicionales",
+        badge: "Extras Adicionales",
+        navLabel: "Adicionales",
+        titlePrefix: "Añade extras",
+        titleHighlight: "adicionales",
+        subtitle: "Personaliza tu unidad con componentes y servicios de alto rendimiento.",
+      });
+    }
+    return list;
+  }, [hasAlcalinaExtra, tinacoExtras.length, adicionalesExtras.length]);
+
+  useEffect(() => {
+    if (currentSubStepIndex >= subSteps.length && subSteps.length > 0) {
+      setCurrentSubStepIndex(0);
+    }
+  }, [subSteps.length, currentSubStepIndex]);
+
+  const activeStep = subSteps[Math.min(currentSubStepIndex, Math.max(0, subSteps.length - 1))] || {
+    id: "adicionales",
+    badge: "Personalización",
+    navLabel: "Adicionales",
+    titlePrefix: "Añade extras",
+    titleHighlight: "adicionales",
+    subtitle: "Personaliza tu unidad con componentes de alto rendimiento.",
+  };
+
+  const isLastSubStep = currentSubStepIndex === subSteps.length - 1;
+
+  const scrollToTopConfigurator = () => {
+    if (typeof window === "undefined") return;
+    const isMobile = window.innerWidth < 640;
+    if (isMobile) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      const anchor = document.getElementById("extras-top-anchor");
+      if (anchor) {
+        const yOffset = -90;
+        const targetY = Math.max(0, anchor.getBoundingClientRect().top + window.pageYOffset + yOffset);
+        if (window.pageYOffset > targetY + 20) {
+          window.scrollTo({ top: targetY, behavior: "smooth" });
+        }
+      }
+    }
+  };
+
+  const handleNextSubStep = () => {
+    if (!isLastSubStep) {
+      setCurrentSubStepIndex((prev) => prev + 1);
+      scrollToTopConfigurator();
+    } else {
+      if (!buildPayload) return;
+      onSelect?.(buildPayload);
+      onNext?.();
+    }
+  };
+
+  const handlePrevSubStep = () => {
+    if (currentSubStepIndex > 0) {
+      setCurrentSubStepIndex((prev) => prev - 1);
+      scrollToTopConfigurator();
+    } else {
+      onBack?.();
+    }
+  };
 
   const estaDeshabilitado = (_modelExtra) => {
     return false;
@@ -325,7 +417,7 @@ export default function Step3ExtrasConfigurator({
     };
   }, [modelData, extras, seleccionados, displayImageSrc, secondaryImageSrc, currentDisplayString]);
 
-  // ✅ NUEVO: avisar al padre “en vivo” cuando cambie la selección
+  // Notificar al componente padre en vivo cuando cambie la seleccion
   useEffect(() => {
     if (onChange && buildPayload) onChange(buildPayload);
   }, [onChange, buildPayload]);
@@ -360,27 +452,27 @@ export default function Step3ExtrasConfigurator({
 
     const isTinaco = Boolean(modelExtra.extra?.isTinaco);
 
-    let containerClasses = "border-gray-200 hover:border-gray-400 bg-white";
+    let containerClasses = "border-gray-200 hover:border-gray-300 bg-white";
     if (isAlcalina) {
       containerClasses = isSelected
-        ? "bg-gradient-to-r from-[#288EB9]/20 via-[#1DB3BA]/20 to-teal-50/80 border-[#168387] shadow-md shadow-[#168387]/15 ring-1 ring-[#168387]"
-        : "bg-gradient-to-r from-[#288EB9]/10 via-[#1DB3BA]/10 to-teal-50/40 border-[#1DB3BA]/40 hover:border-[#1DB3BA] hover:shadow-md";
+        ? "bg-gradient-to-r from-[#288EB9]/15 via-[#1DB3BA]/10 to-teal-50/60 border-[#168387] shadow-sm ring-1 ring-[#168387]/30"
+        : "bg-gradient-to-r from-[#288EB9]/[0.04] via-[#1DB3BA]/[0.02] to-white border-[#1DB3BA]/30 hover:border-[#1DB3BA]/60 hover:bg-[#1DB3BA]/[0.04]";
     } else if (isAltamenteRecomendado) {
       containerClasses = isSelected
-        ? "bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-50/90 border-amber-500 shadow-md shadow-amber-500/15 ring-1 ring-amber-500"
-        : "bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-50/40 border-amber-300/60 hover:border-amber-400 hover:shadow-md";
+        ? "bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-50/50 border-amber-400 shadow-sm ring-1 ring-amber-400/30"
+        : "bg-gradient-to-r from-amber-500/[0.04] via-orange-500/[0.02] to-white border-amber-200/70 hover:border-amber-300 hover:bg-amber-500/[0.04]";
     } else if (isAviso) {
       containerClasses = isSelected
-        ? "bg-gradient-to-r from-violet-600/20 via-indigo-600/20 to-purple-50/90 border-violet-600 shadow-md shadow-violet-600/15 ring-1 ring-violet-600"
-        : "bg-gradient-to-r from-violet-600/10 via-indigo-600/10 to-purple-50/40 border-violet-300/60 hover:border-violet-400 hover:shadow-md";
+        ? "bg-gradient-to-r from-violet-600/15 via-indigo-600/10 to-purple-50/50 border-violet-400 shadow-sm ring-1 ring-violet-400/30"
+        : "bg-gradient-to-r from-violet-600/[0.04] via-indigo-600/[0.02] to-white border-violet-200/70 hover:border-violet-300 hover:bg-violet-600/[0.04]";
     } else if (isOpcional) {
       containerClasses = isSelected
-        ? "bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-50/90 border-emerald-600 shadow-md shadow-emerald-500/15 ring-1 ring-emerald-600"
-        : "bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-50/40 border-emerald-300/60 hover:border-emerald-400 hover:shadow-md";
+        ? "bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-50/50 border-emerald-400 shadow-sm ring-1 ring-emerald-400/30"
+        : "bg-gradient-to-r from-emerald-500/[0.04] via-teal-500/[0.02] to-white border-emerald-200/70 hover:border-emerald-300 hover:bg-emerald-500/[0.04]";
     } else if (isTinaco && isSelected) {
-      containerClasses = "border-[#168387] bg-teal-50/50 shadow-sm ring-1 ring-[#168387]";
+      containerClasses = "border-[#168387] bg-gradient-to-r from-[#168387]/15 via-teal-500/10 to-teal-50/50 shadow-sm ring-1 ring-[#168387]/30";
     } else if (isSelected) {
-      containerClasses = "border-gray-900 bg-gray-50 shadow-md";
+      containerClasses = "border-[#168387] bg-gradient-to-r from-[#168387]/15 via-[#24d4da]/10 to-teal-50/50 shadow-sm ring-1 ring-[#168387]/30";
     }
 
     return (
@@ -393,36 +485,21 @@ export default function Step3ExtrasConfigurator({
           if (!disabled) toggleExtra(modelExtra.id);
         }}
       >
-        {/* Difuminado suave decorativo exclusivo para Agua Alcalina */}
-        {isAlcalina && (
-          <>
-            <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-[#288EB9]/25 to-[#1DB3BA]/30 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -left-6 -top-6 w-24 h-24 bg-[#1DB3BA]/20 rounded-full blur-xl pointer-events-none" />
-          </>
+        {/* Difuminado suave decorativo exclusivo (solo sutil en selección) */}
+        {isAlcalina && isSelected && (
+          <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-[#288EB9]/15 to-[#1DB3BA]/15 rounded-full blur-2xl pointer-events-none" />
         )}
 
-        {/* Difuminado suave decorativo exclusivo para Altamente Recomendado (Insumos Anuales y Toma de pipa) */}
-        {isAltamenteRecomendado && (
-          <>
-            <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-amber-400/25 to-orange-500/25 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -left-6 -top-6 w-24 h-24 bg-amber-400/20 rounded-full blur-xl pointer-events-none" />
-          </>
+        {isAltamenteRecomendado && isSelected && (
+          <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-amber-400/15 to-orange-500/15 rounded-full blur-2xl pointer-events-none" />
         )}
 
-        {/* Difuminado suave decorativo exclusivo para Aviso de Funcionamiento */}
-        {isAviso && (
-          <>
-            <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-violet-500/25 to-indigo-600/25 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -left-6 -top-6 w-24 h-24 bg-purple-500/20 rounded-full blur-xl pointer-events-none" />
-          </>
+        {isAviso && isSelected && (
+          <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-violet-500/15 to-indigo-600/15 rounded-full blur-2xl pointer-events-none" />
         )}
 
-        {/* Difuminado suave decorativo exclusivo para Opcional (Seguro y Plan de Mantenimiento) */}
-        {isOpcional && (
-          <>
-            <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-emerald-400/25 to-teal-500/25 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -left-6 -top-6 w-24 h-24 bg-emerald-400/20 rounded-full blur-xl pointer-events-none" />
-          </>
+        {isOpcional && isSelected && (
+          <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-emerald-400/15 to-teal-500/15 rounded-full blur-2xl pointer-events-none" />
         )}
 
         <div className="relative z-10 flex justify-between items-center gap-4">
@@ -436,22 +513,22 @@ export default function Step3ExtrasConfigurator({
                 {modelExtra.extra?.name}
               </p>
               {isAlcalina && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#288EB9]/15 to-[#1DB3BA]/20 text-[#168387] border border-[#168387]/30">
                   Recomendado
                 </span>
               )}
               {isAltamenteRecomendado && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/15 to-orange-500/20 text-amber-800 border border-amber-400/30">
                   Altamente Recomendado
                 </span>
               )}
               {isAviso && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-violet-600/15 to-indigo-600/20 text-violet-800 border border-violet-400/30">
                   Indispensable
                 </span>
               )}
               {isOpcional && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-600/15 to-teal-600/20 text-emerald-800 border border-emerald-400/30">
                   Opcional
                 </span>
               )}
@@ -464,11 +541,11 @@ export default function Step3ExtrasConfigurator({
                 isAlcalina
                   ? "text-[#168387]"
                   : isAltamenteRecomendado
-                  ? "text-amber-700"
+                  ? "text-amber-800"
                   : isAviso
-                  ? "text-violet-700"
+                  ? "text-violet-800"
                   : isOpcional
-                  ? "text-emerald-700"
+                  ? "text-emerald-800"
                   : "text-gray-700"
               }`}
             >
@@ -492,7 +569,7 @@ export default function Step3ExtrasConfigurator({
                 ? "accent-violet-600"
                 : isOpcional
                 ? "accent-emerald-600"
-                : "accent-black"
+                : "accent-[#168387]"
             }`}
           />
         </div>
@@ -511,7 +588,7 @@ export default function Step3ExtrasConfigurator({
   const hasAnyPreview = Boolean(displayImageSrc || secondaryImageSrc);
 
   return (
-    <div className={`w-full pb-32 ${hasAnyPreview ? "lg:flex lg:items-start lg:gap-12" : "flex justify-center"}`}>
+    <div className={`w-full pb-24 sm:pb-24 lg:pb-24 ${hasAnyPreview ? "lg:flex lg:items-start lg:gap-12" : "flex justify-center"}`}>
       {/* Panel de Vista Previa: FIXED en Móvil, STICKY en Desktop */}
       {hasAnyPreview && (
         <div className="
@@ -583,87 +660,214 @@ export default function Step3ExtrasConfigurator({
         </div>
       )}
 
-      {/* Listado de Extras: Añadimos padding-top en móvil para compensar el FIXED */}
+      {/* Listado de Extras en Sub-Pasos: Añadimos padding-top en móvil para compensar el FIXED */}
       <div className={`
         ${hasAnyPreview ? "lg:w-[60%] pt-[200px] lg:pt-0" : "w-full max-w-3xl"} 
         flex flex-col font-montserrat not-italic
       `}>
-        <div className="mb-6">
+        <div id="extras-top-anchor" className="mb-6">
+          {/* Indicador de progreso de Sub-Pasos (Stepper / Tabs interactivos) */}
+          {subSteps.length > 1 && (
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-4 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/80 overflow-x-auto no-scrollbar">
+              {subSteps.map((step, idx) => {
+                const isActive = currentSubStepIndex === idx;
+                const isPast = currentSubStepIndex > idx;
+                return (
+                  <button
+                    key={step.id}
+                    type="button"
+                    onClick={() => {
+                      setCurrentSubStepIndex(idx);
+                      scrollToTopConfigurator();
+                    }}
+                    className={`flex-1 min-w-[105px] py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-xl text-center text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                      isActive
+                        ? "bg-white text-[#168387] shadow-sm font-extrabold ring-1 ring-slate-200"
+                        : isPast
+                        ? "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                        : "text-slate-400 hover:text-slate-600"
+                    }`}
+                  >
+                    <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-black shrink-0 ${
+                      isActive
+                        ? "bg-[#168387] text-white"
+                        : isPast
+                        ? "bg-slate-200 text-slate-700"
+                        : "bg-slate-200/60 text-slate-400"
+                    }`}>
+                      {idx + 1}
+                    </span>
+                    <span className="truncate">{step.navLabel}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-1.5 block">
-            Personalización
+            {activeStep.badge}
           </span>
           <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight text-[#031638] mb-2">
-            Añade extras{" "}
+            {activeStep.titlePrefix}{" "}
             <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
-              adicionales
+              {activeStep.titleHighlight}
             </span>
           </h2>
-          <p className="text-slate-600 font-montserrat not-italic text-xs sm:text-sm md:text-base font-normal leading-relaxed">
-            Personaliza tu unidad con componentes de alto rendimiento.
-          </p>
+          {activeStep.subtitle ? (
+            <p className="text-slate-600 font-montserrat not-italic text-xs sm:text-sm md:text-base font-normal leading-relaxed">
+              {activeStep.subtitle}
+            </p>
+          ) : null}
         </div>
 
-        {/* Los extras fluyen con el scroll normal de la página en móvil, interno en desktop */}
-        <div className="space-y-2 mb-8 lg:flex-1 lg:overflow-y-auto lg:pr-2 lg:max-h-[calc(100vh-280px)] scrollbar-thin">
-          {[
-            { id: "otros", title: "Adicionales", items: adicionalesExtras },
-            { id: "tinacos", title: "Tinacos (Almacenamiento)", items: tinacoExtras }
-          ].map((section) => {
-            const isOpen = openSections.includes(section.id);
-            return (
-              section.items.length > 0 && (
-                <div key={section.id} className="border border-slate-100 rounded-xl overflow-hidden bg-white shadow-sm">
-                  <button
-                    onClick={() => toggleSection(section.id)}
-                    className="w-full flex justify-between items-center p-3 sm:p-4 hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-[9px] sm:text-xs font-black text-slate-700 uppercase tracking-[0.2em]">
-                        {section.title}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-semibold px-2 py-0.5 rounded-full bg-slate-100">
-                        {section.items.length}
-                      </span>
-                    </div>
-                    <div className={`p-1 rounded-md transition-all ${isOpen ? 'bg-[#168387] text-white rotate-180' : 'bg-slate-100 text-slate-400'}`}>
-                      <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </button>
-                  {isOpen && (
-                    <ul className="p-2 space-y-2 border-t border-slate-50">
-                      {section.items.map(renderExtraItem)}
-                    </ul>
-                  )}
+        {/* Contenido dinámico del Sub-Paso actual */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeStep.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-3 mb-4 lg:flex-1"
+          >
+            {/* FASE A: AGUA ALCALINA (si está presente en el modelo) */}
+            {activeStep.id === "agua" && alcalinaExtra && (
+              <div className="space-y-2">
+                <ul className="space-y-2.5">
+                  {renderExtraItem(alcalinaExtra)}
+                </ul>
+
+                <div className="pt-0.5 text-center sm:text-left">
+                  <p className="text-xs text-slate-500 font-medium">
+                    {hasAguaAlcalina
+                      ? "Has añadido agua alcalina a tu equipo."
+                      : "Si deseas, puedes avanzar sin añadir esta opción."}
+                  </p>
                 </div>
-              )
-            );
-          })}
-        </div>
+              </div>
+            )}
 
-        {/* Footer Actions: Siempre visible al final */}
+            {/* FASE B: ALMACENAMIENTO (TINACOS) */}
+            {activeStep.id === "almacenamiento" && (
+              <div className="space-y-4">
+                <ul className="space-y-2.5">
+                  {/* Opcion de sin almacenamiento adicional */}
+                  <li
+                    onClick={() => {
+                      setSeleccionados((prev) => {
+                        return prev.filter((id) => {
+                          const item = extras.find((me) => me.id === id);
+                          return !item?.extra?.isTinaco;
+                        });
+                      });
+                    }}
+                    className={`list-none relative overflow-hidden border rounded-xl p-4 cursor-pointer transition-all duration-300 shadow-sm text-left ${
+                      !selectedTinacoExtraId
+                        ? "border-[#168387] bg-gradient-to-r from-[#168387]/15 via-teal-500/10 to-teal-50/50 shadow-sm ring-1 ring-[#168387]/30"
+                        : "border-gray-200 hover:border-gray-300 bg-white"
+                    }`}
+                  >
+                    <div className="flex justify-between items-center gap-4">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-gray-800">
+                          Sin almacenamiento adicional
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          Ya cuento con tinacos de almacenamiento o no requiero tinacos extras.
+                        </p>
+                        <p className="text-sm font-bold text-gray-700 mt-1">
+                          $0 MXN
+                        </p>
+                      </div>
+                      <input
+                        type="radio"
+                        name="tinaco-selector"
+                        checked={!selectedTinacoExtraId}
+                        readOnly
+                        className="w-5 h-5 accent-[#168387] shrink-0"
+                      />
+                    </div>
+                  </li>
+
+                  {/* Lista de tinacos disponibles */}
+                  {tinacoExtras.map(renderExtraItem)}
+                </ul>
+              </div>
+            )}
+
+            {/* FASE C: EXTRAS ADICIONALES */}
+            {activeStep.id === "adicionales" && (
+              <div className="space-y-4">
+                <p className="text-xs text-slate-500 font-medium text-left">
+                  Selecciona los componentes, insumos o servicios que deseas sumar a tu configuración:
+                </p>
+                <ul className="space-y-2.5">
+                  {adicionalesExtras.map(renderExtraItem)}
+                </ul>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Soporte para BundleWizard cuando hideFooterActions es true */}
+        {hideFooterActions && subSteps.length > 1 && (
+          <div className="flex justify-between items-center gap-3 pt-4 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={handlePrevSubStep}
+              disabled={currentSubStepIndex === 0}
+              className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              Paso anterior
+            </button>
+            <button
+              type="button"
+              onClick={handleNextSubStep}
+              disabled={isLastSubStep}
+              className="px-5 py-2 rounded-xl bg-[#168387] text-white text-xs font-bold hover:bg-[#24d4da] transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {isLastSubStep ? "Adicionales listos" : `Continuar a ${subSteps[currentSubStepIndex + 1]?.navLabel}`}
+            </button>
+          </div>
+        )}
+
+        {/* Barra de Acciones Fija Inferior (App-like bar fija en móvil y escritorio) */}
         {!hideFooterActions && (
-          <div className="
-            fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-100 flex gap-3 z-30
-            lg:static lg:p-0 lg:pt-6 lg:bg-transparent lg:border-t-0
-          ">
-            <button
-              onClick={onBack}
-              className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition"
-            >
-              Atrás
-            </button>
-            <button
-              onClick={() => {
-                if (!buildPayload) return;
-                onSelect?.(buildPayload);
-                onNext?.();
-              }}
-              className="flex-[2] px-4 py-3 rounded-xl bg-[#168387] text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#24d4da] transition-all shadow-lg shadow-cyan-900/10"
-            >
-              Confirmar Selección
-            </button>
+          <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.06)] py-3 px-4 sm:px-8">
+            <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
+              {/* Información rápida de la configuración actual (visible en tablets y escritorio) */}
+              <div className="hidden sm:flex items-center gap-2.5 min-w-0 flex-1 pr-4">
+                <span className="w-2 h-2 rounded-full bg-[#168387] shrink-0 animate-pulse" />
+                <div className="min-w-0">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block leading-none mb-0.5">
+                    Tu configuración en curso:
+                  </span>
+                  <p className="text-xs font-bold text-slate-800 truncate leading-snug">
+                    {currentDisplayString}
+                  </p>
+                </div>
+              </div>
+
+              {/* Botones de acción */}
+              <div className="flex items-center gap-3 w-full sm:w-auto shrink-0 justify-end">
+                <button
+                  type="button"
+                  onClick={handlePrevSubStep}
+                  className="flex-1 sm:flex-none sm:min-w-[120px] px-4 py-3 rounded-xl border border-slate-200 text-slate-600 text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition cursor-pointer text-center"
+                >
+                  Atrás
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextSubStep}
+                  className="flex-[2] sm:flex-none sm:min-w-[220px] px-6 py-3 rounded-xl bg-[#168387] hover:bg-[#24d4da] text-white text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all shadow-md shadow-cyan-900/15 cursor-pointer text-center"
+                >
+                  {isLastSubStep
+                    ? "Confirmar Selección"
+                    : `Continuar a ${subSteps[currentSubStepIndex + 1]?.navLabel || "Siguiente"}`}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

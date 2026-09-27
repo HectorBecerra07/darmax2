@@ -23,8 +23,9 @@ const VendingTypeEnum = {
 export default function WizardGeneral() {
   const { id } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const wizardRef = useRef(null);
+  const isFirstMountRef = useRef(true);
+  const prevStepRef = useRef(null);
 
   // Sincronizar paso y tipo con URL
   const urlType = searchParams.get("tipo")?.toUpperCase() || searchParams.get("type")?.toUpperCase();
@@ -66,15 +67,121 @@ export default function WizardGeneral() {
     };
   }, []);
 
-  // Efecto para manejar el scroll al cambiar de paso
+  // Efecto para manejar el scroll pausado y suave al entrar y al cambiar de paso
   useEffect(() => {
-    if (wizardRef.current && !loadingModels) {
-      const yOffset = -100; // Offset para el Navbar
-      const element = wizardRef.current;
-      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: "smooth" });
+    if (!wizardRef.current || loadingModels) return;
+
+    const isMobile = window.innerWidth < 640;
+    const isExtrasStep = (id === "Vending" && step === 2) || (id !== "Vending" && step === 3);
+
+    // En el paso de extras en escritorio, no realizar movimiento de scroll al entrar
+    if (isExtrasStep) {
+      if (isMobile) {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
+      return;
     }
-  }, [step, loadingModels]);
+
+    const isTargetStep = (id === "Vending" && step === 0) || step === 1;
+
+    if (isMobile) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      return;
+    }
+
+    let isCancelled = false;
+    let animFrameId = null;
+    let pauseTimer = null;
+
+    const easeInOutCubic = (t) => {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    };
+
+    const animateScroll = (startY, endY, duration, onComplete) => {
+      const distance = endY - startY;
+      if (Math.abs(distance) < 2) {
+        if (onComplete && !isCancelled) onComplete();
+        return;
+      }
+
+      let startTime = null;
+      const stepAnim = (currentTime) => {
+        if (isCancelled) return;
+        if (!startTime) startTime = currentTime;
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = easeInOutCubic(progress);
+
+        window.scrollTo(0, startY + distance * ease);
+
+        if (progress < 1) {
+          animFrameId = requestAnimationFrame(stepAnim);
+        } else {
+          if (onComplete && !isCancelled) onComplete();
+        }
+      };
+
+      animFrameId = requestAnimationFrame(stepAnim);
+    };
+
+    const handleUserScroll = () => {
+      isCancelled = true;
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      if (pauseTimer) clearTimeout(pauseTimer);
+    };
+
+    window.addEventListener("wheel", handleUserScroll, { passive: true });
+    window.addEventListener("touchmove", handleUserScroll, { passive: true });
+
+    if (isTargetStep) {
+      const performDescent = () => {
+        if (isCancelled) return;
+        const targetElement =
+          document.getElementById("extras-top-anchor") ||
+          document.getElementById("step0-vending-container") ||
+          document.getElementById("step1-model-container") ||
+          document.getElementById("wizard-main-content") ||
+          wizardRef.current;
+
+        if (targetElement) {
+          const rect = targetElement.getBoundingClientRect();
+          const targetY = Math.max(0, rect.top + window.pageYOffset - 85);
+          animateScroll(window.pageYOffset, targetY, 1200);
+        }
+      };
+
+      if (window.pageYOffset > 15) {
+        // Al avanzar o retroceder de paso: sube suavemente al inicio para mostrar breadcrumbs
+        animateScroll(window.pageYOffset, 0, 550, () => {
+          if (isCancelled) return;
+          pauseTimer = setTimeout(() => {
+            if (!isCancelled) performDescent();
+          }, 450);
+        });
+      } else {
+        // Al entrar por primera vez: asegura tope superior, pausa y desciende pausadamente
+        window.scrollTo(0, 0);
+        pauseTimer = setTimeout(() => {
+          if (!isCancelled) performDescent();
+        }, 700);
+      }
+    } else {
+      // Otros pasos del configurador: descenso suave al contenido
+      const yOffset = -85;
+      const element = wizardRef.current;
+      const rect = element.getBoundingClientRect();
+      const targetY = Math.max(0, rect.top + window.pageYOffset + yOffset);
+      animateScroll(window.pageYOffset, targetY, 700);
+    }
+
+    return () => {
+      isCancelled = true;
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      if (pauseTimer) clearTimeout(pauseTimer);
+      window.removeEventListener("wheel", handleUserScroll);
+      window.removeEventListener("touchmove", handleUserScroll);
+    };
+  }, [step, loadingModels, id]);
 
   const setStep = (newStep) => {
     setSearchParams({ s: newStep });
@@ -163,8 +270,25 @@ export default function WizardGeneral() {
     let images = modelos.flatMap((m) =>
       (m.images || []).filter((img) => img.context === "CAROUSEL" && img.url).map((img) => optimizeCloudinaryUrl(img.url, 900))
     );
-    return [...new Set(images.filter((url) => url && url.trim() !== ""))];
+    const unique = [...new Set(images.filter((url) => url && url.trim() !== ""))];
+    if (unique.length > 0) return unique;
+
+    // Respaldo con cualquier imagen disponible del modelo si no tiene etiqueta CAROUSEL
+    const fallbackImgs = modelos.flatMap((m) =>
+      (m.images || []).filter((img) => img.url).map((img) => optimizeCloudinaryUrl(img.url, 900))
+    );
+    return [...new Set(fallbackImgs.filter((url) => url && url.trim() !== ""))];
   }, [modelos, loadingModels]);
+
+  // Precarga inmediata en memoria para transicion instantanea
+  useEffect(() => {
+    if (landingImages && landingImages.length > 0) {
+      landingImages.slice(0, 3).forEach((url) => {
+        const img = new Image();
+        img.src = url;
+      });
+    }
+  }, [landingImages]);
 
   const selectedModelHasOsmosis = useMemo(() => {
     if (!selectedModel) return false;
@@ -266,9 +390,9 @@ export default function WizardGeneral() {
   };
 
   return (
-    <div ref={wizardRef} className="bg-[#fbfbfd] min-h-screen pt-20 sm:pt-24 lg:pt-28 pb-32 font-montserrat not-italic">
+    <div ref={wizardRef} className="bg-[#fbfbfd] min-h-screen pt-20 sm:pt-22 lg:pt-[86px] pb-6 sm:pb-8 lg:pb-10 font-montserrat not-italic">
       {/* NAVEGACIÓN Y BREADCRUMBS ADAPTADOS */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 sm:mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-3 sm:mb-5">
         <Breadcrumbs
           steps={breadcrumbSteps}
           currentStepIndex={actualBreadcrumbStepIndex}
@@ -280,7 +404,7 @@ export default function WizardGeneral() {
         />
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6">
+      <main id="wizard-main-content" className="max-w-7xl mx-auto px-4 sm:px-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={`${id}-${step}`}
@@ -288,8 +412,8 @@ export default function WizardGeneral() {
             initial="initial"
             animate="animate"
             exit="exit"
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start"
+            transition={{ duration: 0.22, ease: "easeInOut" }}
+            className="min-h-0 sm:min-h-[520px] grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start"
           >
             {id === "Vending" && step === 0 && (
               <div className="col-span-1 lg:col-span-2">
@@ -306,62 +430,16 @@ export default function WizardGeneral() {
             )}
 
             {step === 1 && (
-              <>
-                <div className="w-full lg:sticky lg:top-28 lg:self-start space-y-3">
-                  <CarouselImages images={landingImages} />
-
-                  {/* Botón para conocer más sobre ósmosis inversa */}
-                  {catalogHasOsmosis && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="max-w-3xl mx-auto"
-                    >
-                      <Link
-                        to="/blog/osmosis-inversa-vs-agua-alcalina"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-cyan-50/50 to-white border border-[#168387]/25 hover:border-[#168387] hover:shadow-lg hover:shadow-cyan-900/5 transition-all duration-300 cursor-pointer"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-9 h-9 rounded-xl bg-[#168387] text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                            <SparklesIcon className="w-5 h-5" />
-                          </div>
-                          <div className="text-left min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                              <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#168387] transition-colors">
-                                ¿Quieres conocer más sobre ósmosis inversa?
-                              </p>
-                              <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#168387]/10 text-[#168387] border border-[#168387]/20 group-hover:bg-[#168387] group-hover:text-white transition-colors shrink-0">
-                                <span className="sm:hidden">Pulse aquí</span>
-                                <span className="hidden sm:inline">Da clic aquí</span>
-                              </span>
-                            </div>
-                            <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium block truncate">
-                              <span className="sm:hidden font-semibold text-[#168387]">Pulse aquí</span>
-                              <span className="hidden sm:inline font-semibold text-[#168387]">Da clic aquí</span>
-                              {" "}para descubrir cómo funciona y por qué es el estándar de oro en purificación
-                            </span>
-                          </div>
-                        </div>
-                        <div className="p-2 rounded-xl bg-white border border-slate-200 text-slate-400 group-hover:text-[#168387] group-hover:border-[#168387]/40 group-hover:bg-[#168387]/5 shrink-0 transition-all">
-                          <ArrowTopRightOnSquareIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
-                        </div>
-                      </Link>
-                    </motion.div>
-                  )}
-                </div>
-                <div className="w-full">
-                  <Step1SelectModel
-                    modelos={modelos}
-                    vendingType={vendingType}
-                    categoryId={id}
-                    onSelect={setSelectedModel}
-                    onNext={nextStep}
-                  />
-                </div>
-              </>
+              <div className="col-span-1 lg:col-span-2">
+                <Step1SelectModel
+                  modelos={modelos}
+                  vendingType={vendingType}
+                  categoryId={id}
+                  onSelect={setSelectedModel}
+                  onNext={nextStep}
+                  catalogHasOsmosis={catalogHasOsmosis}
+                />
+              </div>
             )}
 
             {/* Paso 2 para NO-Vending: Detalles del modelo */}
