@@ -658,6 +658,7 @@ const IniciaNegocio = () => {
   const [selected, setSelected] = useState([]);
   const [compareOpen, setCompareOpen] = useState(false);
   const [showVendingSpecs, setShowVendingSpecs] = useState(true);
+  const [vendingMode, setVendingMode] = useState(null);
   const [modelosData, setModelosData] = useState(() => {
     const cached = getCachedConfiguradorModels();
     if (cached && Array.isArray(cached) && cached.length > 0) {
@@ -1328,7 +1329,7 @@ const IniciaNegocio = () => {
               {...slideInRight(0.04, "Módulo 3D Interactivo")}
               className="w-full relative overflow-visible flex justify-center lg:justify-end"
             >
-              <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F0FCFF] border border-[#c4eef5] p-3.5 sm:p-4 shadow-xl shadow-cyan-950/5 backdrop-blur-md group w-full max-w-[580px] xl:max-w-[620px]">
+              <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F0FCFF] border border-[#c4eef5] p-3.5 pt-11 sm:pt-11 sm:p-4 shadow-xl shadow-cyan-950/5 backdrop-blur-md group w-full max-w-[580px] xl:max-w-[620px]">
                 
                 {/* Lado izquierdo: Frase en 3 líneas */}
                 <div className="absolute top-3.5 sm:top-4 left-5 sm:left-7 z-20">
@@ -1347,22 +1348,18 @@ const IniciaNegocio = () => {
                   </div>
                 </div>
 
-                <div className="h-[300px] sm:h-[360px] md:h-[400px] lg:h-[430px] xl:h-[450px] flex items-center justify-center overflow-visible">
-                  <VendingPrecise3D showCallouts={showVendingSpecs} />
+                <div className="h-[325px] sm:h-[380px] md:h-[410px] lg:h-[435px] xl:h-[450px] flex items-start justify-center overflow-visible">
+                  <VendingPrecise3D
+                    mode={vendingMode}
+                    onModeChange={setVendingMode}
+                    showCallouts={showVendingSpecs}
+                    onToggleCallouts={() => setShowVendingSpecs((v) => !v)}
+                  />
                 </div>
 
-                {/* Parte inferior: Boton de especificaciones y texto de interaccion */}
-                <div className="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 sm:gap-2 pointer-events-none">
-                  {/* Boton para alternar especificaciones (solo en tablet y escritorio) */}
-                  <button
-                    type="button"
-                    onClick={() => setShowVendingSpecs((v) => !v)}
-                    className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-white/95 hover:bg-[#1c79a6] text-slate-700 hover:text-white rounded-full border border-slate-200/90 hover:border-[#1c79a6] backdrop-blur-md shadow-sm hover:shadow transition-all text-[10px] font-semibold uppercase tracking-widest font-montserrat not-italic cursor-pointer pointer-events-auto"
-                  >
-                    <span>{showVendingSpecs ? "Ocultar detalles" : "Ver detalles"}</span>
-                  </button>
-
-                  <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap font-montserrat not-italic">
+                {/* Parte inferior: Texto de interaccion */}
+                <div className="absolute bottom-2 sm:bottom-3.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+                  <div className="text-[9.5px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap font-montserrat not-italic">
                     Arrastra para rotar e interactuar
                   </div>
                 </div>
