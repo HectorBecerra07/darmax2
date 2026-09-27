@@ -323,9 +323,7 @@ const VendingPrecise3D = ({
   // Profundidad de los bloques traseros
   const coinDepth = 28 * sc;
   const tapasDepth = 15 * sc;
-  const waterDepth = 22 * sc; // Cabina de agua con profundidad compacta y proporcionada
-  const waterFloatZ = Math.round(coinDepth + 5 * sc); // Despegado y flotando un poco mas atras de la Caja Electronica / CPU
-  const bridgeDepth = chassisDepth + waterFloatZ; // Profundidad de union entre cara frontal y cabina
+  const waterDepth = chassisDepth + coinDepth; // Cabina de agua continua unificada
 
   // Coordenadas milimetricas exactas del hueco en frontalV.png
   const hole = {
@@ -834,40 +832,20 @@ const VendingPrecise3D = ({
                 </div>
               )}
 
-              {/* Marco / Túnel interior del chasis hacia la cabina (grosor de 20px) */}
-              <div
-                className="absolute pointer-events-none"
-                style={{
-                  left: `${hole.left}%`,
-                  top: `${hole.top}%`,
-                  width: `${hole.width}%`,
-                  height: `${hole.height}%`,
-                  transformStyle: "preserve-3d",
-                }}
-              >
-                {/* Costados Laterales de Unión (Paredes Izquierda y Derecha del túnel con caras Interior y Exterior) */}
-                <WaterTunnelSidesBridge
-                  depth={bridgeDepth}
-                  uvLight={uvLight}
-                  makeTexOverlay={makeTexOverlay}
-                />
-                {/* CARA SUPERIOR DE UNIÓN (Techo que conecta cara frontal con cabina, con Orificio de Entrada de Agua) */}
-                <WaterInletCeilingBridge
-                  depth={bridgeDepth}
-                  sc={sc}
-                  holeHeightPx={holeHeightPx}
-                  uvLight={uvLight}
-                  isPouring={isPouring}
-                  makeTexOverlay={makeTexOverlay}
-                />
-                {/* CARA INFERIOR DE UNIÓN (Piso que conecta cara frontal con cabina, con Charola de Desagüe y Orificio Central) */}
-                <DrainTrayBridge
-                  depth={bridgeDepth}
-                  sc={sc}
-                  uvLight={uvLight}
-                  makeTexOverlay={makeTexOverlay}
-                />
-              </div>
+              {/* CABINA DE AGUA UNIFICADA 3D (Caja única continua sin cajas dobles ni divisiones) */}
+              <WaterCabinBox
+                x={hole.left}
+                y={hole.top}
+                w={hole.width}
+                h={hole.height}
+                depth={waterDepth}
+                sc={sc}
+                holeHeightPx={holeHeightPx}
+                isPouring={isPouring}
+                uvLight={uvLight}
+                onToggleLight={toggleLight}
+                makeTexOverlay={makeTexOverlay}
+              />
 
               {/* 4 COSTADOS DEL CHASIS (Parten exactamente de Z=0 hacia Z=-chassisDepth sin lineas oscuras exteriores) */}
               {/* Costado Izquierdo */}
@@ -1083,20 +1061,6 @@ const VendingPrecise3D = ({
                 <div style={makeTexOverlay()} />
               </div>
 
-              {/* BLOQUE TRASERO 1: MÓDULO CABINA AGUA (Flotando y despegado en 3D un poco más atrás de Caja Electrónica) */}
-              <WaterCabinBox
-                x={hole.left}
-                y={hole.top}
-                w={hole.width}
-                h={hole.height}
-                depth={waterDepth}
-                floatZ={waterFloatZ}
-                isPouring={isPouring}
-                uvLight={uvLight}
-                hasJug={hasJug}
-                onToggleLight={toggleLight}
-                makeTexOverlay={makeTexOverlay}
-              />
 
               {/* BLOQUE TRASERO 2: CAJA ELECTRÓNICA / CPU MONEDERO */}
               <RearSolidBox
@@ -1290,100 +1254,22 @@ function RearSolidBox({ title, x, y, w, h, depth, theme, makeTexOverlay }) {
   );
 }
 
-// Componente para los Costados Laterales de Unión (Paredes Izquierda y Derecha del túnel)
-// Cuenta con iluminación reactiva en el interior y tonos de acero industrial a juego con Caja Eléctrica / CPU en el exterior
-function WaterTunnelSidesBridge({ depth, uvLight, makeTexOverlay }) {
-  return (
-    <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: "preserve-3d" }}>
-      {/* 1. Cara Lateral Izquierda Interior (Visible desde el interior de la cabina, se ilumina al prender la luz) */}
-      <div
-        className="absolute h-full left-0 top-0 overflow-hidden transition-all duration-500 ease-out pointer-events-none"
-        style={{
-          width: `${depth}px`,
-          transform: "rotateY(90deg)",
-          transformOrigin: "left center",
-          background: uvLight
-            ? "radial-gradient(ellipse 80% 70% at 95% 15%, rgba(255, 255, 255, 0.22) 0%, transparent 75%), linear-gradient(90deg, #333d4b 0%, #475569 40%, #5c6b7e 85%, #3d4a59 100%)"
-            : "linear-gradient(90deg, #1e242c 0%, #28313c 40%, #333d4b 85%, #222932 100%)",
-          boxShadow: uvLight
-            ? "inset 0 0 15px rgba(255,255,255,0.12), inset 0 0 12px rgba(0,0,0,0.3)"
-            : "inset 0 0 15px rgba(0,0,0,0.6)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
+// Componente para la Cabina de Agua 3D Unificada (Caja solida continua con interior iluminado, desague, boquilla y chorro de agua)
+function WaterCabinBox({ x, y, w, h, depth, sc = 3.5, holeHeightPx, isPouring, uvLight, onToggleLight, makeTexOverlay }) {
+  const faceBase = "absolute overflow-hidden";
 
-      {/* 2. Cara Lateral Izquierda Exterior (Visible desde el exterior izquierdo, tonos acero cepillado) */}
-      <div
-        className="absolute h-full left-0 top-0 overflow-hidden pointer-events-none"
-        style={{
-          width: `${depth}px`,
-          transform: `translateZ(-${depth}px) rotateY(-90deg)`,
-          transformOrigin: "left center",
-          background: `${STEEL_GRAIN_V}, linear-gradient(90deg, #898889 0%, #BDBBBE 65%, #D4D3D6 100%)`,
-          boxShadow: "inset 2px 0 3px rgba(255, 255, 255, 0.5), inset -3px 0 5px rgba(0, 0, 0, 0.35)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
-
-      {/* 3. Cara Lateral Derecha Interior (Visible desde el interior de la cabina, se ilumina al prender la luz) */}
-      <div
-        className="absolute h-full right-0 top-0 overflow-hidden transition-all duration-500 ease-out pointer-events-none"
-        style={{
-          width: `${depth}px`,
-          transform: "rotateY(-90deg)",
-          transformOrigin: "right center",
-          background: uvLight
-            ? "radial-gradient(ellipse 80% 70% at 5% 15%, rgba(255, 255, 255, 0.22) 0%, transparent 75%), linear-gradient(90deg, #3d4a59 0%, #5c6b7e 15%, #475569 60%, #333d4b 100%)"
-            : "linear-gradient(90deg, #222932 0%, #333d4b 15%, #28313c 60%, #1e242c 100%)",
-          boxShadow: uvLight
-            ? "inset 0 0 15px rgba(255,255,255,0.12), inset 0 0 12px rgba(0,0,0,0.3)"
-            : "inset 0 0 15px rgba(0,0,0,0.6)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
-
-      {/* 4. Cara Lateral Derecha Exterior (Visible desde el exterior derecho, tonos acero cepillado) */}
-      <div
-        className="absolute h-full right-0 top-0 overflow-hidden pointer-events-none"
-        style={{
-          width: `${depth}px`,
-          transform: `translateZ(-${depth}px) rotateY(90deg)`,
-          transformOrigin: "right center",
-          background: `${STEEL_GRAIN_V}, linear-gradient(90deg, #CAC9CC 0%, #ACAAAD 55%, #777678 100%)`,
-          boxShadow: "inset -2px 0 3px rgba(255, 255, 255, 0.4), inset 3px 0 5px rgba(0, 0, 0, 0.35)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
-    </div>
-  );
-}
-
-// Componente para la Cara Superior de Unión: Techo que conecta la cara frontal con la cabina
-// Cuenta con iluminación reactiva, textura metálica, Orificio Pasante, Boquilla 3D de PVC blanco y Cilindro 3D de Agua
-function WaterInletCeilingBridge({ depth, sc = 3.5, holeHeightPx, uvLight, isPouring, makeTexOverlay }) {
-  // Radio proporcional para el orificio de entrada de agua (alineado verticalmente con el desagüe inferior)
+  // Radio proporcional para el orificio de entrada de agua y desague central
   const holeRadius = Math.round(1.7 * sc);
+  const ringSize = Math.max(20, Math.round(holeRadius * 2 + 10));
 
-  // Parámetros de la boquilla cilíndrica de tubería PVC blanca
-  const pvcRadius = Math.max(4, Math.round(holeRadius * 0.85)); // Diámetro aprox 10px a 11px
-  const innerLength = Math.round(5.5 * sc); // Longitud que desciende hacia el interior de la cabina (aprox 20px)
-  const outerLength = Math.round(2.5 * sc); // Longitud que sobresale hacia el exterior en el techo (aprox 9px)
+  // Parametros de la boquilla cilindrica de tuberia PVC blanca
+  const pvcRadius = Math.max(4, Math.round(holeRadius * 0.85));
+  const innerLength = Math.round(5.5 * sc);
+  const outerLength = Math.round(2.5 * sc);
   const totalLength = innerLength + outerLength;
   const facetWidth = Math.ceil(pvcRadius * 0.88);
 
-  // Parámetros del cilindro 3D de agua cristalina azul con tonos transparentes degradados
+  // Parametros del cilindro 3D de agua cristalina azul con tonos transparentes degradados
   const waterRadius = Math.max(3, Math.round(pvcRadius * 0.72));
   const waterFacetWidth = Math.ceil(waterRadius * 0.9);
   const waterStreamLength = (holeHeightPx || Math.round(54 * sc)) - innerLength;
@@ -1411,20 +1297,123 @@ function WaterInletCeilingBridge({ depth, sc = 3.5, holeHeightPx, uvLight, isPou
   ];
 
   return (
-    <div className="absolute w-full left-0 top-0" style={{ transformStyle: "preserve-3d" }}>
-      {/* 1. Cara inferior visible desde el interior de la cabina (Techo interior que brilla al prender el foco) */}
+    <div
+      className="absolute pointer-events-none"
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        width: `${w}%`,
+        height: `${h}%`,
+        transformStyle: "preserve-3d",
+      }}
+    >
+      {/* 1. CARA TRASERA EXTERIOR (Acero cepillado con acabado industrial) */}
       <div
-        className="absolute w-full left-0 top-0 overflow-hidden transition-all duration-500 ease-out"
+        className={`${faceBase} inset-0 border flex flex-col items-center justify-center p-2 text-center shadow-inner`}
+        style={{
+          transform: `translateZ(-${depth}px) rotateY(180deg)`,
+          background: STEEL_FINISH.back,
+          borderColor: STEEL_FINISH.border,
+          boxShadow: "inset 2px 2px 3px rgba(255, 255, 255, 0.45), inset -2px -2px 4px rgba(0, 0, 0, 0.25), inset 0 0 20px rgba(0, 0, 0, 0.15)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+        }}
+      >
+        <div style={makeTexOverlay()} />
+      </div>
+
+      {/* 2. CARA LATERAL IZQUIERDA EXTERIOR */}
+      <div
+        className={`${faceBase} h-full left-0 top-0 origin-left pointer-events-none`}
+        style={{
+          width: `${depth}px`,
+          transform: "rotateY(90deg) rotateX(180deg)",
+          background: STEEL_FINISH.left,
+          boxShadow: "inset 2px 0 3px rgba(255, 255, 255, 0.5), inset -3px 0 5px rgba(0, 0, 0, 0.35)",
+          borderLeft: "1px solid rgba(255, 255, 255, 0.5)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+        }}
+      >
+        <div style={makeTexOverlay()} />
+      </div>
+
+      {/* 3. PARED INTERIOR IZQUIERDA (Iluminacion reactiva) */}
+      <div
+        className="absolute h-full left-0 top-0 origin-left transition-all duration-500 pointer-events-none overflow-hidden"
+        style={{
+          width: `${depth}px`,
+          transform: "rotateY(90deg)",
+          background: uvLight
+            ? "radial-gradient(ellipse 80% 70% at 95% 15%, rgba(255, 255, 255, 0.22) 0%, transparent 75%), linear-gradient(90deg, #333d4b 0%, #475569 40%, #5c6b7e 85%, #3d4a59 100%)"
+            : "linear-gradient(90deg, #1e242c 0%, #28313c 40%, #333d4b 85%, #222932 100%)",
+          boxShadow: uvLight ? "inset 0 0 15px rgba(255,255,255,0.12), inset 0 0 12px rgba(0,0,0,0.3)" : "inset 0 0 15px rgba(0,0,0,0.6)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+        }}
+      >
+        <div style={makeTexOverlay()} />
+      </div>
+
+      {/* 4. CARA LATERAL DERECHA EXTERIOR */}
+      <div
+        className={`${faceBase} h-full right-0 top-0 origin-right pointer-events-none`}
+        style={{
+          width: `${depth}px`,
+          transform: "rotateY(-90deg) rotateX(180deg)",
+          background: STEEL_FINISH.right,
+          boxShadow: "inset -2px 0 3px rgba(255, 255, 255, 0.4), inset 3px 0 5px rgba(0, 0, 0, 0.35)",
+          borderRight: "1px solid rgba(50, 50, 50, 0.55)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+        }}
+      >
+        <div style={makeTexOverlay()} />
+      </div>
+
+      {/* 5. PARED INTERIOR DERECHA (Iluminacion reactiva) */}
+      <div
+        className="absolute h-full right-0 top-0 origin-right transition-all duration-500 pointer-events-none overflow-hidden"
+        style={{
+          width: `${depth}px`,
+          transform: "rotateY(-90deg)",
+          background: uvLight
+            ? "radial-gradient(ellipse 80% 70% at 5% 15%, rgba(255, 255, 255, 0.22) 0%, transparent 75%), linear-gradient(90deg, #3d4a59 0%, #5c6b7e 15%, #475569 60%, #333d4b 100%)"
+            : "linear-gradient(90deg, #222932 0%, #333d4b 15%, #28313c 60%, #1e242c 100%)",
+          boxShadow: uvLight ? "inset 0 0 15px rgba(255,255,255,0.12), inset 0 0 12px rgba(0,0,0,0.3)" : "inset 0 0 15px rgba(0,0,0,0.6)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+        }}
+      >
+        <div style={makeTexOverlay()} />
+      </div>
+
+      {/* 6. CARA SUPERIOR EXTERIOR (TECHO) */}
+      <div
+        className={`${faceBase} w-full left-0 top-0 origin-top`}
+        style={{
+          height: `${depth}px`,
+          transform: "rotateX(-90deg) rotateY(180deg)",
+          background: STEEL_FINISH.top,
+          boxShadow: "inset 0 2px 3px rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(0, 0, 0, 0.15)",
+          borderTop: "1px solid rgba(255, 255, 255, 0.75)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+        }}
+      >
+        <div style={makeTexOverlay()} />
+      </div>
+
+      {/* 7. TECHO INTERIOR (Con boquilla de entrada y textura reactiva) */}
+      <div
+        className="absolute w-full left-0 top-0 origin-top transition-all duration-500 pointer-events-none overflow-hidden"
         style={{
           height: `${depth}px`,
           transform: "rotateX(-90deg)",
-          transformOrigin: "top center",
           background: uvLight
-            ? "radial-gradient(ellipse 75% 85% at 50% 50%, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.1) 45%, transparent 80%), linear-gradient(180deg, #64748b 0%, #4f5d6f 60%, #374351 100%)"
+            ? "radial-gradient(ellipse 70% 85% at 50% 50%, rgba(255, 255, 255, 0.32) 0%, transparent 80%), linear-gradient(180deg, #64748b 0%, #4f5d6f 60%, #374351 100%)"
             : "linear-gradient(180deg, #374151 0%, #28313c 60%, #1a2027 100%)",
-          boxShadow: uvLight
-            ? "inset 0 -8px 20px rgba(255,255,255,0.22), inset 0 0 10px rgba(0,0,0,0.3)"
-            : "inset 0 -4px 10px rgba(0,0,0,0.6)",
+          boxShadow: uvLight ? "inset 0 -8px 20px rgba(255,255,255,0.22), inset 0 0 10px rgba(0,0,0,0.3)" : "inset 0 -6px 12px rgba(0,0,0,0.6)",
           WebkitMaskImage: `radial-gradient(circle at 50% 50%, transparent 0, transparent ${holeRadius}px, black ${holeRadius + 0.5}px, black 100%)`,
           maskImage: `radial-gradient(circle at 50% 50%, transparent 0, transparent ${holeRadius}px, black ${holeRadius + 0.5}px, black 100%)`,
           backfaceVisibility: "hidden",
@@ -1433,7 +1422,7 @@ function WaterInletCeilingBridge({ depth, sc = 3.5, holeHeightPx, uvLight, isPou
       >
         <div style={makeTexOverlay()} />
 
-        {/* Boquilla / Aro embellecedor de entrada de agua en el techo interior */}
+        {/* Aro embellecedor de entrada de agua */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div
             className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center transition-all duration-500 relative ${
@@ -1443,7 +1432,6 @@ function WaterInletCeilingBridge({ depth, sc = 3.5, holeHeightPx, uvLight, isPou
             }`}
             title="Orificio para la entrada de agua"
           >
-            {/* Aro biselado exterior del orificio */}
             <div
               className={`rounded-full border transition-all duration-500 ${
                 uvLight ? "border-slate-300 shadow-[inset_0_1px_2px_rgba(255,255,255,0.5)]" : "border-slate-600 shadow-inner"
@@ -1454,209 +1442,28 @@ function WaterInletCeilingBridge({ depth, sc = 3.5, holeHeightPx, uvLight, isPou
         </div>
       </div>
 
-      {/* 2. Cara superior exterior visible desde arriba del chasis (Tonos acero cepillado con orificio de entrada) */}
+      {/* 8. CARA INFERIOR EXTERIOR (PISO) */}
       <div
-        className="absolute w-full left-0 top-0 overflow-hidden pointer-events-none"
+        className={`${faceBase} w-full left-0 bottom-0 origin-bottom`}
         style={{
           height: `${depth}px`,
-          transform: "rotateX(-90deg) rotateY(180deg)",
-          transformOrigin: "top center",
-          background: STEEL_FINISH.top,
-          boxShadow: "inset 0 2px 3px rgba(255,255,255,0.85), inset 0 -2px 4px rgba(0,0,0,0.15)",
-          WebkitMaskImage: `radial-gradient(circle at 50% 50%, transparent 0, transparent ${holeRadius}px, black ${holeRadius + 0.5}px, black 100%)`,
-          maskImage: `radial-gradient(circle at 50% 50%, transparent 0, transparent ${holeRadius}px, black ${holeRadius + 0.5}px, black 100%)`,
+          transform: "rotateX(90deg) rotateY(180deg)",
+          background: STEEL_FINISH.bottom,
+          boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -2px 6px rgba(0, 0, 0, 0.7)",
+          borderBottom: "1px solid rgba(50, 50, 50, 0.75)",
           backfaceVisibility: "hidden",
           WebkitBackfaceVisibility: "hidden",
         }}
       >
         <div style={makeTexOverlay()} />
-
-        {/* Brida de entrada de agua exterior en el techo */}
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none"
-          style={{ width: `${holeRadius * 4.4}px`, height: `${holeRadius * 4.4}px` }}
-        >
-          {/* Brida exterior de fijación con remaches metálicos */}
-          <div className="absolute inset-0 rounded-full border border-[#898889] bg-gradient-to-b from-[#E2E1E4] via-[#CDCCCF] to-[#ACAAAD] shadow-sm flex items-center justify-center">
-            {/* 4 Remaches de montaje exterior */}
-            <div className="absolute top-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#F0EFF1] border border-[#777678] shadow-xs" />
-            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#F0EFF1] border border-[#777678] shadow-xs" />
-            <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#F0EFF1] border border-[#777678] shadow-xs" />
-            <div className="absolute right-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#F0EFF1] border border-[#777678] shadow-xs" />
-
-            {/* Collarín / Conector de tubería */}
-            <div
-              className="rounded-full border-2 border-[#BDBBBE] shadow-[inset_0_1px_3px_rgba(0,0,0,0.4)]"
-              style={{ width: `${holeRadius * 2.8}px`, height: `${holeRadius * 2.8}px` }}
-            />
-          </div>
-        </div>
       </div>
 
-      {/* 3. BOQUILLA CILÍNDRICA 3D DE TUBERÍA PVC BLANCA (Parte interna que desciende y saliendo hacia el exterior) */}
+      {/* 9. PISO INTERIOR (Con charola de desague y orificio pasante) */}
       <div
-        className="absolute pointer-events-none"
-        style={{
-          left: "50%",
-          top: 0,
-          transformStyle: "preserve-3d",
-          transform: `translate3d(0px, 0px, -${depth * 0.5}px)`,
-        }}
-      >
-        {/* Pasamuros / Cople blanco de fijación en la unión del techo interior */}
-        <div
-          className="absolute rounded-full border pointer-events-none transition-all duration-500"
-          style={{
-            width: `${pvcRadius * 2.6}px`,
-            height: `${pvcRadius * 2.6}px`,
-            left: `-${pvcRadius * 1.3}px`,
-            top: `-${pvcRadius * 1.3}px`,
-            transform: "rotateX(90deg)",
-            background: uvLight ? "linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)" : "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
-            borderColor: uvLight ? "#cbd5e1" : "#94a3b8",
-            boxShadow: uvLight ? "0 0 6px rgba(255,255,255,0.5)" : "0 1px 3px rgba(0,0,0,0.3)",
-            backfaceVisibility: "visible",
-            WebkitBackfaceVisibility: "visible",
-          }}
-        />
-
-        {/* 8 Facetas del cuerpo cilíndrico de PVC blanco */}
-        {PVC_FACETS.map((f, i) => (
-          <div
-            key={i}
-            className="absolute transition-all duration-500"
-            style={{
-              width: `${facetWidth}px`,
-              height: `${totalLength}px`,
-              left: `-${facetWidth / 2}px`,
-              top: `-${outerLength}px`,
-              background: f.bg,
-              transform: `rotateY(${f.angle}deg) translateZ(${pvcRadius}px)`,
-              backfaceVisibility: "hidden",
-              WebkitBackfaceVisibility: "hidden",
-              boxShadow: uvLight ? "inset 0 0 3px rgba(255,255,255,0.8)" : "inset 0 0 2px rgba(0,0,0,0.15)",
-            }}
-          />
-        ))}
-
-        {/* Boca inferior de la boquilla dentro de la cabina (Punta dispensadora) */}
-        <div
-          className="absolute rounded-full border flex items-center justify-center pointer-events-none transition-all duration-500"
-          style={{
-            width: `${pvcRadius * 2}px`,
-            height: `${pvcRadius * 2}px`,
-            left: `-${pvcRadius}px`,
-            top: `-${pvcRadius}px`,
-            transform: `translateY(${innerLength}px) rotateX(90deg)`,
-            background: uvLight ? "#ffffff" : "#f1f5f9",
-            borderColor: uvLight ? "#e2e8f0" : "#cbd5e1",
-            boxShadow: uvLight ? "0 0 5px rgba(255,255,255,0.7)" : "0 1px 2px rgba(0,0,0,0.25)",
-            backfaceVisibility: "visible",
-            WebkitBackfaceVisibility: "visible",
-          }}
-        >
-          {/* Orificio hueco interno de salida del agua en la punta */}
-          <div
-            className="rounded-full bg-[#05090e] shadow-[inset_0_1px_3px_rgba(0,0,0,0.95)]"
-            style={{ width: `${pvcRadius * 1.2}px`, height: `${pvcRadius * 1.2}px` }}
-          />
-        </div>
-
-        {/* Extremo superior del tubo de PVC saliendo en el techo exterior */}
-        <div
-          className="absolute rounded-full border flex items-center justify-center pointer-events-none"
-          style={{
-            width: `${pvcRadius * 2}px`,
-            height: `${pvcRadius * 2}px`,
-            left: `-${pvcRadius}px`,
-            top: `-${pvcRadius}px`,
-            transform: `translateY(-${outerLength}px) rotateX(-90deg)`,
-            background: "#f8fafc",
-            borderColor: "#cbd5e1",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
-            backfaceVisibility: "visible",
-            WebkitBackfaceVisibility: "visible",
-          }}
-        >
-          {/* Orificio hueco de la tubería en el extremo exterior */}
-          <div
-            className="rounded-full bg-slate-600 shadow-inner"
-            style={{ width: `${pvcRadius * 1.2}px`, height: `${pvcRadius * 1.2}px` }}
-          />
-        </div>
-
-        {/* 4. CILINDRO 3D DE AGUA AZUL CRISTALINA CON TONOS TRANSPARENTES DEGRADADOS */}
-        {isPouring && (
-          <div
-            className="absolute left-0 top-0 pointer-events-none"
-            style={{
-              transform: `translateY(${innerLength}px)`,
-              transformStyle: "preserve-3d",
-            }}
-          >
-            {/* Núcleo interior de brillo líquido */}
-            <div
-              className="absolute left-0 top-0 pointer-events-none w-[2.5px] -translate-x-1/2 bg-gradient-to-b from-white/95 via-cyan-200/80 to-sky-300/50 blur-[0.4px] animate-pulse z-10"
-              style={{ height: `${waterStreamLength}px` }}
-            />
-
-            {/* 8 Facetas del cilindro 3D de agua con degradados azules translúcidos */}
-            {WATER_FACETS.map((f, i) => (
-              <div
-                key={i}
-                className="absolute top-0 animate-pulse"
-                style={{
-                  width: `${waterFacetWidth}px`,
-                  height: `${waterStreamLength}px`,
-                  left: `-${waterFacetWidth / 2}px`,
-                  background: f.bg,
-                  transform: `rotateY(${f.angle}deg) translateZ(${waterRadius}px)`,
-                  backfaceVisibility: "visible",
-                  WebkitBackfaceVisibility: "visible",
-                  boxShadow: uvLight
-                    ? "0 0 6px rgba(56,189,248,0.55), inset 0 0 3px rgba(255,255,255,0.7)"
-                    : "0 0 4px rgba(56,189,248,0.35), inset 0 0 2px rgba(255,255,255,0.4)",
-                  opacity: uvLight ? 0.95 : 0.85,
-                  animationDuration: `${0.75 + (i % 3) * 0.25}s`,
-                }}
-              />
-            ))}
-
-            {/* Anillo de impacto / Ondas de agua en la charola de desagüe inferior */}
-            <div
-              className="absolute rounded-full border border-cyan-300/80 bg-gradient-to-b from-cyan-400/35 to-blue-500/25 shadow-[0_0_12px_rgba(56,189,248,0.7)] animate-pulse pointer-events-none"
-              style={{
-                width: `${waterRadius * 5.2}px`,
-                height: `${waterRadius * 5.2}px`,
-                left: `-${waterRadius * 2.6}px`,
-                top: `${waterStreamLength - waterRadius * 2.6}px`,
-                transform: "rotateX(90deg)",
-              }}
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-
-// Componente para la Cara Inferior de Unión: Piso que conecta la cara frontal con la cabina
-// Cuenta con iluminación reactiva, textura de acero inoxidable, Charola de Desagüe y Agujero Central Pasante Real
-function DrainTrayBridge({ depth, sc = 3.5, uvLight, makeTexOverlay }) {
-  // Radio proporcional para el orificio pasante real (diametro aprox 12px en desktop)
-  const holeRadius = Math.round(1.7 * sc);
-  const ringSize = Math.max(20, Math.round(holeRadius * 2 + 10));
-
-  return (
-    <div className="absolute w-full left-0 bottom-0" style={{ transformStyle: "preserve-3d" }}>
-      {/* 1. Cara superior visible desde la cabina (Piso interior con charola de desague y orificio central pasante) */}
-      <div
-        className="absolute w-full left-0 bottom-0 overflow-hidden transition-all duration-500 ease-out"
+        className="absolute w-full left-0 bottom-0 origin-bottom transition-all duration-500 pointer-events-none overflow-hidden"
         style={{
           height: `${depth}px`,
           transform: "rotateX(90deg)",
-          transformOrigin: "bottom center",
           background: uvLight
             ? "radial-gradient(ellipse 90% 85% at 50% 20%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 50%, transparent 85%), linear-gradient(180deg, #4b5869 0%, #3a4755 50%, #29333e 100%)"
             : "linear-gradient(180deg, #242c36 0%, #1a2028 50%, #13171e 100%)",
@@ -1671,7 +1478,7 @@ function DrainTrayBridge({ depth, sc = 3.5, uvLight, makeTexOverlay }) {
       >
         <div style={makeTexOverlay()} />
 
-        {/* Charola de Desague embutida con parilla simetrica */}
+        {/* Charola de Desague embutida con parrilla simetrica */}
         <div className="absolute inset-0 flex items-center justify-center p-1 sm:p-2 pointer-events-none">
           <div
             className={`relative w-[92%] h-[84%] rounded-md flex flex-col items-center justify-between p-1.5 sm:p-2.5 transition-all duration-500 border ${
@@ -1725,7 +1532,7 @@ function DrainTrayBridge({ depth, sc = 3.5, uvLight, makeTexOverlay }) {
                 />
               </div>
 
-              {/* Hueco / reserva central simetrica para el aro */}
+              {/* Hueco central simetrico */}
               <div
                 className="shrink-0 pointer-events-none"
                 style={{ width: `${ringSize}px` }}
@@ -1775,7 +1582,7 @@ function DrainTrayBridge({ depth, sc = 3.5, uvLight, makeTexOverlay }) {
               />
             </div>
 
-            {/* Aro Central de Desague: Posicionado exactamente en 50% 50% coincidiendo con la mascara */}
+            {/* Aro Central de Desague */}
             <div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center z-10"
               style={{ width: `${ringSize}px`, height: `${ringSize}px` }}
@@ -1786,9 +1593,8 @@ function DrainTrayBridge({ depth, sc = 3.5, uvLight, makeTexOverlay }) {
                     ? "border-slate-300 bg-slate-500/10 shadow-[0_0_10px_rgba(255,255,255,0.35)]"
                     : "border-slate-600 bg-slate-800/10 shadow-inner"
                 }`}
-                title="Orificio pasante de salida / Desagüe"
+                title="Orificio pasante de salida / Desague"
               >
-                {/* Aro biselado exterior del orificio */}
                 <div
                   className={`rounded-full border transition-all duration-500 ${
                     uvLight ? "border-slate-400 shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]" : "border-slate-700 shadow-inner"
@@ -1801,144 +1607,149 @@ function DrainTrayBridge({ depth, sc = 3.5, uvLight, makeTexOverlay }) {
         </div>
       </div>
 
-      {/* 2. Cara inferior exterior visible desde abajo del chasis (Tonos acero cepillado con orificio de salida exterior) */}
+      {/* 10. BOQUILLA CILINDRICA 3D DE PVC Y CHORRO DE AGUA */}
       <div
-        className="absolute w-full left-0 bottom-0 overflow-hidden pointer-events-none"
+        className="absolute pointer-events-none"
         style={{
-          height: `${depth}px`,
-          transform: "rotateX(90deg) rotateY(180deg)",
-          transformOrigin: "bottom center",
-          background: STEEL_FINISH.bottom,
-          boxShadow: "inset 0 2px 4px rgba(0,0,0,0.4), inset 0 -2px 6px rgba(0,0,0,0.7)",
-          WebkitMaskImage: `radial-gradient(circle at 50% 50%, transparent 0, transparent ${holeRadius}px, black ${holeRadius + 0.5}px, black 100%)`,
-          maskImage: `radial-gradient(circle at 50% 50%, transparent 0, transparent ${holeRadius}px, black ${holeRadius + 0.5}px, black 100%)`,
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
+          left: "50%",
+          top: 0,
+          transformStyle: "preserve-3d",
+          transform: `translate3d(0px, 0px, -${depth * 0.5}px)`,
         }}
       >
-        <div style={makeTexOverlay()} />
-
-        {/* Orificio / Boquilla de salida exterior de desagüe */}
+        {/* Pasamuros / Cople blanco de fijacion en la union del techo interior */}
         <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none"
-          style={{ width: `${holeRadius * 4.4}px`, height: `${holeRadius * 4.4}px` }}
-        >
-          {/* Brida exterior de fijación (Tonos acero cepillado con remaches de montaje) */}
-          <div className="absolute inset-0 rounded-full border border-[#5D5C5C] bg-gradient-to-b from-[#ACAAAD] via-[#898889] to-[#5D5C5C] shadow-md flex items-center justify-center">
-            {/* 4 Remaches de montaje exterior */}
-            <div className="absolute top-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#E2E1E4] border border-[#5D5C5C] shadow-xs" />
-            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#E2E1E4] border border-[#5D5C5C] shadow-xs" />
-            <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#E2E1E4] border border-[#5D5C5C] shadow-xs" />
-            <div className="absolute right-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#E2E1E4] border border-[#5D5C5C] shadow-xs" />
+          className="absolute rounded-full border pointer-events-none transition-all duration-500"
+          style={{
+            width: `${pvcRadius * 2.6}px`,
+            height: `${pvcRadius * 2.6}px`,
+            left: `-${pvcRadius * 1.3}px`,
+            top: `-${pvcRadius * 1.3}px`,
+            transform: "rotateX(90deg)",
+            background: uvLight ? "linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)" : "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
+            borderColor: uvLight ? "#cbd5e1" : "#94a3b8",
+            boxShadow: uvLight ? "0 0 6px rgba(255,255,255,0.5)" : "0 1px 3px rgba(0,0,0,0.3)",
+            backfaceVisibility: "visible",
+            WebkitBackfaceVisibility: "visible",
+          }}
+        />
 
-            {/* Collarín / Boquilla cilíndrica de salida */}
+        {/* 8 Facetas del cuerpo cilindrico de PVC blanco */}
+        {PVC_FACETS.map((f, i) => (
+          <div
+            key={i}
+            className="absolute transition-all duration-500"
+            style={{
+              width: `${facetWidth}px`,
+              height: `${totalLength}px`,
+              left: `-${facetWidth / 2}px`,
+              top: `-${outerLength}px`,
+              background: f.bg,
+              transform: `rotateY(${f.angle}deg) translateZ(${pvcRadius}px)`,
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              boxShadow: uvLight ? "inset 0 0 3px rgba(255,255,255,0.8)" : "inset 0 0 2px rgba(0,0,0,0.15)",
+            }}
+          />
+        ))}
+
+        {/* Boca inferior de la boquilla dentro de la cabina */}
+        <div
+          className="absolute rounded-full border flex items-center justify-center pointer-events-none transition-all duration-500"
+          style={{
+            width: `${pvcRadius * 2}px`,
+            height: `${pvcRadius * 2}px`,
+            left: `-${pvcRadius}px`,
+            top: `-${pvcRadius}px`,
+            transform: `translateY(${innerLength}px) rotateX(90deg)`,
+            background: uvLight ? "#ffffff" : "#f1f5f9",
+            borderColor: uvLight ? "#e2e8f0" : "#cbd5e1",
+            boxShadow: uvLight ? "0 0 5px rgba(255,255,255,0.7)" : "0 1px 2px rgba(0,0,0,0.25)",
+            backfaceVisibility: "visible",
+            WebkitBackfaceVisibility: "visible",
+          }}
+        >
+          <div
+            className="rounded-full bg-[#05090e] shadow-[inset_0_1px_3px_rgba(0,0,0,0.95)]"
+            style={{ width: `${pvcRadius * 1.2}px`, height: `${pvcRadius * 1.2}px` }}
+          />
+        </div>
+
+        {/* Extremo superior del tubo de PVC saliendo en el techo exterior */}
+        <div
+          className="absolute rounded-full border flex items-center justify-center pointer-events-none"
+          style={{
+            width: `${pvcRadius * 2}px`,
+            height: `${pvcRadius * 2}px`,
+            left: `-${pvcRadius}px`,
+            top: `-${pvcRadius}px`,
+            transform: `translateY(-${outerLength}px) rotateX(-90deg)`,
+            background: "#f8fafc",
+            borderColor: "#cbd5e1",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
+            backfaceVisibility: "visible",
+            WebkitBackfaceVisibility: "visible",
+          }}
+        >
+          <div
+            className="rounded-full bg-slate-600 shadow-inner"
+            style={{ width: `${pvcRadius * 1.2}px`, height: `${pvcRadius * 1.2}px` }}
+          />
+        </div>
+
+        {/* Cilindro 3D de agua azul cristalina */}
+        {isPouring && (
+          <div
+            className="absolute left-0 top-0 pointer-events-none"
+            style={{
+              transform: `translateY(${innerLength}px)`,
+              transformStyle: "preserve-3d",
+            }}
+          >
+            {/* Nucleo interior de brillo liquido */}
             <div
-              className="rounded-full border-2 border-[#898889] shadow-[inset_0_1px_3px_rgba(0,0,0,0.6)]"
-              style={{ width: `${holeRadius * 2.8}px`, height: `${holeRadius * 2.8}px` }}
+              className="absolute left-0 top-0 pointer-events-none w-[2.5px] -translate-x-1/2 bg-gradient-to-b from-white/95 via-cyan-200/80 to-sky-300/50 blur-[0.4px] animate-pulse z-10"
+              style={{ height: `${waterStreamLength}px` }}
+            />
+
+            {/* 8 Facetas del cilindro 3D de agua con degradados azules translucidos */}
+            {WATER_FACETS.map((f, i) => (
+              <div
+                key={i}
+                className="absolute top-0 animate-pulse"
+                style={{
+                  width: `${waterFacetWidth}px`,
+                  height: `${waterStreamLength}px`,
+                  left: `-${waterFacetWidth / 2}px`,
+                  background: f.bg,
+                  transform: `rotateY(${f.angle}deg) translateZ(${waterRadius}px)`,
+                  backfaceVisibility: "visible",
+                  WebkitBackfaceVisibility: "visible",
+                  boxShadow: uvLight
+                    ? "0 0 6px rgba(56,189,248,0.55), inset 0 0 3px rgba(255,255,255,0.7)"
+                    : "0 0 4px rgba(56,189,248,0.35), inset 0 0 2px rgba(255,255,255,0.4)",
+                  opacity: uvLight ? 0.95 : 0.85,
+                  animationDuration: `${0.75 + (i % 3) * 0.25}s`,
+                }}
+              />
+            ))}
+
+            {/* Anillo de impacto / Ondas de agua en la charola de desague inferior */}
+            <div
+              className="absolute rounded-full border border-cyan-300/80 bg-gradient-to-b from-cyan-400/35 to-blue-500/25 shadow-[0_0_12px_rgba(56,189,248,0.7)] animate-pulse pointer-events-none"
+              style={{
+                width: `${waterRadius * 5.2}px`,
+                height: `${waterRadius * 5.2}px`,
+                left: `-${waterRadius * 2.6}px`,
+                top: `${waterStreamLength - waterRadius * 2.6}px`,
+                transform: "rotateX(90deg)",
+              }}
             />
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Componente para la Cabina de Agua 3D (Caja Sólida Externa + Interior Iluminado, Despegada y Flotante)
-function WaterCabinBox({ x, y, w, h, depth, floatZ = 0, isPouring, uvLight, hasJug, onToggleLight, makeTexOverlay }) {
-  const faceBase = "absolute overflow-hidden";
-
-  return (
-    <div
-      className="absolute transition-transform duration-500 ease-out"
-      style={{
-        left: `${x}%`,
-        top: `${y}%`,
-        width: `${w}%`,
-        height: `${h}%`,
-        transformStyle: "preserve-3d",
-        transform: `translateZ(-${floatZ}px)`,
-      }}
-    >
-      {/* 1. CARA TRASERA EXTERIOR (Acero cepillado con acabado industrial) */}
-      <div
-        className={`${faceBase} inset-0 border flex flex-col items-center justify-center p-2 text-center shadow-inner`}
-        style={{
-          transform: `translateZ(-${depth}px) rotateY(180deg)`,
-          background: STEEL_FINISH.back,
-          borderColor: STEEL_FINISH.border,
-          boxShadow: "inset 2px 2px 3px rgba(255, 255, 255, 0.45), inset -2px -2px 4px rgba(0, 0, 0, 0.25), inset 0 0 20px rgba(0, 0, 0, 0.15)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-      >
-        <div style={makeTexOverlay()} />
+        )}
       </div>
 
-      {/* 2. CARA LATERAL IZQUIERDA EXTERIOR */}
-      <div
-        className={`${faceBase} h-full left-0 top-0 origin-left`}
-        style={{
-          width: `${depth}px`,
-          transform: "rotateY(90deg)",
-          background: STEEL_FINISH.left,
-          boxShadow: "inset 2px 0 3px rgba(255, 255, 255, 0.5), inset -3px 0 5px rgba(0, 0, 0, 0.35)",
-          borderLeft: "1px solid rgba(255, 255, 255, 0.5)",
-          backfaceVisibility: "visible",
-          WebkitBackfaceVisibility: "visible",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
-
-      {/* 3. CARA LATERAL DERECHA EXTERIOR */}
-      <div
-        className={`${faceBase} h-full right-0 top-0 origin-right`}
-        style={{
-          width: `${depth}px`,
-          transform: "rotateY(-90deg)",
-          background: STEEL_FINISH.right,
-          boxShadow: "inset -2px 0 3px rgba(255, 255, 255, 0.4), inset 3px 0 5px rgba(0, 0, 0, 0.35)",
-          borderRight: "1px solid rgba(50, 50, 50, 0.55)",
-          backfaceVisibility: "visible",
-          WebkitBackfaceVisibility: "visible",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
-
-      {/* 4. CARA SUPERIOR EXTERIOR (TECHO) */}
-      <div
-        className={`${faceBase} w-full left-0 top-0 origin-top`}
-        style={{
-          height: `${depth}px`,
-          transform: "rotateX(-90deg)",
-          background: STEEL_FINISH.top,
-          boxShadow: "inset 0 2px 3px rgba(255, 255, 255, 0.85), inset 0 -2px 4px rgba(0, 0, 0, 0.15)",
-          borderTop: "1px solid rgba(255, 255, 255, 0.75)",
-          backfaceVisibility: "visible",
-          WebkitBackfaceVisibility: "visible",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
-
-      {/* 5. CARA INFERIOR EXTERIOR (PISO) */}
-      <div
-        className={`${faceBase} w-full left-0 bottom-0 origin-bottom`}
-        style={{
-          height: `${depth}px`,
-          transform: "rotateX(90deg)",
-          background: STEEL_FINISH.bottom,
-          boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -2px 6px rgba(0, 0, 0, 0.7)",
-          borderBottom: "1px solid rgba(50, 50, 50, 0.75)",
-          backfaceVisibility: "visible",
-          WebkitBackfaceVisibility: "visible",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
-
-      {/* 6. PARED TRASERA INTERIOR (Acero gris oscuro satinado con luz blanca difuminada) */}
+      {/* 11. PARED TRASERA INTERIOR (Acero gris oscuro satinado con luz blanca difuminada) */}
       <div
         className="absolute inset-0 flex flex-col items-center justify-between p-2 overflow-hidden transition-all duration-500 ease-out"
         style={{
@@ -1959,7 +1770,6 @@ function WaterCabinBox({ x, y, w, h, depth, floatZ = 0, isPouring, uvLight, hasJ
 
         {/* Foquito LED Superior Delgado */}
         <div className="relative z-10 flex flex-col items-center pt-0.5" data-ui="true">
-          {/* Foquito LED interactivo: delgado, mas pequeno y ubicado bien arriba */}
           <div
             data-ui="true"
             onPointerDown={(e) => e.stopPropagation()}
@@ -1983,7 +1793,7 @@ function WaterCabinBox({ x, y, w, h, depth, floatZ = 0, isPouring, uvLight, hasJ
         </div>
       </div>
 
-      {/* 7. HAZ DIFUMINADO DE LUZ BLANCA (Abarca ampliamente la cabina con difusión suave) */}
+      {/* 12. HAZ DIFUMINADO DE LUZ BLANCA */}
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-700 ease-out"
         style={{
@@ -1995,7 +1805,7 @@ function WaterCabinBox({ x, y, w, h, depth, floatZ = 0, isPouring, uvLight, hasJ
         }}
       />
 
-      {/* 8. RESPLANDOR AMBIENTAL TENUE Y ENVOLVENTE */}
+      {/* 13. RESPLANDOR AMBIENTAL TENUE Y ENVOLVENTE */}
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-700 ease-out"
         style={{
@@ -2005,75 +1815,6 @@ function WaterCabinBox({ x, y, w, h, depth, floatZ = 0, isPouring, uvLight, hasJ
           filter: "blur(10px)",
         }}
       />
-
-      {/* 9. PAREDES INTERIORES CON ACERO GRIS Y LUZ BLANCA ENVOLVENTE */}
-      {/* Pared Interior Izquierda */}
-      <div
-        className="absolute h-full left-0 top-0 origin-left transition-all duration-500 pointer-events-none overflow-hidden"
-        style={{
-          width: `${depth}px`,
-          transform: "rotateY(90deg)",
-          background: uvLight
-            ? "radial-gradient(ellipse 80% 70% at 95% 15%, rgba(255, 255, 255, 0.22) 0%, transparent 75%), linear-gradient(90deg, #333d4b 0%, #475569 40%, #5c6b7e 85%, #3d4a59 100%)"
-            : "linear-gradient(90deg, #1e242c 0%, #28313c 40%, #333d4b 85%, #222932 100%)",
-          boxShadow: uvLight ? "inset 0 0 15px rgba(255,255,255,0.12), inset 0 0 12px rgba(0,0,0,0.3)" : "inset 0 0 15px rgba(0,0,0,0.6)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
-
-      {/* Pared Interior Derecha */}
-      <div
-        className="absolute h-full right-0 top-0 origin-right transition-all duration-500 pointer-events-none overflow-hidden"
-        style={{
-          width: `${depth}px`,
-          transform: "rotateY(-90deg)",
-          background: uvLight
-            ? "radial-gradient(ellipse 80% 70% at 5% 15%, rgba(255, 255, 255, 0.22) 0%, transparent 75%), linear-gradient(90deg, #3d4a59 0%, #5c6b7e 15%, #475569 60%, #333d4b 100%)"
-            : "linear-gradient(90deg, #222932 0%, #333d4b 15%, #28313c 60%, #1e242c 100%)",
-          boxShadow: uvLight ? "inset 0 0 15px rgba(255,255,255,0.12), inset 0 0 12px rgba(0,0,0,0.3)" : "inset 0 0 15px rgba(0,0,0,0.6)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
-
-      {/* Techo Interior */}
-      <div
-        className="absolute w-full left-0 top-0 origin-top transition-all duration-500 pointer-events-none overflow-hidden"
-        style={{
-          height: `${depth}px`,
-          transform: "rotateX(-90deg)",
-          background: uvLight
-            ? "radial-gradient(ellipse 70% 85% at 50% 100%, rgba(255, 255, 255, 0.32) 0%, transparent 80%), linear-gradient(180deg, #64748b 0%, #4f5d6f 60%, #374351 100%)"
-            : "linear-gradient(180deg, #374151 0%, #28313c 60%, #1a2027 100%)",
-          boxShadow: uvLight ? "inset 0 -8px 20px rgba(255,255,255,0.22), inset 0 0 10px rgba(0,0,0,0.3)" : "inset 0 -6px 12px rgba(0,0,0,0.6)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
-
-      {/* Piso Interior */}
-      <div
-        className="absolute w-full left-0 bottom-0 origin-bottom transition-all duration-500 pointer-events-none overflow-hidden"
-        style={{
-          height: `${depth}px`,
-          transform: "rotateX(90deg)",
-          background: uvLight
-            ? "radial-gradient(ellipse 75% 75% at 50% 25%, rgba(255, 255, 255, 0.2) 0%, transparent 80%), linear-gradient(180deg, #3d4a59 0%, #526071 60%, #2a3440 100%)"
-            : "linear-gradient(180deg, #1c222a 0%, #28313c 60%, #151a20 100%)",
-          boxShadow: uvLight ? "inset 0 8px 18px rgba(255,255,255,0.12), inset 0 0 10px rgba(0,0,0,0.3)" : "inset 0 6px 12px rgba(0,0,0,0.6)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-      >
-        <div style={makeTexOverlay()} />
-      </div>
     </div>
   );
 }
