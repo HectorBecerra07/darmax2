@@ -175,8 +175,7 @@ const TEX_OVERLAY_STYLE = Object.freeze({
   backgroundRepeat: "repeat",
   backgroundSize: "260px 260px",
   backgroundPosition: "center",
-  opacity: 0.22,
-  mixBlendMode: "soft-light",
+  opacity: 0.14,
   pointerEvents: "none",
 });
 
@@ -935,7 +934,7 @@ const VendingPrecise3D = ({
             {/* 3. PUERTA ABATIBLE SÓLIDA (Volumen 3D dentro del modelo) */}
             <div
               className="absolute z-30 transition-transform duration-500 ease-out"
-              data-ui={mode ? "true" : undefined}
+              data-ui={mode === "controles" ? "true" : undefined}
               style={{
                 left: `${door.left}%`,
                 top: `${door.top}%`,
@@ -944,11 +943,11 @@ const VendingPrecise3D = ({
                 transformStyle: "preserve-3d",
                 transformOrigin: "left center", // Las bisagras coinciden exactamente con door.left (4.01%)
                 transform: `translateZ(1px) rotateY(-${doorAngle}deg)`,
-                cursor: mode ? "pointer" : "inherit",
+                cursor: mode === "controles" ? "pointer" : "inherit",
               }}
-              onClick={mode ? toggleDoor : undefined}
+              onClick={mode === "controles" ? toggleDoor : undefined}
               title={
-                mode
+                mode === "controles"
                   ? doorAngle > 10
                     ? "Haz clic para cerrar la puerta"
                     : "Haz clic para abrir la puerta"
@@ -1151,16 +1150,16 @@ const VendingPrecise3D = ({
                     }`}
                     style={{
                       left: isMobile
-                        ? (c.side === "left" ? "1%" : "99%")
+                        ? (c.side === "left" ? "0%" : "100%")
                         : `${c.bubble.x}%`,
                       top: `${c.bubble.y}%`,
                       transform: isMobile
-                        ? (c.side === "left" ? "translate(-78%, -50%)" : "translate(-22%, -50%)")
+                        ? (c.side === "left" ? "translate(-60%, -50%)" : "translate(-40%, -50%)")
                         : (c.side === "left" ? "translate(-98%, -50%)" : "translate(-2%, -50%)"),
                     }}
                   >
                     <div
-                      className={`w-[118px] sm:w-[145px] rounded-xl border backdrop-blur px-2.5 py-1.5 sm:px-3 sm:py-2 transition-all duration-300 ${
+                      className={`w-[108px] min-[380px]:w-[118px] sm:w-[145px] rounded-xl border backdrop-blur px-2 py-1.5 sm:px-3 sm:py-2 transition-all duration-300 ${
                         isActive
                           ? "scale-105"
                           : "hover:scale-105 shadow-md shadow-slate-900/5 bg-white/95 border-slate-200/90"
@@ -1993,7 +1992,6 @@ function WaterCabinBox({ x, y, w, h, depth, floatZ = 0, isPouring, uvLight, hasJ
           background:
             "radial-gradient(ellipse 85% 90% at 50% 0%, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.15) 40%, rgba(255, 255, 255, 0.03) 75%, transparent 100%)",
           filter: "blur(6px)",
-          mixBlendMode: "screen",
         }}
       />
 
@@ -2005,7 +2003,6 @@ function WaterCabinBox({ x, y, w, h, depth, floatZ = 0, isPouring, uvLight, hasJ
           opacity: uvLight ? 0.30 : 0,
           background: "radial-gradient(ellipse 80% 80% at 50% 20%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.06) 55%, transparent 85%)",
           filter: "blur(10px)",
-          mixBlendMode: "screen",
         }}
       />
 
