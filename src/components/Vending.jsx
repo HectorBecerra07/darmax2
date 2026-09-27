@@ -1402,6 +1402,24 @@ function WaterCabinBox({ x, y, w, h, depth, sc = 3.5, holeHeightPx, isPouring, u
         }}
       >
         <div style={makeTexOverlay()} />
+
+        {/* Brida exterior de entrada de agua con remaches metalicos */}
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none"
+          style={{ width: `${holeRadius * 4.4}px`, height: `${holeRadius * 4.4}px` }}
+        >
+          <div className="absolute inset-0 rounded-full border border-[#898889] bg-gradient-to-b from-[#E2E1E4] via-[#CDCCCF] to-[#ACAAAD] shadow-sm flex items-center justify-center">
+            <div className="absolute top-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#F0EFF1] border border-[#777678] shadow-xs" />
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#F0EFF1] border border-[#777678] shadow-xs" />
+            <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#F0EFF1] border border-[#777678] shadow-xs" />
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#F0EFF1] border border-[#777678] shadow-xs" />
+
+            <div
+              className="rounded-full border-2 border-[#BDBBBE] shadow-[inset_0_1px_3px_rgba(0,0,0,0.4)]"
+              style={{ width: `${holeRadius * 2.8}px`, height: `${holeRadius * 2.8}px` }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* 7. TECHO INTERIOR (Con boquilla de entrada y textura reactiva) */}
@@ -1451,11 +1469,34 @@ function WaterCabinBox({ x, y, w, h, depth, sc = 3.5, holeHeightPx, isPouring, u
           background: STEEL_FINISH.bottom,
           boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -2px 6px rgba(0, 0, 0, 0.7)",
           borderBottom: "1px solid rgba(50, 50, 50, 0.75)",
+          WebkitMaskImage: `radial-gradient(circle at 50% 50%, transparent 0, transparent ${holeRadius}px, black ${holeRadius + 0.5}px, black 100%)`,
+          maskImage: `radial-gradient(circle at 50% 50%, transparent 0, transparent ${holeRadius}px, black ${holeRadius + 0.5}px, black 100%)`,
           backfaceVisibility: "hidden",
           WebkitBackfaceVisibility: "hidden",
         }}
       >
         <div style={makeTexOverlay()} />
+
+        {/* Orificio / Boquilla de salida exterior de desague */}
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none"
+          style={{ width: `${holeRadius * 4.4}px`, height: `${holeRadius * 4.4}px` }}
+        >
+          {/* Brida exterior de fijacion (Tonos acero cepillado con remaches de montaje) */}
+          <div className="absolute inset-0 rounded-full border border-[#5D5C5C] bg-gradient-to-b from-[#ACAAAD] via-[#898889] to-[#5D5C5C] shadow-md flex items-center justify-center">
+            {/* 4 Remaches de montaje exterior */}
+            <div className="absolute top-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#E2E1E4] border border-[#5D5C5C] shadow-xs" />
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#E2E1E4] border border-[#5D5C5C] shadow-xs" />
+            <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#E2E1E4] border border-[#5D5C5C] shadow-xs" />
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-[#E2E1E4] border border-[#5D5C5C] shadow-xs" />
+
+            {/* Collarin / Boquilla cilindrica de salida hueca */}
+            <div
+              className="rounded-full border-2 border-[#898889] shadow-[inset_0_1px_3px_rgba(0,0,0,0.6)]"
+              style={{ width: `${holeRadius * 2.8}px`, height: `${holeRadius * 2.8}px` }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* 9. PISO INTERIOR (Con charola de desague y orificio pasante) */}
@@ -1582,7 +1623,7 @@ function WaterCabinBox({ x, y, w, h, depth, sc = 3.5, holeHeightPx, isPouring, u
               />
             </div>
 
-            {/* Aro Central de Desague */}
+            {/* Aro Central de Desague: Orificio pasante que permite ver a traves del piso */}
             <div
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center z-10"
               style={{ width: `${ringSize}px`, height: `${ringSize}px` }}
@@ -1595,6 +1636,7 @@ function WaterCabinBox({ x, y, w, h, depth, sc = 3.5, holeHeightPx, isPouring, u
                 }`}
                 title="Orificio pasante de salida / Desague"
               >
+                {/* Aro biselado interior que enmarca el orificio */}
                 <div
                   className={`rounded-full border transition-all duration-500 ${
                     uvLight ? "border-slate-400 shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]" : "border-slate-700 shadow-inner"
