@@ -17,6 +17,7 @@ import zoomRoutes from "./routes/zoom.js";
 import postalCodeRoutes from "./routes/postalcode.js";
 import blogRoutes from "./routes/blog.js";
 import cotizacionesRoutes from "./routes/cotizaciones.js";
+import externalRoutes from "./routes/external.js";
 
 const app = express();
 app.disable("x-powered-by");
@@ -67,6 +68,7 @@ app.use("/api/zoom", zoomRoutes);
 app.use("/api/blog", blogRoutes);
 app.use("/api/orders", ordersRouter);
 app.use("/api/cotizaciones", cotizacionesRoutes);
+app.use("/api/external", externalRoutes);
 
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");
