@@ -606,8 +606,8 @@ const IniciaNegocio = () => {
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
   const [compareOpen, setCompareOpen] = useState(false);
-  const [showVendingSpecs, setShowVendingSpecs] = useState(true);
-  const [vendingMode, setVendingMode] = useState("detalles");
+  const [showVendingSpecs, setShowVendingSpecs] = useState(false);
+  const [vendingMode, setVendingMode] = useState(null);
   const [isVendingZoomed, setIsVendingZoomed] = useState(false);
   const [activeCalloutId, setActiveCalloutId] = useState(null);
   const [modelosData, setModelosData] = useState(() => {
@@ -1290,7 +1290,10 @@ const IniciaNegocio = () => {
                 <div className="h-[325px] sm:h-[380px] md:h-[410px] lg:h-[435px] xl:h-[450px] flex items-start justify-center overflow-visible">
                   <VendingPrecise3D
                     mode={vendingMode}
-                    onModeChange={setVendingMode}
+                    onModeChange={(m) => {
+                      setVendingMode(m);
+                      setShowVendingSpecs(m === "detalles");
+                    }}
                     showCallouts={showVendingSpecs}
                     onToggleCallouts={() => setShowVendingSpecs((v) => !v)}
                     onZoomChange={setIsVendingZoomed}

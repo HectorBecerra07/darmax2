@@ -186,9 +186,12 @@ const CALLOUTS = Object.freeze([
   {
     id: "agua",
     title: "Módulo Agua",
-    body: "Despacho automático de garrafón.",
+    body: "Acero inoxidable grado alimenticio 304, con luz LED en el interior.",
+    bodyMobile: "Acero inox 304 con luz LED interior",
     side: "left",
+    sideMobile: "left",
     bubble: { x: 2, y: 45 },
+    mobileY: 74,
     color: "#0ea5e9",
     colorBg: "rgba(14, 165, 233, 0.25)",
     colorBorder: "#0ea5e9",
@@ -196,10 +199,14 @@ const CALLOUTS = Object.freeze([
   },
   {
     id: "monedas",
-    title: "Monedero Anti Robo",
+    title: "Monedero",
+    fullTitle: "Monedero Anti Robo",
     body: "Validación multimoneda de alta seguridad.",
+    bodyMobile: "Blindaje anti robo",
     side: "right",
+    sideMobile: "left",
     bubble: { x: 97, y: 17 },
+    mobileY: 18,
     color: "#f59e0b",
     colorBg: "rgba(245, 158, 11, 0.25)",
     colorBorder: "#f59e0b",
@@ -209,8 +216,11 @@ const CALLOUTS = Object.freeze([
     id: "pantalla",
     title: "Pantalla Touch",
     body: "Interfaz táctil guiada.",
+    bodyMobile: "Interfaz táctil",
     side: "right",
+    sideMobile: "right",
     bubble: { x: 97, y: 51 },
+    mobileY: 18,
     color: "#3b82f6",
     colorBg: "rgba(59, 130, 246, 0.25)",
     colorBorder: "#3b82f6",
@@ -220,8 +230,11 @@ const CALLOUTS = Object.freeze([
     id: "tapas",
     title: "Dispensador Tapas",
     body: "Entrega automática de tapas.",
+    bodyMobile: "Entrega limpia",
     side: "right",
+    sideMobile: "right",
     bubble: { x: 97, y: 91 },
+    mobileY: 74,
     color: "#10b981",
     colorBg: "rgba(16, 185, 129, 0.25)",
     colorBorder: "#10b981",
@@ -238,7 +251,7 @@ const ZOOM_CONFIG = Object.freeze({
     rotX: 0,
     rotY: 0,
     badge: "Cabina Sanitaria",
-    subtitle: "Acero inoxidable 304 con boquilla de llenado y luz UV bactericida.",
+    subtitle: "Acero inoxidable grado alimenticio 304, con luz LED en el interior.",
   },
   monedas: {
     pinX: 57.5,
@@ -1327,8 +1340,11 @@ const VendingPrecise3D = ({
             >
               {CALLOUTS.map((c) => {
                 const isSelected = activeCalloutId === c.id || zoomedCalloutId === c.id;
+                const isZoomed = zoomedCalloutId === c.id;
                 const isAnySelected = Boolean(activeCalloutId) || Boolean(zoomedCalloutId);
                 const shouldHide = isAnySelected && !isSelected;
+                const sideMob = c.sideMobile || c.side;
+                const mobY = c.mobileY || c.bubble.y;
 
                 return (
                   <div
@@ -1338,48 +1354,79 @@ const VendingPrecise3D = ({
                       e.stopPropagation();
                       handleCalloutClick(c.id);
                     }}
-                    className={`absolute z-[50] cursor-pointer transition-[opacity,transform] duration-300 ease-out ${
+                    className={`absolute cursor-pointer transition-[opacity,transform,left,top,bottom] duration-500 ease-out ${
+                      isZoomed ? "z-[60]" : "z-[45]"
+                    } ${
                       shouldHide
                         ? "opacity-0 scale-75 pointer-events-none"
                         : "opacity-100 scale-100 pointer-events-auto"
                     }`}
-                    style={{
-                      left: isMobile
-                        ? (c.side === "left" ? "0%" : "100%")
-                        : `${c.bubble.x}%`,
-                      top: `${c.bubble.y}%`,
-                      transform: isMobile
-                        ? (c.side === "left" ? "translate(-60%, -50%)" : "translate(-40%, -50%)")
-                        : (c.side === "left" ? "translate(-98%, -50%)" : "translate(-2%, -50%)"),
-                    }}
+                    style={
+                      isZoomed
+                        ? {
+                            left: "50%",
+                            top: "auto",
+                            bottom: isMobile ? "-45px" : "-55px",
+                            transform: "translate(-50%, 0)",
+                          }
+                        : {
+                            left: isMobile
+                              ? (sideMob === "left" ? "0%" : "100%")
+                              : `${c.bubble.x}%`,
+                            top: isMobile ? `${mobY}%` : `${c.bubble.y}%`,
+                            bottom: "auto",
+                            transform: isMobile
+                              ? (sideMob === "left" ? "translate(-65%, -50%)" : "translate(-35%, -50%)")
+                              : (c.side === "left" ? "translate(-98%, -50%)" : "translate(-2%, -50%)"),
+                          }
+                    }
                   >
                     <div
-                      className={`w-[110px] min-[380px]:w-[122px] sm:w-[148px] rounded-xl border backdrop-blur px-2.5 py-2 sm:px-3 sm:py-2.5 transition-all duration-300 ${
-                        isSelected
-                          ? "scale-105"
-                          : "hover:scale-105 shadow-md shadow-slate-900/5 bg-white/95 border-slate-200/90"
+                      className={`rounded-2xl border transition-all duration-300 font-montserrat not-italic ${
+                        isZoomed
+                          ? "w-[265px] min-[380px]:w-[290px] sm:w-[340px] px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xl"
+                          : "w-[86px] min-[380px]:w-[94px] sm:w-[148px] px-2 py-1.5 sm:px-3 sm:py-2.5 shadow-lg hover:scale-105"
                       }`}
                       style={{
-                        backgroundColor: isSelected ? "rgba(255, 255, 255, 0.98)" : undefined,
-                        borderColor: isSelected ? c.colorBorder : undefined,
+                        background: isZoomed
+                          ? "linear-gradient(145deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.92) 100%)"
+                          : "linear-gradient(145deg, rgba(255, 255, 255, 0.93) 0%, rgba(241, 245, 249, 0.88) 100%)",
+                        backdropFilter: "blur(16px) saturate(190%)",
+                        WebkitBackdropFilter: "blur(16px) saturate(190%)",
+                        borderColor: isSelected ? c.colorBorder : "rgba(255, 255, 255, 0.85)",
                         boxShadow: isSelected
-                          ? `0 10px 25px -4px ${c.colorBg}, 0 0 0 1.5px ${c.colorBorder}`
-                          : undefined,
+                          ? `0 12px 30px -4px ${c.colorBg}, 0 0 0 1.5px ${c.colorBorder}, inset 0 1px 1.5px rgba(255, 255, 255, 1)`
+                          : "0 8px 24px -4px rgba(15, 23, 42, 0.12), 0 2px 6px -1px rgba(15, 23, 42, 0.05), inset 0 1px 1.5px rgba(255, 255, 255, 0.95)",
                       }}
                     >
                       <div
-                        className="text-[9px] sm:text-[10.5px] font-bold leading-tight font-montserrat not-italic sm:whitespace-nowrap transition-colors duration-300"
+                        className={`font-bold leading-tight font-montserrat not-italic transition-colors duration-300 ${
+                          isZoomed
+                            ? "text-[10.5px] min-[380px]:text-[11.5px] sm:text-[13px]"
+                            : "text-[8px] min-[380px]:text-[8.5px] sm:text-[10.5px] sm:whitespace-nowrap"
+                        }`}
                         style={{ color: isSelected ? c.color : "#0f172a" }}
                       >
-                        {c.title}
+                        {isMobile && !isZoomed && c.id === "monedas" ? c.title : (c.fullTitle || c.title)}
                       </div>
-                      <div className="text-[8px] sm:text-[9.5px] text-slate-500 leading-snug mt-1 font-montserrat not-italic">
-                        {c.body}
+                      <div
+                        className={`text-slate-700 font-medium font-montserrat not-italic mt-0.5 sm:mt-1 ${
+                          isZoomed
+                            ? "text-[8.5px] min-[380px]:text-[9.5px] sm:text-[10.5px] leading-snug"
+                            : "text-[7px] min-[380px]:text-[7.5px] sm:text-[9.5px] leading-tight sm:leading-snug"
+                        }`}
+                      >
+                        {isZoomed ? (ZOOM_CONFIG[c.id]?.subtitle || c.body) : (isMobile ? c.bodyMobile : c.body)}
                       </div>
-                      <div className="mt-1.5 pt-1 border-t border-slate-100 flex items-center justify-between text-[7.5px] sm:text-[8.5px] font-semibold text-[#168387]">
-                        <span>{isSelected ? "Vista enfocada" : "Toca para zoom"}</span>
-                        {isSelected ? <Sparkles size={10} className="shrink-0 text-[#168387]" /> : <ZoomIn size={10} className="shrink-0 text-[#168387]" />}
-                      </div>
+                      {!isZoomed && (
+                        <div className="hidden sm:flex mt-1.5 pt-1 border-t border-slate-200/60 items-center justify-between text-[7.5px] sm:text-[8.5px] font-semibold text-slate-700">
+                          <span className="flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: c.color }} />
+                            <span>Toca para zoom</span>
+                          </span>
+                          <ZoomIn size={10} className="shrink-0 text-[#168387]" />
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
