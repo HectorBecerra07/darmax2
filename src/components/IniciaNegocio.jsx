@@ -608,6 +608,8 @@ const IniciaNegocio = () => {
   const [compareOpen, setCompareOpen] = useState(false);
   const [showVendingSpecs, setShowVendingSpecs] = useState(true);
   const [vendingMode, setVendingMode] = useState("detalles");
+  const [isVendingZoomed, setIsVendingZoomed] = useState(false);
+  const [activeCalloutId, setActiveCalloutId] = useState(null);
   const [modelosData, setModelosData] = useState(() => {
     const cached = getCachedConfiguradorModels();
     if (cached && Array.isArray(cached) && cached.length > 0) {
@@ -1254,10 +1256,16 @@ const IniciaNegocio = () => {
               {...slideInRight(0.04, "Módulo 3D Interactivo")}
               className="w-full relative overflow-visible flex justify-center lg:justify-end"
             >
-              <div className="relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F0FCFF] border border-[#c4eef5] p-3.5 pt-11 sm:pt-11 sm:p-4 shadow-xl shadow-cyan-950/5 backdrop-blur-md group w-full max-w-[580px] xl:max-w-[620px]">
+              <div className={`relative rounded-[2rem] sm:rounded-[2.5rem] bg-[#F0FCFF] border border-[#c4eef5] p-3.5 pt-11 sm:pt-11 sm:p-4 shadow-xl shadow-cyan-950/5 backdrop-blur-md group w-full max-w-[580px] xl:max-w-[620px] transition-all duration-300 ${
+                isVendingZoomed ? "overflow-hidden ring-2 ring-[#168387]/30" : "overflow-visible"
+              }`}>
                 
-                {/* Lado izquierdo: Frase en 3 líneas */}
-                <div className="absolute top-3.5 sm:top-4 left-5 sm:left-7 z-20">
+                {/* Lado izquierdo: Frase en 3 líneas (desaparece al seleccionar un globo o en zoom) */}
+                <div className={`absolute top-3.5 sm:top-4 left-5 sm:left-7 z-20 transition-all duration-300 ${
+                  activeCalloutId || isVendingZoomed
+                    ? "opacity-0 -translate-y-1 pointer-events-none"
+                    : "opacity-100 translate-y-0 pointer-events-auto"
+                }`}>
                   <div className="text-[7.5px] sm:text-[8px] font-semibold text-slate-600 uppercase tracking-widest font-montserrat not-italic leading-[1.35] text-left">
                     <span className="block">TECNOLOGÍA</span>
                     <span className="block">QUE GENERA</span>
@@ -1265,11 +1273,17 @@ const IniciaNegocio = () => {
                   </div>
                 </div>
 
-                {/* Badge 360° Interactiva */}
+                {/* Badge 360° Interactiva / Zoom Focal */}
                 <div className="absolute top-3.5 sm:top-4 right-5 sm:right-7 z-20">
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 bg-[#b5e0ef] rounded-full border border-[#94cbde] backdrop-blur-md shadow-sm">
-                    <CubeIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#1c79a6] stroke-[2]" />
-                    <span className="text-[8.5px] sm:text-[9px] font-semibold text-slate-800 uppercase tracking-widest font-montserrat not-italic">360° Interactiva</span>
+                  <div className={`flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border backdrop-blur-md shadow-sm transition-all duration-300 ${
+                    isVendingZoomed
+                      ? "bg-[#168387] border-[#168387] text-white shadow-md shadow-[#168387]/20"
+                      : "bg-[#b5e0ef] border-[#94cbde] text-slate-800"
+                  }`}>
+                    <CubeIcon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2] ${isVendingZoomed ? "text-white" : "text-[#1c79a6]"}`} />
+                    <span className="text-[8.5px] sm:text-[9px] font-semibold uppercase tracking-widest font-montserrat not-italic">
+                      {isVendingZoomed ? "Zoom Focal" : "360° Interactiva"}
+                    </span>
                   </div>
                 </div>
 
@@ -1279,15 +1293,19 @@ const IniciaNegocio = () => {
                     onModeChange={setVendingMode}
                     showCallouts={showVendingSpecs}
                     onToggleCallouts={() => setShowVendingSpecs((v) => !v)}
+                    onZoomChange={setIsVendingZoomed}
+                    onActiveCalloutChange={setActiveCalloutId}
                   />
                 </div>
 
-                {/* Parte inferior: Texto de interaccion */}
-                <div className="absolute bottom-2 sm:bottom-3.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-                  <div className="text-[9.5px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap font-montserrat not-italic">
-                    Arrastra para rotar e interactuar
+                {/* Parte inferior: Texto de interaccion (se oculta durante el zoom focal) */}
+                {!isVendingZoomed && (
+                  <div className="absolute bottom-2 sm:bottom-3.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none transition-opacity duration-300">
+                    <div className="text-[9.5px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] whitespace-nowrap font-montserrat not-italic">
+                      Arrastra para rotar e interactuar
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </motion.div>
           </div>

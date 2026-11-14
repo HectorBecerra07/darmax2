@@ -38,12 +38,12 @@ const Footer = () => {
       {/* Linea decorativa superior con identidad dual */}
       <div className="absolute top-0 left-0 right-0 h-[2px] flex">
         <div className="flex-1 bg-gradient-to-r from-transparent via-[#168387] to-transparent" />
-        <div className="flex-1 bg-gradient-to-r from-transparent via-[#e7b341] to-transparent" />
+        <div className="flex-1 bg-gradient-to-r from-transparent via-[#53c406] to-transparent" />
       </div>
 
       {/* Brillos sutiles de fondo */}
       <div className="absolute top-0 left-1/4 w-64 h-64 bg-[#168387]/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-[#e7b341]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-[#53c406]/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* CUERPO PRINCIPAL DEL FOOTER */}
       <div className="max-w-screen-2xl mx-auto px-5 sm:px-8 lg:px-12 pt-12 sm:pt-16 pb-12 sm:pb-14 relative z-10">

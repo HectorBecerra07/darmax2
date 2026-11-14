@@ -783,18 +783,18 @@ export default function LandingPage() {
                     <span className={`w-2 h-2 rounded-full ${tipoCalc === "agua" ? "bg-white" : "bg-slate-300"}`} />
                     <span>Agua</span>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setTipoCalc("limpieza")}
-                    className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer font-montserrat not-italic ${
-                      tipoCalc === "limpieza"
-                        ? "bg-[#e7b341] text-white shadow-md"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    <span className={`w-2 h-2 rounded-full ${tipoCalc === "limpieza" ? "bg-amber-200" : "bg-slate-300"}`} />
-                    <span>Limpieza</span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setTipoCalc("limpieza")}
+                      className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer font-montserrat not-italic ${
+                        tipoCalc === "limpieza"
+                          ? "bg-gradient-to-r from-[#53c406] to-[#90e119] text-white shadow-md"
+                          : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      <span className={`w-2 h-2 rounded-full ${tipoCalc === "limpieza" ? "bg-lime-200" : "bg-slate-300"}`} />
+                      <span>Limpieza</span>
+                    </button>
                 </div>
               </div>
             </motion.div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { DoorClosed, DoorOpen, Droplets, Lightbulb, Volume2, VolumeX, RotateCcw, Sliders, Info, Eye, ArrowLeft } from "lucide-react";
+import { DoorClosed, DoorOpen, Droplets, Lightbulb, Volume2, VolumeX, RotateCcw, Sliders, Info, Eye, ArrowLeft, ZoomIn, ZoomOut, Sparkles } from "lucide-react";
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
@@ -82,7 +82,7 @@ class VendingSoundSystem {
 
     try {
       if (!this.cachedNoiseBuffer || this.cachedNoiseBuffer.sampleRate !== this.ctx.sampleRate) {
-        const bufferSize = this.ctx.sampleRate * 2;
+        const bufferSize = Math.round(this.ctx.sampleRate * 0.75);
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
 
@@ -229,23 +229,71 @@ const CALLOUTS = Object.freeze([
   },
 ]);
 
+// Configuracion de zoom focal milimetrico para cada componente con escala equilibrada
+const ZOOM_CONFIG = Object.freeze({
+  agua: {
+    pinX: 27,
+    pinY: 45.5,
+    scale: 2.15,
+    rotX: 0,
+    rotY: 0,
+    badge: "Cabina Sanitaria",
+    subtitle: "Acero inoxidable 304 con boquilla de llenado y luz UV bactericida.",
+  },
+  monedas: {
+    pinX: 57.5,
+    pinY: 22,
+    scale: 2.3,
+    rotX: 0,
+    rotY: 0,
+    badge: "Blindaje Antirrobo",
+    subtitle: "Validador multimoneda de alta precisión y placa frontal blindada.",
+  },
+  pantalla: {
+    pinX: 81.5,
+    pinY: 40,
+    scale: 2.3,
+    rotX: 0,
+    rotY: 0,
+    badge: "Control Táctil",
+    subtitle: "Pantalla intuitiva con guía paso a paso y diagnósticos en tiempo real.",
+  },
+  tapas: {
+    pinX: 80.5,
+    pinY: 88,
+    scale: 2.2,
+    rotX: 0,
+    rotY: 0,
+    badge: "Despacho Hermético",
+    subtitle: "Mecanismo automático para entrega limpia de tapas sin contacto manual.",
+  },
+});
+
 const VendingPrecise3D = ({
   mode: propMode,
   onModeChange: propOnModeChange,
   showCallouts: propShowCallouts,
   onToggleCallouts: propOnToggleCallouts,
+  onZoomChange,
+  onActiveCalloutChange,
 }) => {
   const [rotation, setRotation] = useState({ x: -10, y: -12 });
   const [isDragging, setIsDragging] = useState(false);
   const [internalMode, setInternalMode] = useState(null);
   const [activeCalloutId, setActiveCalloutId] = useState(null);
+  const [zoomedCalloutId, setZoomedCalloutId] = useState(null);
   const mode = propMode !== undefined ? propMode : internalMode;
   const handleModeChange = (newMode) => {
     setInternalMode(newMode);
     setActiveCalloutId(null);
+    setZoomedCalloutId(null);
     if (propOnModeChange) propOnModeChange(newMode);
   };
   const handleBack = () => {
+    if (zoomedCalloutId) {
+      handleZoomOut();
+      return;
+    }
     setActiveCalloutId(null);
     if (mode === "detalles") {
       setDoorAngle((prev) => {
@@ -300,12 +348,27 @@ const VendingPrecise3D = ({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Precarga y decodificacion en memoria de imagenes criticas de alta resolucion
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const criticalImages = ["/img/vending/frontalV.png", "/img/vending/doorV.png", "/img/vending/doorback.png"];
+      criticalImages.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+        if (img.decode) {
+          img.decode().catch(() => {});
+        }
+      });
+    }
+  }, []);
+
   const modelRef = useRef(null);
   const calloutsRef = useRef(null);
   const rotationRef = useRef({ x: -10, y: -12 });
   const lastRef = useRef({ x: 0, y: 0 });
   const velRef = useRef({ vx: 0, vy: 0 });
   const isDraggingRef = useRef(false);
+  const dragStartPosRef = useRef({ x: 0, y: 0 });
   const resetTimeoutRef = useRef(null);
   const inertiaRafRef = useRef(null);
   const frameRafRef = useRef(null);
@@ -318,14 +381,17 @@ const VendingPrecise3D = ({
   const totalW = 80.5 * sc;
   const totalH = 80.5 * sc * (1174 / 1123); // Relacion nativa exacta 1123 x 1174
 
-  // Profundidad del chasis del marco frontal soldado a la imagen
-  const chassisDepth = Math.round(5.5 * sc); // Aprox 18px a 21px
-  const doorThickness = Math.round(1.5 * sc); // Grosor fisico estilizado de la puerta (aprox 5px)
+  // Factor de super-muestreo interno para que la GPU renderice las texturas en alta definicion 1:1
+  const RES_FACTOR = 2.5;
+  const renderW = Math.round(totalW * RES_FACTOR);
+  const renderH = Math.round(totalH * RES_FACTOR);
 
-  // Profundidad de los bloques traseros
-  const coinDepth = 28 * sc;
-  const tapasDepth = 15 * sc;
-  const waterDepth = chassisDepth + coinDepth; // Cabina de agua continua unificada
+  // Profundidad del chasis y modulos en el espacio interno de alta resolucion
+  const chassisDepth = Math.round(5.5 * sc * RES_FACTOR);
+  const doorThickness = Math.round(1.5 * sc * RES_FACTOR);
+  const coinDepth = Math.round(28 * sc * RES_FACTOR);
+  const tapasDepth = Math.round(15 * sc * RES_FACTOR);
+  const waterDepth = chassisDepth + coinDepth;
 
   // Coordenadas milimetricas exactas del hueco en frontalV.png
   const hole = {
@@ -334,7 +400,7 @@ const VendingPrecise3D = ({
     width: 40.34,
     height: 64.40,
   };
-  const holeHeightPx = Math.round(totalH * (hole.height / 100));
+  const holeHeightPx = Math.round(renderH * (hole.height / 100));
 
   // Coordenadas milimetricas exactas de la puerta en doorV.png
   const door = {
@@ -447,6 +513,7 @@ const VendingPrecise3D = ({
   };
 
   const onPointerDown = (e) => {
+    if (zoomedCalloutId) return; // En modo zoom el modelo permanece estatico y centrado
     if (Boolean(e.target.closest('[data-ui="true"]'))) return;
 
     stopInertia();
@@ -468,6 +535,7 @@ const VendingPrecise3D = ({
     isDraggingRef.current = true;
     setIsDragging(true);
     lastRef.current = { x: e.clientX, y: e.clientY };
+    dragStartPosRef.current = { x: e.clientX, y: e.clientY };
     velRef.current = { vx: 0, vy: 0 };
   };
 
@@ -507,6 +575,14 @@ const VendingPrecise3D = ({
     setIsDragging(false);
 
     setRotation({ ...rotationRef.current });
+
+    // Si fue un clic simple en modo controles sobre la puerta (sin arrastre apreciable), alternar puerta
+    if (mode === "controles" && e && dragStartPosRef.current) {
+      const dist = Math.hypot(e.clientX - dragStartPosRef.current.x, e.clientY - dragStartPosRef.current.y);
+      if (dist < 6 && e.target?.closest?.('[data-door="true"]')) {
+        toggleDoor();
+      }
+    }
 
     if (Math.abs(velRef.current.vx) > 0.1 || Math.abs(velRef.current.vy) > 0.1) {
       startInertia();
@@ -577,7 +653,7 @@ const VendingPrecise3D = ({
     });
   }, [soundEnabled]);
 
-  const resetView = (target = { x: -10, y: -12 }) => {
+  const resetView = (target = { x: -10, y: -12 }, duration = 400, easing = "cubic-bezier(0.25, 1, 0.5, 1)") => {
     stopInertia();
     if (resetTimeoutRef.current) {
       clearTimeout(resetTimeoutRef.current);
@@ -586,9 +662,9 @@ const VendingPrecise3D = ({
     rotationRef.current = { ...target };
     setRotation({ ...target });
     if (modelRef.current) {
-      modelRef.current.style.transition = "transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+      modelRef.current.style.transition = `transform ${duration}ms ${easing}`;
       if (calloutsRef.current) {
-        calloutsRef.current.style.transition = "opacity 400ms ease, transform 400ms ease";
+        calloutsRef.current.style.transition = `opacity ${duration}ms ease, transform ${duration}ms ease`;
       }
       updateModelTransform();
       resetTimeoutRef.current = setTimeout(() => {
@@ -599,9 +675,71 @@ const VendingPrecise3D = ({
           calloutsRef.current.style.transition = "none";
         }
         resetTimeoutRef.current = null;
-      }, 420);
+      }, duration + 30);
     }
   };
+
+  const handleZoomOut = useCallback(() => {
+    setZoomedCalloutId(null);
+    setActiveCalloutId(null);
+    resetView({ x: -10, y: -12 }, 650, "cubic-bezier(0.25, 1, 0.5, 1)");
+  }, []);
+
+  const handleCalloutClick = useCallback((id) => {
+    if (zoomedCalloutId === id) {
+      handleZoomOut();
+      return;
+    }
+    stopInertia();
+    setZoomedCalloutId(id);
+    setActiveCalloutId(id);
+    const cfg = ZOOM_CONFIG[id];
+    if (cfg) {
+      resetView({ x: cfg.rotX, y: cfg.rotY }, 750, "cubic-bezier(0.25, 1, 0.5, 1)");
+    }
+  }, [zoomedCalloutId, handleZoomOut]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && zoomedCalloutId) {
+        handleZoomOut();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [zoomedCalloutId, handleZoomOut]);
+
+  useEffect(() => {
+    if (onZoomChange) {
+      onZoomChange(Boolean(zoomedCalloutId));
+    }
+  }, [zoomedCalloutId, onZoomChange]);
+
+  useEffect(() => {
+    if (onActiveCalloutChange) {
+      onActiveCalloutChange(activeCalloutId || zoomedCalloutId);
+    }
+  }, [activeCalloutId, zoomedCalloutId, onActiveCalloutChange]);
+
+  const zoomTarget = useMemo(() => {
+    if (!zoomedCalloutId || !ZOOM_CONFIG[zoomedCalloutId]) return null;
+    const cfg = ZOOM_CONFIG[zoomedCalloutId];
+    const tx = ((50 - cfg.pinX) / 100) * totalW;
+    const ty = ((50 - cfg.pinY) / 100) * totalH;
+    const calloutInfo = CALLOUTS.find((c) => c.id === zoomedCalloutId);
+    return {
+      id: zoomedCalloutId,
+      ...cfg,
+      tx,
+      ty,
+      title: calloutInfo?.title || "Detalle Técnico",
+      color: calloutInfo?.color || "#168387",
+      colorBg: calloutInfo?.colorBg || "rgba(22, 131, 135, 0.25)",
+      colorBorder: calloutInfo?.colorBorder || "#168387",
+      colorPing: calloutInfo?.colorPing || "#38bdf8",
+      body: calloutInfo?.body || "",
+    };
+  }, [zoomedCalloutId, totalW, totalH]);
 
   useEffect(() => {
     updateCalloutsVisibility();
@@ -736,24 +874,36 @@ const VendingPrecise3D = ({
               type="button"
               onClick={handleBack}
               className="flex items-center gap-1 px-2 py-1 rounded-full text-slate-500 hover:text-[#168387] hover:bg-slate-100 transition-all cursor-pointer whitespace-nowrap"
-              title="Regresar al selector"
+              title={zoomedCalloutId ? "Alejar vista de detalle" : "Regresar al selector"}
             >
               <ArrowLeft size={13} />
-              <span className="text-[10px] sm:text-[11px]">Volver</span>
+              <span className="text-[10px] sm:text-[11px]">{zoomedCalloutId ? "Alejar" : "Volver"}</span>
             </button>
 
             <div className="h-3.5 w-px bg-slate-200" />
 
-            {/* Alternar visibilidad de especificaciones */}
-            <button
-              type="button"
-              onClick={toggleCallouts}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-slate-700 hover:text-[#168387] hover:bg-slate-100 transition-all cursor-pointer whitespace-nowrap"
-              title={showCallouts ? "Ocultar especificaciones" : "Ver especificaciones"}
-            >
-              <Eye size={12} className={showCallouts ? "text-[#168387]" : "text-slate-400"} />
-              <span>{showCallouts ? "Ocultar detalles" : "Ver detalles"}</span>
-            </button>
+            {/* Alternar visibilidad de especificaciones o alejar vista */}
+            {zoomedCalloutId ? (
+              <button
+                type="button"
+                onClick={handleZoomOut}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[#168387] hover:bg-cyan-50 transition-all cursor-pointer whitespace-nowrap"
+                title="Alejar vista y volver al modo 360°"
+              >
+                <ZoomOut size={12} />
+                <span>Vista 360°</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={toggleCallouts}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-slate-700 hover:text-[#168387] hover:bg-slate-100 transition-all cursor-pointer whitespace-nowrap"
+                title={showCallouts ? "Ocultar especificaciones" : "Ver especificaciones"}
+              >
+                <Eye size={12} className={showCallouts ? "text-[#168387]" : "text-slate-400"} />
+                <span>{showCallouts ? "Ocultar detalles" : "Ver detalles"}</span>
+              </button>
+            )}
           </div>
         ) : (
           /* MODO NEUTRAL: Switch selector con ninguna opcion preseleccionada */
@@ -785,9 +935,9 @@ const VendingPrecise3D = ({
           style={{
             width: totalW,
             height: totalH,
-            perspective: "2500px",
+            perspective: `${Math.round(2500 * RES_FACTOR)}px`,
             touchAction: "none",
-            cursor: isDragging ? "grabbing" : "grab",
+            cursor: zoomedCalloutId ? "default" : isDragging ? "grabbing" : "grab",
           }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -797,78 +947,113 @@ const VendingPrecise3D = ({
         >
           {/* Sombra suave y realista en el suelo */}
           <div
-            className="absolute left-1/2 -bottom-2.5 sm:-bottom-3.5 w-[150px] sm:w-[210px] h-[14px] sm:h-[18px] -translate-x-1/2 rounded-full bg-slate-900/30 blur-md sm:blur-lg pointer-events-none"
+            className={`absolute left-1/2 -bottom-2.5 sm:-bottom-3.5 w-[150px] sm:w-[210px] h-[14px] sm:h-[18px] -translate-x-1/2 rounded-full bg-slate-900/30 blur-md sm:blur-lg pointer-events-none transition-opacity duration-300 ${
+              zoomedCalloutId ? "opacity-0" : "opacity-100"
+            }`}
           />
 
+          {/* CONTENEDOR DE ZOOM FOCAL CON SUPER-MUESTREO DE ALTA DEFINICION */}
           <div
-            className="relative w-full h-full"
+            className="absolute"
             style={{
+              width: renderW,
+              height: renderH,
+              left: "50%",
+              top: "50%",
+              marginLeft: -renderW / 2,
+              marginTop: -renderH / 2,
               transformStyle: "preserve-3d",
+              transformOrigin: "center center",
+              willChange: "transform",
+              transform: zoomTarget
+                ? `scale(${((1 / RES_FACTOR) * zoomTarget.scale).toFixed(4)}) translate3d(${(zoomTarget.tx * RES_FACTOR).toFixed(2)}px, ${(zoomTarget.ty * RES_FACTOR).toFixed(2)}px, 0px)`
+                : `scale(${(1 / RES_FACTOR).toFixed(4)}) translate3d(0px, 0px, 0px)`,
+              transition: zoomTarget
+                ? "transform 750ms cubic-bezier(0.25, 1, 0.5, 1)"
+                : "transform 650ms cubic-bezier(0.25, 1, 0.5, 1)",
             }}
-            ref={setModelRef}
           >
-            {/* 1. GABINETE Y PANEL FRONTAL UNIFICADO (Frente en Z=0 soldado con los 4 costados) */}
-            <div className="absolute w-full h-full" style={{ transformStyle: "preserve-3d" }}>
-              
-              {/* Caratula frontal continua en Z = 0 (Totalmente unida al diseno) */}
-              <div
-                className="absolute w-full h-full z-20 bg-cover bg-no-repeat pointer-events-none select-none"
-                style={{
-                  transform: "translateZ(0px)",
-                  backgroundImage: `url('/img/vending/frontalV.png')`,
-                  backgroundSize: "100% 100%",
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
-                }}
-              />
-
-              {/* Balizas 3D en caratula frontal durante modo detalles */}
-              {mode === "detalles" && showCallouts && (
+            <div
+              className="relative w-full h-full"
+              style={{
+                transformStyle: "preserve-3d",
+              }}
+              ref={setModelRef}
+            >
+              {/* 1. GABINETE Y PANEL FRONTAL UNIFICADO (Frente en Z=0 soldado con los 4 costados) */}
+              <div className="absolute w-full h-full" style={{ transformStyle: "preserve-3d" }}>
+                
+                {/* Caratula frontal continua en Z = 0 (Renderizado nativo de maxima fidelidad) */}
                 <div
-                  className="absolute inset-0 z-20 pointer-events-none"
-                  style={{ transform: "translateZ(2.5px)", backfaceVisibility: "hidden" }}
+                  className="absolute w-full h-full z-20 pointer-events-none select-none"
+                  style={{
+                    transform: "translateZ(0.2px)",
+                  }}
                 >
-                  {[
-                    { id: "agua", left: "27%", top: "45%" },
-                    { id: "monedas", left: "57.5%", top: "22%" },
-                    { id: "pantalla", left: "81.5%", top: "40%" },
-                    { id: "tapas", left: "80.5%", top: "91%" },
-                  ].map((pin) => {
-                    const c = CALLOUTS.find((item) => item.id === pin.id);
-                    const isActive = activeCalloutId === pin.id;
-                    const isOtherPinOnMobile = isMobile && Boolean(activeCalloutId) && !isActive;
-                    const pinColor = isActive ? c.color : "#168387";
-                    const pingColor = isActive ? c.colorPing : "#168387";
-
-                    return (
-                      <div
-                        key={pin.id}
-                        data-ui="true"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveCalloutId((prev) => (prev === pin.id ? null : pin.id));
-                        }}
-                        className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-auto cursor-pointer transition-all duration-300 hover:scale-125 z-30 ${
-                          isOtherPinOnMobile ? "opacity-35" : "opacity-100"
-                        }`}
-                        style={{ left: pin.left, top: pin.top }}
-                        title={c ? c.title : pin.id}
-                      >
-                        <span className={`relative flex transition-all duration-300 ${isActive ? "h-3.5 w-3.5 sm:h-4 sm:w-4" : "h-2.5 w-2.5 sm:h-3 sm:w-3"}`}>
-                          <span
-                            className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                            style={{ backgroundColor: pingColor }}
-                          />
-                          <span
-                            className="relative inline-flex rounded-full h-full w-full border-2 border-white shadow-md transition-colors duration-300"
-                            style={{ backgroundColor: pinColor }}
-                          />
-                        </span>
-                      </div>
-                    );
-                  })}
+                  <img
+                    src="/img/vending/frontalV.png"
+                    alt="Carátula Frontal Vending Darmax"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="sync"
+                    className="w-full h-full object-fill pointer-events-none select-none"
+                    style={{
+                      imageRendering: "-webkit-optimize-contrast",
+                      backfaceVisibility: "visible",
+                      WebkitBackfaceVisibility: "visible",
+                      transform: "translateZ(0)",
+                    }}
+                  />
                 </div>
-              )}
+
+                {/* Balizas 3D en caratula frontal durante modo detalles */}
+                {mode === "detalles" && showCallouts && (
+                  <div
+                    className="absolute inset-0 z-20 pointer-events-none"
+                    style={{ transform: "translateZ(2.5px)", backfaceVisibility: "hidden" }}
+                  >
+                    {[
+                      { id: "agua", left: "27%", top: "45%" },
+                      { id: "monedas", left: "57.5%", top: "22%" },
+                      { id: "pantalla", left: "81.5%", top: "40%" },
+                      { id: "tapas", left: "80.5%", top: "91%" },
+                    ].map((pin) => {
+                      const c = CALLOUTS.find((item) => item.id === pin.id);
+                      const isSelected = activeCalloutId === pin.id || zoomedCalloutId === pin.id;
+                      const isAnySelected = Boolean(activeCalloutId) || Boolean(zoomedCalloutId);
+                      const shouldHidePin = isAnySelected && !isSelected;
+                      const pinColor = isSelected ? c.color : "#168387";
+                      const pingColor = isSelected ? c.colorPing : "#168387";
+
+                      return (
+                        <div
+                          key={pin.id}
+                          data-ui="true"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCalloutClick(pin.id);
+                          }}
+                          className={`absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-auto cursor-pointer transition-[opacity,transform] duration-300 ease-out hover:scale-125 z-30 ${
+                            shouldHidePin ? "opacity-0 scale-75 pointer-events-none" : "opacity-100 scale-100"
+                          }`}
+                          style={{ left: pin.left, top: pin.top }}
+                          title={c ? c.title : pin.id}
+                        >
+                          <span className={`relative flex transition-all duration-300 ${isSelected ? "h-3.5 w-3.5 sm:h-4 sm:w-4" : "h-2.5 w-2.5 sm:h-3 sm:w-3"}`}>
+                            <span
+                              className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                              style={{ backgroundColor: pingColor }}
+                            />
+                            <span
+                              className="relative inline-flex rounded-full h-full w-full border-2 border-white shadow-md transition-colors duration-300"
+                              style={{ backgroundColor: pinColor }}
+                            />
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
               {/* CABINA DE AGUA UNIFICADA 3D (Caja única continua sin cajas dobles ni divisiones) */}
               <WaterCabinBox
@@ -877,7 +1062,7 @@ const VendingPrecise3D = ({
                 w={hole.width}
                 h={hole.height}
                 depth={waterDepth}
-                sc={sc}
+                sc={sc * RES_FACTOR}
                 holeHeightPx={holeHeightPx}
                 isPouring={isPouring}
                 uvLight={uvLight}
@@ -950,7 +1135,7 @@ const VendingPrecise3D = ({
             {/* 3. PUERTA ABATIBLE SÓLIDA (Volumen 3D dentro del modelo) */}
             <div
               className="absolute z-30 transition-transform duration-500 ease-out"
-              data-ui={mode === "controles" ? "true" : undefined}
+              data-door="true"
               style={{
                 left: `${door.left}%`,
                 top: `${door.top}%`,
@@ -959,14 +1144,13 @@ const VendingPrecise3D = ({
                 transformStyle: "preserve-3d",
                 transformOrigin: "left center", // Las bisagras coinciden exactamente con door.left (4.01%)
                 transform: `translateZ(1px) rotateY(-${doorAngle}deg)`,
-                cursor: mode === "controles" ? "pointer" : "inherit",
+                cursor: zoomedCalloutId ? "default" : isDragging ? "grabbing" : "grab",
               }}
-              onClick={mode === "controles" ? toggleDoor : undefined}
               title={
                 mode === "controles"
                   ? doorAngle > 10
-                    ? "Haz clic para cerrar la puerta"
-                    : "Haz clic para abrir la puerta"
+                    ? "Haz clic para cerrar la puerta (o arrastra para rotar)"
+                    : "Haz clic para abrir la puerta (o arrastra para rotar)"
                   : undefined
               }
             >
@@ -976,14 +1160,21 @@ const VendingPrecise3D = ({
                 style={{
                   transformStyle: "preserve-3d",
                   transform: "translateZ(0px)",
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
                 }}
               >
                 <img
                   src="/img/vending/doorV.png"
                   alt="Puerta Dispensador Darmax"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="sync"
                   className="w-full h-full object-fill pointer-events-none select-none drop-shadow-md"
+                  style={{
+                    imageRendering: "-webkit-optimize-contrast",
+                    backfaceVisibility: "visible",
+                    WebkitBackfaceVisibility: "visible",
+                    transform: "translateZ(0)",
+                  }}
                 />
               </div>
 
@@ -1125,17 +1316,19 @@ const VendingPrecise3D = ({
               />
             </div>
           </div>
+          </div>
 
           {/* CALLOUTS (Tarjetas informativas que flotan a traves del modelo reactivas al giro 3D) */}
           {mode === "detalles" && showCallouts && (
             <div
               ref={calloutsRef}
-              className="absolute inset-0 pointer-events-none z-40"
+              className="absolute inset-0 pointer-events-none z-40 transition-opacity duration-300"
               style={{ willChange: "opacity, transform" }}
             >
               {CALLOUTS.map((c) => {
-                const isActive = activeCalloutId === c.id;
-                const isHiddenOnMobile = isMobile && Boolean(activeCalloutId) && !isActive;
+                const isSelected = activeCalloutId === c.id || zoomedCalloutId === c.id;
+                const isAnySelected = Boolean(activeCalloutId) || Boolean(zoomedCalloutId);
+                const shouldHide = isAnySelected && !isSelected;
 
                 return (
                   <div
@@ -1143,11 +1336,11 @@ const VendingPrecise3D = ({
                     data-ui="true"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setActiveCalloutId((prev) => (prev === c.id ? null : c.id));
+                      handleCalloutClick(c.id);
                     }}
-                    className={`absolute z-[50] cursor-pointer transition-all duration-300 ${
-                      isHiddenOnMobile
-                        ? "opacity-0 scale-90 pointer-events-none"
+                    className={`absolute z-[50] cursor-pointer transition-[opacity,transform] duration-300 ease-out ${
+                      shouldHide
+                        ? "opacity-0 scale-75 pointer-events-none"
                         : "opacity-100 scale-100 pointer-events-auto"
                     }`}
                     style={{
@@ -1161,27 +1354,31 @@ const VendingPrecise3D = ({
                     }}
                   >
                     <div
-                      className={`w-[108px] min-[380px]:w-[118px] sm:w-[145px] rounded-xl border backdrop-blur px-2 py-1.5 sm:px-3 sm:py-2 transition-all duration-300 ${
-                        isActive
+                      className={`w-[110px] min-[380px]:w-[122px] sm:w-[148px] rounded-xl border backdrop-blur px-2.5 py-2 sm:px-3 sm:py-2.5 transition-all duration-300 ${
+                        isSelected
                           ? "scale-105"
                           : "hover:scale-105 shadow-md shadow-slate-900/5 bg-white/95 border-slate-200/90"
                       }`}
                       style={{
-                        backgroundColor: isActive ? "rgba(255, 255, 255, 0.98)" : undefined,
-                        borderColor: isActive ? c.colorBorder : undefined,
-                        boxShadow: isActive
+                        backgroundColor: isSelected ? "rgba(255, 255, 255, 0.98)" : undefined,
+                        borderColor: isSelected ? c.colorBorder : undefined,
+                        boxShadow: isSelected
                           ? `0 10px 25px -4px ${c.colorBg}, 0 0 0 1.5px ${c.colorBorder}`
                           : undefined,
                       }}
                     >
                       <div
                         className="text-[9px] sm:text-[10.5px] font-bold leading-tight font-montserrat not-italic sm:whitespace-nowrap transition-colors duration-300"
-                        style={{ color: isActive ? c.color : "#0f172a" }}
+                        style={{ color: isSelected ? c.color : "#0f172a" }}
                       >
                         {c.title}
                       </div>
                       <div className="text-[8px] sm:text-[9.5px] text-slate-500 leading-snug mt-1 font-montserrat not-italic">
                         {c.body}
+                      </div>
+                      <div className="mt-1.5 pt-1 border-t border-slate-100 flex items-center justify-between text-[7.5px] sm:text-[8.5px] font-semibold text-[#168387]">
+                        <span>{isSelected ? "Vista enfocada" : "Toca para zoom"}</span>
+                        {isSelected ? <Sparkles size={10} className="shrink-0 text-[#168387]" /> : <ZoomIn size={10} className="shrink-0 text-[#168387]" />}
                       </div>
                     </div>
                   </div>
@@ -1849,7 +2046,7 @@ function WaterCabinBox({ x, y, w, h, depth, sc = 3.5, holeHeightPx, isPouring, u
         <div style={makeTexOverlay()} />
 
         {/* Foquito LED Superior Delgado */}
-        <div className="relative z-10 flex flex-col items-center pt-0.5" data-ui="true">
+        <div className="relative z-10 flex flex-col items-center pt-0.5 pointer-events-none">
           <div
             data-ui="true"
             onPointerDown={(e) => e.stopPropagation()}
@@ -1880,8 +2077,7 @@ function WaterCabinBox({ x, y, w, h, depth, sc = 3.5, holeHeightPx, isPouring, u
           transform: `translateZ(-${depth * 0.45}px)`,
           opacity: uvLight ? 0.42 : 0,
           background:
-            "radial-gradient(ellipse 85% 90% at 50% 0%, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.15) 40%, rgba(255, 255, 255, 0.03) 75%, transparent 100%)",
-          filter: "blur(6px)",
+            "radial-gradient(ellipse 85% 90% at 50% 0%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.22) 25%, rgba(255, 255, 255, 0.08) 55%, transparent 85%)",
         }}
       />
 
@@ -1891,8 +2087,7 @@ function WaterCabinBox({ x, y, w, h, depth, sc = 3.5, holeHeightPx, isPouring, u
         style={{
           transform: `translateZ(-${depth * 0.65}px)`,
           opacity: uvLight ? 0.30 : 0,
-          background: "radial-gradient(ellipse 80% 80% at 50% 20%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.06) 55%, transparent 85%)",
-          filter: "blur(10px)",
+          background: "radial-gradient(ellipse 80% 80% at 50% 20%, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.12) 40%, rgba(255, 255, 255, 0.03) 70%, transparent 95%)",
         }}
       />
     </div>

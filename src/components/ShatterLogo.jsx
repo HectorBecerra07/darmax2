@@ -31,7 +31,7 @@ export default function ShatterLogo({ currentSrc, alt = "Logo Darmax", className
   }, [currentSrc, displayedSrc]);
 
   // Color de la linea de barrido segun el modo entrante
-  const sweepColor = isSwitchingToClean ? "#7FB32A" : "#288EB9";
+  const sweepColor = isSwitchingToClean ? "#53c406" : "#288EB9";
 
   return (
     <div className="relative inline-flex items-center justify-start select-none h-10 md:h-11">

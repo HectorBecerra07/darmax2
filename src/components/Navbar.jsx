@@ -17,7 +17,7 @@ import ShatterLogo from "./ShatterLogo";
 const PATH_THEMES = {
   "/vending-info": { accent: "#5188C9", bg: "bg-[#5188C9]/10", hover: "bg-[#5188C9]/5" },
   "/purificadora-info": { accent: "#7DD3FC", bg: "bg-[#7DD3FC]/10", hover: "bg-[#7DD3FC]/5" },
-  "/vending-limpieza-info": { accent: "#e7b341", bg: "bg-[#e7b341]/10", hover: "bg-[#e7b341]/5" },
+  "/vending-limpieza-info": { accent: "#53c406", bg: "bg-[#53c406]/10", hover: "bg-[#53c406]/5" },
   "/duo-emprendedor-info": { accent: "#73cdbd", bg: "bg-[#73cdbd]/10", hover: "bg-[#73cdbd]/5" },
   "/tridente-info": { accent: "#4d79bf", bg: "bg-[#4d79bf]/10", hover: "bg-[#4d79bf]/5" },
   "/megalodon-info": { accent: "#2f7384", bg: "bg-[#2f7384]/10", hover: "bg-[#2f7384]/5" },
@@ -126,10 +126,10 @@ export default function NavBar() {
     activeTextClass = "";
     hoverLineColor = currentTheme.accent;
   } else if (isClean) {
-    accentStyle = { color: "#7FB32A" };
-    activeBgClass = "bg-gradient-to-r from-[#7FB32A]/15 to-[#F3AD13]/15 border border-[#7FB32A]/25 shadow-sm";
-    activeTextClass = "bg-gradient-to-r from-[#7FB32A] to-[#F3AD13] bg-clip-text text-transparent";
-    hoverLineColor = "#7FB32A";
+    accentStyle = { color: "#53c406" };
+    activeBgClass = "bg-gradient-to-r from-[#53c406]/15 via-[#5bc809]/15 to-[#90e119]/15 border border-[#53c406]/25 shadow-sm";
+    activeTextClass = "bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] bg-clip-text text-transparent";
+    hoverLineColor = "#53c406";
   }
 
   const normalLogoSrc = isDarkTheme 
