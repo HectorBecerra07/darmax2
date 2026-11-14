@@ -767,14 +767,36 @@ export default function Step4Summary({
                 <span>Total Extras</span>
                 <span className="font-bold text-white">${toMoney(precioExtras)}</span>
               </div>
-              <div className="pt-4 border-t border-white/10 mt-4">
+              <div className="pt-4 border-t border-white/10 mt-4 space-y-3">
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#24d4da] block mb-1">
                   Inversión Total Estimada
                 </span>
                 <p className="text-4xl font-black tracking-tighter text-white">${toMoney(precioTotal)}</p>
-                <span className="text-[10px] text-slate-400 font-medium block mt-1">
+                <span className="text-[10px] text-slate-400 font-medium block">
                   *Fletes y viáticos a cotizar según tu ubicación
                 </span>
+
+                {/* Acciones inmediatas sin obligar formulario */}
+                <div className="pt-3 flex flex-col gap-2.5">
+                  <button
+                    type="button"
+                    onClick={generarPDF}
+                    className="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white text-white hover:text-slate-900 border border-white/20 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  >
+                    <ArrowDownTrayIcon className="w-4 h-4" />
+                    <span>Descargar Cotización PDF</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={enviarWhatsApp}
+                    className="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-green-600/30"
+                  >
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                    </svg>
+                    <span>Enviar a Asesor por WhatsApp</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -799,13 +821,13 @@ export default function Step4Summary({
         <div className="p-8 sm:p-10 bg-gradient-to-br from-cyan-50/70 via-white to-teal-50/50 border-2 border-cyan-100 rounded-[2.5rem] shadow-xl shadow-cyan-900/5 space-y-6">
           <div className="max-w-2xl">
             <span className="text-[#168387] text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] block mb-1">
-              Tu Cotización
+              Registro Oficial (Opcional)
             </span>
             <h3 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Ingresa tus Datos para Generar tu Cotización
             </h3>
             <p className="text-slate-500 text-sm font-medium leading-relaxed mt-2">
-              Se generará tu número de cotización con el desglose de tu equipo para que puedas guardarlo y darle seguimiento directo con nuestros asesores.
+              Si deseas registrar tu cotización en nuestro sistema para obtener tu número de folio oficial y que un asesor prepare tu pedido automáticamente, completa los siguientes datos. O si lo prefieres, puedes descargar tu PDF o enviar tu cotización por WhatsApp directamente con los botones de arriba sin necesidad de registrarte.
             </p>
           </div>
 

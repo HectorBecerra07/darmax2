@@ -52,6 +52,7 @@ const SidebarAdmin = ({ collapsed, theme, setTheme }) => {
             { to: "/admin/dashboard/envios", icon: "🚚", label: "Envíos" },
             { to: "/admin/dashboard/configurador", icon: "⚙️", label: "Modelos Config." },
             { to: "/admin/dashboard/extras", icon: "✨", label: "Biblioteca de Extras" },
+            { to: "/admin/dashboard/paquetes", icon: "🎁", label: "Paquetes" },
             { to: "/admin/dashboard/reportes", icon: "📊", label: "Reportes" },
             { to: "/admin/dashboard/clientes", icon: "👤", label: "Clientes" },
             { to: "/admin/dashboard/chatbot", icon: "🤖", label: "Chatbot" },

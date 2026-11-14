@@ -288,7 +288,7 @@ const BundleCard = ({ bundle, index }) => {
             <span className="text-4xl font-black text-slate-900 tracking-tighter">{bundle.price}</span>
           </div>
           <Link
-            to="/configurar-maquina/Tridente"
+            to="/configurar-paquete/Tridente"
             className="w-full sm:w-auto px-12 py-5 bg-gradient-to-r from-[#5d87c9] to-[#334b8f] text-white font-black rounded-2xl hover:shadow-2xl hover:shadow-blue-500/30 transition-all text-xs uppercase tracking-widest text-center"
           >
             Seleccionar Tridente
@@ -382,7 +382,7 @@ export default function TridenteInfo() {
             </p>
             <div className="flex flex-wrap gap-5">
               <Link
-                to="/configurar-maquina/Tridente"
+                to="/configurar-paquete/Tridente"
                 className="px-12 py-5 bg-gradient-to-r from-[#5d87c9] to-[#4d79bf] hover:shadow-blue-500/20 text-white font-black rounded-2xl shadow-2xl transition-all transform hover:scale-105 uppercase tracking-widest text-xs"
               >
                 Configurar mi Tridente
@@ -577,7 +577,7 @@ export default function TridenteInfo() {
           </p>
           <div className="flex flex-wrap justify-center gap-8">
             <Link
-              to="/configurar-maquina/Tridente"
+              to="/configurar-paquete/Tridente"
               className="px-14 py-7 bg-gradient-to-r from-[#5d87c9] to-[#4d79bf] text-white font-black rounded-2xl shadow-2xl transition-all transform hover:scale-110 uppercase tracking-widest text-sm"
             >
               Configurar mi Tridente

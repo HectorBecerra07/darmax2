@@ -22,8 +22,18 @@ const VendingTypeEnum = {
 
 export default function WizardGeneral() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const wizardRef = useRef(null);
+
+  // Redirigir automáticamente a configurador de paquetes si el ID corresponde a un combo
+  useEffect(() => {
+    const raw = (id || "").toLowerCase();
+    if (raw.includes("duo") || raw.includes("tridente") || raw.includes("megalodon")) {
+      const normalized = raw.includes("duo") ? "Duo-Emprendedor" : raw.includes("tridente") ? "Tridente" : "Megalodon";
+      navigate(`/configurar-paquete/${normalized}`, { replace: true });
+    }
+  }, [id, navigate]);
   const isFirstMountRef = useRef(true);
   const prevStepRef = useRef(null);
 

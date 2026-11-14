@@ -290,7 +290,7 @@ const BundleCard = ({ bundle, index }) => {
             <span className="text-4xl font-black text-slate-900 tracking-tighter">{bundle.price}</span>
           </div>
           <Link
-            to="/configurar-maquina/Megalodon"
+            to="/configurar-paquete/Megalodon"
             className="w-full sm:w-auto px-12 py-5 bg-gradient-to-r from-[#2f7384] to-[#17355b] text-white font-black rounded-2xl hover:shadow-2xl hover:shadow-blue-500/30 transition-all text-xs uppercase tracking-widest text-center"
           >
             Seleccionar Megalodón
@@ -384,7 +384,7 @@ export default function MegalodonInfo() {
             </p>
             <div className="flex flex-wrap gap-5">
               <Link
-                to="/configurar-maquina/Megalodon"
+                to="/configurar-paquete/Megalodon"
                 className="px-12 py-5 bg-gradient-to-r from-[#2f7384] to-[#245f73] hover:shadow-[#2f7384]/20 text-white font-black rounded-2xl shadow-2xl transition-all transform hover:scale-105 uppercase tracking-widest text-xs"
               >
                 Configurar mi Estación
@@ -579,7 +579,7 @@ export default function MegalodonInfo() {
           </p>
           <div className="flex flex-wrap justify-center gap-8">
             <Link
-              to="/configurar-maquina/Megalodon"
+              to="/configurar-paquete/Megalodon"
               className="px-14 py-7 bg-gradient-to-r from-[#2f7384] to-[#245f73] text-white font-black rounded-2xl shadow-2xl transition-all transform hover:scale-110 uppercase tracking-widest text-sm"
             >
               Configurar mi Megalodón

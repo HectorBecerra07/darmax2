@@ -54,7 +54,9 @@ function ModelCard({
   onSelect,
   hasOsmosis,
   image,
-  vendingType
+  vendingType,
+  ctaText = "Configurar modelo",
+  priceLabel = "Inversión"
 }) {
   return (
     <motion.div
@@ -127,10 +129,10 @@ function ModelCard({
         <div className="shrink-0 space-y-1.5 sm:space-y-2 w-full pt-1">
           <div className="py-1.5 sm:py-2 px-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
             <span className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              Inversión
+              {priceLabel}
             </span>
             <p className="text-sm sm:text-base font-black text-slate-900 tracking-tight">
-              ${item.basePrice.toLocaleString()}
+              ${(item.basePrice || 0).toLocaleString()}
               <span className="text-[9px] sm:text-[10px] ml-1 text-slate-400 font-bold uppercase">MXN</span>
             </p>
           </div>
@@ -149,7 +151,7 @@ function ModelCard({
             onClick={() => onSelect(item)}
             className="w-full py-2.5 sm:py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-[#168387] text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-900/20 active:scale-98 flex items-center justify-center gap-2 group/btn cursor-pointer"
           >
-            <span>Configurar modelo</span>
+            <span>{ctaText}</span>
             <ChevronRightIcon className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
           </button>
         </div>
@@ -220,7 +222,7 @@ function ModelCard({
             onClick={() => onSelect(item)}
             className="w-full py-2.5 sm:py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-[#168387] text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-900/20 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>Configurar modelo</span>
+            <span>{ctaText}</span>
             <ChevronRightIcon className="w-4 h-4" />
           </button>
 
@@ -341,7 +343,14 @@ export default function Step1SelectModel({
   categoryId, 
   onSelect, 
   onNext,
-  catalogHasOsmosis 
+  catalogHasOsmosis,
+  titleOverride,
+  subtitleOverride,
+  descriptionOverride,
+  ctaTextOverride,
+  priceLabelOverride,
+  hidePpmNotice = false,
+  hideOsmosisBanner = false,
 }) {
   const [flippedCards, setFlippedCards] = useState({});
   const [showPpmModal, setShowPpmModal] = useState(false);
@@ -444,22 +453,28 @@ export default function Step1SelectModel({
         {/* COLUMNA IZQUIERDA: Titulo, aviso de PPM y banner de osmosis */}
         <div className="w-full lg:w-[35%] text-center lg:text-left space-y-3 lg:sticky lg:top-40">
           <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 block">
-            Configuración Inicial
+            {subtitleOverride || "Configuración Inicial"}
           </span>
           <h2 className="font-montserrat not-italic text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-[#031638]">
-            Elige tu modelo <br />
-            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 pt-0.5 overflow-visible">
-              {vendingType === VendingTypeEnum.TOUCH ? "Touch" : 
-               vendingType === VendingTypeEnum.TRADICIONAL ? "Tradicional" : 
-               (categoryId || "modelo")}
-            </span>
+            {titleOverride ? (
+              titleOverride
+            ) : (
+              <>
+                Elige tu modelo <br />
+                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 pt-0.5 overflow-visible">
+                  {vendingType === VendingTypeEnum.TOUCH ? "Touch" : 
+                   vendingType === VendingTypeEnum.TRADICIONAL ? "Tradicional" : 
+                   (categoryId || "modelo")}
+                </span>
+              </>
+            )}
           </h2>
           <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base font-normal leading-relaxed max-w-md mx-auto lg:mx-0">
-            Selecciona la base tecnológica que impulsará tu negocio. Cada modelo está diseñado para máxima eficiencia.
+            {descriptionOverride || "Selecciona la base tecnológica que impulsará tu negocio. Cada modelo está diseñado para máxima eficiencia."}
           </p>
 
           {/* MODAL EMERGENTE DE PRIMERA VISITA SOBRE DUREZA EN PPM */}
-          {isVending && (
+          {isVending && !hidePpmNotice && (
             <PpmNoticeModal
               isOpen={showPpmModal}
               onClose={handleClosePpmModal}
@@ -468,14 +483,18 @@ export default function Step1SelectModel({
 
           {/* EN ESCRITORIO / TABLET: Mostrar en la columna lateral */}
           <div className="hidden sm:block space-y-3 pt-1">
-            <PpmAccordion
-              isVending={isVending}
-              isPpmOpen={isPpmOpen}
-              setIsPpmOpen={setIsPpmOpen}
-            />
-            <OsmosisBanner
-              hasOsmosisInCatalog={hasOsmosisInCatalog}
-            />
+            {!hidePpmNotice && (
+              <PpmAccordion
+                isVending={isVending}
+                isPpmOpen={isPpmOpen}
+                setIsPpmOpen={setIsPpmOpen}
+              />
+            )}
+            {!hideOsmosisBanner && (
+              <OsmosisBanner
+                hasOsmosisInCatalog={hasOsmosisInCatalog}
+              />
+            )}
           </div>
 
           {/* Indicador de progreso visual sutil (Paso 2 activo) */}
@@ -543,6 +562,8 @@ export default function Step1SelectModel({
                       hasOsmosis={hasOsmosis}
                       image={image}
                       vendingType={vendingType}
+                      ctaText={ctaTextOverride}
+                      priceLabel={priceLabelOverride}
                     />
                   </div>
                 );
@@ -613,6 +634,8 @@ export default function Step1SelectModel({
                     hasOsmosis={hasOsmosis}
                     image={image}
                     vendingType={vendingType}
+                    ctaText={ctaTextOverride}
+                    priceLabel={priceLabelOverride}
                   />
                 </motion.div>
               );

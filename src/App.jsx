@@ -50,6 +50,7 @@ const ReportesAdmin = lazy(() => import("./administrador/pages/ReportesAdmin"));
 const ClientesAdmin = lazy(() => import("./administrador/pages/ClientesAdmin"));
 const CategoriasAdmin = lazy(() => import("./administrador/pages/CategoriasAdmin"));
 const ModelsConfigAdmin = lazy(() => import("./administrador/pages/ModelsConfigAdmin"));
+const PaquetesAdmin = lazy(() => import("./administrador/pages/PaquetesAdmin"));
 const ExtrasAdmin = lazy(() => import("./administrador/pages/ExtrasAdmin"));
 const DetalleModeloAdmin = lazy(() => import("./administrador/pages/DetalleModeloAdmin"));
 const ChatbotAdmin = lazy(() => import("./administrador/pages/ChatbotAdmin"));
@@ -122,6 +123,7 @@ function AppContent() {
               <Route path="configurador" element={<ModelsConfigAdmin />} />
               <Route path="configurador/model/:slug" element={<DetalleModeloAdmin />} />
               <Route path="extras" element={<ExtrasAdmin />} />
+              <Route path="paquetes" element={<PaquetesAdmin />} />
               <Route path="reportes" element={<ReportesAdmin />} />
               <Route path="clientes" element={<ClientesAdmin />} />
               <Route path="chatbot" element={<ChatbotAdmin />} />

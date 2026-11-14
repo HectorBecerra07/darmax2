@@ -1,829 +1,520 @@
 // src/pages/BundleWizard.jsx
-import { useParams, useNavigate } from "react-router-dom";
-import { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import toast from "react-hot-toast";
-import Step3ExtrasConfigurator from "../components/Step3ExtrasConfigurator";
 import { motion, AnimatePresence } from "framer-motion";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import { MODEL_SPECS } from "../utils/modelSpecs";
+import toast from "react-hot-toast";
+
+import Breadcrumbs from "../components/Breadcrumbs";
+import Step1SelectModel from "../components/Step1SelectModel";
+import Step3ExtrasConfigurator from "../components/Step3ExtrasConfigurator";
+import BundleSummaryStep from "../components/BundleSummaryStep";
+
 import { getConfiguradorModels, getCachedConfiguradorModels } from "../services/configuradorService";
-import { optimizeCloudinaryUrl } from "../utils/cloudinary";
+import { getBundlePrices, calculateBundleBasePrice } from "../services/bundlePricingService";
 
-const API_URL = import.meta.env.VITE_API_URL;
+// Normalizador de ID de paquete
+const normalizeBundleId = (rawId = "") => {
+  const clean = (rawId || "").toLowerCase();
+  if (clean.includes("duo")) return "Duo-Emprendedor";
+  if (clean.includes("tridente")) return "Tridente";
+  if (clean.includes("megalodon")) return "Megalodon";
+  return rawId;
+};
 
-
-// --- Helper Functions and Constants ---
-const BRAND_BLUE = "#168387";
-const BRAND_TEAL = "#03A4A4";
-
-function formatCurrency(value) {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-    minimumFractionDigits: 0,
-  }).format(value);
-}
-
-const loadImage = (src) =>
-  new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-function hexToRgb(hex) {
-  const s = hex.replace("#", "");
-  const n = parseInt(s, 16);
-  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
-}
-
-
-// --- Bundle Configuration ---
-
-const bundleStepsConfig = {
+// Configuraciones de pasos por paquete
+const BUNDLE_STEPS_FLOW = {
   "Duo-Emprendedor": [
     {
       step: 0,
-      title: "Paso 1: Selecciona tu Vending de Agua",
+      title: "Vending de Agua",
+      breadcrumb: "Vending Agua",
       modelType: "vendingAgua",
-      filter: (m) => m.name.toLowerCase().includes('touch') || m.name.toLowerCase().includes('atlantis'),
-      imageType: 'secondary',
+      type: "model",
     },
     {
       step: 1,
-      title: "Paso 2: Configura Extras del Vending de Agua",
+      title: "Extras de Vending de Agua",
+      breadcrumb: "Extras Agua",
       modelType: "vendingAgua",
       type: "extras",
     },
     {
       step: 2,
-      title: "Paso 3: Selecciona tu Vending de Limpieza",
+      title: "Vending de Limpieza",
+      breadcrumb: "Vending Limpieza",
       modelType: "vendingLimpieza",
+      type: "model",
     },
     {
       step: 3,
-      title: "Paso 4: Configura Extras de Vending de Limpieza",
+      title: "Extras de Limpieza",
+      breadcrumb: "Extras Limpieza",
       modelType: "vendingLimpieza",
       type: "extras",
-    },
-    { step: 4, title: "Paso 5: Resumen del Paquete", type: "summary" },
-  ],
-  Tridente: [
-    {
-      step: 0,
-      title: "Paso 1: Selecciona tu Vending de Agua",
-      modelType: "vendingAgua",
-      imageType: 'secondary',
-      filter: (m) => !(m.slug.toLowerCase().includes('vending5') || m.slug.toLowerCase().includes('vending8') || m.name.toLowerCase().includes('mostrador')),
-    },
-    {
-      step: 1,
-      title: "Paso 2: Configura Extras de Vending de Agua",
-      modelType: "vendingAgua",
-      type: "extras",
-    },
-    {
-      step: 2,
-      title: "Paso 3: Selecciona tu Purificadora",
-      modelType: "mostrador",
-      imageType: 'secondary',
-    },
-    {
-      step: 3,
-      title: "Paso 4: Selecciona tu Vending de Limpieza",
-      modelType: "vendingLimpieza",
-      imageType: 'secondary',
-      filter: (m) => m.slug.toLowerCase() === 'vending5',
     },
     {
       step: 4,
-      title: "Paso 5: Configura Extras de Vending de Limpieza",
-      modelType: "vendingLimpieza",
-      type: "extras",
+      title: "Resumen del Paquete",
+      breadcrumb: "Resumen",
+      type: "summary",
     },
-    { step: 5, title: "Paso 6: Resumen del Paquete", type: "summary" },
   ],
-  Megalodon: [
+  "Tridente": [
     {
       step: 0,
-      title: "Paso 1: Selecciona tu Vending de Agua",
+      title: "Vending de Agua",
+      breadcrumb: "Vending Agua",
       modelType: "vendingAgua",
-      imageType: 'secondary',
-      filter: (m) => m.name.toLowerCase().includes('atlantis'),
+      type: "model",
     },
     {
       step: 1,
-      title: "Paso 2: Configura Extras de Vending de Agua",
+      title: "Extras de Vending de Agua",
+      breadcrumb: "Extras Agua",
       modelType: "vendingAgua",
       type: "extras",
     },
     {
       step: 2,
-      title: "Paso 3: Selecciona tu Purificadora",
+      title: "Purificadora Mostrador",
+      breadcrumb: "Purificadora",
       modelType: "mostrador",
-      imageType: 'secondary',
+      type: "model",
     },
     {
       step: 3,
-      title: "Paso 4: Selecciona tu Vending de Limpieza (8 Productos)",
+      title: "Vending de Limpieza",
+      breadcrumb: "Vending Limpieza",
       modelType: "vendingLimpieza",
-      filter: (m) => m.slug.toLowerCase() === "vending8",
-      imageType: 'secondary',
+      type: "model",
     },
     {
       step: 4,
-      title: "Paso 5: Configura Extras de Vending de Limpieza",
+      title: "Extras de Limpieza",
+      breadcrumb: "Extras Limpieza",
       modelType: "vendingLimpieza",
       type: "extras",
     },
-    { step: 5, title: "Paso 6: Resumen del Paquete", type: "summary" },
+    {
+      step: 5,
+      title: "Resumen del Paquete",
+      breadcrumb: "Resumen",
+      type: "summary",
+    },
+  ],
+  "Megalodon": [
+    {
+      step: 0,
+      title: "Vending de Agua",
+      breadcrumb: "Vending Agua",
+      modelType: "vendingAgua",
+      type: "model",
+    },
+    {
+      step: 1,
+      title: "Extras de Vending de Agua",
+      breadcrumb: "Extras Agua",
+      modelType: "vendingAgua",
+      type: "extras",
+    },
+    {
+      step: 2,
+      title: "Purificadora Mostrador",
+      breadcrumb: "Purificadora",
+      modelType: "mostrador",
+      type: "model",
+    },
+    {
+      step: 3,
+      title: "Vending Limpieza (8 Prod)",
+      breadcrumb: "Limpieza 8",
+      modelType: "vendingLimpieza",
+      type: "model",
+    },
+    {
+      step: 4,
+      title: "Extras de Limpieza",
+      breadcrumb: "Extras Limpieza",
+      modelType: "vendingLimpieza",
+      type: "extras",
+    },
+    {
+      step: 5,
+      title: "Resumen del Paquete",
+      breadcrumb: "Resumen",
+      type: "summary",
+    },
   ],
 };
-
-// --- Child Components ---
-
-const ModelCard = ({ model, onSelect, isSelected, imageType }) => {
-    const imageToShow = useMemo(() => {
-        if (!model.images || model.images.length === 0) return null;
-
-        const sortedImages = [...model.images].sort((a, b) => a.priority - b.priority);
-
-        if (imageType === 'secondary') {
-            const secondaryImage = sortedImages.find(img => img.isSecondary);
-            if (secondaryImage) return secondaryImage;
-        }
-        
-        // Fallback to the first non-secondary image if available, otherwise first image overall.
-        const primaryImage = sortedImages.find(img => !img.isSecondary);
-        return primaryImage || sortedImages[0];
-    }, [model.images, imageType]);
-
-    return (
-    <div
-      onClick={() => onSelect(model)}
-      className={`relative rounded-2xl p-5 cursor-pointer transition-all duration-300 text-center ${
-        isSelected
-          ? "border-cyan-500 ring-2 ring-cyan-500/30 bg-cyan-50"
-          : "border-gray-200 bg-white hover:border-cyan-400 hover:shadow-lg"
-      }`}
-    >
-      {isSelected && (
-          <div className="absolute top-3 right-3 bg-cyan-500 text-white rounded-full h-6 w-6 flex items-center justify-center z-10">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-          </div>
-      )}
-      {imageToShow ? (
-          <img
-              src={optimizeCloudinaryUrl(imageToShow.url, 600)}
-              alt={imageToShow.alt || model.name}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-48 object-contain rounded-lg mb-4 shadow-md"
-          />
-      ) : (
-          <div className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-sm mb-4 shadow-inner">
-              Sin Imagen
-          </div>
-      )}
-      <div className="flex-grow">
-        <h3 className="font-montserrat not-italic text-lg sm:text-xl font-bold text-[#031638] leading-snug">{model.name}</h3>
-        <p className="font-montserrat not-italic text-xs sm:text-sm text-slate-600 mt-2 line-clamp-3">
-          {model.description}
-        </p>
-      </div>
-      <div className="mt-4">
-        <p className="font-montserrat not-italic text-xl font-bold text-[#168387]">
-          {formatCurrency(model.basePrice)}
-        </p>
-      </div>
-    </div>
-    )
-};
-  
-
-const ModelSelectionStep = ({
-  title,
-  models,
-  onSelect,
-  selectedModelId,
-  imageType,
-}) => (
-  <div className="space-y-6 font-montserrat not-italic">
-    <div className="text-center mb-6">
-      <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-2 block">
-        Selección de Equipo
-      </span>
-      <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-4xl font-bold text-[#031638] tracking-tight leading-tight">
-        {title}
-      </h2>
-    </div>
-    {models.length > 0 ? (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-        {models.map((model) => (
-          <ModelCard
-            key={model.id}
-            model={model}
-            onSelect={onSelect}
-            isSelected={selectedModelId === model.id}
-            imageType={imageType}
-          />
-        ))}
-      </div>
-    ) : (
-      <div className="text-center text-gray-500 py-8">
-        <p className="font-semibold">No se encontraron modelos para esta categoría.</p>
-        <p className="text-sm mt-1">Por favor, verifica que los modelos correctos existan en la base de datos.</p>
-      </div>
-    )}
-  </div>
-);
-
-const BundleSummary = ({ config, extras, steps, onEdit }) => {
-    const total = useMemo(() => {
-        let modelsTotal = Object.values(config).reduce((acc, model) => acc + (model?.basePrice || 0), 0);
-        
-        let extrasTotal = Object.values(extras).reduce((acc, extraGroup) => {
-            if (!extraGroup || !extraGroup.selectedExtras) return acc;
-            const groupTotal = extraGroup.selectedExtras.reduce((sum, extra) => {
-                return sum + (extra.priceOverride ?? extra.extra.basePrice);
-            }, 0);
-            return acc + groupTotal;
-        }, 0);
-
-        return modelsTotal + extrasTotal;
-    }, [config, extras]);
-  
-    const summaryItems = useMemo(
-      () =>
-        steps
-          .filter((s) => s.type !== "summary" && s.type !== "extras")
-          .map((step) => ({
-            ...step,
-            model: config[step.modelType],
-            extras: extras[step.modelType]?.selectedExtras || [],
-          })),
-      [steps, config, extras]
-    );
-  
-    return (
-      <div className="space-y-8 font-montserrat not-italic">
-        <div className="text-center mb-6">
-          <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs uppercase mb-2 block">
-            Paso Final
-          </span>
-          <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-4xl font-bold text-[#031638] tracking-tight leading-tight">
-            Resumen de tu{" "}
-            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
-              Paquete
-            </span>
-          </h2>
-        </div>
-        <div className="max-w-3xl mx-auto space-y-4">
-          {summaryItems.map((item, index) => (
-            <div key={item.modelType} className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex-grow">
-                  <p className="text-xs font-medium text-gray-500">{item.title.replace(/:/g, '')}</p>
-                  <p className="font-semibold text-gray-800 mt-1">
-                    {item.model?.name || "No seleccionado"}
-                  </p>
-                  {/* Display extras */}
-                  {item.extras.length > 0 && (
-                      <div className="pl-4 mt-2 text-sm text-gray-600">
-                          <p className="font-semibold">Extras:</p>
-                          <ul className="list-disc list-inside">
-                              {item.extras.map(extra => (
-                                  <li key={extra.id}>{extra.extra.name} - {formatCurrency(extra.priceOverride ?? extra.extra.basePrice)}</li>
-                              ))}
-                          </ul>
-                      </div>
-                  )}
-                </div>
-                <div className="flex items-center justify-between mt-3 sm:mt-0 sm:gap-6">
-                   <p className="font-bold text-gray-800 sm:text-right">
-                    {item.model ? formatCurrency(item.model.basePrice) : "—"}
-                  </p>
-                  <button
-                    onClick={() => onEdit(steps.findIndex(s => s.modelType === item.modelType && s.type !== 'extras'))}
-                    className="text-sm font-semibold text-cyan-600 hover:text-cyan-800 transition-colors"
-                  >
-                    Cambiar
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-          
-          {/* Total */}
-          <div className="flex justify-between items-center pt-4 mt-4 border-t-2 border-dashed">
-              <p className="text-lg sm:text-xl font-bold text-gray-900">
-                Total del Paquete:
-              </p>
-              <p className="text-lg sm:text-xl font-bold text-gray-900">
-                {formatCurrency(total)}
-              </p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-  
-
-// --- Main Component ---
 
 export default function BundleWizard() {
-  const { id } = useParams();
+  const { id: rawId } = useParams();
   const navigate = useNavigate();
-  const [step, setStep] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const wizardContainerRef = useRef(null);
+
+  const bundleId = useMemo(() => normalizeBundleId(rawId), [rawId]);
+  const stepsConfig = useMemo(() => BUNDLE_STEPS_FLOW[bundleId] || [], [bundleId]);
+
+  const step = Math.min(
+    Math.max(0, parseInt(searchParams.get("s"), 10) || 0),
+    Math.max(0, stepsConfig.length - 1)
+  );
+
   const [allModels, setAllModels] = useState(() => getCachedConfiguradorModels() || []);
   const [loadingModels, setLoadingModels] = useState(() => !getCachedConfiguradorModels());
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bundlePrices, setBundlePrices] = useState(null);
 
+  // Estados de configuración de equipos y extras
   const [bundleConfig, setBundleConfig] = useState({
-    mostrador: null,
     vendingAgua: null,
+    mostrador: null,
     vendingLimpieza: null,
   });
 
   const [extrasConfig, setExtrasConfig] = useState({
-    mostrador: null,
     vendingAgua: null,
+    mostrador: null,
     vendingLimpieza: null,
   });
 
-  const steps = useMemo(() => bundleStepsConfig[id] || [], [id]);
-  const currentStepInfo = useMemo(() => steps[step], [step, steps]);
-  const totalSteps = steps.length;
-
-  useEffect(() => {
-    if (isModalOpen) {
-      const timer = setTimeout(() => {
-        navigate("/inicia-tu-negocio");
-      }, 3000); 
-
-      return () => clearTimeout(timer);
-    }
-  }, [isModalOpen, navigate]);
-
+  // Cargar modelos y precios dinámicos
   useEffect(() => {
     let isMounted = true;
-    const fetchAllModels = async () => {
+    const initData = async () => {
       try {
-        const data = await getConfiguradorModels();
+        const [modelsData, pricesData] = await Promise.all([
+          getConfiguradorModels(),
+          getBundlePrices(),
+        ]);
         if (isMounted) {
-          setAllModels(data);
+          setAllModels(modelsData);
+          setBundlePrices(pricesData);
         }
       } catch (error) {
-        toast.error(error.message);
+        console.error("Error al cargar datos del configurador de paquetes:", error);
+        toast.error("Error al cargar los modelos de máquinas.");
       } finally {
         if (isMounted) {
           setLoadingModels(false);
         }
       }
     };
-    fetchAllModels();
+    initData();
     return () => {
       isMounted = false;
     };
   }, []);
 
-  const generarPDF = async () => {
-    toast.loading("Generando tu Cotización Premium...", { id: "pdf-toast" });
-    const doc = new jsPDF({ unit: "mm", format: "a4" });
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const M = 15;
-    let y = 22; // Subir el título
+  // Control de scroll suave entre pasos
+  useEffect(() => {
+    if (!wizardContainerRef.current || loadingModels) return;
+    const isMobile = window.innerWidth < 640;
 
-    try {
-        const templateImage = await loadImage("/img/Plantillas/coti_dar.jpg");
-
-        const addHeader = (pageNumber = 1) => {
-            doc.addImage(templateImage, "PNG", 0, 0, pageW, pageH);
-            doc.setFontSize(8);
-            doc.setTextColor("#999");
-            doc.text(`Página ${pageNumber}`, pageW - 20, pageH - 8, { align: "right" });
-        };
-
-        const ensureSpace = (need = 8) => {
-            if (y + need > pageH - 30) {
-                doc.addPage();
-                addHeader(doc.getNumberOfPages());
-                y = 45;
-            }
-        };
-
-        // ====== INICIO PDF ======
-        addHeader(1);
-
-        // Título con salto de línea
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(26);
-        doc.setTextColor("#000");
-        doc.text("DARMAX", pageW / 2, y, { align: "center" });
-        y += 10;
-        doc.setFontSize(18);
-        doc.setTextColor("#666");
-        doc.text("Cotización de Paquete", pageW / 2, y, { align: "center" });
-        y += 5;
-        doc.setFontSize(14);
-        doc.setTextColor(BRAND_BLUE);
-        doc.text(String(id), pageW / 2, y, { align: "center" });
-        y += 15;
-
-        const summaryItems = steps.filter(s => s.type !== 'summary' && s.type !== 'extras');
-        let totalVal = 0;
-        let consolidatedNotes = [];
-
-        for (const item of summaryItems) {
-            const model = bundleConfig[item.modelType];
-            const extras = extrasConfig[item.modelType]?.selectedExtras || [];
-            
-            if (model) {
-                const modelData = MODEL_SPECS[model.slug] || {};
-                const realSpecs = modelData.specs || model.features || [];
-                const realReqs = modelData.requirements || [];
-                if (modelData.note) consolidatedNotes.push(modelData.note);
-
-                // Obtener imágenes del modelo
-                const sortedImgs = [...(model.images || [])].sort((a,b) => a.priority - b.priority);
-                const pImg = sortedImgs.find(i => !i.isSecondary) || sortedImgs[0];
-                const sImg = sortedImgs.find(i => i.isSecondary);
-
-                const itemBasePrice = (id === 'Tridente' || id === 'Megalodon') && item.modelType === 'mostrador' ? 18000 : model.basePrice;
-                totalVal += itemBasePrice;
-
-                ensureSpace(20);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(14);
-                doc.setTextColor("#111");
-                doc.text(item.title.replace(/Paso \d: /g, ''), M, y);
-                y += 7;
-                
-                doc.setFontSize(12);
-                doc.setTextColor(BRAND_BLUE);
-                doc.text(`${model.name}`, M, y);
-                doc.text(`${formatCurrency(itemBasePrice)}`, pageW - M, y, { align: "right" });
-                y += 5;
-
-                // Tablas
-                if (realSpecs.length > 0) {
-                    autoTable(doc, {
-                        startY: y,
-                        head: [[{ content: 'Especificaciones', colSpan: 1 }]],
-                        body: realSpecs.map(s => [s]),
-                        theme: 'striped',
-                        headStyles: { fillColor: BRAND_BLUE, textColor: 255 },
-                        styles: { fontSize: 8, cellPadding: 1.5 },
-                        margin: { left: M, right: M }
-                    });
-                    y = doc.lastAutoTable.finalY + 5;
-                }
-
-                // Imágenes del equipo en el Paquete
-                if (pImg || sImg) {
-                    try {
-                        if (pImg) {
-                            ensureSpace(50);
-                            const iW = 65; // Imagen principal más grande
-                            const iX = (pageW - iW) / 2;
-                            const img1 = await loadImage(pImg.url);
-                            const img1H = (img1.height / img1.width) * iW;
-                            doc.addImage(img1, "JPEG", iX, y, iW, img1H);
-                            y += img1H + 5;
-                        }
-                        if (sImg) {
-                            ensureSpace(40);
-                            const iW2 = 40; // Imagen secundaria normal
-                            const iX2 = (pageW - iW2) / 2;
-                            const img2 = await loadImage(sImg.url);
-                            const img2H = (img2.height / img2.width) * iW2;
-                            doc.addImage(img2, "JPEG", iX2, y, iW2, img2H);
-                            y += img2H + 5;
-                        }
-                    } catch(e) { console.error(e); }
-                }
-
-                // Requerimientos
-                if (realReqs.length > 0) {
-                    ensureSpace(15);
-                    autoTable(doc, {
-                        startY: y,
-                        head: [['Requerimiento Técnico', 'Detalle']],
-                        body: realReqs.map(r => [r.title, r.desc]),
-                        theme: 'grid',
-                        headStyles: { fillColor: "#444", textColor: 255 },
-                        styles: { fontSize: 7, cellPadding: 1.5 },
-                        columnStyles: { 0: { fontStyle: 'bold', width: 35 } },
-                        margin: { left: M, right: M }
-                    });
-                    y = doc.lastAutoTable.finalY + 8;
-                }
-
-                if (extras.length > 0) {
-                    ensureSpace(10);
-                    doc.setFont("helvetica", "bold");
-                    doc.setFontSize(9);
-                    doc.setTextColor("#333");
-                    doc.text("Extras para este equipo:", M, y);
-                    y += 4;
-                    
-                    const extraItems = extras.map(e => {
-                        const p = (e.priceOverride ?? e.extra.basePrice);
-                        totalVal += p;
-                        return [e.extra.name, formatCurrency(p)];
-                    });
-
-                    autoTable(doc, {
-                        startY: y,
-                        body: extraItems,
-                        theme: 'plain',
-                        styles: { fontSize: 8, cellPadding: 1 },
-                        columnStyles: { 1: { halign: 'right' } },
-                        margin: { left: M + 5, right: M }
-                    });
-                    y = doc.lastAutoTable.finalY + 10;
-                }
-            }
-        }
-
-        // Resumen Final
-        ensureSpace(40);
-        doc.setDrawColor("#ccc");
-        doc.line(M, y, pageW - M, y);
-        y += 10;
-        
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-        doc.setTextColor("#000");
-        doc.text("Inversión Total del Paquete:", M, y);
-        doc.text(formatCurrency(totalVal), pageW - M, y, { align: "right" });
-        y += 15;
-
-        // Notas Consolidadas
-        const uniqueNotes = [...new Set(consolidatedNotes)];
-        if (uniqueNotes.length > 0) {
-            ensureSpace(25);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(10);
-            doc.setTextColor("#d97706");
-            doc.text("Notas Importantes de Instalación:", M, y);
-            y += 5;
-            doc.setFont("helvetica", "italic");
-            doc.setFontSize(8.5);
-            doc.setTextColor("#92400e");
-            
-            uniqueNotes.forEach(note => {
-                const lines = doc.splitTextToSize(`• ${note}`, pageW - M * 2);
-                doc.text(lines, M, y);
-                y += (lines.length * 4) + 2;
-                ensureSpace(10);
-            });
-        }
-        
-        doc.save(`Darmax_Paquete_${id}.pdf`);
-        toast.success("Tu cotización ha sido generada con éxito", { id: "pdf-toast" });
-
-    } catch (error) {
-        console.error("Error al generar PDF:", error);
-        toast.error("Hubo un problema al generar el documento", { id: "pdf-toast" });
+    if (isMobile) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      return;
     }
+
+    const timer = setTimeout(() => {
+      const targetElement =
+        document.getElementById("step1-model-container") ||
+        document.getElementById("extras-top-anchor") ||
+        document.getElementById("bundle-wizard-content") ||
+        wizardContainerRef.current;
+
+      if (targetElement) {
+        const rect = targetElement.getBoundingClientRect();
+        const targetY = Math.max(0, rect.top + window.pageYOffset - 85);
+        window.scrollTo({ top: targetY, behavior: "smooth" });
+      }
+    }, 150);
+
+    return () => clearTimeout(timer);
+  }, [step, loadingModels]);
+
+  const setStep = (newStep) => {
+    setSearchParams({ s: newStep });
   };
 
-  const handleFinish = () => {
-    setIsModalOpen(true);
+  const nextStep = () => {
+    setStep(Math.min(step + 1, stepsConfig.length - 1));
   };
 
+  const prevStep = () => {
+    setStep(Math.max(0, step - 1));
+  };
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, totalSteps - 1));
-  const prevStep = () => setStep((prev) => Math.max(0, prev - 1));
-  const goToStep = (stepIndex) => setStep(Math.max(0, Math.min(stepIndex, totalSteps - 1)));
+  const currentStepInfo = stepsConfig[step];
 
-  const handleSelect = (model) => {
+  // Breadcrumbs interactivos adaptados al paquete
+  const breadcrumbSteps = useMemo(() => {
+    const list = [{ label: "Inicio", path: "/#catalogo" }];
+    stepsConfig.forEach((s) => {
+      list.push({ label: s.breadcrumb });
+    });
+    return list;
+  }, [stepsConfig]);
+
+  // Selección de modelos para el paso actual
+  const modelsForCurrentStep = useMemo(() => {
+    if (!currentStepInfo || currentStepInfo.type !== "model" || loadingModels) return [];
+
+    const { modelType } = currentStepInfo;
+
+    if (modelType === "vendingAgua") {
+      // Filtrar Vending de Agua (Atlantis y AtlantisTouch)
+      return allModels.filter(
+        (m) =>
+          (m.slug.toLowerCase().includes("atlantis") || m.isAtlantis) &&
+          !m.slug.toLowerCase().includes("vending5") &&
+          !m.slug.toLowerCase().includes("vending8") &&
+          !m.slug.toLowerCase().includes("limpieza")
+      );
+    }
+
+    if (modelType === "mostrador") {
+      // Filtrar Purificadora Mostrador emparejada con la ósmosis del vending de agua
+      const waterModel = bundleConfig.vendingAgua;
+      const rawWater = `${waterModel?.name || ""} ${waterModel?.slug || ""}`.toLowerCase();
+      const hasOsmosis = rawWater.includes("max") || rawWater.includes("osmosis");
+
+      return allModels
+        .filter((m) => {
+          const s = m.slug.toLowerCase();
+          const n = (m.name || "").toLowerCase();
+          const isMostradorModel = s.includes("neptuno") || s.includes("poseidon") || n.includes("mostrador");
+          if (!isMostradorModel) return false;
+
+          const isOsmosisModel = s.includes("aplus") || n.includes("osmosis");
+          return hasOsmosis ? isOsmosisModel : !isOsmosisModel;
+        })
+        .map((m) => ({
+          ...m,
+          // Precio bonificado especial en paquete
+          basePrice: 18000,
+          description: "Purificadora de Mostrador en acero inoxidable incluida a precio especial en tu paquete.",
+        }));
+    }
+
+    if (modelType === "vendingLimpieza") {
+      if (bundleId === "Megalodon") {
+        return allModels.filter((m) => m.slug.toLowerCase() === "vending8");
+      }
+      if (bundleId === "Tridente") {
+        return allModels.filter((m) => m.slug.toLowerCase() === "vending5");
+      }
+      // Duo-Emprendedor: muestra tanto 5 como 8 productos
+      return allModels.filter(
+        (m) => m.slug.toLowerCase() === "vending5" || m.slug.toLowerCase() === "vending8"
+      );
+    }
+
+    return [];
+  }, [currentStepInfo, allModels, bundleConfig.vendingAgua, bundleId, loadingModels]);
+
+  // Manejo de selección de modelo
+  const handleModelSelect = (model) => {
     if (!currentStepInfo) return;
-    const modelType = currentStepInfo.modelType;
-    setBundleConfig((prev) => ({ ...prev, [modelType]: model }));
-    setExtrasConfig((prev) => ({ ...prev, [modelType]: null })); // Reset extras for this model type
-    nextStep();
-  };
+    const { modelType } = currentStepInfo;
 
-  const handleExtrasSelect = (extras) => {
-    if (!currentStepInfo) return;
-    const modelType = currentStepInfo.modelType;
-    setExtrasConfig(prev => ({ ...prev, [modelType]: extras }));
-    nextStep();
-  };
+    setBundleConfig((prev) => {
+      const updated = { ...prev, [modelType]: model };
 
-  const getModelsForCurrentStep = (bundleConfig, id) => {
-    if (!currentStepInfo || currentStepInfo.type === "summary" || currentStepInfo.type === "extras") return [];
-    
-    const { modelType, filter: specificFilter } = currentStepInfo;
-    
-    let baseFiltered = allModels.filter(m => {
-        const slug = m.slug.toLowerCase();
-        switch(modelType) {
-            case 'mostrador':
-                if ((id === 'Tridente' || id === 'Megalodon') && bundleConfig.vendingAgua) {
-                    const vendingName = bundleConfig.vendingAgua.name.toLowerCase();
-                    if (vendingName.includes('max')) {
-                        return (slug.includes('neptuno') || slug.includes('poseidon')) && m.name.toLowerCase().includes('osmosis');
-                    } else {
-                        return (slug.includes('neptuno') || slug.includes('poseidon')) && !m.name.toLowerCase().includes('osmosis');
-                    }
-                }
-                return slug.includes('neptuno') || slug.includes('poseidon');
-
-            case 'vendingAgua': return true;
-
-            case 'vendingLimpieza': return slug === 'vending5' || slug === 'vending8';
-
-            default: return false;
+      // Si se selecciona Vending de Agua en Tridente o Megalodón, auto-emparejar mostrador
+      if (modelType === "vendingAgua" && (bundleId === "Tridente" || bundleId === "Megalodon")) {
+        const rawWater = `${model?.name || ""} ${model?.slug || ""}`.toLowerCase();
+        const hasOsmosis = rawWater.includes("max") || rawWater.includes("osmosis");
+        const matchingMostrador = allModels.find((m) => {
+          const s = m.slug.toLowerCase();
+          const n = (m.name || "").toLowerCase();
+          const isM = s.includes("neptuno") || s.includes("poseidon") || n.includes("mostrador");
+          if (!isM) return false;
+          return hasOsmosis ? (s.includes("aplus") || n.includes("osmosis")) : (!s.includes("aplus") && !n.includes("osmosis"));
+        });
+        if (matchingMostrador) {
+          updated.mostrador = {
+            ...matchingMostrador,
+            basePrice: 18000,
+          };
         }
+      }
+
+      // Si es Megalodón o Tridente, auto-seleccionar la vending de limpieza correspondiente si aún no existe
+      if (bundleId === "Megalodon" && !updated.vendingLimpieza) {
+        const v8 = allModels.find((m) => m.slug.toLowerCase() === "vending8");
+        if (v8) updated.vendingLimpieza = v8;
+      } else if (bundleId === "Tridente" && !updated.vendingLimpieza) {
+        const v5 = allModels.find((m) => m.slug.toLowerCase() === "vending5");
+        if (v5) updated.vendingLimpieza = v5;
+      }
+
+      return updated;
     });
 
-        const models = baseFiltered.map(m => {
-            if ((id === 'Tridente' || id === 'Megalodon') && modelType === 'mostrador') {
-                return { ...m,
-                    basePrice: 18000
-                };
-            }
-            return m;
-        });
-
-        if (specificFilter) {
-            return models.filter(specificFilter);
-        }
-
-        return models;
+    nextStep();
   };
+
+  // Manejo de extras seleccionados
+  const handleExtrasSelect = (modelType, summaryPayload) => {
+    setExtrasConfig((prev) => ({
+      ...prev,
+      [modelType]: summaryPayload,
+    }));
+    nextStep();
+  };
+
+  // Cálculo del precio base del paquete con los descuentos combo
+  const calculatedBundleBasePrice = useMemo(() => {
+    return calculateBundleBasePrice(
+      bundleId,
+      bundleConfig.vendingAgua,
+      bundleConfig.vendingLimpieza,
+      bundlePrices || undefined
+    );
+  }, [bundleId, bundleConfig.vendingAgua, bundleConfig.vendingLimpieza, bundlePrices]);
 
   if (loadingModels) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="text-center p-8 text-lg text-gray-700">
-          Cargando configurador...
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-[#fbfbfd]">
+        <div className="w-12 h-12 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  if (!currentStepInfo) {
+  if (!stepsConfig || stepsConfig.length === 0) {
     return (
-        <div className="text-center p-8 my-20">
-            <h2 className="text-2xl font-bold text-red-600">Configurador no encontrado</h2>
-            <p className="text-gray-600 mt-2">El tipo de paquete "${id}" no es válido.</p>
-            <button onClick={() => navigate('/inicia-tu-negocio')} className="mt-8 px-6 py-3 bg-cyan-600 text-white rounded-lg font-semibold hover:bg-cyan-700 transition-colors">
-                Volver a Modelos de Negocio
-            </button>
-        </div>
+      <div className="text-center p-8 my-20 font-montserrat">
+        <h2 className="text-2xl font-bold text-red-600">Paquete no encontrado</h2>
+        <p className="text-gray-600 mt-2">El identificador "{rawId}" no es válido.</p>
+        <button
+          onClick={() => navigate("/#catalogo")}
+          className="mt-6 px-6 py-3 bg-[#168387] text-white rounded-xl font-bold hover:bg-[#126b6e] transition"
+        >
+          Volver a Catálogo
+        </button>
+      </div>
     );
   }
 
-  const renderCurrentStep = () => {
-    if (currentStepInfo.type === "summary") {
-      return <BundleSummary config={bundleConfig} extras={extrasConfig} steps={steps} onEdit={goToStep} />;
-    }
-
-    if (currentStepInfo.type === "extras") {
-        const modelType = currentStepInfo.modelType;
-        const selectedModel = bundleConfig[modelType];
-        if (!selectedModel) {
-            // This case should ideally not be reached if the flow is correct.
-            return <div className="text-center text-red-500">Por favor, primero selecciona un modelo en el paso anterior.</div>
-        }
-        return (
-          <Step3ExtrasConfigurator
-            selectedModelId={selectedModel.slug} // (si tu endpoint realmente recibe slug)
-            hideFooterActions
-            onChange={(payload) => {
-              // aquí guardas la selección sin avanzar de paso
-              setExtrasConfig((prev) => ({ ...prev, [modelType]: payload }));
-            }}
-          />
-        );
-
-    }
-    
-    const models = getModelsForCurrentStep(bundleConfig, id);
-    return (
-      <ModelSelectionStep
-        title={currentStepInfo.title}
-        models={models}
-        onSelect={handleSelect}
-        selectedModelId={bundleConfig[currentStepInfo.modelType]?.id}
-        imageType={currentStepInfo.imageType}
-      />
-    );
+  const stepVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
   };
 
   return (
-    <div className="bg-[#fbfbfd] min-h-screen pt-12 sm:pt-16 pb-32 font-montserrat not-italic">
+    <div
+      ref={wizardContainerRef}
+      className="bg-[#fbfbfd] min-h-screen pt-20 sm:pt-22 lg:pt-[86px] pb-12 font-montserrat not-italic"
+    >
       <Helmet>
-        <title>Configurador de Paquete - Darmax</title>
-        <meta name="description" content="Configura tu paquete de purificadora y vending a la medida de tus necesidades." />
+        <title>{`Configurador ${bundleId} - Darmax`}</title>
+        <meta
+          name="description"
+          content="Configura tu paquete combo de agua purificada y productos de limpieza con precios especiales."
+        />
       </Helmet>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <div className="text-center mb-8 sm:mb-12">
-            <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 block">
-              Solución Combo
-            </span>
-            <h1 className="font-montserrat not-italic text-3xl sm:text-4xl md:text-5xl font-bold text-[#031638] tracking-tight leading-tight mb-2">
-              Configurador de{" "}
-              <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
-                Paquete
-              </span>
-            </h1>
-            <p className="font-montserrat not-italic text-sm sm:text-base text-[#168387] font-semibold tracking-wide uppercase">
-              {id?.replace(/-/g, ' ')}
-            </p>
-        </div>
 
-        <div className="max-w-2xl mx-auto mb-10">
-            <div className="flex justify-between mb-2">
-                {steps.map((s, index) => (
-                    <div key={index} className={`text-xs text-center font-semibold ${step >= index ? 'text-cyan-600' : 'text-gray-400'}`}>
-                        PASO {index + 1}
-                    </div>
-                ))}
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div
-                className="bg-cyan-500 h-2.5 rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${((step) / (totalSteps - 1)) * 100}%` }}
-            ></div>
-            </div>
-        </div>
+      {/* Breadcrumbs en Cápsula */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-4 sm:mb-6">
+        <Breadcrumbs
+          steps={breadcrumbSteps}
+          currentStepIndex={step + 1}
+          onStepClick={(index) => {
+            if (index === 0) {
+              navigate("/#catalogo");
+            } else {
+              setStep(index - 1);
+            }
+          }}
+        />
+      </div>
 
-        <div className="bg-white p-6 sm:p-10 border border-gray-200/80 rounded-3xl shadow-lg min-h-[300px]">
-            <AnimatePresence mode="wait">
-                <motion.div
-                key={step}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-                >
-                {renderCurrentStep()}
-                </motion.div>
-            </AnimatePresence>
-        </div>
-        
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-between max-w-3xl mx-auto gap-4">
-            <button
-            onClick={prevStep}
-            disabled={step === 0}
-            className="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-800 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-gray-300"
-            >
-            Anterior
-            </button>
-            {step < totalSteps - 1 ? (
-            <button
-                onClick={nextStep}
-                disabled={currentStepInfo?.type !== 'extras' && !bundleConfig[currentStepInfo?.modelType]}
-                className="w-full sm:w-auto px-6 py-3 bg-cyan-600 text-white rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-cyan-700 shadow-sm"
-            >
-                Siguiente
-            </button>
-            ) : (
-            <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-4">
-                 <button
-                    onClick={generarPDF}
-                    className="w-full sm:w-auto px-6 py-3 bg-slate-800 text-white rounded-xl font-semibold transition-colors hover:bg-slate-900 shadow-sm"
-                >
-                    Descargar PDF
-                </button>
-                <button
-                    onClick={handleFinish}
-                    className="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-xl font-semibold transition-colors hover:bg-green-700 shadow-sm"
-                >
-                    Finalizar
-                </button>
-            </div>
+      <main id="bundle-wizard-content" className="max-w-7xl mx-auto px-4 sm:px-6">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${bundleId}-${step}`}
+            variants={stepVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.22, ease: "easeInOut" }}
+            className="w-full"
+          >
+            {/* 1. PASO DE SELECCIÓN DE MODELO */}
+            {currentStepInfo?.type === "model" && (
+              <Step1SelectModel
+                modelos={modelsForCurrentStep}
+                categoryId={currentStepInfo.modelType === "vendingAgua" ? "Vending" : currentStepInfo.title}
+                vendingType="NONE"
+                onSelect={handleModelSelect}
+                onNext={() => {}}
+                catalogHasOsmosis={currentStepInfo.modelType === "vendingAgua" || currentStepInfo.modelType === "mostrador"}
+                subtitleOverride={`${bundleId.replace(/-/g, " ")} • Paso ${step + 1} de ${stepsConfig.length}`}
+                titleOverride={
+                  <>
+                    Selecciona tu <br />
+                    <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 pt-0.5 overflow-visible">
+                      {currentStepInfo.title}
+                    </span>
+                  </>
+                }
+                descriptionOverride={
+                  currentStepInfo.modelType === "vendingAgua"
+                    ? "Elige la tecnología de agua purificada que impulsará tu estación de venta automática."
+                    : currentStepInfo.modelType === "mostrador"
+                    ? "Purificadora para mostrador emparejada especialmente con la tecnología de tu vending seleccionada."
+                    : "Diversifica tus ingresos con la venta de productos de limpieza a granel de alta demanda."
+                }
+                ctaTextOverride="Seleccionar en Paquete"
+                hidePpmNotice={currentStepInfo.modelType !== "vendingAgua"}
+                hideOsmosisBanner={currentStepInfo.modelType !== "vendingAgua"}
+              />
             )}
-        </div>
-        </div>
-        {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 transition-opacity duration-300">
-            <motion.div 
-                initial={{ opacity: 0, y: -30, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-sm mx-4"
-            >
-                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-                    <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                </div>
-                <h2 className="font-montserrat not-italic text-2xl font-bold text-[#031638] mb-2">¡Configuración Terminada!</h2>
-                <p className="font-montserrat not-italic text-slate-600 text-sm">Gracias por configurar tu paquete.</p>
-                <p className="font-montserrat not-italic mt-3 text-xs text-slate-400 font-medium animate-pulse">Serás redirigido en unos segundos...</p>
-            </motion.div>
-        </div>
-      )}
+
+            {/* 2. PASO DE CONFIGURACIÓN DE EXTRAS */}
+            {currentStepInfo?.type === "extras" && (
+              <div className="col-span-1 lg:col-span-2">
+                {bundleConfig[currentStepInfo.modelType] ? (
+                  <Step3ExtrasConfigurator
+                    selectedModelId={bundleConfig[currentStepInfo.modelType].slug}
+                    onSelect={(summary) => handleExtrasSelect(currentStepInfo.modelType, summary)}
+                    onNext={nextStep}
+                    onBack={prevStep}
+                    hideFooterActions={false}
+                  />
+                ) : (
+                  <div className="text-center py-16 bg-white rounded-3xl border border-slate-200">
+                    <p className="text-slate-600 font-bold mb-4">
+                      Por favor, selecciona primero el equipo correspondiente.
+                    </p>
+                    <button
+                      onClick={prevStep}
+                      className="px-6 py-2.5 rounded-xl bg-[#168387] text-white font-bold"
+                    >
+                      Regresar al paso anterior
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 3. PASO DE RESUMEN FINAL DEL PAQUETE */}
+            {currentStepInfo?.type === "summary" && (
+              <BundleSummaryStep
+                bundleId={bundleId}
+                bundleConfig={bundleConfig}
+                extrasConfig={extrasConfig}
+                bundleBasePrice={calculatedBundleBasePrice}
+                onBack={prevStep}
+                onEditStep={(stepIdx) => setStep(stepIdx)}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </main>
     </div>
   );
 }
