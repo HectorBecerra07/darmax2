@@ -36,36 +36,40 @@ export default function WhatsAppButton() {
       return;
     }
 
-    const checkFooter = () => {
-      const footer = document.querySelector('footer');
-      if (footer) {
-        const footerRect = footer.getBoundingClientRect();
-        // Si el footer entra en la ventana visual
-        const isAtBottom = footerRect.top <= window.innerHeight - 30;
-        setIsNearFooter(isAtBottom);
-        if (isAtBottom) {
-          setIsOpen(false);
-        }
-      } else {
-        setIsNearFooter(false);
-      }
-    };
-
+    let ticking = false;
     const handleScroll = () => {
-      if (isHome) {
-        setIsVisible(window.scrollY > 300);
-      } else {
-        setIsVisible(true);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const shouldBeVisible = isHome ? window.scrollY > 300 : true;
+          setIsVisible((prev) => (prev !== shouldBeVisible ? shouldBeVisible : prev));
+          ticking = false;
+        });
+        ticking = true;
       }
-      checkFooter();
     };
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll, { passive: true });
+
+    // Observar la entrada del footer mediante IntersectionObserver para evitar forced reflows
+    const footer = document.querySelector('footer');
+    let observer;
+    if (footer && typeof IntersectionObserver !== 'undefined') {
+      observer = new IntersectionObserver((entries) => {
+        const isAtBottom = entries[0]?.isIntersecting;
+        setIsNearFooter(Boolean(isAtBottom));
+        if (isAtBottom) {
+          setIsOpen(false);
+        }
+      }, { rootMargin: '0px 0px -30px 0px' });
+      observer.observe(footer);
+    }
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
+      if (observer) observer.disconnect();
     };
   }, [isHome, isWizardPage]);
 

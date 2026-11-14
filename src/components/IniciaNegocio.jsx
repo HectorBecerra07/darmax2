@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, useInView, animate } from "framer-motion";
-import Parallax from "parallax-js";
 import SEO from "../components/SEO";
 import Calendar from "../components/Calendar";
 import VendingPrecise3D from "../components/Vending";
@@ -41,57 +40,6 @@ const Counter = ({ value, prefix = "", duration = 1.5 }) => {
   }, [isInView, value, duration]);
 
   return <span ref={ref}>{prefix}{count}</span>;
-};
-
-/* =========================
-   COMPONENTES UI PREMIUM
-========================= */
-
-/**
- * Componente para crear fondos con efecto parallax (movimiento de mouse).
- */
-const ParallaxBackground = ({ depthElements = [] }) => {
-  const sceneRef = useRef(null);
-
-  useEffect(() => {
-    let parallaxInstance;
-
-    if (sceneRef.current) {
-      parallaxInstance = new Parallax(sceneRef.current, {
-        relativeInput: true,
-        hoverOnly: true,
-        clipRelativeInput: true,
-        calibrateX: true,
-        calibrateY: true,
-        scalarX: 10,
-        scalarY: 10,
-        frictionX: 0.08,
-        frictionY: 0.08,
-      });
-    }
-
-    return () => {
-      if (parallaxInstance) parallaxInstance.destroy();
-    };
-  }, []);
-
-  return (
-    <div
-      ref={sceneRef}
-      className="absolute inset-0 pointer-events-none select-none z-0"
-    >
-      {depthElements.map((el, idx) => (
-        <div
-          key={idx}
-          data-depth={el.depth}
-          className="absolute"
-          style={{ ...el.style }}
-        >
-          {el.content}
-        </div>
-      ))}
-    </div>
-  );
 };
 
 /* =========================
@@ -183,7 +131,7 @@ const INITIAL_MODELOS = [
   },
   {
     id: "Duo-Emprendedor",
-    nombre: "Paquete Dúo Emprendedor",
+    nombre: "Dúo Emprendedor",
     imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/4emprendedor_lxuzyt.png", 700),
     precio: 89900,
     descripcion:
@@ -192,7 +140,7 @@ const INITIAL_MODELOS = [
   },
   {
     id: "Tridente",
-    nombre: "Paquete Tridente",
+    nombre: "Tridente",
     imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/puri3_sr1yoc.png", 700),
     precio: 107900,
     descripcion:
@@ -201,7 +149,7 @@ const INITIAL_MODELOS = [
   },
   {
     id: "Megalodon",
-    nombre: "Paquete Megalodon",
+    nombre: "Megalodón",
     imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/6megalodon_wd13q6.png", 700),
     precio: 117900,
     descripcion:
@@ -380,20 +328,20 @@ const getLevelConfig = (modelId, isBundle) => {
   if (modelId === "Vending" || modelId === "Vending-Limpieza") {
     return {
       label: "Esencial",
-      badgeBg: "bg-blue-600 shadow-blue-600/30",
-      borderClass: "border-2 border-slate-200 hover:border-blue-500 shadow-sm hover:shadow-lg hover:shadow-blue-950/5",
+      badgeBg: "bg-[#e39b14] shadow-[#e39b14]/30",
+      borderClass: "border-2 border-slate-200 hover:border-[#e39b14] shadow-sm hover:shadow-lg hover:shadow-[#e39b14]/10",
     };
   } else if (modelId === "Purificadora" || modelId === "Duo-Emprendedor") {
     return {
       label: "Escalable",
-      badgeBg: "bg-[#168387] shadow-[#168387]/30",
-      borderClass: "border-2 border-slate-200 hover:border-[#168387] shadow-sm hover:shadow-lg hover:shadow-cyan-950/5",
+      badgeBg: "bg-[#b8cd21] shadow-[#b8cd21]/30",
+      borderClass: "border-2 border-slate-200 hover:border-[#b8cd21] shadow-sm hover:shadow-lg hover:shadow-[#b8cd21]/10",
     };
   } else if (isBundle) {
     return {
       label: "Premium",
-      badgeBg: "bg-gradient-to-r from-amber-500 to-amber-600 shadow-amber-500/30",
-      borderClass: "border-2 border-slate-200 hover:border-amber-500 shadow-sm hover:shadow-lg hover:shadow-amber-950/5",
+      badgeBg: "bg-[#00bcbc] shadow-[#00bcbc]/30",
+      borderClass: "border-2 border-slate-200 hover:border-[#00bcbc] shadow-sm hover:shadow-lg hover:shadow-[#00bcbc]/10",
     };
   }
 
@@ -413,11 +361,12 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
 
   return (
     <motion.article
-      variants={cardVariants}
+      variants={isCompact ? undefined : cardVariants}
       whileHover={{ y: -6, transition: { duration: 0.25 } }}
+      style={{ willChange: "transform" }}
       className={[
         "group relative flex flex-col h-full rounded-[2rem] sm:rounded-[2.25rem] bg-white",
-        "transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]",
+        "transition-[border-color,box-shadow] duration-300 ease-out",
         "hover:shadow-[0_24px_50px_-12px_rgba(0,0,0,0.12)] mx-auto",
         isCompact 
           ? "p-3.5 w-[270px]" 
@@ -436,7 +385,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
       {/* IMAGEN Y CONTROL */}
       <div 
         onClick={() => navigate(configurePath)}
-        className={`relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img ${isCompact ? "mb-2.5 p-1.5" : "mb-3 sm:mb-4 p-1.5 sm:p-2"} transition-all duration-500 hover:shadow-inner flex items-center justify-center`}
+        className={`relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img ${isCompact ? "mb-2.5 p-1.5" : "mb-3 sm:mb-4 p-1.5 sm:p-2"} transition-[box-shadow] duration-300 hover:shadow-inner flex items-center justify-center`}
       >
         {!errorImagen ? (
           <img
@@ -460,10 +409,10 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
             onToggleSelect(modelo.id);
           }}
           className={[
-            "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-8 w-8 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 backdrop-blur-xl border z-30",
+            "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-8 w-8 rounded-lg sm:rounded-xl flex items-center justify-center transition-[background-color,border-color,color,transform] duration-200 border z-30",
             isSelected
               ? "bg-[#24d4da] border-[#24d4da] text-white shadow-lg shadow-cyan-500/40 rotate-90"
-              : "bg-white/80 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover/img:scale-100",
+              : "bg-white/90 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover/img:scale-100",
           ].join(" ")}
         >
           <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -476,7 +425,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
       <div className="flex flex-col flex-grow text-center">
         <div className={isCompact ? "mb-1" : "mb-1.5 sm:mb-2"}>
           <h3 className={`${isCompact ? "text-base leading-tight" : "text-lg sm:text-xl leading-snug"} font-bold text-slate-900 tracking-tight group-hover:text-[#168387] transition-colors duration-500 uppercase font-montserrat not-italic`}>
-            {modelo.nombre}
+            {modelo.nombre?.replace(/^Paquete\s+/i, "")}
           </h3>
         </div>
 
@@ -513,7 +462,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
           <div className={`flex flex-col ${isCompact ? "gap-1.5" : "gap-2.5"} w-full items-center`}>
             <Link
               to={configurePath}
-              className={`inline-flex items-center justify-center gap-1.5 w-full ${isCompact ? "max-w-[240px] h-9 text-xs" : "max-w-[260px] sm:max-w-[270px] h-11 sm:h-11 text-xs sm:text-[13px]"} px-5 rounded-2xl bg-slate-900 text-white font-bold uppercase tracking-wider hover:bg-[#168387] shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-[#168387]/20 transition-all duration-300 font-montserrat not-italic group/btn cursor-pointer`}
+              className={`inline-flex items-center justify-center gap-1.5 w-full ${isCompact ? "max-w-[240px] h-9 text-xs" : "max-w-[260px] sm:max-w-[270px] h-11 sm:h-11 text-xs sm:text-[13px]"} px-5 rounded-full bg-slate-900 text-white font-bold uppercase tracking-wider hover:bg-[#168387] shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-[#168387]/20 transition-all duration-300 font-montserrat not-italic group/btn cursor-pointer`}
             >
               <span>Configurar</span>
               <ArrowRightIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2] group-hover/btn:translate-x-0.5 transition-transform" />
@@ -658,7 +607,7 @@ const IniciaNegocio = () => {
   const [selected, setSelected] = useState([]);
   const [compareOpen, setCompareOpen] = useState(false);
   const [showVendingSpecs, setShowVendingSpecs] = useState(true);
-  const [vendingMode, setVendingMode] = useState(null);
+  const [vendingMode, setVendingMode] = useState("detalles");
   const [modelosData, setModelosData] = useState(() => {
     const cached = getCachedConfiguradorModels();
     if (cached && Array.isArray(cached) && cached.length > 0) {
@@ -689,30 +638,6 @@ const IniciaNegocio = () => {
     fetchDbModels();
     return () => {
       isMounted = false;
-    };
-  }, []);
-
-  const roiSceneRef = useRef(null);
-
-  useEffect(() => {
-    let parallaxInstance;
-
-    if (roiSceneRef.current) {
-      parallaxInstance = new Parallax(roiSceneRef.current, {
-        relativeInput: true,
-        hoverOnly: true,
-        clipRelativeInput: true,
-        calibrateX: true,
-        calibrateY: true,
-        scalarX: 12,
-        scalarY: 12,
-        frictionX: 0.08,
-        frictionY: 0.08,
-      });
-    }
-
-    return () => {
-      if (parallaxInstance) parallaxInstance.destroy();
     };
   }, []);
 
@@ -758,7 +683,7 @@ const IniciaNegocio = () => {
         closestIdx = idx;
       }
     });
-    setActiveMobileIndex(closestIdx);
+    setActiveMobileIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
   }, []);
 
   const scrollToCard = useCallback((index) => {
@@ -958,17 +883,17 @@ const IniciaNegocio = () => {
                 <p>Desde modelos de negocio totalmente automáticos hasta modelos híbridos para generar más ingresos.</p>
               </div>
               <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-2 sm:mt-4">
-                <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-blue-50/80 rounded-xl border border-blue-200 shadow-sm">
-                  <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
-                  <span className="text-xs font-bold text-blue-700 uppercase tracking-widest font-montserrat not-italic">Esencial</span>
+                <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-[#e39b14]/10 rounded-xl border border-[#e39b14]/30 shadow-sm">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#e39b14]" />
+                  <span className="text-xs font-bold text-[#e39b14] uppercase tracking-widest font-montserrat not-italic">Esencial</span>
                 </div>
-                <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-teal-50/80 rounded-xl border border-[#168387]/30 shadow-sm">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#168387]" />
-                  <span className="text-xs font-bold text-[#168387] uppercase tracking-widest font-montserrat not-italic">Escalable</span>
+                <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-[#b8cd21]/10 rounded-xl border border-[#b8cd21]/30 shadow-sm">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#b8cd21]" />
+                  <span className="text-xs font-bold text-[#7d8c0f] uppercase tracking-widest font-montserrat not-italic">Escalable</span>
                 </div>
-                <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-amber-50/80 rounded-xl border border-amber-300 shadow-sm">
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-                  <span className="text-xs font-bold text-amber-700 uppercase tracking-widest font-montserrat not-italic">Premium</span>
+                <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-[#00bcbc]/10 rounded-xl border border-[#00bcbc]/30 shadow-sm">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#00bcbc] animate-pulse" />
+                  <span className="text-xs font-bold text-[#009e9e] uppercase tracking-widest font-montserrat not-italic">Premium</span>
                 </div>
               </div>
             </div>
@@ -1058,8 +983,8 @@ const IniciaNegocio = () => {
                 return (
                   <div 
                     key={modelo.id} 
-                    className={`modelo-card-item snap-center shrink-0 w-[270px] transition-all duration-300 ${
-                      isActive ? "scale-100 opacity-100" : "scale-[0.96] opacity-85"
+                    className={`modelo-card-item snap-center shrink-0 w-[270px] transition-transform duration-300 ${
+                      isActive ? "scale-100" : "scale-[0.96]"
                     }`}
                   >
                     <TarjetaModelo

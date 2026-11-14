@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import { useSettings } from '../context/SettingsContext';
 import { 
   ClockIcon, 
@@ -10,10 +10,10 @@ import {
 import { optimizeCloudinaryUrl } from "../utils/cloudinary";
 
 export default function HeroBannerSlide({ onOpenTouchModal }) {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const { brandingMode: mode, setBrandingMode } = useSettings();
   const containerRef = useRef(null);
+  const isInView = useInView(containerRef, { amount: 0.1 });
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -36,25 +36,26 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
     resetTimer();
   }, [setBrandingMode, resetTimer]);
 
-  // Alternar modo automaticamente cada 9 segundos solo si no hay scroll y no esta pausado
-  // Se reinicia el intervalo si el usuario cambia el modo manualmente (timerKey)
+  // Alternar modo automaticamente cada 9 segundos solo cuando el banner esta visible y no esta pausado
   useEffect(() => {
-    if (isScrolled || isPaused) return;
+    if (!isInView || isPaused) return;
 
     const interval = setInterval(() => {
       setBrandingMode(prev => prev === 'agua' ? 'clean' : 'agua');
     }, 9000);
 
     return () => clearInterval(interval);
-  }, [isScrolled, isPaused, timerKey, setBrandingMode]);
+  }, [isInView, isPaused, timerKey, setBrandingMode]);
 
-  // Animaciones de Scroll
-  const videoY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
-  const videoScaleBase = useTransform(scrollYProgress, [0, 1], [1.1, 1.3]);
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-50%"]);
+  // Animaciones de Scroll aceleradas por hardware
+  const videoY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const videoScaleBase = useTransform(scrollYProgress, [0, 1], [1.05, 1.2]);
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-40%"]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
   const boxesOpacity = useTransform(scrollYProgress, [0, 0.25], [1, 0]);
-  const boxesScale = useTransform(scrollYProgress, [0, 0.25], [1, 0.9]);
+  const boxesScale = useTransform(scrollYProgress, [0, 0.25], [1, 0.95]);
+  const machineOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const machineScale = useTransform(scrollYProgress, [0, 0.7], [1, 0.9]);
 
   const handleCTA = () => {
     const el = document.getElementById('catalogo');
@@ -66,15 +67,6 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
       }, 150);
     }
   };
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 100);
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   return (
     <div 
@@ -231,7 +223,10 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
 
         {/* COLUMNA DERECHA: RENDERS DE MAQUINAS (50% exacto) */}
         <div className="w-full lg:w-1/2 flex justify-center items-center translate-y-1 sm:translate-y-4 lg:translate-y-4 2xl:translate-y-0 2xl:-translate-x-4 pointer-events-auto">
-          <div className={`w-full flex justify-center items-center transition-all duration-500 ease-in-out ${isScrolled ? 'opacity-0 scale-75 -translate-y-6' : 'opacity-100 scale-100 translate-y-0'}`}>
+          <motion.div 
+            style={{ opacity: machineOpacity, scale: machineScale }}
+            className="w-full flex justify-center items-center"
+          >
             <AnimatePresence mode="wait">
               {mode === 'agua' ? (
                 <motion.div 
@@ -239,7 +234,7 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.4 }}
                   className="flex flex-col items-center gap-4 sm:gap-6 relative"
                 >
                   {/* Imagen de Vending de Agua Unica Estatica */}
@@ -247,12 +242,12 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                     <motion.img 
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
-                      src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529494/vending_agua_f5hj2l.png", 2000)} 
+                      transition={{ delay: 0.08, duration: 0.4, ease: "easeOut" }}
+                      src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529494/vending_agua_f5hj2l.png", 1000)} 
                       alt="Máquina Vending de Agua Darmax"
                       fetchPriority="high"
                       loading="eager"
-                      className="w-full max-w-[330px] min-[380px]:max-w-[345px] [@media(min-height:750px)]:max-w-[380px] [@media(min-height:840px)]:max-w-[410px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[490px] xl:max-w-[550px] 2xl:max-w-[640px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_25px_45px_rgba(0,0,0,0.28)] z-10" 
+                      className="w-full max-w-[330px] min-[380px]:max-w-[345px] [@media(min-height:750px)]:max-w-[380px] [@media(min-height:840px)]:max-w-[410px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[490px] xl:max-w-[550px] 2xl:max-w-[640px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.22)] z-10" 
                     />
                   </div>
                 </motion.div>
@@ -262,7 +257,7 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.4 }}
                   className="flex flex-col items-center gap-4 sm:gap-6 relative"
                 >
                   {/* Imagen de Vending de Limpieza Unica Estatica */}
@@ -270,18 +265,18 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                     <motion.img 
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
-                      src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529494/vending_limpieza_z5u2sj.png", 2000)} 
+                      transition={{ delay: 0.08, duration: 0.4, ease: "easeOut" }}
+                      src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529494/vending_limpieza_z5u2sj.png", 1000)} 
                       alt="Máquina Vending de Productos de Limpieza Darmax Clean"
                       fetchPriority="high"
                       loading="eager"
-                      className="w-full max-w-[330px] min-[380px]:max-w-[345px] [@media(min-height:750px)]:max-w-[380px] [@media(min-height:840px)]:max-w-[410px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[490px] xl:max-w-[550px] 2xl:max-w-[640px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_25px_45px_rgba(0,0,0,0.28)] z-10" 
+                      className="w-full max-w-[330px] min-[380px]:max-w-[345px] [@media(min-height:750px)]:max-w-[380px] [@media(min-height:840px)]:max-w-[410px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[490px] xl:max-w-[550px] 2xl:max-w-[640px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.22)] z-10" 
                     />
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </motion.div>
         </div>
       </div>
 

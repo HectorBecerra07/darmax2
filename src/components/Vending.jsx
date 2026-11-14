@@ -305,6 +305,8 @@ const VendingPrecise3D = ({
   const rotationRef = useRef({ x: -10, y: -12 });
   const lastRef = useRef({ x: 0, y: 0 });
   const velRef = useRef({ vx: 0, vy: 0 });
+  const isDraggingRef = useRef(false);
+  const resetTimeoutRef = useRef(null);
   const inertiaRafRef = useRef(null);
   const frameRafRef = useRef(null);
 
@@ -361,24 +363,28 @@ const VendingPrecise3D = ({
 
   const updateCalloutsVisibility = useCallback(() => {
     if (calloutsRef.current) {
-      const absY = Math.abs(rotationRef.current.y);
+      // Normalizar rotacion en Y al rango [0, 360) para obtener la distancia angular al frente (0 deg)
+      const rawY = rotationRef.current.y;
+      const normY = ((rawY % 360) + 360) % 360;
+      const diffFromFront = normY > 180 ? 360 - normY : normY;
       const absX = Math.abs(rotationRef.current.x);
 
-      // Desvanecer suavemente si el giro en Y se aleja de la cara frontal (entre 28deg y 50deg)
+      // Desvanecer suavemente si el giro en Y se aleja de la cara frontal (entre 32deg y 60deg)
       let opacity = 1;
-      if (absY > 28) {
-        opacity = Math.max(0, 1 - (absY - 28) / 22);
+      if (diffFromFront > 32) {
+        opacity = Math.max(0, 1 - (diffFromFront - 32) / 28);
       }
       if (absX > 45) {
-        opacity = Math.min(opacity, Math.max(0, 1 - (absX - 45) / 20));
+        opacity = Math.min(opacity, Math.max(0, 1 - (absX - 45) / 25));
       }
 
       calloutsRef.current.style.opacity = opacity.toFixed(3);
       calloutsRef.current.style.pointerEvents = opacity > 0.25 ? "auto" : "none";
 
-      // Sutil efecto de paralaje 2D que acompana el giro de la maquina
-      const parallaxX = (rotationRef.current.y / 45) * 8;
-      const parallaxY = (rotationRef.current.x / 45) * 5;
+      // Sutil efecto de paralaje 2D contenido dentro de limites seguros (-12px a 12px)
+      const angleOffset = normY > 180 ? normY - 360 : normY;
+      const parallaxX = clamp((angleOffset / 45) * 8, -12, 12);
+      const parallaxY = clamp((rotationRef.current.x / 45) * 5, -8, 8);
       calloutsRef.current.style.transform = `translate3d(${parallaxX.toFixed(1)}px, ${parallaxY.toFixed(1)}px, 0)`;
     }
   }, []);
@@ -411,6 +417,17 @@ const VendingPrecise3D = ({
     const minSpeed = 0.01;
 
     const tick = () => {
+      // Si el usuario volvio a interactuar, abortar inercia
+      if (isDraggingRef.current) {
+        inertiaRafRef.current = null;
+        return;
+      }
+
+      if (!Number.isFinite(velRef.current.vx) || !Number.isFinite(velRef.current.vy)) {
+        inertiaRafRef.current = null;
+        return;
+      }
+
       rotationRef.current.y += velRef.current.vx;
       rotationRef.current.x = clamp(rotationRef.current.x - velRef.current.vy, -85, 85);
 
@@ -433,31 +450,42 @@ const VendingPrecise3D = ({
     if (Boolean(e.target.closest('[data-ui="true"]'))) return;
 
     stopInertia();
+    if (resetTimeoutRef.current) {
+      clearTimeout(resetTimeoutRef.current);
+      resetTimeoutRef.current = null;
+    }
     if (modelRef.current) {
       modelRef.current.style.transition = "none";
     }
     if (calloutsRef.current) {
       calloutsRef.current.style.transition = "none";
     }
-    e.currentTarget.setPointerCapture(e.pointerId);
+
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
+
+    isDraggingRef.current = true;
     setIsDragging(true);
     lastRef.current = { x: e.clientX, y: e.clientY };
     velRef.current = { vx: 0, vy: 0 };
   };
 
   const onPointerMove = (e) => {
-    if (!isDragging) return;
+    if (!isDraggingRef.current) return;
 
     const dx = e.clientX - lastRef.current.x;
     const dy = e.clientY - lastRef.current.y;
     lastRef.current = { x: e.clientX, y: e.clientY };
 
-    const s = 0.25;
+    if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
+
+    const s = 0.28;
     rotationRef.current.y += dx * s;
     rotationRef.current.x = clamp(rotationRef.current.x - dy * s, -85, 85);
 
-    velRef.current.vx = velRef.current.vx * 0.7 + dx * s * 0.3;
-    velRef.current.vy = velRef.current.vy * 0.7 + dy * s * 0.3;
+    velRef.current.vx = clamp(velRef.current.vx * 0.7 + dx * s * 0.3, -15, 15);
+    velRef.current.vy = clamp(velRef.current.vy * 0.7 + dy * s * 0.3, -15, 15);
 
     if (!frameRafRef.current) {
       frameRafRef.current = requestAnimationFrame(() => {
@@ -469,9 +497,13 @@ const VendingPrecise3D = ({
 
   const endDrag = (e) => {
     try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
+      if (e?.currentTarget && e.pointerId !== undefined) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
     } catch {}
-    if (!isDragging) return;
+
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
     setIsDragging(false);
 
     setRotation({ ...rotationRef.current });
@@ -547,6 +579,10 @@ const VendingPrecise3D = ({
 
   const resetView = (target = { x: -10, y: -12 }) => {
     stopInertia();
+    if (resetTimeoutRef.current) {
+      clearTimeout(resetTimeoutRef.current);
+      resetTimeoutRef.current = null;
+    }
     rotationRef.current = { ...target };
     setRotation({ ...target });
     if (modelRef.current) {
@@ -555,13 +591,14 @@ const VendingPrecise3D = ({
         calloutsRef.current.style.transition = "opacity 400ms ease, transform 400ms ease";
       }
       updateModelTransform();
-      setTimeout(() => {
+      resetTimeoutRef.current = setTimeout(() => {
         if (modelRef.current) {
           modelRef.current.style.transition = "none";
         }
         if (calloutsRef.current) {
           calloutsRef.current.style.transition = "none";
         }
+        resetTimeoutRef.current = null;
       }, 420);
     }
   };
@@ -570,6 +607,7 @@ const VendingPrecise3D = ({
     updateCalloutsVisibility();
     return () => {
       stopInertia();
+      if (resetTimeoutRef.current) clearTimeout(resetTimeoutRef.current);
       if (frameRafRef.current) cancelAnimationFrame(frameRafRef.current);
       audioService.stopWaterStream();
     };
@@ -743,7 +781,7 @@ const VendingPrecise3D = ({
 
       <div className="relative mx-auto w-full flex items-center justify-center shrink-0">
         <div
-          className="relative mx-auto"
+          className="relative mx-auto select-none touch-none before:absolute before:-inset-6 sm:before:-inset-10 before:content-[''] before:z-0"
           style={{
             width: totalW,
             height: totalH,
@@ -755,7 +793,7 @@ const VendingPrecise3D = ({
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
-          onPointerLeave={endDrag}
+          onLostPointerCapture={endDrag}
         >
           {/* Sombra suave y realista en el suelo */}
           <div
@@ -788,7 +826,7 @@ const VendingPrecise3D = ({
               {mode === "detalles" && showCallouts && (
                 <div
                   className="absolute inset-0 z-20 pointer-events-none"
-                  style={{ transform: "translateZ(1px)", backfaceVisibility: "hidden" }}
+                  style={{ transform: "translateZ(2.5px)", backfaceVisibility: "hidden" }}
                 >
                   {[
                     { id: "agua", left: "27%", top: "45%" },

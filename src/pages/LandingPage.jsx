@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
 import { Helmet } from "react-helmet-async";
-import { motion } from "framer-motion";
+import { motion, useInView, animate } from "framer-motion";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeroBannerSlide from "../components/HeroBannerSlide";
 import TouchModal from "../components/TouchModal";
 import { 
@@ -23,8 +22,6 @@ import {
   WifiIcon,
   HandThumbUpIcon
 } from "@heroicons/react/24/outline";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const IniciaNegocio = lazy(() => import("../components/IniciaNegocio"));
 import TestimoniosSection from "../components/TestimoniosSection";
@@ -119,33 +116,25 @@ const fadeUp = (d = 0) => revealUp(d);
 const slideInLeft = (d = 0) => revealUp(d);
 const slideInRight = (d = 0) => revealUp(d);
 
-const GSAPCounter = React.memo(({ value, suffix = "" }) => {
-  const el = useRef();
+const MetricCounter = React.memo(({ value, suffix = "" }) => {
+  const el = useRef(null);
+  const isInView = useInView(el, { once: true, amount: 0.15 });
   const numericValue = parseInt(value.toString().replace(/[^0-9]/g, "")) || 0;
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(el.current, 
-        { innerText: 0 }, 
-        { 
-          innerText: numericValue, 
-          duration: 2.5, 
-          snap: { innerText: 1 },
-          scrollTrigger: {
-            trigger: el.current,
-            start: "top 90%",
-          },
-          ease: "expo.out",
-          onUpdate: function() {
-            if (el.current) {
-              el.current.innerText = Math.floor(this.targets()[0].innerText).toLocaleString() + suffix;
-            }
+    if (isInView && el.current) {
+      const controls = animate(0, numericValue, {
+        duration: 1.8,
+        ease: [0.16, 1, 0.3, 1],
+        onUpdate: (latest) => {
+          if (el.current) {
+            el.current.innerText = Math.floor(latest).toLocaleString() + suffix;
           }
         }
-      );
-    });
-    return () => ctx.revert();
-  }, [numericValue, suffix]);
+      });
+      return () => controls.stop();
+    }
+  }, [isInView, numericValue, suffix]);
 
   return <span ref={el}>0{suffix}</span>;
 });
@@ -165,7 +154,7 @@ const MetricCard = React.memo(({ title, value, suffix, icon: Icon, delay = 0 }) 
         <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
       </div>
       <div className="text-3xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-1 sm:mb-1.5 font-montserrat not-italic">
-        <GSAPCounter value={value} suffix={suffix} />
+        <MetricCounter value={value} suffix={suffix} />
       </div>
       <p className="text-[#168387] font-semibold uppercase tracking-wider text-xs sm:text-[13px] font-montserrat not-italic">{title}</p>
     </div>
@@ -381,9 +370,19 @@ const DashboardResults = React.memo(function DashboardResults({ data }) {
       {/* Imagen de fondo Cloudinary directa sin capas por encima */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img
-          src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789698736/fondo_calc_wzkkas.png", 1920)}
+          src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789698736/fondo_calc_wzkkas.png", 1200)}
           alt="Fondo Calculadora"
           className="w-full h-full object-cover object-center"
+        />
+      </div>
+
+      {/* Imagen superpuesta proporcional exacta a la imagen de fondo con z-index superior al recuadro de utilidad */}
+      <div className="absolute inset-0 z-20 pointer-events-none select-none">
+        <img
+          src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1794626761/Imagen_de_ChatGPT_24_sept_2026_11_57_59_p.m._h0ornf.png", 1200)}
+          alt="Proyección Calculadora"
+          className="w-full h-full object-cover object-center"
+          loading="lazy"
         />
       </div>
       
@@ -475,7 +474,7 @@ const DashboardResults = React.memo(function DashboardResults({ data }) {
         </div>
       </div>
 
-      <div className="relative z-10 mt-2.5 sm:mt-3.5 flex items-center justify-between border-t border-white/10 pt-2.5 sm:pt-3.5 font-montserrat not-italic">
+      <div className="relative z-30 mt-2.5 sm:mt-3.5 flex items-center justify-between border-t border-white/10 pt-2.5 sm:pt-3.5 font-montserrat not-italic">
         <div className="text-[11px] sm:text-xs text-white font-semibold uppercase tracking-wider font-montserrat not-italic">
           Margen Neto: <span className="font-extrabold ml-1.5 text-white font-montserrat not-italic">
             {data.ingresosBrutos > 0 ? Math.round((data.utilidadMensual / data.ingresosBrutos) * 100) : 0}%

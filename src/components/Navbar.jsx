@@ -67,21 +67,28 @@ export default function NavBar() {
   const totalItems = carrito.reduce((acc, p) => acc + p.cantidad, 0);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setIsScrolled(scrollY > 20);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          setIsScrolled((prev) => ((scrollY > 20) !== prev ? scrollY > 20 : prev));
 
-      const darkSections = ["/purificadores-caseros"];
-      if (location.pathname === "/") {
-        setIsDarkTheme(scrollY > 600);
-      } else if (darkSections.includes(location.pathname)) {
-        setIsDarkTheme(true);
-      } else {
-        setIsDarkTheme(false); 
+          const darkSections = ["/purificadores-caseros"];
+          if (location.pathname === "/") {
+            setIsDarkTheme((prev) => ((scrollY > 600) !== prev ? scrollY > 600 : prev));
+          } else if (darkSections.includes(location.pathname)) {
+            setIsDarkTheme(true);
+          } else {
+            setIsDarkTheme(false); 
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location.pathname]);
