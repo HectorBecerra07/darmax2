@@ -22,9 +22,8 @@ export const optimizeCloudinaryUrl = (url, maxWidth = 800, customVersion = null)
     optimized = optimized.replace("/image/upload/", `/image/upload/${transform}/`);
   }
 
-  // Si ya tiene version nativa de Cloudinary (/v1234567890/) no requiere query param a menos que se especifique customVersion
-  const hasCloudinaryNativeVersion = /\/v\d+\//.test(optimized);
-  const activeVersion = customVersion || (!hasCloudinaryNativeVersion && ((typeof import.meta !== "undefined" && import.meta.env?.VITE_IMAGE_CACHE_VERSION) || DEFAULT_IMAGE_VERSION));
+  // Versionamiento para invalidacion de cache en cada build/deploy
+  const activeVersion = customVersion || DEFAULT_IMAGE_VERSION;
   if (activeVersion && !optimized.includes("?v=") && !optimized.includes("&v=")) {
     const separator = optimized.includes("?") ? "&" : "?";
     optimized = `${optimized}${separator}v=${activeVersion}`;
