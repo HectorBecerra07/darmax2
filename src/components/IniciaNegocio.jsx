@@ -101,10 +101,21 @@ const getConfigurePath = (modeloId) =>
     : `/configurar-maquina/${modeloId}`;
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+const MODEL_SUBTITLES = {
+  "Vending": "Genera ingresos 24/7",
+  "Vending-Limpieza": "Amplía tu negocio y diversifica",
+  "Purificadora": "Vende más, ofrece más",
+  "Duo-Emprendedor": "Duplica tus oportunidades",
+  "Tridente": "3 negocios en 1",
+  "Megalodon": "Tu dinastía completa",
+};
+
 const INITIAL_MODELOS = [
   {
     id: "Vending",
-    nombre: "Máquina Vending",
+    nombre: "Vending De Agua",
+    subtitulo: "Genera ingresos 24/7",
     imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/1touch_heazvd.png", 700),
     precio: 54950,
     descripcion:
@@ -113,7 +124,8 @@ const INITIAL_MODELOS = [
   },
   {
     id: "Vending-Limpieza",
-    nombre: "Vending Limpieza",
+    nombre: "Vending De Limpieza",
+    subtitulo: "Amplía tu negocio y diversifica",
     imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/3productos_dcha1t.png", 700),
     precio: 34950,
     descripcion:
@@ -123,6 +135,7 @@ const INITIAL_MODELOS = [
   {
     id: "Purificadora",
     nombre: "Mostrador",
+    subtitulo: "Vende más, ofrece más",
     imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/2mostrador_iajzgl.png", 700),
     precio: 52950,
     descripcion:
@@ -132,6 +145,7 @@ const INITIAL_MODELOS = [
   {
     id: "Duo-Emprendedor",
     nombre: "Dúo Emprendedor",
+    subtitulo: "Duplica tus oportunidades",
     imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/4emprendedor_lxuzyt.png", 700),
     precio: 89900,
     descripcion:
@@ -141,6 +155,7 @@ const INITIAL_MODELOS = [
   {
     id: "Tridente",
     nombre: "Tridente",
+    subtitulo: "3 negocios en 1",
     imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/puri3_sr1yoc.png", 700),
     precio: 107900,
     descripcion:
@@ -150,6 +165,7 @@ const INITIAL_MODELOS = [
   {
     id: "Megalodon",
     nombre: "Megalodón",
+    subtitulo: "Tu dinastía completa",
     imagen: optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/6megalodon_wd13q6.png", 700),
     precio: 117900,
     descripcion:
@@ -358,6 +374,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
   const configurePath = getConfigurePath(modelo.id);
   const levelConfig = useMemo(() => getLevelConfig(modelo.id, isBundle), [modelo.id, isBundle]);
   const specs = useMemo(() => getModelSpecs(modelo.id), [modelo.id]);
+  const subtitulo = modelo.subtitulo || MODEL_SUBTITLES[modelo.id];
 
   return (
     <motion.article
@@ -377,7 +394,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
     >
       {/* BADGE DE NIVEL */}
       {levelConfig.label && (
-        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 ${isCompact ? "px-3 py-0.5 text-[9px]" : "px-3.5 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs"} ${levelConfig.badgeBg} text-white font-bold uppercase tracking-[0.16em] sm:tracking-[0.2em] rounded-full shadow-md whitespace-nowrap font-montserrat not-italic`}>
+        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 ${isCompact ? "px-3 py-1 text-[9px]" : "px-4 py-1 sm:px-4.5 sm:py-1.5 text-[10px] sm:text-[11px]"} ${levelConfig.badgeBg} text-white font-medium uppercase tracking-[0.18em] sm:tracking-[0.2em] rounded-full shadow-md whitespace-nowrap font-montserrat not-italic`}>
           {levelConfig.label}
         </div>
       )}
@@ -385,14 +402,14 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
       {/* IMAGEN Y CONTROL */}
       <div 
         onClick={() => navigate(configurePath)}
-        className={`relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img ${isCompact ? "mb-2.5 p-1.5" : "mb-3 sm:mb-4 p-1.5 sm:p-2"} transition-[box-shadow] duration-300 hover:shadow-inner flex items-center justify-center`}
+        className={`relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img ${isCompact ? "mb-2.5" : "mb-3 sm:mb-4"} transition-[box-shadow] duration-300 hover:shadow-inner flex items-center justify-center`}
       >
         {!errorImagen ? (
           <img
             src={optimizeCloudinaryUrl(modelo.imagen, 700)}
             alt={modelo.nombre}
             decoding="async"
-            className="w-full h-full object-contain object-center transition-transform duration-500 group-hover/img:scale-105"
+            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/img:scale-105"
             onError={() => setErrorImagen(true)}
           />
         ) : (
@@ -429,6 +446,11 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
           <h3 className={`${isCompact ? "text-base leading-tight" : "text-lg sm:text-xl leading-snug"} font-bold text-slate-900 tracking-tight group-hover:text-[#168387] transition-colors duration-500 uppercase font-montserrat not-italic`}>
             {modelo.nombre?.replace(/^Paquete\s+/i, "")}
           </h3>
+          {subtitulo && (
+            <p className={`${isCompact ? "text-[10px] mt-0.5" : "text-[11px] sm:text-xs mt-0.5 sm:mt-1"} font-semibold text-slate-500 font-montserrat not-italic leading-tight`}>
+              {subtitulo}
+            </p>
+          )}
         </div>
 
         {/* BUSINESS SPECS CON SEPARADORES | */}
@@ -889,15 +911,15 @@ const IniciaNegocio = () => {
               <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-2 sm:mt-4">
                 <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-[#e39b14]/10 rounded-xl border border-[#e39b14]/30 shadow-sm">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#e39b14]" />
-                  <span className="text-xs font-bold text-[#e39b14] uppercase tracking-widest font-montserrat not-italic">Esencial</span>
+                  <span className="text-xs font-medium text-[#e39b14] uppercase tracking-widest font-montserrat not-italic">Esencial</span>
                 </div>
                 <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-[#b8cd21]/10 rounded-xl border border-[#b8cd21]/30 shadow-sm">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#b8cd21]" />
-                  <span className="text-xs font-bold text-[#7d8c0f] uppercase tracking-widest font-montserrat not-italic">Escalable</span>
+                  <span className="text-xs font-medium text-[#7d8c0f] uppercase tracking-widest font-montserrat not-italic">Escalable</span>
                 </div>
                 <div className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-[#00bcbc]/10 rounded-xl border border-[#00bcbc]/30 shadow-sm">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#00bcbc] animate-pulse" />
-                  <span className="text-xs font-bold text-[#009e9e] uppercase tracking-widest font-montserrat not-italic">Premium</span>
+                  <span className="text-xs font-medium text-[#009e9e] uppercase tracking-widest font-montserrat not-italic">Premium</span>
                 </div>
               </div>
             </div>
@@ -1262,20 +1284,23 @@ const IniciaNegocio = () => {
                 isVendingZoomed ? "overflow-hidden ring-2 ring-[#168387]/30" : "overflow-visible"
               }`}>
                 
-                {/* Lado izquierdo: Frase en 3 líneas (desaparece al seleccionar un globo o en zoom) */}
-                <div className={`absolute top-3.5 sm:top-4 left-5 sm:left-7 z-20 transition-all duration-300 ${
+                {/* Lado izquierdo: Badge Nuevo modelo touch + Texto 'Innovamos para ti' */}
+                <div className={`absolute top-3.5 sm:top-4 left-5 sm:left-7 z-20 flex flex-col items-start gap-1 sm:gap-1.5 transition-all duration-300 ${
                   activeCalloutId || isVendingZoomed
                     ? "opacity-0 -translate-y-1 pointer-events-none"
                     : "opacity-100 translate-y-0 pointer-events-auto"
                 }`}>
-                  <div className="text-[7.5px] sm:text-[8px] font-semibold text-slate-600 uppercase tracking-widest font-montserrat not-italic leading-[1.35] text-left">
-                    <span className="block">TECNOLOGÍA</span>
-                    <span className="block">QUE GENERA</span>
-                    <span className="block">OPORTUNIDADES</span>
+                  <div className="inline-flex items-center px-3 py-1 sm:px-3.5 sm:py-1 rounded-full bg-[#bce024] border border-[#a8ca1c]/60 text-slate-900 shadow-sm shadow-[#bce024]/30">
+                    <span className="text-[8.5px] sm:text-[9.5px] font-bold uppercase tracking-wider font-montserrat not-italic whitespace-nowrap">
+                      Nuevo modelo touch
+                    </span>
+                  </div>
+                  <div className="hidden sm:block text-[7.5px] sm:text-[8px] font-semibold text-slate-500 uppercase tracking-widest font-montserrat not-italic pl-1">
+                    Innovamos para ti
                   </div>
                 </div>
 
-                {/* Badge 360° Interactiva / Zoom Focal */}
+                {/* Badge 360° Interactiva / Zoom Focal (Lado derecho) */}
                 <div className="absolute top-3.5 sm:top-4 right-5 sm:right-7 z-20">
                   <div className={`flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full border backdrop-blur-md shadow-sm transition-all duration-300 ${
                     isVendingZoomed

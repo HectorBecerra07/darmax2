@@ -79,8 +79,8 @@ export default function TouchModal({ isOpen, onClose }) {
                 <div className="w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-gradient-to-tr from-cyan-100/70 to-teal-50/50 absolute -z-10 blur-xl" />
                 
                 <img
-                  src={optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1779689000/touch_atlantis_max_a2hi0p.png", 1000)}
-                  alt="Modelo Atlantis Touch Max"
+                  src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1794712507/Purificadora_de_Agua_Premium_Negra_ubdjfc.png", 1000)}
+                  alt="Purificadora de Agua Premium Touch con marco negro"
                   width="352"
                   height="460"
                   loading="lazy"
@@ -96,7 +96,7 @@ export default function TouchModal({ isOpen, onClose }) {
               {/* Columna de contenido */}
               <div className="md:col-span-6 flex flex-col items-center md:items-start text-center md:text-left">
                 <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-[#0f6b6f] text-[10px] font-black uppercase tracking-widest mb-3 shadow-xs">
-                  Tecnología Exclusiva
+                  Innovación Continua
                 </div>
 
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight mb-3">
@@ -104,7 +104,7 @@ export default function TouchModal({ isOpen, onClose }) {
                 </h3>
 
                 <p className="text-slate-600 text-sm sm:text-base font-medium leading-relaxed mb-6 sm:mb-8">
-                  Nuevo modelo innovador y único en el mercado con beneficios exclusivos.
+                  Seguimos innovando y mejorando nuestros diseños constantemente para brindarte la mejor tecnología interactiva, acabados de alta gama y máxima rentabilidad en cada equipo.
                 </p>
 
                 {/* Boton de accion unico que dirige a configurar Vending */}

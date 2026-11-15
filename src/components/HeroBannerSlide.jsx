@@ -172,7 +172,7 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                   mode === 'agua' ? 'text-[#168387]' : 'text-[#53c406]'
                 }`}>
                   {mode === 'agua' 
-                    ? "Agua Pura, Grandes oportunidades"
+                    ? "Calidad al beber, retorno al invertir"
                     : "Limpieza Disponible 24/7"}
                 </p>
 
@@ -235,22 +235,40 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4 }}
-                  className="flex flex-col items-center gap-4 sm:gap-6 relative"
+                  className="flex flex-col items-center gap-4 sm:gap-6 relative pt-6 min-[380px]:pt-8 sm:pt-10 lg:pt-0"
                 >
-                  {/* Imagen de Vending de Agua Unica Estatica */}
-                  <div className="relative flex items-center justify-center">
-                    <motion.img 
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.08, duration: 0.4, ease: "easeOut" }}
-                      src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529494/vending_agua_f5hj2l.png", 1000)} 
-                      alt="Máquina Vending de Agua Darmax"
-                      fetchPriority="high"
-                      loading="eager"
-                      width="550"
-                      height="700"
-                      className="w-full max-w-[330px] min-[380px]:max-w-[345px] [@media(min-height:750px)]:max-w-[380px] [@media(min-height:840px)]:max-w-[410px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[490px] xl:max-w-[550px] 2xl:max-w-[640px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.22)] z-10" 
-                    />
+                  {/* Imagenes de Vending de Agua escalonadas segun diseno (Botonera abajo, Touch arriba, coincidiendo en altura total con el modelo clean) */}
+                  <div className="relative flex items-center justify-center w-full max-w-[340px] min-[380px]:max-w-[370px] [@media(min-height:750px)]:max-w-[420px] [@media(min-height:840px)]:max-w-[460px] sm:max-w-[440px] md:max-w-[500px] lg:max-w-[580px] xl:max-w-[660px] 2xl:max-w-[760px] -space-x-3 sm:-space-x-5 md:-space-x-6">
+                    {/* Maquina izquierda: Botonera con marco negro (posicionada mas abajo, alineando la base) */}
+                    <div className="w-1/2 flex justify-center translate-y-5 sm:translate-y-7 md:translate-y-9 lg:translate-y-12 xl:translate-y-14 z-10">
+                      <motion.img 
+                        initial={{ opacity: 0, x: -14, scale: 0.96 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        transition={{ delay: 0.08, duration: 0.4, ease: "easeOut" }}
+                        src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1794712508/M%C3%A1quina_expendedora_DARMAX_con_marco_negro_stdff5.png", 700)} 
+                        alt="Máquina Expendedora Vending Darmax con marco negro"
+                        fetchPriority="high"
+                        loading="eager"
+                        width="350"
+                        height="365"
+                        className="w-full h-auto max-h-[50vh] min-[380px]:max-h-[54vh] [@media(min-height:750px)]:max-h-[58vh] [@media(min-height:840px)]:max-h-[62vh] sm:max-h-[58vh] lg:max-h-[60vh] xl:max-h-[62vh] 2xl:max-h-[65vh] object-contain drop-shadow-[0_18px_32px_rgba(0,0,0,0.22)]" 
+                      />
+                    </div>
+                    {/* Maquina derecha: Touch con marco negro (posicionada mas arriba, alcanzando el tope superior) */}
+                    <div className="w-1/2 flex justify-center -translate-y-5 sm:-translate-y-7 md:-translate-y-9 lg:-translate-y-12 xl:-translate-y-14 z-20">
+                      <motion.img 
+                        initial={{ opacity: 0, x: 14, scale: 0.96 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        transition={{ delay: 0.12, duration: 0.4, ease: "easeOut" }}
+                        src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1794712507/Purificadora_de_Agua_Premium_Negra_ubdjfc.png", 700)} 
+                        alt="Purificadora de Agua Premium Touch con marco negro"
+                        fetchPriority="high"
+                        loading="eager"
+                        width="350"
+                        height="365"
+                        className="w-full h-auto max-h-[50vh] min-[380px]:max-h-[54vh] [@media(min-height:750px)]:max-h-[58vh] [@media(min-height:840px)]:max-h-[62vh] sm:max-h-[58vh] lg:max-h-[60vh] xl:max-h-[62vh] 2xl:max-h-[65vh] object-contain drop-shadow-[0_20px_35px_rgba(0,0,0,0.25)]" 
+                      />
+                    </div>
                   </div>
                 </motion.div>
               ) : (
@@ -262,19 +280,31 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                   transition={{ duration: 0.4 }}
                   className="flex flex-col items-center gap-4 sm:gap-6 relative"
                 >
-                  {/* Imagen de Vending de Limpieza Unica Estatica */}
-                  <div className="relative flex items-center justify-center">
+                  {/* Imagenes de Vending de Limpieza (8 y 5 productos) */}
+                  <div className="relative flex items-end justify-center w-full max-w-[340px] min-[380px]:max-w-[370px] [@media(min-height:750px)]:max-w-[420px] [@media(min-height:840px)]:max-w-[460px] sm:max-w-[440px] md:max-w-[490px] lg:max-w-[560px] xl:max-w-[640px] 2xl:max-w-[740px] -space-x-3 sm:-space-x-5 md:-space-x-6">
                     <motion.img 
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      initial={{ opacity: 0, x: -12, scale: 0.96 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
                       transition={{ delay: 0.08, duration: 0.4, ease: "easeOut" }}
-                      src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1789529494/vending_limpieza_z5u2sj.png", 1000)} 
-                      alt="Máquina Vending de Productos de Limpieza Darmax Clean"
+                      src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1794712234/limpieza_8_joqhoc.png", 700)} 
+                      alt="Máquina Vending de Limpieza 8 Productos Darmax Clean"
                       fetchPriority="high"
                       loading="eager"
-                      width="550"
-                      height="700"
-                      className="w-full max-w-[330px] min-[380px]:max-w-[345px] [@media(min-height:750px)]:max-w-[380px] [@media(min-height:840px)]:max-w-[410px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[490px] xl:max-w-[550px] 2xl:max-w-[640px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.22)] z-10" 
+                      width="350"
+                      height="525"
+                      className="w-1/2 h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.22)] z-20" 
+                    />
+                    <motion.img 
+                      initial={{ opacity: 0, x: 12, scale: 0.96 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      transition={{ delay: 0.12, duration: 0.4, ease: "easeOut" }}
+                      src={optimizeCloudinaryUrl("https://res.cloudinary.com/dunrpwsfq/image/upload/v1794712234/limpieza_5_c8ulvc.png", 700)} 
+                      alt="Máquina Vending de Limpieza 5 Productos Darmax Clean"
+                      fetchPriority="high"
+                      loading="eager"
+                      width="350"
+                      height="525"
+                      className="w-1/2 h-auto max-h-[54vh] min-[380px]:max-h-[60vh] [@media(min-height:750px)]:max-h-[64vh] [@media(min-height:840px)]:max-h-[68vh] sm:max-h-[64vh] lg:max-h-[66vh] xl:max-h-[68vh] 2xl:max-h-[70vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.20)] z-10" 
                     />
                   </div>
                 </motion.div>
