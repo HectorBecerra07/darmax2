@@ -1,8 +1,6 @@
 // src/components/BundleSummaryStep.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
 import { MODEL_SPECS } from "../utils/modelSpecs";
 import { useUser } from "../context/UserContext";
@@ -302,6 +300,10 @@ export default function BundleSummaryStep({
   /* Generar PDF oficial multipágina para el paquete */
   const generarPDF = async () => {
     try {
+      const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+        import("jspdf"),
+        import("jspdf-autotable"),
+      ]);
       const doc = new jsPDF({ unit: "mm", format: "a4" });
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();

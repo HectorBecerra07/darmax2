@@ -222,7 +222,11 @@ export default function NavBar() {
                 <UserIcon className="w-6 h-6 active:scale-90" />
               </Link>
             )}
-            <button onClick={() => setNavOpen(!navOpen)} className="p-1 transition-colors">
+            <button 
+              onClick={() => setNavOpen(!navOpen)} 
+              className="p-1 transition-colors"
+              aria-label={navOpen ? "Cerrar menú de navegación" : "Abrir menú de navegación"}
+            >
               {navOpen ? <XMarkIcon className="w-7 h-7" /> : <Bars3Icon className="w-7 h-7" />}
             </button>
           </div>
@@ -232,8 +236,18 @@ export default function NavBar() {
       {/* Menú Lateral Móvil */}
       <div className={`fixed top-0 right-0 h-full w-full max-w-xs bg-slate-950/95 backdrop-blur-2xl z-[60] transform transition-transform duration-700 ease-in-out shadow-2xl border-l border-white/5 font-montserrat not-italic ${navOpen ? "translate-x-0" : "translate-x-full"}`}>
         <div className="flex justify-between items-center px-8 h-20 border-b border-white/5">
-          <img src="/img/logos/logoblanco.png" alt="Logo Darmax" className="h-9 w-auto object-contain" />
-          <button onClick={() => setNavOpen(false)} className="text-white/50 hover:text-white hover:rotate-90 transition-all duration-500">
+          <img 
+            src="/img/logos/logoblanco.png" 
+            alt="Logo Darmax" 
+            width="120"
+            height="36"
+            className="h-9 w-auto object-contain" 
+          />
+          <button 
+            onClick={() => setNavOpen(false)} 
+            className="text-white/50 hover:text-white hover:rotate-90 transition-all duration-500"
+            aria-label="Cerrar menú"
+          >
             <XMarkIcon className="w-8 h-8" />
           </button>
         </div>

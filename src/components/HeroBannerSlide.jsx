@@ -247,6 +247,8 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                       alt="Máquina Vending de Agua Darmax"
                       fetchPriority="high"
                       loading="eager"
+                      width="550"
+                      height="700"
                       className="w-full max-w-[330px] min-[380px]:max-w-[345px] [@media(min-height:750px)]:max-w-[380px] [@media(min-height:840px)]:max-w-[410px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[490px] xl:max-w-[550px] 2xl:max-w-[640px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.22)] z-10" 
                     />
                   </div>
@@ -270,6 +272,8 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                       alt="Máquina Vending de Productos de Limpieza Darmax Clean"
                       fetchPriority="high"
                       loading="eager"
+                      width="550"
+                      height="700"
                       className="w-full max-w-[330px] min-[380px]:max-w-[345px] [@media(min-height:750px)]:max-w-[380px] [@media(min-height:840px)]:max-w-[410px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[490px] xl:max-w-[550px] 2xl:max-w-[640px] h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.22)] z-10" 
                     />
                   </div>

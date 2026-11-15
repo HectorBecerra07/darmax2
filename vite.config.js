@@ -72,10 +72,6 @@ export default defineConfig({
       output: {
         manualChunks: (id) => {
           if (id.includes('node_modules')) {
-            // PDF Libraries (Suelen ser muy pesadas)
-            if (id.includes('@react-pdf') || id.includes('jspdf') || id.includes('html2pdf')) {
-              return 'vendor-pdf';
-            }
             // Material UI
             if (id.includes('@mui') || id.includes('@emotion')) {
               return 'vendor-ui';

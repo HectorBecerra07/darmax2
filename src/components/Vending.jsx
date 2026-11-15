@@ -166,7 +166,7 @@ const STEEL_FINISH = {
   border: "rgba(119, 118, 120, 0.65)",
 };
 
-const METAL_TEX_URL = "/img/textures/metal_brushed.png";
+const METAL_TEX_URL = "/img/textures/metal_brushed.webp";
 
 const TEX_OVERLAY_STYLE = Object.freeze({
   position: "absolute",
@@ -364,7 +364,7 @@ const VendingPrecise3D = ({
   // Precarga y decodificacion en memoria de imagenes criticas de alta resolucion
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const criticalImages = ["/img/vending/frontalV.png", "/img/vending/doorV.png", "/img/vending/doorback.png"];
+      const criticalImages = ["/img/vending/frontalV.webp", "/img/vending/doorV.webp", "/img/vending/doorback.webp"];
       criticalImages.forEach((src) => {
         const img = new Image();
         img.src = src;
@@ -1004,11 +1004,13 @@ const VendingPrecise3D = ({
                   }}
                 >
                   <img
-                    src="/img/vending/frontalV.png"
+                    src="/img/vending/frontalV.webp"
                     alt="Carátula Frontal Vending Darmax"
                     loading="eager"
                     fetchPriority="high"
                     decoding="sync"
+                    width="600"
+                    height="627"
                     className="w-full h-full object-fill pointer-events-none select-none"
                     style={{
                       imageRendering: "-webkit-optimize-contrast",
@@ -1176,11 +1178,13 @@ const VendingPrecise3D = ({
                 }}
               >
                 <img
-                  src="/img/vending/doorV.png"
+                  src="/img/vending/doorV.webp"
                   alt="Puerta Dispensador Darmax"
                   loading="eager"
                   fetchPriority="high"
                   decoding="sync"
+                  width="440"
+                  height="677"
                   className="w-full h-full object-fill pointer-events-none select-none drop-shadow-md"
                   style={{
                     imageRendering: "-webkit-optimize-contrast",
@@ -1201,8 +1205,12 @@ const VendingPrecise3D = ({
                 }}
               >
                 <img
-                  src="/img/vending/doorback.png"
+                  src="/img/vending/doorback.webp"
                   alt="Puerta Dispensador Darmax Posterior"
+                  loading="lazy"
+                  decoding="async"
+                  width="600"
+                  height="930"
                   className="h-full object-fill pointer-events-none select-none drop-shadow-md"
                   style={{
                     width: "107.5%",

@@ -47,6 +47,8 @@ export default function ShatterLogo({ currentSrc, alt = "Logo Darmax", className
           <img
             src={outgoingSrc}
             alt={alt}
+            width="154"
+            height="44"
             className={`${className} w-auto object-contain block`}
           />
         </motion.div>
@@ -82,6 +84,8 @@ export default function ShatterLogo({ currentSrc, alt = "Logo Darmax", className
         <img
           src={displayedSrc}
           alt={alt}
+          width="154"
+          height="44"
           className={`${className} w-auto object-contain block`}
         />
       </motion.div>

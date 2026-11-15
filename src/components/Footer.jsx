@@ -56,7 +56,15 @@ const Footer = () => {
               {/* Logo y frase debajo */}
               <div className="space-y-1 w-fit">
                 <Link to="/" className="inline-block">
-                  <img src="/img/logos/logoblanco.png" alt="Darmax Logo" className="h-[48px] min-[380px]:h-[54px] w-auto object-contain block" />
+                  <img 
+                    src="/img/logos/logoblanco.png" 
+                    alt="Darmax Logo" 
+                    width="180" 
+                    height="54" 
+                    loading="lazy"
+                    decoding="async"
+                    className="h-[48px] min-[380px]:h-[54px] w-auto object-contain block" 
+                  />
                 </Link>
                 <p className="text-white font-light text-[6.5px] min-[380px]:text-[7.5px] tracking-[0.16em] font-montserrat not-italic uppercase leading-tight">
                   CALIDAD AL BEBER, RETORNO AL INVERTIR
@@ -174,7 +182,15 @@ const Footer = () => {
           <div className="space-y-6 sm:space-y-7 sm:col-span-2 md:col-span-1 lg:col-span-1">
             <div className="space-y-1.5 w-fit">
               <Link to="/" className="inline-block">
-                <img src="/img/logos/logoblanco.png" alt="Darmax Logo" className="h-[72px] sm:h-[80px] lg:h-[86px] w-auto object-contain block" />
+                <img 
+                  src="/img/logos/logoblanco.png" 
+                  alt="Darmax Logo" 
+                  width="260" 
+                  height="86" 
+                  loading="lazy"
+                  decoding="async"
+                  className="h-[72px] sm:h-[80px] lg:h-[86px] w-auto object-contain block" 
+                />
               </Link>
               <p className="text-white font-light text-[8px] sm:text-[8.5px] tracking-[0.25em] font-montserrat not-italic uppercase leading-relaxed">
                 CALIDAD AL BEBER, RETORNO AL INVERTIR

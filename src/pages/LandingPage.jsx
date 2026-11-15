@@ -183,6 +183,7 @@ const formatCurrency = (amount) => {
    CALCULADORA: COMPONENTES UI
 ========================================================= */
 const CompactInput = React.memo(({ label, value, setValue, color, suffix = "", prefix = "$", icon: Icon, help, sideIcon = false }) => {
+  const inputId = React.useId();
   const handleChange = (e) => {
     const cleanValue = e.target.value.replace(/[^0-9.]/g, "");
     setValue(cleanValue);
@@ -194,7 +195,7 @@ const CompactInput = React.memo(({ label, value, setValue, color, suffix = "", p
         {Icon && <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-[#288EB9] shrink-0 stroke-[1.8]" />}
         <div className="min-w-0 flex-1 flex flex-col justify-center">
           <div className="flex items-center justify-between mb-1 gap-1">
-            <label className="text-[10px] sm:text-[11px] font-normal uppercase tracking-wider text-slate-800 block group-focus-within:text-[#288EB9] transition-colors font-montserrat not-italic leading-tight truncate">
+            <label htmlFor={inputId} className="text-[10px] sm:text-[11px] font-normal uppercase tracking-wider text-slate-800 block group-focus-within:text-[#288EB9] transition-colors font-montserrat not-italic leading-tight truncate">
               {label}
             </label>
             {help && (
@@ -209,6 +210,8 @@ const CompactInput = React.memo(({ label, value, setValue, color, suffix = "", p
           <div className="relative font-montserrat not-italic">
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 font-normal text-xs font-montserrat not-italic pointer-events-none">{prefix}</span>
             <input
+              id={inputId}
+              aria-label={label}
               type="text"
               inputMode="numeric"
               value={value}
@@ -227,7 +230,7 @@ const CompactInput = React.memo(({ label, value, setValue, color, suffix = "", p
       <div className="flex items-center justify-between mb-1 gap-1 w-full">
         <div className="flex items-center gap-1.5 min-w-0">
           {Icon && <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#288EB9] shrink-0 stroke-[1.8]" />}
-          <label className="text-[10px] sm:text-[11px] font-normal uppercase tracking-wider text-slate-800 group-focus-within:text-[#288EB9] transition-colors font-montserrat not-italic truncate">
+          <label htmlFor={inputId} className="text-[10px] sm:text-[11px] font-normal uppercase tracking-wider text-slate-800 group-focus-within:text-[#288EB9] transition-colors font-montserrat not-italic truncate">
             {label}
           </label>
         </div>
@@ -243,6 +246,8 @@ const CompactInput = React.memo(({ label, value, setValue, color, suffix = "", p
       <div className="relative w-full font-montserrat not-italic">
         <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 font-normal text-xs font-montserrat not-italic pointer-events-none">{prefix}</span>
         <input
+          id={inputId}
+          aria-label={label}
           type="text"
           inputMode="numeric"
           value={value}

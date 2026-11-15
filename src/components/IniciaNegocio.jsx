@@ -404,12 +404,14 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-700 pointer-events-none" />
         
         <button
+          type="button"
+          aria-label={isSelected ? `Deseleccionar ${modelo.nombre}` : `Seleccionar ${modelo.nombre}`}
           onClick={(e) => {
             e.stopPropagation();
             onToggleSelect(modelo.id);
           }}
           className={[
-            "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-8 w-8 rounded-lg sm:rounded-xl flex items-center justify-center transition-[background-color,border-color,color,transform] duration-200 border z-30",
+            "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-8 w-8 rounded-lg sm:rounded-xl flex items-center justify-center transition-[background-color,border-color,color,transform] duration-200 border z-30 cursor-pointer",
             isSelected
               ? "bg-[#24d4da] border-[#24d4da] text-white shadow-lg shadow-cyan-500/40 rotate-90"
               : "bg-white/90 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover/img:scale-100",
@@ -1239,9 +1241,9 @@ const IniciaNegocio = () => {
                       <item.icon className="w-6 h-6 sm:w-6.5 sm:h-6.5 xl:w-7 xl:h-7 stroke-[1.8]" />
                     </div>
                     <div className="w-full text-left">
-                      <h4 className="font-bold text-[#031638] group-hover:text-[#1c79a6] text-xs sm:text-[13.5px] xl:text-[14.5px] font-montserrat not-italic transition-colors leading-tight mb-1 sm:mb-1.5 tracking-tight">
+                      <h3 className="font-bold text-[#031638] group-hover:text-[#1c79a6] text-xs sm:text-[13.5px] xl:text-[14.5px] font-montserrat not-italic transition-colors leading-tight mb-1 sm:mb-1.5 tracking-tight">
                         {item.t}
-                      </h4>
+                      </h3>
                       <p className="text-slate-600 text-xs sm:text-[12.5px] leading-relaxed font-normal font-montserrat not-italic">
                         {item.d}
                       </p>

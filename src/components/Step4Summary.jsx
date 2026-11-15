@@ -1,8 +1,6 @@
 // Archivo: Step4Summary.jsx
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
 import { MODEL_SPECS } from "../utils/modelSpecs";
 import { useUser } from "../context/UserContext";
@@ -351,6 +349,10 @@ export default function Step4Summary({
   /* ====== PDF local con formato original ====== */
   const generarPDF = async () => {
     try {
+      const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+        import("jspdf"),
+        import("jspdf-autotable"),
+      ]);
       const doc = new jsPDF({ unit: "mm", format: "a4" });
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();

@@ -113,18 +113,18 @@ function TestimonioCard({ testimonio, isMobile = false, isActive = false }) {
 
       <div className="relative z-10 flex flex-col flex-grow">
         <div className="mb-3 sm:mb-3.5 pr-10 sm:pr-12">
-          <h4 className={`font-bold text-base sm:text-[17px] leading-snug transition-colors duration-500 font-montserrat not-italic truncate ${
+          <h3 className={`font-bold text-base sm:text-[17px] leading-snug transition-colors duration-500 font-montserrat not-italic truncate ${
             isMobile ? "text-slate-900" : "text-slate-900 group-hover:text-white"
           }`}>
             {testimonio.name}
-          </h4>
+          </h3>
           <div className="flex gap-0.5 my-1 sm:my-1.5">
             {[...Array(5)].map((_, idx) => (
               <StarIcon key={idx} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.3)] group-hover:drop-shadow-[0_0_10px_rgba(251,191,36,0.6)] transition-all" />
             ))}
           </div>
-          <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider opacity-90 transition-colors duration-500 font-montserrat not-italic truncate ${
-            isMobile ? "text-[#288EB9]" : "text-[#288EB9] group-hover:text-cyan-100"
+          <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-colors duration-500 font-montserrat not-italic truncate ${
+            isMobile ? "text-[#187596]" : "text-[#187596] group-hover:text-cyan-100"
           }`}>
             {testimonio.role}
           </p>
@@ -386,13 +386,17 @@ export function TestimoniosCarousel() {
               key={idx}
               type="button"
               onClick={() => setCurrentIndex(idx)}
-              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                currentIndex === idx
-                  ? "w-7 bg-gradient-to-r from-[#288EB9] to-[#1DB3BA]"
-                  : "w-2 bg-slate-200 hover:bg-slate-300"
-              }`}
+              className="h-7 px-1 flex items-center justify-center cursor-pointer focus:outline-none"
               aria-label={`Ir al testimonio ${idx + 1}`}
-            />
+            >
+              <span
+                className={`h-2 rounded-full transition-all duration-300 block ${
+                  currentIndex === idx
+                    ? "w-7 bg-gradient-to-r from-[#288EB9] to-[#1DB3BA]"
+                    : "w-2 bg-slate-200 hover:bg-slate-300"
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>

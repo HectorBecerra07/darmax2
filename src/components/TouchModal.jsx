@@ -81,17 +81,21 @@ export default function TouchModal({ isOpen, onClose }) {
                 <img
                   src={optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1779689000/touch_atlantis_max_a2hi0p.png", 1000)}
                   alt="Modelo Atlantis Touch Max"
+                  width="352"
+                  height="460"
+                  loading="lazy"
+                  decoding="async"
                   className="w-60 sm:w-72 md:w-80 lg:w-88 h-auto max-h-[400px] sm:max-h-[460px] object-contain drop-shadow-[0_20px_35px_rgba(22,131,135,0.22)]"
                 />
 
-                <span className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-[#168387] text-[10px] font-black uppercase tracking-widest shadow-sm">
-                  <SparklesIcon className="w-3.5 h-3.5 text-[#168387]" /> Edición 2026
+                <span className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-[#0f6b6f] text-[10px] font-black uppercase tracking-widest shadow-sm">
+                  <SparklesIcon className="w-3.5 h-3.5 text-[#0f6b6f]" /> Edición 2026
                 </span>
               </div>
 
               {/* Columna de contenido */}
               <div className="md:col-span-6 flex flex-col items-center md:items-start text-center md:text-left">
-                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-[#168387] text-[10px] font-black uppercase tracking-widest mb-3 shadow-xs">
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-[#0f6b6f] text-[10px] font-black uppercase tracking-widest mb-3 shadow-xs">
                   Tecnología Exclusiva
                 </div>
 
