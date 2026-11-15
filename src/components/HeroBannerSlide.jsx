@@ -281,7 +281,7 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                   className="flex flex-col items-center gap-4 sm:gap-6 relative"
                 >
                   {/* Imagenes de Vending de Limpieza (8 y 5 productos) */}
-                  <div className="relative flex items-end justify-center w-full max-w-[340px] min-[380px]:max-w-[370px] [@media(min-height:750px)]:max-w-[420px] [@media(min-height:840px)]:max-w-[460px] sm:max-w-[440px] md:max-w-[490px] lg:max-w-[560px] xl:max-w-[640px] 2xl:max-w-[740px] -space-x-3 sm:-space-x-5 md:-space-x-6">
+                  <div className="relative flex items-end justify-center w-full max-w-[290px] min-[380px]:max-w-[320px] [@media(min-height:750px)]:max-w-[360px] [@media(min-height:840px)]:max-w-[390px] sm:max-w-[440px] md:max-w-[490px] lg:max-w-[560px] xl:max-w-[640px] 2xl:max-w-[740px] -space-x-2.5 sm:-space-x-5 md:-space-x-6">
                     <motion.img 
                       initial={{ opacity: 0, x: -12, scale: 0.96 }}
                       animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -292,7 +292,7 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                       loading="eager"
                       width="350"
                       height="525"
-                      className="w-1/2 h-auto max-h-[56vh] min-[380px]:max-h-[62vh] [@media(min-height:750px)]:max-h-[66vh] [@media(min-height:840px)]:max-h-[70vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.22)] z-20" 
+                      className="w-1/2 h-auto max-h-[48vh] min-[380px]:max-h-[53vh] [@media(min-height:750px)]:max-h-[58vh] [@media(min-height:840px)]:max-h-[62vh] sm:max-h-[66vh] lg:max-h-[68vh] xl:max-h-[70vh] 2xl:max-h-[72vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.22)] z-20" 
                     />
                     <motion.img 
                       initial={{ opacity: 0, x: 12, scale: 0.96 }}
@@ -304,7 +304,7 @@ export default function HeroBannerSlide({ onOpenTouchModal }) {
                       loading="eager"
                       width="350"
                       height="525"
-                      className="w-1/2 h-auto max-h-[54vh] min-[380px]:max-h-[60vh] [@media(min-height:750px)]:max-h-[64vh] [@media(min-height:840px)]:max-h-[68vh] sm:max-h-[64vh] lg:max-h-[66vh] xl:max-h-[68vh] 2xl:max-h-[70vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.20)] z-10" 
+                      className="w-1/2 h-auto max-h-[46vh] min-[380px]:max-h-[51vh] [@media(min-height:750px)]:max-h-[56vh] [@media(min-height:840px)]:max-h-[60vh] sm:max-h-[64vh] lg:max-h-[66vh] xl:max-h-[68vh] 2xl:max-h-[70vh] object-contain drop-shadow-[0_16px_32px_rgba(0,0,0,0.20)] z-10" 
                     />
                   </div>
                 </motion.div>
