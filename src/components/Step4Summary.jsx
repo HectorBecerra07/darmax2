@@ -357,6 +357,9 @@ export default function Step4Summary({
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
       const M = 15;
+      const CONTENT_TOP_MARGIN = 48; // Misma altura donde inicia el modelo seleccionado en pagina 1
+      const FOOTER_BOTTOM_MARGIN = 42; // Margen de seguridad para no encimar el pie de pagina
+      const MAX_CONTENT_Y = pageH - FOOTER_BOTTOM_MARGIN;
 
       let templateData = null;
       try {
@@ -365,26 +368,28 @@ export default function Step4Summary({
         console.warn("No se pudo cargar la plantilla de fondo para el PDF:", err);
       }
 
-      const addHeader = (pageNumber = 1) => {
+      const drawBackground = () => {
         if (templateData?.dataUrl) {
           doc.addImage(templateData.dataUrl, "JPEG", 0, 0, pageW, pageH, "bg_template", "FAST");
         }
-        doc.setFontSize(8);
-        doc.setTextColor("#999");
-        doc.text(`Página ${pageNumber}`, pageW - 20, pageH - 8, { align: "right" });
       };
+
+      // Dibujar fondo membretado en la primera pagina
+      drawBackground();
+
+      // Garantizar que toda pagina agregada (manual o por autoTable) conserve la hoja membretada
+      doc.internal.events.subscribe("addPage", () => {
+        drawBackground();
+      });
 
       let y = 22;
 
       const ensureSpace = (need = 8) => {
-        if (y + need > pageH - 30) {
+        if (y + need > MAX_CONTENT_Y) {
           doc.addPage();
-          addHeader(doc.getNumberOfPages());
-          y = 45;
+          y = CONTENT_TOP_MARGIN;
         }
       };
-
-      addHeader(1);
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(26);
@@ -442,9 +447,9 @@ export default function Step4Summary({
           theme: "striped",
           headStyles: { fillColor: BRAND_BLUE, textColor: 255, fontStyle: "bold" },
           styles: { fontSize: 9, cellPadding: 2 },
-          margin: { left: M, right: M },
+          margin: { left: M, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
         });
-        y = doc.lastAutoTable.finalY + 10;
+        y = doc.lastAutoTable.finalY + 8;
       }
 
       if (regalosPaquete.length > 0) {
@@ -456,9 +461,9 @@ export default function Step4Summary({
           theme: "striped",
           headStyles: { fillColor: "#0f766e", textColor: 255, fontStyle: "bold" },
           styles: { fontSize: 8.5, cellPadding: 2 },
-          margin: { left: M, right: M },
+          margin: { left: M, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
         });
-        y = doc.lastAutoTable.finalY + 10;
+        y = doc.lastAutoTable.finalY + 8;
       }
 
       if (realRequirements.length > 0) {
@@ -471,9 +476,9 @@ export default function Step4Summary({
           headStyles: { fillColor: "#333", textColor: 255 },
           styles: { fontSize: 8, cellPadding: 2 },
           columnStyles: { 0: { fontStyle: "bold", width: 40 } },
-          margin: { left: M, right: M },
+          margin: { left: M, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
         });
-        y = doc.lastAutoTable.finalY + 10;
+        y = doc.lastAutoTable.finalY + 8;
       }
 
       if (selectedExtras.length > 0) {
@@ -489,12 +494,12 @@ export default function Step4Summary({
           headStyles: { textColor: "#000", fontStyle: "bold", borderBottom: { width: 0.5, color: "#ccc" } },
           styles: { fontSize: 9 },
           columnStyles: { 1: { halign: "right" } },
-          margin: { left: M, right: M },
+          margin: { left: M, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
         });
-        y = doc.lastAutoTable.finalY + 5;
+        y = doc.lastAutoTable.finalY + 6;
       }
 
-      ensureSpace(30);
+      ensureSpace(38);
       y += 5;
       doc.setDrawColor("#eee");
       doc.line(M, y, pageW - M, y);
@@ -513,10 +518,10 @@ export default function Step4Summary({
       doc.setTextColor("#000");
       doc.text("Inversión Total Estimada:", M, y);
       doc.text(`$${toMoney(precioTotal)} MXN`, pageW - M, y, { align: "right" });
-      y += 15;
+      y += 12;
 
       if (importantNote) {
-        ensureSpace(20);
+        ensureSpace(25);
         doc.setFont("helvetica", "bold");
         doc.setFontSize(10);
         doc.setTextColor("#d97706");
@@ -527,19 +532,19 @@ export default function Step4Summary({
         doc.setTextColor("#92400e");
         const noteLines = doc.splitTextToSize(importantNote, pageW - M * 2);
         doc.text(noteLines, M, y);
-        y += noteLines.length * 4 + 10;
+        y += noteLines.length * 4 + 8;
       }
 
       if (displayImage || secondaryImage) {
         if (displayImage) {
           try {
             const img1 = await loadImageAsDataUrl(displayImage, 800, 0.8);
-            const pW = 110;
+            const pW = 100;
             const img1H = (img1.height / img1.width) * pW;
-            ensureSpace(img1H + 15);
+            ensureSpace(img1H + 10);
             const pX = (pageW - pW) / 2;
             doc.addImage(img1.dataUrl, "JPEG", pX, y, pW, img1H, undefined, "FAST");
-            y += img1H + 10;
+            y += img1H + 8;
           } catch (e) {
             console.error("Error cargando imagen principal para PDF:", e);
           }
@@ -549,14 +554,24 @@ export default function Step4Summary({
             const img2 = await loadImageAsDataUrl(secondaryImage, 800, 0.8);
             const sW = 70;
             const img2H = (img2.height / img2.width) * sW;
-            ensureSpace(img2H + 15);
+            ensureSpace(img2H + 10);
             const sX = (pageW - sW) / 2;
             doc.addImage(img2.dataUrl, "JPEG", sX, y, sW, img2H, undefined, "FAST");
-            y += img2H + 10;
+            y += img2H + 8;
           } catch (e) {
             console.error("Error cargando imagen secundaria para PDF:", e);
           }
         }
+      }
+
+      // Numeracion de paginas en el pie de pagina
+      const totalPages = doc.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor("#777");
+        doc.text(`Página ${i} de ${totalPages}`, pageW - M, pageH - 10, { align: "right" });
       }
 
       doc.save(

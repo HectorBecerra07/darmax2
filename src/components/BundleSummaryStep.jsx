@@ -308,6 +308,9 @@ export default function BundleSummaryStep({
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
       const M = 15;
+      const CONTENT_TOP_MARGIN = 48; // Misma altura donde inicia el contenido en pagina 1
+      const FOOTER_BOTTOM_MARGIN = 42; // Margen de seguridad para no encimar el pie de pagina
+      const MAX_CONTENT_Y = pageH - FOOTER_BOTTOM_MARGIN;
 
       let templateData = null;
       try {
@@ -316,26 +319,28 @@ export default function BundleSummaryStep({
         console.warn("No se pudo cargar la plantilla de fondo para el PDF:", err);
       }
 
-      const addHeader = (pageNumber = 1) => {
+      const drawBackground = () => {
         if (templateData?.dataUrl) {
           doc.addImage(templateData.dataUrl, "JPEG", 0, 0, pageW, pageH, "bg_template", "FAST");
         }
-        doc.setFontSize(8);
-        doc.setTextColor("#999");
-        doc.text(`Página ${pageNumber}`, pageW - 20, pageH - 8, { align: "right" });
       };
+
+      // Dibujar fondo en la primera pagina
+      drawBackground();
+
+      // Garantizar que toda pagina agregada (manual o por autoTable) conserve la hoja membretada
+      doc.internal.events.subscribe("addPage", () => {
+        drawBackground();
+      });
 
       let y = 22;
 
       const ensureSpace = (need = 8) => {
-        if (y + need > pageH - 30) {
+        if (y + need > MAX_CONTENT_Y) {
           doc.addPage();
-          addHeader(doc.getNumberOfPages());
-          y = 45;
+          y = CONTENT_TOP_MARGIN;
         }
       };
-
-      addHeader(1);
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(26);
@@ -393,7 +398,7 @@ export default function BundleSummaryStep({
             theme: "striped",
             headStyles: { fillColor: BRAND_BLUE, textColor: 255, fontStyle: "bold" },
             styles: { fontSize: 8.5, cellPadding: 1.5 },
-            margin: { left: M, right: M },
+            margin: { left: M, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
           });
           y = doc.lastAutoTable.finalY + 6;
         }
@@ -411,7 +416,7 @@ export default function BundleSummaryStep({
             headStyles: { textColor: "#333", fontStyle: "bold", borderBottom: { width: 0.5, color: "#ccc" } },
             styles: { fontSize: 8.5 },
             columnStyles: { 1: { halign: "right" } },
-            margin: { left: M + 4, right: M },
+            margin: { left: M + 4, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
           });
           y = doc.lastAutoTable.finalY + 8;
         }
@@ -426,12 +431,12 @@ export default function BundleSummaryStep({
         theme: "striped",
         headStyles: { fillColor: "#0f766e", textColor: 255, fontStyle: "bold" },
         styles: { fontSize: 8.5, cellPadding: 2 },
-        margin: { left: M, right: M },
+        margin: { left: M, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
       });
       y = doc.lastAutoTable.finalY + 10;
 
       // Resumen Financiero
-      ensureSpace(30);
+      ensureSpace(38);
       doc.setDrawColor("#eee");
       doc.line(M, y, pageW - M, y);
       y += 8;
@@ -450,6 +455,16 @@ export default function BundleSummaryStep({
       doc.text("Inversión Total del Paquete:", M, y);
       doc.text(`$${toMoney(precioTotalFinal)} MXN`, pageW - M, y, { align: "right" });
       y += 15;
+
+      // Numeracion de paginas en el pie de pagina
+      const totalPages = doc.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor("#777");
+        doc.text(`Página ${i} de ${totalPages}`, pageW - M, pageH - 10, { align: "right" });
+      }
 
       doc.save(`Darmax_Cotizacion_${bundleId}.pdf`);
       toast.success("Cotización del paquete descargada con éxito");
