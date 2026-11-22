@@ -340,7 +340,7 @@ const getModelSpecs = (modeloId) => {
   ];
 };
 
-const getLevelConfig = (modelId, isBundle) => {
+const getLevelConfig = (modelId) => {
   if (modelId === "Vending" || modelId === "Vending-Limpieza") {
     return {
       label: "Esencial",
@@ -353,7 +353,7 @@ const getLevelConfig = (modelId, isBundle) => {
       badgeBg: "bg-[#b8cd21] shadow-[#b8cd21]/30",
       borderClass: "border-2 border-slate-200 hover:border-[#b8cd21] shadow-sm hover:shadow-lg hover:shadow-[#b8cd21]/10",
     };
-  } else if (isBundle) {
+  } else if (modelId === "Tridente" || modelId === "Megalodon") {
     return {
       label: "Premium",
       badgeBg: "bg-[#00bcbc] shadow-[#00bcbc]/30",
@@ -368,11 +368,37 @@ const getLevelConfig = (modelId, isBundle) => {
   };
 };
 
+const NIVELES_CONFIG = [
+  {
+    nivelKey: "esencial",
+    badgeNum: "Nivel 01",
+    titulo: "Esencial",
+    colorText: "text-[#e39b14]",
+    lineColor: "bg-[#e39b14]/30",
+    ids: ["Vending", "Vending-Limpieza"],
+  },
+  {
+    nivelKey: "escalable",
+    badgeNum: "Nivel 02",
+    titulo: "Escalable",
+    colorText: "text-[#7d8c0f]",
+    lineColor: "bg-[#b8cd21]/30",
+    ids: ["Purificadora", "Duo-Emprendedor"],
+  },
+  {
+    nivelKey: "premium",
+    badgeNum: "Nivel 03",
+    titulo: "Premium",
+    colorText: "text-[#009e9e]",
+    lineColor: "bg-[#00bcbc]/30",
+    ids: ["Tridente", "Megalodon"],
+  },
+];
+
 const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect, isCompact = false }) => {
   const [errorImagen, setErrorImagen] = useState(false);
-  const isBundle = BUNDLE_IDS.has(modelo.id);
   const configurePath = getConfigurePath(modelo.id);
-  const levelConfig = useMemo(() => getLevelConfig(modelo.id, isBundle), [modelo.id, isBundle]);
+  const levelConfig = useMemo(() => getLevelConfig(modelo.id), [modelo.id]);
   const specs = useMemo(() => getModelSpecs(modelo.id), [modelo.id]);
   const subtitulo = modelo.subtitulo || MODEL_SUBTITLES[modelo.id];
 
@@ -387,83 +413,92 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
         "hover:shadow-[0_24px_50px_-12px_rgba(0,0,0,0.12)] mx-auto",
         isCompact 
           ? "p-3.5 w-[270px]" 
-          : "p-4 sm:p-5 w-full max-w-[335px] sm:max-w-[345px] md:max-w-[350px] lg:max-w-[360px]",
+          : "p-4 sm:p-5 lg:p-4 xl:p-5 w-full max-w-[340px] sm:max-w-[360px] lg:max-w-none lg:flex-row lg:items-center",
         levelConfig.borderClass,
         isSelected ? "ring-2 ring-[#24d4da]" : "",
       ].join(" ")}
     >
-      {/* BADGE DE NIVEL */}
+      {/* BADGE DE NIVEL EN LA POSICION SUPERIOR IZQUIERDA (DONDE INICIA LA CURVATURA) */}
       {levelConfig.label && (
-        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 z-20 ${isCompact ? "px-3 py-1 text-[9px]" : "px-4 py-1 sm:px-4.5 sm:py-1.5 text-[10px] sm:text-[11px]"} ${levelConfig.badgeBg} text-white font-medium uppercase tracking-[0.18em] sm:tracking-[0.2em] rounded-full shadow-md whitespace-nowrap font-montserrat not-italic`}>
+        <div
+          className={`absolute -top-3 sm:-top-3.5 ${
+            isCompact ? "left-6 px-3 py-1 text-[9px]" : "left-7 sm:left-8 px-4 py-1 sm:px-4.5 sm:py-1.5 text-[10px] sm:text-[11px]"
+          } z-20 ${levelConfig.badgeBg} text-white font-medium uppercase tracking-[0.18em] sm:tracking-[0.2em] rounded-full shadow-md whitespace-nowrap font-montserrat not-italic pointer-events-none`}
+        >
           {levelConfig.label}
         </div>
       )}
 
-      {/* IMAGEN Y CONTROL */}
-      <div 
-        onClick={() => navigate(configurePath)}
-        className={`relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img ${isCompact ? "mb-2.5" : "mb-3 sm:mb-4"} transition-[box-shadow] duration-300 hover:shadow-inner flex items-center justify-center`}
-      >
-        {!errorImagen ? (
-          <img
-            src={optimizeCloudinaryUrl(modelo.imagen, 700)}
-            alt={modelo.nombre}
-            decoding="async"
-            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/img:scale-105"
-            onError={() => setErrorImagen(true)}
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-slate-300 text-sm font-semibold uppercase font-montserrat not-italic">
-            Vista previa
-          </div>
-        )}
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-700 pointer-events-none" />
-        
-        <button
-          type="button"
-          aria-label={isSelected ? `Deseleccionar ${modelo.nombre}` : `Seleccionar ${modelo.nombre}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleSelect(modelo.id);
-          }}
-          className={[
-            "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-8 w-8 rounded-lg sm:rounded-xl flex items-center justify-center transition-[background-color,border-color,color,transform] duration-200 border z-30 cursor-pointer",
-            isSelected
-              ? "bg-[#24d4da] border-[#24d4da] text-white shadow-lg shadow-cyan-500/40 rotate-90"
-              : "bg-white/90 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover/img:scale-100",
-          ].join(" ")}
+      {/* CONTENEDOR 1: IMAGEN */}
+      <div className={`relative w-full ${isCompact ? "" : "lg:w-[53%] xl:w-[51%] lg:self-center"} shrink-0 flex flex-col justify-center`}>
+        {/* IMAGEN Y CONTROL */}
+        <div 
+          onClick={() => navigate(configurePath)}
+          className={`relative aspect-video ${
+            isCompact ? "mb-2.5" : "mb-3 sm:mb-4 lg:mb-0"
+          } w-full overflow-hidden rounded-xl sm:rounded-2xl bg-slate-50/80 isolate cursor-pointer group/img transition-[box-shadow] duration-300 hover:shadow-inner flex items-center justify-center`}
         >
-          <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {isSelected ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />}
-          </svg>
-        </button>
+          {!errorImagen ? (
+            <img
+              src={optimizeCloudinaryUrl(modelo.imagen, 700)}
+              alt={modelo.nombre}
+              decoding="async"
+              className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/img:scale-105"
+              onError={() => setErrorImagen(true)}
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-slate-300 text-sm font-semibold uppercase font-montserrat not-italic">
+              Vista previa
+            </div>
+          )}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-700 pointer-events-none" />
+          
+          <button
+            type="button"
+            aria-label={isSelected ? `Deseleccionar ${modelo.nombre}` : `Seleccionar ${modelo.nombre}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSelect(modelo.id);
+            }}
+            className={[
+              "absolute top-2 sm:top-2.5 right-2 sm:right-2.5 h-8 w-8 rounded-lg sm:rounded-xl flex items-center justify-center transition-[background-color,border-color,color,transform] duration-200 border z-30 cursor-pointer",
+              isSelected
+                ? "bg-[#24d4da] border-[#24d4da] text-white shadow-lg shadow-cyan-500/40 rotate-90"
+                : "bg-white/90 border-white text-slate-400 hover:bg-white hover:text-[#168387] scale-90 group-hover/img:scale-100",
+            ].join(" ")}
+          >
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {isSelected ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />}
+            </svg>
+          </button>
+        </div>
       </div>
 
-      {/* CONTENIDO DE NEGOCIO */}
-      <div className="flex flex-col flex-grow text-center">
-        <div className={isCompact ? "mb-1" : "mb-1.5 sm:mb-2"}>
-          <h3 className={`${isCompact ? "text-base leading-tight" : "text-lg sm:text-xl leading-snug"} font-bold text-slate-900 tracking-tight group-hover:text-[#168387] transition-colors duration-500 uppercase font-montserrat not-italic`}>
+      {/* CONTENEDOR 2: CONTENIDO DE NEGOCIO */}
+      <div className={`flex flex-col flex-grow text-center ${isCompact ? "" : "lg:pl-3.5 xl:pl-5 lg:justify-between lg:text-center w-full lg:w-[47%] xl:w-[49%]"}`}>
+        <div className={isCompact ? "mb-1" : "mb-1.5 sm:mb-2 lg:mb-1.5"}>
+          <h3 className={`${isCompact ? "text-base leading-tight" : "text-lg sm:text-xl lg:text-[17px] xl:text-lg leading-snug"} font-bold text-slate-900 tracking-tight group-hover:text-[#168387] transition-colors duration-500 uppercase font-montserrat not-italic`}>
             {modelo.nombre?.replace(/^Paquete\s+/i, "")}
           </h3>
           {subtitulo && (
-            <p className={`${isCompact ? "text-[10px] mt-0.5" : "text-[11px] sm:text-xs mt-0.5 sm:mt-1"} font-semibold text-slate-500 font-montserrat not-italic leading-tight`}>
+            <p className={`${isCompact ? "text-[10px] mt-0.5" : "text-[11px] sm:text-xs mt-0.5"} font-semibold text-slate-500 font-montserrat not-italic leading-tight`}>
               {subtitulo}
             </p>
           )}
         </div>
 
         {/* BUSINESS SPECS CON SEPARADORES | */}
-        <div className={`flex items-center justify-center gap-1 sm:gap-1.5 ${isCompact ? "max-w-[250px] mb-0.5 py-0.5" : "max-w-[285px] sm:max-w-[305px] mb-1 py-1"} mx-auto w-full`}>
+        <div className={`flex items-center justify-center gap-1 sm:gap-1.5 ${isCompact ? "max-w-[250px] mb-0.5 py-0.5" : "max-w-[285px] sm:max-w-[305px] lg:max-w-none mb-1 py-1 lg:py-1"} mx-auto w-full`}>
           {specs.map((spec, i) => (
             <React.Fragment key={i}>
               {i > 0 && <div className={`${isCompact ? "h-5" : "h-6 sm:h-7"} w-[1.5px] bg-slate-200 shrink-0 rounded-full self-center`} />}
               <div className="flex-1 flex flex-col items-center text-center min-w-0 group/spec cursor-default px-0.5">
                 <spec.icon className={`${isCompact ? "w-3 h-3 mb-0.5" : "w-3.5 h-3.5 sm:w-4 sm:h-4 mb-1"} text-slate-400 group-hover/spec:text-[#168387] transition-colors duration-300 shrink-0 stroke-[1.6]`} />
-                <span className={`${isCompact ? "text-[8.5px]" : "text-[9.5px] sm:text-[10.5px]"} font-semibold text-slate-400 group-hover/spec:text-slate-600 transition-colors duration-300 uppercase tracking-wider truncate w-full font-montserrat not-italic leading-tight`}>
+                <span className={`${isCompact ? "text-[8.5px]" : "text-[9.5px] sm:text-[10px] xl:text-[10.5px]"} font-semibold text-slate-400 group-hover/spec:text-slate-600 transition-colors duration-300 uppercase tracking-wider truncate w-full font-montserrat not-italic leading-tight`}>
                   {spec.label}
                 </span>
-                <span className={`${isCompact ? "text-[9px]" : "text-[10px] sm:text-[11px]"} font-bold text-slate-700 group-hover/spec:text-[#168387] transition-colors duration-300 truncate w-full font-montserrat not-italic mt-0.5 leading-tight`}>
+                <span className={`${isCompact ? "text-[9px]" : "text-[10px] sm:text-[10.5px] xl:text-[11px]"} font-bold text-slate-700 group-hover/spec:text-[#168387] transition-colors duration-300 truncate w-full font-montserrat not-italic mt-0.5 leading-tight`}>
                   {spec.val}
                 </span>
               </div>
@@ -472,21 +507,21 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
         </div>
 
         {/* SEPARADOR HORIZONTAL QUE DIVIDE ESPECIFICACIONES DE INVERSIÓN */}
-        <div className={`w-full h-px bg-slate-200/80 ${isCompact ? "my-2" : "my-3 sm:my-3.5"}`} />
+        <div className={`w-full h-px bg-slate-200/80 ${isCompact ? "my-2" : "my-2.5 sm:my-3 lg:my-2"}`} />
 
         {/* FOOTER DE CONVERSIÓN */}
-        <div className="mt-auto">
-          <div className={`relative group/price ${isCompact ? "mb-2" : "mb-3 sm:mb-4"}`}>
+        <div className={isCompact ? "mt-auto" : "mt-auto lg:mt-0"}>
+          <div className={`relative group/price ${isCompact ? "mb-2" : "mb-2.5 sm:mb-3.5 lg:mb-2"}`}>
             <span className="block text-[9.5px] sm:text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-0.5 font-montserrat not-italic">Inversión desde</span>
-            <span className={`${isCompact ? "text-xl" : "text-2xl sm:text-2xl lg:text-[26px]"} font-bold text-slate-900 tracking-tight group-hover/price:text-[#168387] transition-colors font-montserrat not-italic`}>
+            <span className={`${isCompact ? "text-xl" : "text-2xl sm:text-2xl lg:text-[21px] xl:text-[23px]"} font-bold text-slate-900 tracking-tight group-hover/price:text-[#168387] transition-colors font-montserrat not-italic`}>
               {formatMXN(modelo.precio)}
             </span>
           </div>
 
-          <div className={`flex flex-col ${isCompact ? "gap-1.5" : "gap-2.5"} w-full items-center`}>
+          <div className={`flex flex-col ${isCompact ? "gap-1.5" : "gap-2 sm:gap-2.5 lg:gap-1.5"} w-full items-center`}>
             <Link
               to={configurePath}
-              className={`inline-flex items-center justify-center gap-1.5 w-full ${isCompact ? "max-w-[240px] h-9 text-xs" : "max-w-[260px] sm:max-w-[270px] h-11 sm:h-11 text-xs sm:text-[13px]"} px-5 rounded-full bg-slate-900 text-white font-bold uppercase tracking-wider hover:bg-[#168387] shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-[#168387]/20 transition-all duration-300 font-montserrat not-italic group/btn cursor-pointer`}
+              className={`inline-flex items-center justify-center gap-1.5 w-full ${isCompact ? "max-w-[240px] h-9 text-xs" : "max-w-[260px] sm:max-w-[270px] lg:max-w-[220px] xl:max-w-[240px] h-11 sm:h-11 lg:h-10 xl:h-11 text-xs sm:text-[13px]"} px-5 rounded-full bg-slate-900 text-white font-bold uppercase tracking-wider hover:bg-[#168387] shadow-md shadow-slate-900/10 hover:shadow-lg hover:shadow-[#168387]/20 transition-all duration-300 font-montserrat not-italic group/btn cursor-pointer`}
             >
               <span>Configurar</span>
               <ArrowRightIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2] group-hover/btn:translate-x-0.5 transition-transform" />
@@ -494,7 +529,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
 
             <Link
               to={modelo.rutaInfo}
-              className="inline-flex items-center justify-center py-1 text-slate-500 hover:text-[#168387] text-xs font-semibold tracking-wider uppercase underline underline-offset-4 decoration-slate-300 hover:decoration-[#168387] transition-all font-montserrat not-italic cursor-pointer"
+              className="inline-flex items-center justify-center py-0.5 text-slate-500 hover:text-[#168387] text-xs font-semibold tracking-wider uppercase underline underline-offset-4 decoration-slate-300 hover:decoration-[#168387] transition-all font-montserrat not-italic cursor-pointer"
             >
               <span>Conoce más</span>
             </Link>
@@ -682,17 +717,19 @@ const IniciaNegocio = () => {
   const mobileCarouselRef = useRef(null);
 
   const todosLosModelos = useMemo(() => {
-    const individuales = modelosData.filter((m) => !BUNDLE_IDS.has(m.id));
-    const paquetes = modelosData.filter((m) => BUNDLE_IDS.has(m.id));
-    return [...individuales, ...paquetes];
+    const order = ["Vending", "Vending-Limpieza", "Purificadora", "Duo-Emprendedor", "Tridente", "Megalodon"];
+    return [...modelosData].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
   }, [modelosData]);
 
-  const numIndividuales = useMemo(
-    () => modelosData.filter((m) => !BUNDLE_IDS.has(m.id)).length,
-    [modelosData]
-  );
-
-  const isNivelDos = activeMobileIndex >= numIndividuales;
+  const activeMobileNivel = useMemo(() => {
+    if (activeMobileIndex < 2) {
+      return { num: "Nivel 01", title: "Esencial", color: "text-[#e39b14]", line: "bg-[#e39b14]/30" };
+    }
+    if (activeMobileIndex < 4) {
+      return { num: "Nivel 02", title: "Escalable", color: "text-[#7d8c0f]", line: "bg-[#b8cd21]/30" };
+    }
+    return { num: "Nivel 03", title: "Premium", color: "text-[#009e9e]", line: "bg-[#00bcbc]/30" };
+  }, [activeMobileIndex]);
 
   const handleMobileScroll = useCallback(() => {
     if (!mobileCarouselRef.current) return;
@@ -962,24 +999,20 @@ const IniciaNegocio = () => {
               VISTA MÓVIL: FORMATO ACORDEÓN HORIZONTAL CON HEADER DINÁMICO
              ======================================================== */}
           <div className="block sm:hidden mb-12">
-            {/* Header dinámico: cambia de Nivel 01 a Nivel 02 según la tarjeta activa */}
+            {/* Header dinamico: cambia segun el nivel de la tarjeta activa (01 Esencial, 02 Escalable, 03 Premium) */}
             <div className="flex items-center justify-between gap-3 mb-2 px-1">
               <div className="shrink-0 transition-all duration-300">
                 <span 
-                  className={`text-xs font-bold uppercase tracking-[0.2em] font-montserrat not-italic transition-colors duration-300 block ${
-                    isNivelDos ? "text-[#168387]" : "text-slate-400"
-                  }`}
+                  className={`text-xs font-bold uppercase tracking-[0.2em] font-montserrat not-italic transition-colors duration-300 block ${activeMobileNivel.color}`}
                 >
-                  {isNivelDos ? "Nivel 02" : "Nivel 01"}
+                  {activeMobileNivel.num}
                 </span>
                 <h3 className="text-lg font-bold text-slate-900 tracking-tight font-montserrat not-italic transition-all duration-300">
-                  {isNivelDos ? "Paquetes de Negocio" : "Individuales"}
+                  {activeMobileNivel.title}
                 </h3>
               </div>
               <div 
-                className={`h-px flex-1 transition-colors duration-300 ${
-                  isNivelDos ? "bg-[#168387]/30" : "bg-slate-200"
-                }`} 
+                className={`h-px flex-1 transition-colors duration-300 ${activeMobileNivel.line}`} 
               />
               <span className="text-[10.5px] font-semibold text-slate-400 tracking-wider shrink-0 font-montserrat not-italic">
                 {activeMobileIndex + 1}/{todosLosModelos.length}
@@ -1036,7 +1069,7 @@ const IniciaNegocio = () => {
             <div className="flex items-center justify-center gap-1.5 mt-4">
               {todosLosModelos.map((m, idx) => {
                 const isActive = activeMobileIndex === idx;
-                const isBundle = BUNDLE_IDS.has(m.id);
+                const activeDotBg = idx < 2 ? "bg-[#e39b14]" : idx < 4 ? "bg-[#b8cd21]" : "bg-[#00bcbc]";
                 return (
                   <button
                     key={m.id}
@@ -1045,9 +1078,7 @@ const IniciaNegocio = () => {
                     aria-label={`Ver modelo ${m.nombre}`}
                     className={`transition-all duration-300 rounded-full cursor-pointer ${
                       isActive
-                        ? isBundle
-                          ? "w-6 h-2 bg-[#168387]"
-                          : "w-6 h-2 bg-slate-800"
+                        ? `w-6 h-2 ${activeDotBg}`
                         : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
                     }`}
                   />
@@ -1057,76 +1088,48 @@ const IniciaNegocio = () => {
           </div>
 
           {/* ========================================================
-              VISTA ESCRITORIO / TABLET: 2 GRUPOS EN GRID CLÁSICO
+              VISTA ESCRITORIO / TABLET: 3 NIVELES EN FORMATO HORIZONTAL
              ======================================================== */}
-          <div className="hidden sm:block">
-            {/* GRUPO 1: INICIO */}
-            <div className="mb-12 sm:mb-20">
-              <motion.div
-                {...slideInRight(0.08)}
-                className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
-              >
-                <div className="shrink-0">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] font-montserrat not-italic">Nivel 01</span>
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-montserrat not-italic">Individuales</h3>
+          <div className="hidden sm:block space-y-12 sm:space-y-16 lg:space-y-20">
+            {NIVELES_CONFIG.map((nivel, idx) => {
+              const modelosNivel = modelosData.filter((m) => nivel.ids.includes(m.id));
+              return (
+                <div key={nivel.nivelKey} className="w-full">
+                  <motion.div
+                    {...slideInRight(0.06 * (idx + 1))}
+                    className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-10"
+                  >
+                    <div className="shrink-0">
+                      <span className={`text-xs font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] font-montserrat not-italic block ${nivel.colorText}`}>
+                        {nivel.badgeNum}
+                      </span>
+                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-montserrat not-italic">
+                        {nivel.titulo}
+                      </h3>
+                    </div>
+                    <div className={`h-px w-full ${nivel.lineColor}`} />
+                  </motion.div>
+
+                  <motion.div 
+                    variants={gridContainerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.05 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-6 lg:gap-8 items-stretch"
+                  >
+                    {modelosNivel.map((modelo) => (
+                      <TarjetaModelo
+                        key={modelo.id}
+                        modelo={modelo}
+                        navigate={navigate}
+                        isSelected={selected.includes(modelo.id)}
+                        onToggleSelect={toggleSelect}
+                      />
+                    ))}
+                  </motion.div>
                 </div>
-                <div className="h-px w-full bg-slate-200" />
-              </motion.div>
-
-              <motion.div 
-                variants={gridContainerVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.05 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
-              >
-                {modelosData
-                  .filter((m) => !BUNDLE_IDS.has(m.id))
-                  .map((modelo) => (
-                    <TarjetaModelo
-                      key={modelo.id}
-                      modelo={modelo}
-                      navigate={navigate}
-                      isSelected={selected.includes(modelo.id)}
-                      onToggleSelect={toggleSelect}
-                    />
-                  ))}
-              </motion.div>
-            </div>
-
-            {/* GRUPO 2: ESCALA */}
-            <div className="mb-16 sm:mb-24">
-              <motion.div
-                {...slideInRight(0.08)}
-                className="flex items-center gap-4 sm:gap-6 mb-8 sm:mb-12"
-              >
-                <div className="shrink-0">
-                  <span className="text-xs font-bold text-[#168387] uppercase tracking-[0.2em] sm:tracking-[0.3em] font-montserrat not-italic">Nivel 02</span>
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-montserrat not-italic">Paquetes de Negocio</h3>
-                </div>
-                <div className="h-px w-full bg-[#168387]/20" />
-              </motion.div>
-
-              <motion.div 
-                variants={gridContainerVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.05 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
-              >
-                {modelosData
-                  .filter((m) => BUNDLE_IDS.has(m.id))
-                  .map((modelo) => (
-                    <TarjetaModelo
-                      key={modelo.id}
-                      modelo={modelo}
-                      navigate={navigate}
-                      isSelected={selected.includes(modelo.id)}
-                      onToggleSelect={toggleSelect}
-                    />
-                  ))}
-              </motion.div>
-            </div>
+              );
+            })}
           </div>
 
           {/* BARRA DE BENEFICIOS Y VALOR INCLUIDO */}

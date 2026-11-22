@@ -16,51 +16,43 @@ const VendingTypeEnum = {
 const VENDING_DETAILS = {
   [VendingTypeEnum.TOUCH]: {
     name: "Touch",
-    subtitle: "Pantalla interactiva TOUCH de 8”",
-    recommendationTitle: "Recomendación de uso",
+    subtitle: "(Pantalla 8 pulgadas)",
+    recommendationTitle: "Ideal Para:",
     recommendation:
-      "Nuevo modelo innovador y único en el mercado, ideal para plazas, locales comerciales y zonas de alto flujo donde se requiere ser más vistoso y moderno, con beneficios exclusivos como:",
+      "Emprendedores que buscan un negocio más innovador, vistoso y único en el mercado.\n\nCalidad que hace la diferencia desde su fabricación a láser con animaciones en pantalla TOUCH e indicaciones por voz, donde paso a paso guiamos al cliente para realizar un llenado adecuado.\n\nResalta toda la noche con el logo iluminado en acrílico y luz LED en la puerta de llenado con forma de garrafón.\n\nEl diferenciador que estabas buscando con beneficios exclusivos como:",
     features: [
-      "Acero inoxidable de calidad 304",
-      "Vending Gabinete de Acero Quirúrgico",
-      "Pantalla inicial “TOUCH” de 8”",
-      "Marco de puerta en acero inoxidable",
-      "Dispensador de tapas",
-      "1 Monedero antirrobo",
-      "Grado alimenticio 304",
-      "Bocina",
-      "Vinil laminado contra luz UV",
-      "3 Sensor de flujo (sensado de litros)",
-      "Solenoides (2)",
-      "Precios de llenado: 1, 4, 10 y 20 litros",
-      "1 Tiempo de enjuague (enjuague de garrafón)",
+      "Gabinete en acero inoxidable calidad 304 (Grado alimenticio)",
+      "Pantalla inicial touch de 8” con animaciones (antirrobo)",
+      "Auto diagnóstico de fallas y registro de ventas sin Wi-fi",
+      "Contador de garrafones",
+      "Puerta en forma de garrafón en acero inoxidable con luz LED",
+      "Dispensador de tapas con luz LED",
+      "Logotipo 3D en acrílico y luz LED",
+      "Monedero antirrobo",
       "Da cambio",
-      "1 Sistema de verificación de fallas",
+      "Llenado de 1, 4, 10 y 20 lts. (opciónal 4 modos de llenado adicionales para agua alcalina con costo extra).",
+      "Vinil contra luz UV en DTF",
     ],
   },
   [VendingTypeEnum.TRADICIONAL]: {
     name: "Tradicional",
-    subtitle: "Botones LED y pantalla de 5”",
-    recommendationTitle: "Recomendación de uso",
+    subtitle: "(con botones)",
+    recommendationTitle: "Ideal Para:",
     recommendation:
-      "Se mantiene la calidad del modelo de alta gama touch, sin embargo, la configuración de la vending y la selección del tipo de agua es de forma tradicional con botones de acero inoxidable con luz LED. La pantalla es LED de 5”, ideal para colonias con altos índices de vandalismo.",
+      "Emprendedores que buscan iniciar con pasos seguros o en lugares con altos indices de vandalismo.\n\nSe mantiene la calidad del modelo de alta gama TOUCH, sin embargo, la configuración de la vending y la selección del tipo de agua es de forma tradicional (con botones en acero inoxidable y luz LED).\n\nLa pantalla LED de 5” antirrobo conserva las animaciones a color e indicaciones por voz donde paso a paso guiamos al cliente para realizar un llenado adecuado.\n\nConoce los beneficios exclusivos como:",
     features: [
-      "Acero inoxidable de calidad 304",
-      "Vending Gabinete de Acero Quirúrgico",
-      "Botones en acero inoxidable y luz LED",
-      "Pantalla inicial “LCD” (pantalla LED de 5”)",
-      "Marco de puerta en acero inoxidable",
-      "Dispensador de tapas",
-      "1 Monedero antirrobo",
-      "Grado alimenticio 304",
-      "Bocina",
-      "Vinil laminado contra luz UV",
-      "3 Sensor de flujo (sensado de litros)",
-      "Solenoides (2)",
-      "Precios de llenado: 1, 4, 10 y 20 litros",
-      "1 Tiempo de enjuague (enjuague de garrafón)",
+      "Gabinete en acero inoxidable calidad 304 (Grado alimenticio)",
+      "Botones en acero inoxidable con luz LED",
+      "Pantalla LED de 5” a color antirrobo",
+      "Contador de ventas y contador de garrafones sin necesidad de Wi-fi",
+      "Puerta en forma de garrafón en acero inoxidable con luz LED",
+      "Bocina con indicaciones de llenado",
+      "Dispensador de tapas con luz LED",
+      "Logotipo 3D en acrílico y luz LED",
+      "Monedero antirrobo",
       "Da cambio",
-      "1 Luz LED interior",
+      "Llenado de 1, 4, 10 y 20 lts. (opcional 4 modos de llenado adicionales para agua alcalina con costo extra).",
+      "Vinil contra luz UV",
     ],
   },
 };
@@ -92,9 +84,9 @@ function VendingTypeCard({
         }}
       >
         {/* Imagen y Titulo centrados verticalmente en el cuerpo de la tarjeta */}
-        <div className="flex-1 flex flex-col items-center justify-center text-center w-full min-h-0 py-2">
+        <div className="flex-1 flex flex-col items-center justify-center text-center w-full min-h-0 py-1 sm:py-2">
           <div 
-            className="relative w-full h-52 sm:h-60 flex items-center justify-center cursor-pointer group/img"
+            className="relative w-full h-[235px] sm:h-60 flex items-center justify-center cursor-pointer group/img"
             onClick={(e) => onToggleFlip(type, e)}
             title="Haz clic para ver especificaciones"
           >
@@ -103,26 +95,26 @@ function VendingTypeCard({
               alt={displayNames[type]} 
               loading="eager"
               decoding="async"
-              className="max-h-full w-auto object-contain drop-shadow-xl group-hover/img:scale-105 transition-transform duration-500" 
+              className="max-h-full w-auto object-contain drop-shadow-xl group-hover/img:scale-105 transition-transform duration-500 scale-[1.04] sm:scale-100" 
             />
           </div>
 
-          <div className="mt-3 sm:mt-4">
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+          <div className="mt-2.5 sm:mt-4">
+            <h3 className="text-2xl sm:text-[26px] lg:text-3xl font-semibold text-slate-900 tracking-tight">
               {displayNames[type]}
             </h3>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
-              {details.subtitle}
+            <p className="text-sm sm:text-xs text-slate-500 font-semibold mt-0.5">
+              {details.subtitle ? details.subtitle.replace(/[()]/g, "").trim() : ""}
             </p>
           </div>
         </div>
 
         {/* Botones de accion */}
-        <div className="space-y-2 w-full pt-3">
+        <div className="space-y-2 w-full pt-3 shrink-0">
           <button
             type="button"
             onClick={(e) => onToggleFlip(type, e)}
-            className="w-full py-2.5 px-3 rounded-xl bg-slate-50 hover:bg-cyan-50/70 hover:text-[#168387] text-slate-700 text-xs font-bold border border-slate-200/80 hover:border-cyan-200 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+            className="w-full py-2.5 px-4 rounded-full bg-slate-50 hover:bg-cyan-50/70 hover:text-[#168387] text-slate-700 text-xs font-bold border border-slate-200/80 hover:border-cyan-200 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
           >
             <ArrowPathIcon className="w-3.5 h-3.5 text-[#168387]" />
             <span>Ver especificaciones completas</span>
@@ -131,7 +123,7 @@ function VendingTypeCard({
           <button
             type="button"
             onClick={() => onSelect(type)}
-            className="w-full py-3 sm:py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-[#168387] text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-900/20 active:scale-98 flex items-center justify-center gap-2 group/btn cursor-pointer"
+            className="w-full py-3 sm:py-3.5 px-5 rounded-full bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] hover:brightness-110 text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md shadow-[#022447]/20 hover:shadow-lg hover:shadow-[#01949f]/30 active:scale-98 flex items-center justify-center gap-2 group/btn cursor-pointer"
           >
             <span>Configurar vending</span>
             <ChevronRightIcon className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -151,62 +143,68 @@ function VendingTypeCard({
         }}
       >
         {/* Barra superior de la ficha tecnica */}
-        <div className="flex items-center justify-between w-full pb-2 border-b border-slate-100">
-          <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#168387]">
-              Ficha Técnica
-            </span>
-            <h3 className="text-base sm:text-lg font-black text-slate-900 leading-tight">
+        <div className="flex items-center justify-between w-full pb-2 border-b border-slate-100 gap-2 shrink-0">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#168387] block">
+                Ficha Técnica
+              </span>
+              <span className="w-3.5 h-0.5 rounded-full shrink-0 bg-[#168387]" />
+            </div>
+            <h3 className="text-sm sm:text-base font-semibold text-slate-900 leading-tight whitespace-nowrap truncate">
               Modelo {displayNames[type]}
             </h3>
+            <p className="text-[10px] sm:text-[11px] text-slate-500 font-semibold leading-tight mt-0.5">
+              {details.subtitle}
+            </p>
           </div>
 
           <button
             type="button"
             onClick={(e) => onToggleFlip(type, e)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
-            title="Volver a ver la imagen"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
+            title="Ver foto del modelo"
           >
-            <ArrowPathIcon className="w-3.5 h-3.5 text-slate-600" />
-            <span>Volver a foto</span>
+            <ArrowPathIcon className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+            <span>Ver foto</span>
           </button>
         </div>
 
-        {/* Resumen de uso / Perfil recomendado */}
-        <div className={`p-2.5 sm:p-3 rounded-xl border text-left my-2 ${
-          type === VendingTypeEnum.TOUCH
-            ? "bg-cyan-50/70 border-cyan-200/70"
-            : "bg-amber-50/80 border-amber-200/80"
-        }`}>
-          <span className={`text-[10px] font-black uppercase tracking-wider block mb-0.5 ${
-            type === VendingTypeEnum.TOUCH ? "text-[#168387]" : "text-amber-800"
+        {/* Contenido scrolleable: Resumen de uso / Perfil recomendado + lista de especificaciones */}
+        <div className="flex-1 overflow-y-auto pr-1.5 sm:pr-2 my-2 space-y-2.5 text-left min-h-0 scrollbar-vending-ficha">
+          {/* Resumen de uso / Perfil recomendado */}
+          <div className={`p-2.5 sm:p-3 rounded-xl border text-left ${
+            type === VendingTypeEnum.TOUCH
+              ? "bg-cyan-50/70 border-cyan-200/70"
+              : "bg-amber-50/80 border-amber-200/80"
           }`}>
-            {details.recommendationTitle}
-          </span>
-          <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-medium">
-            {details.recommendation}
-          </p>
-        </div>
+            <span className={`text-[10px] font-black uppercase tracking-wider block mb-1 ${
+              type === VendingTypeEnum.TOUCH ? "text-[#168387]" : "text-amber-800"
+            }`}>
+              {details.recommendationTitle}
+            </span>
+            <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-medium whitespace-pre-line">
+              {details.recommendation}
+            </p>
+          </div>
 
-        {/* Lista de especificaciones tecnicas con scroll elegante */}
-        <div 
-          className="flex-1 overflow-y-auto pr-1 sm:pr-2 my-1 space-y-1.5 text-left min-h-0"
-          style={{ scrollbarWidth: "thin", scrollbarColor: "#24d4da transparent" }}
-        >
-          {details.features.map((feature, idx) => (
-            <div key={idx} className="flex items-start gap-2 text-[11px] sm:text-xs text-slate-700 leading-snug">
-              <CheckCircleIcon className="w-4 h-4 text-[#168387] shrink-0 mt-0.5" />
-              <span className="font-medium">{feature}</span>
-            </div>
-          ))}
+          {/* Lista de especificaciones tecnicas */}
+          <div className="space-y-1.5 pt-0.5">
+            {details.features.map((feature, idx) => (
+              <div key={idx} className="flex items-start gap-2 text-[11px] sm:text-xs text-slate-700 leading-snug">
+                <CheckCircleIcon className="w-4 h-4 text-[#168387] shrink-0 mt-0.5" />
+                <span className="font-medium">{feature}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Boton de configurar vending: siempre visible en la parte inferior */}
-        <div className="pt-2 w-full">
+        <div className="pt-2 w-full shrink-0">
           <button
             type="button"
             onClick={() => onSelect(type)}
-            className="w-full py-3 sm:py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-[#168387] text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-900/20 active:scale-98 flex items-center justify-center gap-2 group/btn cursor-pointer"
+            className="w-full py-3 sm:py-3.5 px-5 rounded-full bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] hover:brightness-110 text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md shadow-[#022447]/20 hover:shadow-lg hover:shadow-[#01949f]/30 active:scale-98 flex items-center justify-center gap-2 group/btn cursor-pointer"
           >
             <span>Configurar vending</span>
             <ChevronRightIcon className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -280,16 +278,13 @@ export default function Step0SelectVendingType({ onSelect, availableVendingTypes
 
   return (
     <div id="step0-vending-container" className="flex items-start min-h-0 sm:min-h-[calc(100vh-350px)] w-full pt-1 sm:pt-4 pb-2 sm:pb-6 lg:pb-4 font-montserrat not-italic">
-      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center lg:items-start gap-10 lg:gap-16 px-4 sm:px-8">
+      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12 xl:gap-16 px-4 sm:px-8">
         
         {/* Titulo a la Izquierda */}
-        <div className="w-full lg:w-[35%] text-center lg:text-left space-y-3 lg:sticky lg:top-40">
-          <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 block">
-            Tecnología de Despacho
-          </span>
-          <h2 className="font-montserrat not-italic text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-[#031638]">
-            Selecciona tu <br />
-            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 pt-0.5 overflow-visible">
+        <div className="w-full lg:w-[38%] xl:w-[35%] text-center lg:text-left space-y-3 lg:sticky lg:top-40">
+          <h2 className="font-montserrat not-italic text-3xl sm:text-4xl lg:text-[45px] xl:text-[52px] 2xl:text-[57px] font-bold tracking-tight leading-tight text-[#031638]">
+            <span className="block sm:whitespace-nowrap">Selecciona tu</span>
+            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent block pt-1 pb-1.5 leading-tight">
               vending
             </span>
           </h2>
@@ -315,7 +310,7 @@ export default function Step0SelectVendingType({ onSelect, availableVendingTypes
         </div>
 
         {/* CONTENEDOR DERECHO: VISTA MOVIL CON CARRUSEL + VISTA ESCRITORIO CON GRID */}
-        <div className="w-full lg:w-[65%]">
+        <div className="w-full lg:w-[62%] xl:w-[65%]">
 
           {/* VISTA MOVIL (Carrusel táctil con snap e indicador de 2 opciones) */}
           <div className="block sm:hidden w-full">
@@ -385,7 +380,7 @@ export default function Step0SelectVendingType({ onSelect, availableVendingTypes
                     aria-label={`Ver opción ${displayNames[type]}`}
                     className={`transition-all duration-300 rounded-full cursor-pointer ${
                       activeMobileIndex === idx
-                        ? "w-7 h-2 bg-[#168387]"
+                        ? "w-7 h-2 bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] shadow-xs shadow-[#01949f]/30"
                         : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
                     }`}
                   />

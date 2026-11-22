@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { optimizeCloudinaryUrl } from "../utils/cloudinary";
@@ -18,7 +18,26 @@ export default function Step3ExtrasConfigurator({
   const [loading, setLoading] = useState(true);
   const [seleccionados, setSeleccionados] = useState([]);
   const [currentSubStepIndex, setCurrentSubStepIndex] = useState(0);
+  const [drainingIndex, setDrainingIndex] = useState(null);
   const [activeView, setActiveView] = useState("primary");
+  const [isInitialImageLoaded, setIsInitialImageLoaded] = useState(false);
+  const [isAlcalinaZoomed, setIsAlcalinaZoomed] = useState(false);
+  const prevSubStepRef = useRef(0);
+  const [subStepDirection, setSubStepDirection] = useState(1);
+  const drainTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (currentSubStepIndex !== prevSubStepRef.current) {
+      setSubStepDirection(currentSubStepIndex > prevSubStepRef.current ? 1 : -1);
+      prevSubStepRef.current = currentSubStepIndex;
+    }
+  }, [currentSubStepIndex]);
+
+  useEffect(() => {
+    return () => {
+      if (drainTimerRef.current) clearTimeout(drainTimerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchModelDetails = async () => {
@@ -74,6 +93,12 @@ export default function Step3ExtrasConfigurator({
     if (!modelData) return false;
     const s = modelData.slug.toLowerCase();
     return s.includes("neptuno") || modelData.name.toLowerCase().includes("mostrador");
+  }, [modelData]);
+
+  const isCleaning = useMemo(() => {
+    if (!modelData) return false;
+    const raw = `${modelData.slug || ""} ${modelData.name || ""}`.toLowerCase();
+    return raw.includes("clean") || raw.includes("limpieza") || raw.includes("vending5") || raw.includes("vending8");
   }, [modelData]);
 
   const getRelevantImage = useMemo(
@@ -359,10 +384,26 @@ export default function Step3ExtrasConfigurator({
     }
   };
 
+  const goToSubStep = (newIdx) => {
+    setIsAlcalinaZoomed(false);
+    if (newIdx === currentSubStepIndex || newIdx < 0 || newIdx >= subSteps.length) return;
+    const prev = currentSubStepIndex;
+    setSubStepDirection(newIdx > currentSubStepIndex ? 1 : -1);
+    setDrainingIndex(prev);
+    setCurrentSubStepIndex(newIdx);
+
+    if (drainTimerRef.current) clearTimeout(drainTimerRef.current);
+    drainTimerRef.current = setTimeout(() => {
+      setDrainingIndex(null);
+    }, 850);
+
+    scrollToTopConfigurator();
+  };
+
   const handleNextSubStep = () => {
+    setIsAlcalinaZoomed(false);
     if (!isLastSubStep) {
-      setCurrentSubStepIndex((prev) => prev + 1);
-      scrollToTopConfigurator();
+      goToSubStep(currentSubStepIndex + 1);
     } else {
       if (!buildPayload) return;
       onSelect?.(buildPayload);
@@ -371,9 +412,9 @@ export default function Step3ExtrasConfigurator({
   };
 
   const handlePrevSubStep = () => {
+    setIsAlcalinaZoomed(false);
     if (currentSubStepIndex > 0) {
-      setCurrentSubStepIndex((prev) => prev - 1);
-      scrollToTopConfigurator();
+      goToSubStep(currentSubStepIndex - 1);
     } else {
       onBack?.();
     }
@@ -387,10 +428,20 @@ export default function Step3ExtrasConfigurator({
     const extraSeleccionado = extras.find((me) => me.id === modelExtraId);
     if (!extraSeleccionado) return;
 
+    const extraCode = extraSeleccionado.extra?.code?.toLowerCase() || "";
+    const extraName = extraSeleccionado.extra?.name?.toLowerCase() || "";
+    const isAlcalinaOption = extraCode === "agua-alcalina" || extraName.includes("alcalina");
+
     const esTinaco = extraSeleccionado.extra?.isTinaco;
 
     setSeleccionados((prev) => {
-      if (prev.includes(modelExtraId)) {
+      const willBeSelected = !prev.includes(modelExtraId);
+
+      if (isAlcalinaOption) {
+        setIsAlcalinaZoomed(willBeSelected);
+      }
+
+      if (!willBeSelected) {
         return prev.filter((item) => item !== modelExtraId);
       } else {
         if (esTinaco) {
@@ -455,8 +506,8 @@ export default function Step3ExtrasConfigurator({
     let containerClasses = "border-gray-200 hover:border-gray-300 bg-white";
     if (isAlcalina) {
       containerClasses = isSelected
-        ? "bg-gradient-to-r from-[#288EB9]/15 via-[#1DB3BA]/10 to-teal-50/60 border-[#168387] shadow-sm ring-1 ring-[#168387]/30"
-        : "bg-gradient-to-r from-[#288EB9]/[0.04] via-[#1DB3BA]/[0.02] to-white border-[#1DB3BA]/30 hover:border-[#1DB3BA]/60 hover:bg-[#1DB3BA]/[0.04]";
+        ? "bg-[#fffbed] border-amber-300 shadow-sm ring-1 ring-amber-300/40"
+        : "bg-[#fffbed]/40 border-amber-200/70 hover:bg-[#fffbed]/80 hover:border-amber-300";
     } else if (isAltamenteRecomendado) {
       containerClasses = isSelected
         ? "bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-amber-50/50 border-amber-400 shadow-sm ring-1 ring-amber-400/30"
@@ -469,8 +520,10 @@ export default function Step3ExtrasConfigurator({
       containerClasses = isSelected
         ? "bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-emerald-50/50 border-emerald-400 shadow-sm ring-1 ring-emerald-400/30"
         : "bg-gradient-to-r from-emerald-500/[0.04] via-teal-500/[0.02] to-white border-emerald-200/70 hover:border-emerald-300 hover:bg-emerald-500/[0.04]";
-    } else if (isTinaco && isSelected) {
-      containerClasses = "border-[#168387] bg-gradient-to-r from-[#168387]/15 via-teal-500/10 to-teal-50/50 shadow-sm ring-1 ring-[#168387]/30";
+    } else if (isTinaco) {
+      containerClasses = isSelected
+        ? "bg-[#effdff] border-[#168387] shadow-sm ring-1 ring-[#168387]/40"
+        : "bg-[#effdff]/40 border-cyan-200/70 hover:bg-[#effdff]/80 hover:border-cyan-300";
     } else if (isSelected) {
       containerClasses = "border-[#168387] bg-gradient-to-r from-[#168387]/15 via-[#24d4da]/10 to-teal-50/50 shadow-sm ring-1 ring-[#168387]/30";
     }
@@ -487,7 +540,7 @@ export default function Step3ExtrasConfigurator({
       >
         {/* Difuminado suave decorativo exclusivo (solo sutil en selección) */}
         {isAlcalina && isSelected && (
-          <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-[#288EB9]/15 to-[#1DB3BA]/15 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-amber-200/25 to-yellow-300/20 rounded-full blur-2xl pointer-events-none" />
         )}
 
         {isAltamenteRecomendado && isSelected && (
@@ -502,77 +555,151 @@ export default function Step3ExtrasConfigurator({
           <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gradient-to-br from-emerald-400/15 to-teal-500/15 rounded-full blur-2xl pointer-events-none" />
         )}
 
-        <div className="relative z-10 flex justify-between items-center gap-4">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <p
-                className={`font-semibold break-words ${
-                  isAlcalina || isAltamenteRecomendado || isAviso || isOpcional ? "text-[#031638] font-bold" : "text-gray-800"
-                }`}
-              >
-                {modelExtra.extra?.name}
+        {isTinaco ? (
+          <div className="relative z-10 flex flex-col justify-between gap-1.5 text-left">
+            {/* Fila superior: Titulo a la izquierda, Marcador a la derecha a la misma altura */}
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 flex-wrap min-w-0">
+                <p className="font-semibold break-words text-gray-800">
+                  {modelExtra.extra?.name}
+                </p>
+              </div>
+              <input
+                type="radio"
+                name="tinaco-selector"
+                checked={isSelected}
+                readOnly
+                disabled={disabled}
+                className="w-5 h-5 accent-[#168387] shrink-0 cursor-pointer"
+              />
+            </div>
+
+            {/* Fila inferior: Descripcion a la izquierda, Precio a la derecha a la altura de la descripcion y mas pequeno */}
+            <div className="flex items-center justify-between gap-3 mt-0.5">
+              <div className="min-w-0 flex-1">
+                {modelExtra.extra?.description ? (
+                  <FormattedDescription
+                    text={modelExtra.extra?.description}
+                    className="text-xs text-slate-500 leading-relaxed"
+                  />
+                ) : null}
+              </div>
+              <p className="text-sm sm:text-[15px] font-bold text-gray-800 tracking-tight shrink-0 whitespace-nowrap">
+                ${(modelExtra.priceOverride ?? modelExtra.extra?.basePrice ?? 0).toLocaleString()} MXN
               </p>
-              {isAlcalina && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#288EB9]/15 to-[#1DB3BA]/20 text-[#168387] border border-[#168387]/30">
+            </div>
+          </div>
+        ) : isAlcalina ? (
+          /* Opcion Agua Alcalina con su diseno exclusivo */
+          <div className="relative z-10 flex justify-between items-center gap-4">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="font-semibold break-words text-[#031638] font-bold">
+                  {modelExtra.extra?.name}
+                </p>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100/90 text-[#8f4b10] border border-amber-300/60">
                   Recomendado
                 </span>
+              </div>
+              {modelExtra.extra?.description && (
+                <FormattedDescription text={modelExtra.extra?.description} className="mt-1.5 text-xs text-slate-500 leading-relaxed" />
               )}
-              {isAltamenteRecomendado && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/15 to-orange-500/20 text-amber-800 border border-amber-400/30">
-                  Altamente Recomendado
-                </span>
-              )}
-              {isAviso && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-violet-600/15 to-indigo-600/20 text-violet-800 border border-violet-400/30">
-                  Indispensable
-                </span>
-              )}
-              {isOpcional && (
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-600/15 to-teal-600/20 text-emerald-800 border border-emerald-400/30">
-                  Opcional
-                </span>
-              )}
+              <div
+                className={`w-full my-2.5 border-t ${
+                  isSelected ? "border-amber-200/90" : "border-slate-200/70"
+                }`}
+              />
+              <p className="text-base sm:text-lg font-bold tracking-tight text-[#8f4b10]">
+                ${(modelExtra.priceOverride ?? modelExtra.extra?.basePrice ?? 0).toLocaleString()} MXN
+              </p>
             </div>
-            {!isSelected && (
-              <FormattedDescription text={modelExtra.extra?.description} className="mt-1" />
-            )}
-            <p
-              className={`text-sm font-bold mt-1 ${
-                isAlcalina
-                  ? "text-[#168387]"
-                  : isAltamenteRecomendado
-                  ? "text-amber-800"
-                  : isAviso
-                  ? "text-violet-800"
-                  : isOpcional
-                  ? "text-emerald-800"
-                  : "text-gray-700"
-              }`}
-            >
-              ${(modelExtra.priceOverride ?? modelExtra.extra?.basePrice ?? 0).toLocaleString()} MXN
-            </p>
+            <input
+              type="checkbox"
+              checked={isSelected}
+              readOnly
+              disabled={disabled}
+              className="w-5 h-5 shrink-0 accent-[#8f4b10]"
+            />
           </div>
-          <input
-            type={isTinaco ? "radio" : "checkbox"}
-            name={isTinaco ? "tinaco-selector" : undefined}
-            checked={isSelected}
-            readOnly
-            disabled={disabled}
-            className={`w-5 h-5 shrink-0 ${
-              isTinaco
-                ? "accent-[#168387]"
-                : isAlcalina
-                ? "accent-[#168387]"
-                : isAltamenteRecomendado
-                ? "accent-amber-600"
-                : isAviso
-                ? "accent-violet-600"
-                : isOpcional
-                ? "accent-emerald-600"
-                : "accent-[#168387]"
-            }`}
-          />
-        </div>
+        ) : (
+          /* Extras Adicionales: se contrae la descripcion al seleccionarse para quedar titulo, badge y precio */
+          <div className="relative z-10 flex justify-between items-center gap-4">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p
+                  className={`font-semibold break-words ${
+                    isAltamenteRecomendado || isAviso || isOpcional ? "text-[#031638] font-bold" : "text-gray-800"
+                  }`}
+                >
+                  {modelExtra.extra?.name}
+                </p>
+                {isAltamenteRecomendado && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/15 to-orange-500/20 text-amber-800 border border-amber-400/30">
+                    Altamente Recomendado
+                  </span>
+                )}
+                {isAviso && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-violet-600/15 to-indigo-600/20 text-violet-800 border border-violet-400/30">
+                    Indispensable
+                  </span>
+                )}
+                {isOpcional && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-600/15 to-teal-600/20 text-emerald-800 border border-emerald-400/30">
+                    Opcional
+                  </span>
+                )}
+              </div>
+
+              {/* Animacion fluida: al seleccionarse se contrae ocultando la descripcion */}
+              <AnimatePresence initial={false}>
+                {!isSelected && modelExtra.extra?.description && (
+                  <motion.div
+                    key="extra-desc"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <FormattedDescription
+                      text={modelExtra.extra?.description}
+                      className="mt-1.5 text-xs text-slate-500 leading-relaxed"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <p
+                className={`text-sm sm:text-base font-bold mt-1 tracking-tight ${
+                  isAltamenteRecomendado
+                    ? "text-amber-800"
+                    : isAviso
+                    ? "text-violet-800"
+                    : isOpcional
+                    ? "text-emerald-800"
+                    : "text-gray-800"
+                }`}
+              >
+                ${(modelExtra.priceOverride ?? modelExtra.extra?.basePrice ?? 0).toLocaleString()} MXN
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              checked={isSelected}
+              readOnly
+              disabled={disabled}
+              className={`w-5 h-5 shrink-0 ${
+                isAltamenteRecomendado
+                  ? "accent-amber-600"
+                  : isAviso
+                  ? "accent-violet-600"
+                  : isOpcional
+                  ? "accent-emerald-600"
+                  : "accent-[#168387]"
+              }`}
+            />
+          </div>
+        )}
       </li>
     );
   };
@@ -589,29 +716,89 @@ export default function Step3ExtrasConfigurator({
 
   return (
     <div className={`w-full pb-24 sm:pb-24 lg:pb-24 ${hasAnyPreview ? "lg:flex lg:items-start lg:gap-12" : "flex justify-center"}`}>
-      {/* Panel de Vista Previa: FIXED en Móvil, STICKY en Desktop */}
+      {/* Panel de Vista Previa: FIXED en Móvil, STICKY en Desktop al lado izquierdo */}
       {hasAnyPreview && (
         <div className="
           fixed top-[72px] left-0 right-0 z-40 bg-slate-50 border-b border-cyan-500/20 px-4 pt-2 pb-3 shadow-md
           lg:static lg:w-[40%] lg:sticky lg:top-24 lg:self-start lg:bg-transparent lg:border-none lg:p-0 lg:m-0 lg:shadow-none
         ">
-          <div className="flex flex-col gap-2.5 max-w-7xl mx-auto">
+          <div className="flex flex-col gap-2 max-w-7xl mx-auto">
             {/* Contenedor de Imagen única (reactiva con switch) */}
-            <div className="bg-white border-2 border-[#24d4da]/30 rounded-2xl p-2 lg:p-3 shadow-sm lg:shadow-xl overflow-hidden relative">
-              {/* Barra superior con switch para alternar vistas si existen ambas */}
-              {Boolean(displayImageSrc && secondaryImageSrc) && (
-                <div className="flex items-center justify-between gap-2 mb-2 px-1">
-                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
-                    {activeView === "primary" ? "Configuración actual" : "Vista complementaria"}
+            <div className="bg-transparent border-2 border-[#24d4da]/30 rounded-3xl p-2.5 lg:p-3.5 shadow-sm overflow-hidden relative">
+              {/* Badge de Configuración de [Modelo] en la parte superior dentro del cuadro (ancho completo y rounded-full) */}
+              <div className="w-full mb-2.5">
+                <div className={`w-full py-2 sm:py-2 px-4 rounded-full text-white shadow-xs flex items-center justify-center text-center ${
+                  isCleaning
+                    ? "bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119]"
+                    : "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA]"
+                }`}>
+                  <span className="text-xs sm:text-sm font-semibold tracking-tight truncate" title={`Configuración de ${modelData?.name || ""}`}>
+                    Configuración de {modelData?.name}
                   </span>
-                  <div className="inline-flex items-center p-0.5 bg-slate-100 rounded-lg border border-slate-200 shrink-0">
+                </div>
+              </div>
+
+              <div className="h-48 sm:h-56 lg:h-auto lg:aspect-video w-full overflow-hidden rounded-2xl bg-transparent flex items-center justify-center relative">
+                {/* Skeleton inicial mientras carga la imagen: carga limpia del cuadro */}
+                <AnimatePresence>
+                  {!isInitialImageLoaded && (
+                    <motion.div
+                      key="image-skeleton"
+                      initial={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.35 }}
+                      className="absolute inset-0 z-20 bg-gradient-to-r from-slate-100 via-slate-200/50 to-slate-100 animate-pulse rounded-2xl pointer-events-none"
+                    />
+                  )}
+                </AnimatePresence>
+
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={activeView === "secondary" && secondaryImageSrc ? secondaryImageSrc : displayImageSrc}
+                    initial={{ opacity: 0, filter: "blur(8px)" }}
+                    animate={{
+                      opacity: 1,
+                      filter: "blur(0px)",
+                      scale: isAlcalinaZoomed ? 1.4 : 1,
+                      transformOrigin: isAlcalinaZoomed ? "78% 50%" : "center center",
+                    }}
+                    exit={{ opacity: 0, filter: "blur(8px)" }}
+                    transition={{
+                      opacity: { duration: 0.28, ease: "easeInOut" },
+                      filter: { duration: 0.28, ease: "easeInOut" },
+                      scale: {
+                        duration: 0.65,
+                        ease: [0.16, 1, 0.3, 1],
+                        delay: isAlcalinaZoomed ? 0.15 : 0,
+                      },
+                      transformOrigin: { duration: 0.5 },
+                    }}
+                    onLoad={() => setIsInitialImageLoaded(true)}
+                    src={optimizeCloudinaryUrl(
+                      activeView === "secondary" && secondaryImageSrc ? secondaryImageSrc : displayImageSrc,
+                      800
+                    )}
+                    alt={`Imagen de ${modelData.name}`}
+                    className="max-h-full w-auto object-contain rounded-xl"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </AnimatePresence>
+              </div>
+
+              {/* Boton switch Principal / Adicional abajo de la imagen */}
+              {Boolean(displayImageSrc && secondaryImageSrc) && (
+                <div className="flex justify-center items-center mt-2 lg:mt-2.5">
+                  <div className="inline-flex items-center p-0.5 bg-white/95 backdrop-blur-md rounded-full border border-slate-200/90 shadow-sm">
                     <button
                       type="button"
                       onClick={() => setActiveView("primary")}
-                      className={`px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-bold rounded-md transition-all duration-200 cursor-pointer ${
+                      className={`px-3.5 py-1 text-[11px] sm:text-xs font-bold rounded-full transition-all duration-200 cursor-pointer ${
                         activeView === "primary"
-                          ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-xs"
-                          : "text-slate-500 hover:text-slate-800"
+                          ? isCleaning
+                            ? "bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] text-white shadow-xs"
+                            : "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-xs"
+                          : "text-slate-600 hover:text-slate-900"
                       }`}
                     >
                       Principal
@@ -619,10 +806,12 @@ export default function Step3ExtrasConfigurator({
                     <button
                       type="button"
                       onClick={() => setActiveView("secondary")}
-                      className={`px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-bold rounded-md transition-all duration-200 cursor-pointer ${
+                      className={`px-3.5 py-1 text-[11px] sm:text-xs font-bold rounded-full transition-all duration-200 cursor-pointer ${
                         activeView === "secondary"
-                          ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-xs"
-                          : "text-slate-500 hover:text-slate-800"
+                          ? isCleaning
+                            ? "bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] text-white shadow-xs"
+                            : "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white shadow-xs"
+                          : "text-slate-600 hover:text-slate-900"
                       }`}
                     >
                       Adicional
@@ -630,71 +819,89 @@ export default function Step3ExtrasConfigurator({
                   </div>
                 </div>
               )}
-
-              <div className="h-32 sm:h-56 lg:h-auto lg:aspect-video w-full overflow-hidden rounded-xl bg-slate-50/50 flex items-center justify-center">
-                <motion.img
-                  key={activeView === "secondary" && secondaryImageSrc ? secondaryImageSrc : displayImageSrc}
-                  initial={{ scale: 0.96, opacity: 0.85 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.25 }}
-                  src={optimizeCloudinaryUrl(
-                    activeView === "secondary" && secondaryImageSrc ? secondaryImageSrc : displayImageSrc,
-                    800
-                  )}
-                  alt={`Imagen de ${modelData.name}`}
-                  className="max-h-full w-auto object-contain"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </div>
-
-            {/* Configuración actual (solo visible si hay espacio o en desktop) */}
-            <div className="hidden sm:block bg-[#168387]/5 border border-[#168387]/10 rounded-xl p-2.5">
-              <p className="text-[10px] sm:text-xs font-bold text-[#168387] leading-tight">
-                <span className="font-black uppercase tracking-wider block mb-1 opacity-60 text-[8px]">Modelo actual:</span>
-                {currentDisplayString}
-              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Listado de Extras en Sub-Pasos: Añadimos padding-top en móvil para compensar el FIXED */}
+      {/* Listado de Extras en Sub-Pasos: Ajustamos padding-top en movil para la vista previa ampliada */}
       <div className={`
-        ${hasAnyPreview ? "lg:w-[60%] pt-[200px] lg:pt-0" : "w-full max-w-3xl"} 
+        ${hasAnyPreview ? "lg:w-[60%] pt-[280px] sm:pt-[310px] lg:pt-0" : "w-full max-w-3xl"} 
         flex flex-col font-montserrat not-italic
       `}>
         <div id="extras-top-anchor" className="mb-6">
-          {/* Indicador de progreso de Sub-Pasos (Stepper / Tabs interactivos) */}
+          {/* Indicador de progreso de Sub-Pasos (Efecto de agua en cada tab: vaciado y llenado fluido de abajo hacia arriba) */}
           {subSteps.length > 1 && (
-            <div className="flex items-center gap-1.5 sm:gap-2 mb-4 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/80 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1 mb-4 p-0 bg-slate-100/90 rounded-full border-0">
               {subSteps.map((step, idx) => {
                 const isActive = currentSubStepIndex === idx;
+                const isDraining = drainingIndex === idx;
                 const isPast = currentSubStepIndex > idx;
+
+                let waterHeight = 0;
+                let isMoving = false;
+
+                if (isActive) {
+                  waterHeight = 100;
+                  if (drainingIndex !== null) isMoving = true;
+                } else if (isDraining) {
+                  waterHeight = 0;
+                  isMoving = true;
+                }
+
                 return (
                   <button
                     key={step.id}
                     type="button"
-                    onClick={() => {
-                      setCurrentSubStepIndex(idx);
-                      scrollToTopConfigurator();
-                    }}
-                    className={`flex-1 min-w-[105px] py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-xl text-center text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
+                    onClick={() => goToSubStep(idx)}
+                    className={`relative flex-1 min-w-[85px] sm:min-w-[100px] py-1.5 px-3 rounded-full text-center text-[11px] sm:text-xs font-bold transition-colors duration-200 flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer z-10 border-0 bg-transparent overflow-hidden ${
                       isActive
-                        ? "bg-white text-[#168387] shadow-sm font-extrabold ring-1 ring-slate-200"
+                        ? isCleaning
+                          ? "text-[#14532d] font-black"
+                          : "text-[#083344] font-black"
                         : isPast
-                        ? "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                        ? "text-slate-600 hover:text-slate-900"
                         : "text-slate-400 hover:text-slate-600"
                     }`}
                   >
-                    <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-black shrink-0 ${
-                      isActive
-                        ? "bg-[#168387] text-white"
-                        : isPast
-                        ? "bg-slate-200 text-slate-700"
-                        : "bg-slate-200/60 text-slate-400"
-                    }`}>
+                    {/* Contenedor de agua individual dentro del tab */}
+                    <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none -z-10 border-0">
+                      {/* Columna de agua que sube de abajo hacia arriba al activarse o baja al vaciar */}
+                      <div
+                        className={`absolute bottom-0 left-0 right-0 ${
+                          isCleaning ? "bg-[#dcfce7]" : "bg-[#cff5f4]"
+                        }`}
+                        style={{
+                          height: `${waterHeight}%`,
+                          transition: isMoving
+                            ? isActive
+                              ? "height 0.8s cubic-bezier(0.22, 1, 0.36, 1)"
+                              : "height 0.6s cubic-bezier(0.4, 0, 0.6, 1)"
+                            : "none",
+                        }}
+                      >
+                        {/* Cresta limpia sin borde visible mientras sube o baja */}
+                        {isMoving && (
+                          <div
+                            className={`absolute -top-2 left-0 right-0 h-4 pointer-events-none ${
+                              isCleaning
+                                ? "water-wave-crest-cleaning"
+                                : "water-wave-crest-clean"
+                            }`}
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    <span
+                      className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full text-[9px] sm:text-[10px] flex items-center justify-center font-black shrink-0 transition-colors shadow-2xs ${
+                        isActive || isPast
+                          ? isCleaning
+                            ? "bg-[#15803d] text-white"
+                            : "bg-[#0e7490] text-white"
+                          : "bg-slate-300 text-slate-700"
+                      }`}
+                    >
                       {idx + 1}
                     </span>
                     <span className="truncate">{step.navLabel}</span>
@@ -704,14 +911,14 @@ export default function Step3ExtrasConfigurator({
             </div>
           )}
 
-          <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-1.5 block">
-            {activeStep.badge}
-          </span>
-          <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight text-[#031638] mb-2">
-            {activeStep.titlePrefix}{" "}
-            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
-              {activeStep.titleHighlight}
+          <div className="flex items-center gap-2.5 mb-1.5">
+            <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase">
+              {activeStep.badge}
             </span>
+            <span className="w-8 sm:w-10 h-0.5 rounded-full shrink-0 bg-[#168387]" />
+          </div>
+          <h2 className="font-montserrat not-italic text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight text-[#031638] mb-2">
+            {activeStep.titlePrefix} {activeStep.titleHighlight}
           </h2>
           {activeStep.subtitle ? (
             <p className="text-slate-600 font-montserrat not-italic text-xs sm:text-sm md:text-base font-normal leading-relaxed">
@@ -763,29 +970,34 @@ export default function Step3ExtrasConfigurator({
                     }}
                     className={`list-none relative overflow-hidden border rounded-xl p-4 cursor-pointer transition-all duration-300 shadow-sm text-left ${
                       !selectedTinacoExtraId
-                        ? "border-[#168387] bg-gradient-to-r from-[#168387]/15 via-teal-500/10 to-teal-50/50 shadow-sm ring-1 ring-[#168387]/30"
-                        : "border-gray-200 hover:border-gray-300 bg-white"
+                        ? "bg-[#effdff] border-[#168387] shadow-sm ring-1 ring-[#168387]/40"
+                        : "bg-[#effdff]/40 border-cyan-200/70 hover:bg-[#effdff]/80 hover:border-cyan-300"
                     }`}
                   >
-                    <div className="flex justify-between items-center gap-4">
-                      <div className="min-w-0 flex-1">
+                    <div className="relative z-10 flex flex-col justify-between gap-1.5 text-left">
+                      {/* Fila superior: Titulo a la izquierda, Marcador a la derecha a la misma altura */}
+                      <div className="flex items-center justify-between gap-3">
                         <p className="font-semibold text-gray-800">
                           Sin almacenamiento adicional
                         </p>
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <input
+                          type="radio"
+                          name="tinaco-selector"
+                          checked={!selectedTinacoExtraId}
+                          readOnly
+                          className="w-5 h-5 accent-[#168387] shrink-0 cursor-pointer"
+                        />
+                      </div>
+
+                      {/* Fila inferior: Descripcion a la izquierda, Precio a la derecha a la altura de la descripcion y mas pequeno */}
+                      <div className="flex items-center justify-between gap-3 mt-0.5">
+                        <p className="text-xs text-slate-500 leading-relaxed min-w-0 flex-1">
                           Ya cuento con tinacos de almacenamiento o no requiero tinacos extras.
                         </p>
-                        <p className="text-sm font-bold text-gray-700 mt-1">
+                        <p className="text-sm sm:text-[15px] font-bold text-gray-800 tracking-tight shrink-0 whitespace-nowrap">
                           $0 MXN
                         </p>
                       </div>
-                      <input
-                        type="radio"
-                        name="tinaco-selector"
-                        checked={!selectedTinacoExtraId}
-                        readOnly
-                        className="w-5 h-5 accent-[#168387] shrink-0"
-                      />
                     </div>
                   </li>
 

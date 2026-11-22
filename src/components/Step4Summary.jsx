@@ -590,9 +590,12 @@ export default function Step4Summary({
     <div className="space-y-8 max-w-5xl mx-auto pt-4 sm:pt-6 lg:pt-8 pb-8 font-montserrat not-italic">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-1.5 block">
-            Paso Final del Configurador
-          </span>
+          <div className="flex items-center gap-2.5 mb-1.5">
+            <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase">
+              Paso Final del Configurador
+            </span>
+            <span className="w-8 sm:w-10 h-0.5 rounded-full shrink-0 bg-[#168387]" />
+          </div>
           <h2 className="font-montserrat not-italic text-2xl sm:text-4xl font-bold tracking-tight leading-tight text-[#031638]">
             Resumen de{" "}
             <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">

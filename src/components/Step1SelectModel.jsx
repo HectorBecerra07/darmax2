@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { 
@@ -8,7 +8,8 @@ import {
   ArrowPathIcon, 
   CheckCircleIcon, 
   SparklesIcon, 
-  ArrowTopRightOnSquareIcon 
+  ArrowTopRightOnSquareIcon,
+  ExclamationCircleIcon
 } from "@heroicons/react/24/outline";
 import PpmNoticeModal from "./PpmNoticeModal";
 import { optimizeCloudinaryUrl } from "../utils/cloudinary";
@@ -46,6 +47,75 @@ function getModelImage(item) {
   return optimizeCloudinaryUrl("https://res.cloudinary.com/defkuaytw/image/upload/v1776318780/1touch_heazvd.png", 700);
 }
 
+// Formatea el titulo del modelo aplicando degradado al modelo especifico (como en Selecciona tu vending)
+function renderModelTitle(item, vendingType, isCleaning, isCardFront = true) {
+  const name = item?.name || "";
+  const slug = item?.slug || "";
+  const raw = `${name} ${slug}`.toLowerCase();
+  const vType = item?.vendingType || vendingType;
+
+  // Caso Vending Atlantis (Agua)
+  if (raw.includes("atlantis")) {
+    const isMax = raw.includes("max");
+    const isTouch = vType === VendingTypeEnum.TOUCH || raw.includes("touch");
+    const prefix = isTouch ? "Vending Touch" : "Vending Tradicional";
+    const highlight = isMax ? "Atlantis 300 Max" : "Atlantis 300";
+
+    if (isCardFront) {
+      return (
+        <>
+          <span className="block text-slate-900 font-semibold">{prefix}</span>
+          <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-0.5 font-semibold">
+            {highlight}
+          </span>
+        </>
+      );
+    }
+    return (
+      <>
+        <span className="font-semibold">{prefix} </span>
+        <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent font-semibold">
+          {highlight}
+        </span>
+      </>
+    );
+  }
+
+  // Caso Vending Limpieza (Darmax Clean)
+  if (isCleaning || raw.includes("clean") || raw.includes("vending5") || raw.includes("vending8")) {
+    const is8 = raw.includes("8");
+    const suffix = is8 ? "Vending 8 Productos" : "Vending 5 Productos";
+
+    if (isCardFront) {
+      return (
+        <>
+          <span className="block text-slate-900 font-semibold">
+            Darmax{" "}
+            <span className="bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] bg-clip-text text-transparent inline-block pb-0.5 font-semibold">
+              Clean
+            </span>
+          </span>
+          <span className="block text-slate-600 text-xs sm:text-sm font-semibold mt-0.5">
+            {suffix}
+          </span>
+        </>
+      );
+    }
+    return (
+      <>
+        <span className="font-semibold">Darmax </span>
+        <span className="bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] bg-clip-text text-transparent font-semibold">
+          Clean
+        </span>
+        <span className="text-slate-700 ml-1.5 font-semibold">({suffix})</span>
+      </>
+    );
+  }
+
+  // Otros modelos (Purificadora mostrador, etc.)
+  return <span className="font-semibold">{name}</span>;
+}
+
 // Componente de Tarjeta individual con giro 3D (Front/Back)
 function ModelCard({
   item,
@@ -55,9 +125,19 @@ function ModelCard({
   hasOsmosis,
   image,
   vendingType,
+  categoryId,
+  isLimpieza = false,
   ctaText = "Configurar modelo",
   priceLabel = "Inversión"
 }) {
+  const rawCat = (categoryId || "").toLowerCase();
+  const rawText = `${item?.name || ""} ${item?.description || ""} ${item?.slug || ""}`.toLowerCase();
+  const isCleaning = isLimpieza || rawCat.includes("limpieza") || rawText.includes("limpieza") || rawText.includes("vending5") || rawText.includes("vending8");
+  const isWaterVending = rawCat === "vending" || rawCat.includes("agua") || rawText.includes("atlantis") || rawText.includes("vending agua");
+  const isMostrador = rawCat.includes("purificadora") || rawCat.includes("mostrador") || rawText.includes("mostrador") || rawText.includes("neptuno") || rawText.includes("poseidon");
+  const hasOsmosisDetected = hasOsmosis || rawText.includes("osmosis") || rawText.includes("ósmosis") || rawText.includes("max");
+  const useTouchColorBadge = isWaterVending || isMostrador || hasOsmosisDetected;
+
   return (
     <motion.div
       animate={{ rotateY: isFlipped ? 180 : 0 }}
@@ -67,30 +147,40 @@ function ModelCard({
     >
       {/* FRENTE DE LA TARJETA */}
       <div
-        className={`absolute inset-0 w-full h-full bg-white border border-slate-200/90 rounded-[2rem] p-4 sm:p-5 lg:p-6 shadow-sm hover:border-[#24d4da] hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between overflow-hidden ${
-          isFlipped ? "pointer-events-none" : "pointer-events-auto"
-        }`}
+        className={`absolute inset-0 w-full h-full bg-white border border-slate-200/90 rounded-[2rem] p-4 sm:p-5 lg:p-6 shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between overflow-hidden ${
+          isCleaning ? "hover:border-[#53c406]" : "hover:border-[#24d4da]"
+        } ${isFlipped ? "pointer-events-none" : "pointer-events-auto"}`}
         style={{
           backfaceVisibility: "hidden",
           WebkitBackfaceVisibility: "hidden",
         }}
       >
         {/* Badge superior de procesos */}
-        <div className="shrink-0 flex items-center justify-between gap-2 w-full">
-          {hasOsmosis ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-black bg-gradient-to-r from-cyan-500/15 via-teal-500/10 to-cyan-500/15 text-[#168387] border border-[#168387]/30 shadow-2xs">
-              <SparklesIcon className="w-3.5 h-3.5 text-[#168387]" />
-              <span>7 Procesos • Ósmosis Inversa</span>
+        <div className="shrink-0 relative flex items-center justify-center w-full">
+          {isCleaning ? (
+            <span className="inline-flex items-center justify-center px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] text-white shadow-xs">
+              {item?.name?.includes("8") || item?.slug?.includes("8") ? "8 Productos" : "5 Productos"}
+            </span>
+          ) : hasOsmosis ? (
+            <span className={`inline-flex items-center justify-center px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-bold shadow-xs ${
+              useTouchColorBadge
+                ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white"
+                : "bg-slate-800 text-white"
+            }`}>
+              7 Procesos • Ósmosis Inversa
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 shadow-2xs">
-              <CheckCircleIcon className="w-3.5 h-3.5 text-[#168387]" />
-              <span>6 Procesos de Purificación</span>
+            <span className={`inline-flex items-center justify-center px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-bold shadow-xs ${
+              useTouchColorBadge
+                ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white"
+                : "bg-slate-800 text-white"
+            }`}>
+              6 Procesos de Purificación
             </span>
           )}
 
-          {item.isNew && (
-            <span className="bg-cyan-500 text-white text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest shrink-0">
+          {item?.isNew && (
+            <span className="absolute right-0 bg-cyan-500 text-white text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest shrink-0">
               Nuevo
             </span>
           )}
@@ -99,13 +189,13 @@ function ModelCard({
         {/* Imagen del modelo y titulo centrados con espacio optimizado */}
         <div className="flex-1 min-h-0 flex flex-col items-center justify-center text-center w-full py-0.5">
           <div 
-            className="relative w-full h-40 sm:h-44 lg:h-48 flex items-center justify-center cursor-pointer group/img"
-            onClick={(e) => onToggleFlip(item.slug, e)}
-            title="Haz clic para ver más detalles"
+            className={`relative w-full h-40 sm:h-44 lg:h-48 flex items-center justify-center ${isCleaning ? "" : "cursor-pointer group/img"}`}
+            onClick={(e) => !isCleaning && onToggleFlip(item?.slug, e)}
+            title={isCleaning ? item?.name : "Haz clic para ver más detalles"}
           >
             <img 
               src={image} 
-              alt={item.name} 
+              alt={item?.name} 
               loading="eager"
               decoding="async"
               className="max-h-full w-auto object-contain drop-shadow-xl group-hover/img:scale-105 transition-transform duration-500" 
@@ -114,46 +204,56 @@ function ModelCard({
 
           <div className="mt-1.5 sm:mt-2 text-center w-full">
             <h3 
-              className="text-sm sm:text-base lg:text-xl font-black text-slate-900 tracking-tight leading-tight line-clamp-2 px-1"
-              title={item.name}
+              className="text-base sm:text-lg lg:text-2xl font-semibold text-slate-900 tracking-tight leading-snug line-clamp-2 px-1"
+              title={item?.name}
             >
-              {item.name}
+              {renderModelTitle(item, vendingType, isCleaning, true)}
             </h3>
             <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-1 line-clamp-2 px-2 leading-tight">
-              {item.description || "Tecnología de purificación avanzada de alta demanda"}
+              {item?.description || "Tecnología de purificación avanzada de alta demanda"}
             </p>
+
+            {/* Inversion entre lineas, inmediatamente despues del subtitulo */}
+            <div className="w-full border-y border-slate-200/80 py-2 sm:py-2.5 mt-2 sm:mt-2.5 flex items-center justify-between px-1">
+              <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">
+                {priceLabel || "Inversión"}
+              </span>
+              <p className="text-base sm:text-lg lg:text-xl font-black text-slate-900 tracking-tight">
+                ${(item?.basePrice || 0).toLocaleString()}
+                <span className="text-[10px] sm:text-xs ml-1 text-slate-400 font-bold uppercase">MXN</span>
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Bloque de Inversion y Botones en el frente */}
-        <div className="shrink-0 space-y-1.5 sm:space-y-2 w-full pt-1">
-          <div className="py-1.5 sm:py-2 px-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-            <span className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              {priceLabel}
-            </span>
-            <p className="text-sm sm:text-base font-black text-slate-900 tracking-tight">
-              ${(item.basePrice || 0).toLocaleString()}
-              <span className="text-[9px] sm:text-[10px] ml-1 text-slate-400 font-bold uppercase">MXN</span>
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={(e) => onToggleFlip(item.slug, e)}
-            className="w-full py-2 sm:py-2.5 px-3 rounded-xl bg-slate-50 hover:bg-cyan-50/70 hover:text-[#168387] text-slate-700 text-xs font-bold border border-slate-200/80 hover:border-cyan-200 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
-          >
-            <ArrowPathIcon className="w-3.5 h-3.5 text-[#168387]" />
-            <span>Ver más detalles</span>
-          </button>
-
+        {/* Bloque de Accion en el frente */}
+        <div className="shrink-0 flex flex-col items-center w-full pt-1 sm:pt-2 gap-1.5">
           <button
             type="button"
             onClick={() => onSelect(item)}
-            className="w-full py-2.5 sm:py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-[#168387] text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-900/20 active:scale-98 flex items-center justify-center gap-2 group/btn cursor-pointer"
+            className={`w-full py-2.5 sm:py-3.5 px-5 rounded-full hover:brightness-110 text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 active:scale-98 flex items-center justify-center gap-2 group/btn cursor-pointer ${
+              isCleaning
+                ? "bg-gradient-to-r from-[#133909] via-[#53c406] to-[#90e119] shadow-md shadow-[#133909]/30 hover:shadow-lg hover:shadow-[#90e119]/35"
+                : "bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] shadow-md shadow-[#022447]/20 hover:shadow-lg hover:shadow-[#01949f]/30"
+            }`}
           >
             <span>{ctaText}</span>
             <ChevronRightIcon className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
           </button>
+
+          {!isCleaning && (
+            <button
+              type="button"
+              onClick={(e) => onToggleFlip(item?.slug, e)}
+              className="inline-flex items-center justify-center gap-1.5 py-1 text-slate-500 hover:text-[#168387] text-xs font-medium transition-colors cursor-pointer group/details"
+              title="Haz clic para ver más detalles y ficha técnica"
+            >
+              <ExclamationCircleIcon className="w-4 h-4 text-slate-400 group-hover:text-[#168387] transition-colors shrink-0" />
+              <span className="underline underline-offset-4 decoration-slate-300 group-hover:decoration-[#168387] transition-colors">
+                Ver más detalles
+              </span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -170,11 +270,14 @@ function ModelCard({
       >
         {/* Barra superior de la ficha tecnica */}
         <div className="shrink-0 w-full pb-2 border-b border-slate-100 text-left">
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#168387] block">
-            Ficha de Purificación
-          </span>
-          <h3 className="text-sm sm:text-base font-black text-slate-900 leading-tight truncate" title={item.name}>
-            {item.name}
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <span className={`text-[10px] font-black uppercase tracking-widest block ${isCleaning ? "text-[#53c406]" : "text-[#168387]"}`}>
+              {isCleaning ? "Ficha de Vending Clean" : "Ficha de Purificación"}
+            </span>
+            <span className={`w-3.5 h-0.5 rounded-full shrink-0 ${isCleaning ? "bg-[#53c406]" : "bg-[#168387]"}`} />
+          </div>
+          <h3 className="text-sm sm:text-base font-semibold text-slate-900 leading-tight truncate" title={item?.name}>
+            {renderModelTitle(item, vendingType, isCleaning, false)}
           </h3>
         </div>
 
@@ -210,7 +313,7 @@ function ModelCard({
           <div className="py-1.5 sm:py-2 px-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
             <span className="text-slate-500 font-medium">Inversión del equipo</span>
             <span className="font-black text-slate-900 text-sm">
-              ${item.basePrice.toLocaleString()} MXN
+              ${(item?.basePrice || 0).toLocaleString()} MXN
             </span>
           </div>
         </div>
@@ -220,7 +323,11 @@ function ModelCard({
           <button
             type="button"
             onClick={() => onSelect(item)}
-            className="w-full py-2.5 sm:py-3.5 px-4 rounded-xl bg-slate-900 hover:bg-[#168387] text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-cyan-900/20 active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+            className={`w-full py-2.5 sm:py-3.5 px-5 rounded-full hover:brightness-110 text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 active:scale-98 flex items-center justify-center gap-2 cursor-pointer ${
+              isCleaning
+                ? "bg-gradient-to-r from-[#133909] via-[#53c406] to-[#90e119] shadow-md shadow-[#133909]/30 hover:shadow-lg hover:shadow-[#90e119]/35"
+                : "bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] shadow-md shadow-[#022447]/20 hover:shadow-lg hover:shadow-[#01949f]/30"
+            }`}
           >
             <span>{ctaText}</span>
             <ChevronRightIcon className="w-4 h-4" />
@@ -228,8 +335,8 @@ function ModelCard({
 
           <button
             type="button"
-            onClick={(e) => onToggleFlip(item.slug, e)}
-            className="w-full py-1.5 sm:py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-800 text-xs font-bold border border-slate-200/80 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            onClick={(e) => onToggleFlip(item?.slug, e)}
+            className="w-full py-1.5 sm:py-2 px-4 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-800 text-xs font-bold border border-slate-200/80 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <ArrowPathIcon className="w-3.5 h-3.5 text-slate-500" />
             <span>Volver a foto del modelo</span>
@@ -320,7 +427,7 @@ function OsmosisBanner({ hasOsmosisInCatalog }) {
             <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#168387] transition-colors">
               ¿Quieres conocer más sobre ósmosis inversa?
             </p>
-            <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#168387]/10 text-[#168387] border border-[#168387]/20">
+            <span className="text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#168387] text-white shadow-xs">
               <span className="hidden sm:inline">Da clic aquí</span>
               <span className="sm:hidden">Pulsa aquí</span>
             </span>
@@ -356,11 +463,25 @@ export default function Step1SelectModel({
   const [showPpmModal, setShowPpmModal] = useState(false);
   const [isPpmOpen, setIsPpmOpen] = useState(false);
 
+  // Ordenar para garantizar que el modelo base aparezca primero y el Max despues
+  const sortedModelos = useMemo(() => {
+    if (!Array.isArray(modelos) || modelos.length === 0) return [];
+    return [...modelos].sort((a, b) => {
+      const isMaxA = (a?.slug || "").toLowerCase().includes("max") || (a?.name || "").toLowerCase().includes("max");
+      const isMaxB = (b?.slug || "").toLowerCase().includes("max") || (b?.name || "").toLowerCase().includes("max");
+      if (!isMaxA && isMaxB) return -1;
+      if (isMaxA && !isMaxB) return 1;
+      return (a?.basePrice || 0) - (b?.basePrice || 0);
+    });
+  }, [modelos]);
+
   // Estado para el carrusel horizontal en vista movil
   const mobileCarouselRef = useRef(null);
   const [activeMobileIndex, setActiveMobileIndex] = useState(0);
 
-  const isVending = categoryId === "Vending" || vendingType === VendingTypeEnum.TOUCH || vendingType === VendingTypeEnum.TRADICIONAL;
+  const rawCat = (categoryId || "").toLowerCase();
+  const isCleaningCategory = rawCat.includes("limpieza") || rawCat.includes("clean");
+  const isVending = (categoryId === "Vending" || vendingType === VendingTypeEnum.TOUCH || vendingType === VendingTypeEnum.TRADICIONAL) && !isCleaningCategory;
 
   useEffect(() => {
     if (isVending) {
@@ -428,8 +549,8 @@ export default function Step1SelectModel({
     }
   }, []);
 
-  const hasOsmosisInCatalog = catalogHasOsmosis || modelos.some((m) => {
-    const raw = `${m.name || ""} ${m.description || ""} ${m.slug || ""}`.toLowerCase();
+  const hasOsmosisInCatalog = catalogHasOsmosis || (Array.isArray(modelos) ? modelos : []).some((m) => {
+    const raw = `${m?.name || ""} ${m?.description || ""} ${m?.slug || ""}`.toLowerCase();
     return raw.includes("osmosis");
   });
 
@@ -448,29 +569,58 @@ export default function Step1SelectModel({
 
   return (
     <div id="step1-model-container" className="flex items-start min-h-0 sm:min-h-[calc(100vh-350px)] w-full pt-1 sm:pt-4 pb-2 sm:pb-6 lg:pb-4 font-montserrat not-italic">
-      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center lg:items-start gap-10 lg:gap-16 px-4 sm:px-8">
+      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12 xl:gap-16 px-4 sm:px-8">
         
         {/* COLUMNA IZQUIERDA: Titulo, aviso de PPM y banner de osmosis */}
-        <div className="w-full lg:w-[35%] text-center lg:text-left space-y-3 lg:sticky lg:top-40">
-          <span className="font-montserrat not-italic text-[#168387] font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase mb-2 block">
-            {subtitleOverride || "Configuración Inicial"}
-          </span>
-          <h2 className="font-montserrat not-italic text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-[#031638]">
+        <div className="w-full lg:w-[38%] xl:w-[35%] text-center lg:text-left space-y-3 lg:sticky lg:top-40">
+          <div className="flex items-center justify-center lg:justify-start gap-2.5 mb-2">
+            <span className={`font-montserrat not-italic font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase ${
+              isCleaningCategory ? "text-[#53c406]" : "text-[#168387]"
+            }`}>
+              {subtitleOverride || (isCleaningCategory ? "Limpieza 24/7" : "Configuración Inicial")}
+            </span>
+            <span className={`w-8 sm:w-10 h-0.5 rounded-full shrink-0 ${
+              isCleaningCategory ? "bg-[#53c406]" : "bg-[#168387]"
+            }`} />
+          </div>
+          <h2 className="font-montserrat not-italic text-3xl sm:text-4xl lg:text-[45px] xl:text-[52px] 2xl:text-[57px] font-bold tracking-tight leading-tight text-[#031638]">
             {titleOverride ? (
               titleOverride
+            ) : isCleaningCategory ? (
+              <>
+                <span className="block sm:whitespace-nowrap">Elige tu modelo</span>
+                <span className="block pt-1 pb-1.5 leading-tight">
+                  <span className="text-[#031638]">de Darmax </span>
+                  <span className="bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] bg-clip-text text-transparent inline-block">
+                    Clean
+                  </span>
+                </span>
+              </>
+            ) : (vendingType === VendingTypeEnum.TOUCH || vendingType === VendingTypeEnum.TRADICIONAL) ? (
+              <>
+                <span className="block sm:whitespace-nowrap">Elige tu</span>
+                <span className="block pt-1 pb-1.5 leading-tight">
+                  <span className="text-[#031638]">modelo </span>
+                  <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
+                    {vendingType === VendingTypeEnum.TOUCH ? "Touch" : "Tradicional"}
+                  </span>
+                </span>
+              </>
             ) : (
               <>
-                Elige tu modelo <br />
-                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 pt-0.5 overflow-visible">
-                  {vendingType === VendingTypeEnum.TOUCH ? "Touch" : 
-                   vendingType === VendingTypeEnum.TRADICIONAL ? "Tradicional" : 
-                   (categoryId || "modelo")}
+                <span className="block sm:whitespace-nowrap">Elige tu modelo</span>
+                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent block pt-1 pb-1.5 leading-tight">
+                  {categoryId || "Purificadora"}
                 </span>
               </>
             )}
           </h2>
           <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base font-normal leading-relaxed max-w-md mx-auto lg:mx-0">
-            {descriptionOverride || "Selecciona la base tecnológica que impulsará tu negocio. Cada modelo está diseñado para máxima eficiencia."}
+            {descriptionOverride || (
+              isCleaningCategory
+                ? "Automatiza la venta de productos de limpieza a granel con nuestra tecnología Vending Clean."
+                : "Selecciona la base tecnológica que impulsará tu negocio. Cada modelo está diseñado para máxima eficiencia."
+            )}
           </p>
 
           {/* MODAL EMERGENTE DE PRIMERA VISITA SOBRE DUREZA EN PPM */}
@@ -483,14 +633,14 @@ export default function Step1SelectModel({
 
           {/* EN ESCRITORIO / TABLET: Mostrar en la columna lateral */}
           <div className="hidden sm:block space-y-3 pt-1">
-            {!hidePpmNotice && (
+            {!hidePpmNotice && isVending && (
               <PpmAccordion
                 isVending={isVending}
                 isPpmOpen={isPpmOpen}
                 setIsPpmOpen={setIsPpmOpen}
               />
             )}
-            {!hideOsmosisBanner && (
+            {!hideOsmosisBanner && hasOsmosisInCatalog && (
               <OsmosisBanner
                 hasOsmosisInCatalog={hasOsmosisInCatalog}
               />
@@ -500,13 +650,13 @@ export default function Step1SelectModel({
           {/* Indicador de progreso visual sutil (Paso 2 activo) */}
           <div className="hidden lg:flex items-center gap-4 pt-4">
             <div className="h-1 w-10 bg-slate-200 rounded-full" />
-            <div className="h-1 w-20 bg-[#168387] rounded-full" />
+            <div className={`h-1 w-20 rounded-full ${isCleaningCategory ? "bg-gradient-to-r from-[#53c406] to-[#90e119]" : "bg-[#168387]"}`} />
             <div className="h-1 w-10 bg-slate-100 rounded-full" />
           </div>
         </div>
 
         {/* COLUMNA DERECHA: VISTA MOVIL CON CARRUSEL + VISTA ESCRITORIO CON GRID */}
-        <div className="w-full lg:w-[65%]">
+        <div className="w-full lg:w-[62%] xl:w-[65%]">
 
           {/* VISTA MOVIL (Carrusel táctil con snap e indicador) */}
           <div className="block sm:hidden w-full">
@@ -516,12 +666,16 @@ export default function Step1SelectModel({
                 <span className="text-xs font-bold text-slate-800">
                   Modelos disponibles
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-wider text-[#168387] bg-cyan-50 border border-cyan-200/80 px-2 py-0.5 rounded-full">
+                <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                  isCleaningCategory
+                    ? "text-[#53c406] bg-lime-50 border border-lime-200/80"
+                    : "text-[#168387] bg-cyan-50 border border-cyan-200/80"
+                }`}>
                   {modelos.length} opciones
                 </span>
               </div>
               <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 bg-slate-100/90 px-2.5 py-0.5 rounded-full">
-                <span className="text-[#168387] font-black">{activeMobileIndex + 1}</span>
+                <span className={isCleaningCategory ? "text-[#53c406] font-black" : "text-[#168387] font-black"}>{activeMobileIndex + 1}</span>
                 <span className="text-slate-300">/</span>
                 <span>{modelos.length}</span>
               </div>
@@ -538,7 +692,7 @@ export default function Step1SelectModel({
                 msOverflowStyle: "none"
               }}
             >
-              {modelos.map((item, idx) => {
+              {sortedModelos.map((item, idx) => {
                 const rawText = `${item?.name || ""} ${item?.description || ""} ${item?.slug || ""}`.toLowerCase();
                 const isLimpieza = categoryId === "Vending-Limpieza" || rawText.includes("limpieza") || rawText.includes("vending5") || rawText.includes("vending8");
                 const hasOsmosis = !isLimpieza && rawText.includes("osmosis");
@@ -562,6 +716,8 @@ export default function Step1SelectModel({
                       hasOsmosis={hasOsmosis}
                       image={image}
                       vendingType={vendingType}
+                      categoryId={categoryId}
+                      isLimpieza={isLimpieza}
                       ctaText={ctaTextOverride}
                       priceLabel={priceLabelOverride}
                     />
@@ -573,7 +729,7 @@ export default function Step1SelectModel({
             {/* Indicadores de bolitas inferiores */}
             <div className="flex flex-col items-center justify-center gap-1.5 mt-2">
               <div className="flex items-center gap-2">
-                {modelos.map((item, idx) => (
+                {sortedModelos.map((item, idx) => (
                   <button
                     key={item.slug}
                     type="button"
@@ -581,7 +737,9 @@ export default function Step1SelectModel({
                     aria-label={`Ver modelo ${item.name}`}
                     className={`transition-all duration-300 rounded-full cursor-pointer ${
                       activeMobileIndex === idx
-                        ? "w-7 h-2 bg-[#168387]"
+                        ? isCleaningCategory
+                          ? "w-7 h-2 bg-gradient-to-r from-[#133909] via-[#53c406] to-[#90e119] shadow-xs shadow-[#53c406]/30"
+                          : "w-7 h-2 bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] shadow-xs shadow-[#01949f]/30"
                         : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
                     }`}
                   />
@@ -612,7 +770,7 @@ export default function Step1SelectModel({
             animate="visible"
             className="hidden sm:grid grid-cols-2 gap-5 sm:gap-8 w-full"
           >
-            {modelos.map((item) => {
+            {sortedModelos.map((item) => {
               const rawText = `${item?.name || ""} ${item?.description || ""} ${item?.slug || ""}`.toLowerCase();
               const isLimpieza = categoryId === "Vending-Limpieza" || rawText.includes("limpieza") || rawText.includes("vending5") || rawText.includes("vending8");
               const hasOsmosis = !isLimpieza && rawText.includes("osmosis");
@@ -634,6 +792,8 @@ export default function Step1SelectModel({
                     hasOsmosis={hasOsmosis}
                     image={image}
                     vendingType={vendingType}
+                    categoryId={categoryId}
+                    isLimpieza={isLimpieza}
                     ctaText={ctaTextOverride}
                     priceLabel={priceLabelOverride}
                   />

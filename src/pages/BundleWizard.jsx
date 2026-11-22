@@ -454,12 +454,24 @@ export default function BundleWizard() {
                 catalogHasOsmosis={currentStepInfo.modelType === "vendingAgua" || currentStepInfo.modelType === "mostrador"}
                 subtitleOverride={`${bundleId.replace(/-/g, " ")} • Paso ${step + 1} de ${stepsConfig.length}`}
                 titleOverride={
-                  <>
-                    Selecciona tu <br />
-                    <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-2 pt-0.5 overflow-visible">
-                      {currentStepInfo.title}
-                    </span>
-                  </>
+                  currentStepInfo.modelType === "vendingLimpieza" ? (
+                    <>
+                      <span className="block sm:whitespace-nowrap">Elige tu modelo</span>
+                      <span className="block pt-1 pb-1.5 leading-tight">
+                        <span className="text-[#031638]">de Darmax </span>
+                        <span className="bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] bg-clip-text text-transparent inline-block">
+                          Clean
+                        </span>
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="block sm:whitespace-nowrap">Selecciona tu</span>
+                      <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent block pt-1 pb-1.5 leading-tight">
+                        {currentStepInfo.title}
+                      </span>
+                    </>
+                  )
                 }
                 descriptionOverride={
                   currentStepInfo.modelType === "vendingAgua"

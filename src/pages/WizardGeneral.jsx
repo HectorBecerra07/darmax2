@@ -269,10 +269,18 @@ export default function WizardGeneral() {
       filteredByCategory = allModels.filter((m) => m.slug.toLowerCase().includes("megalodon"));
     }
 
+    let result = Array.isArray(filteredByCategory) ? filteredByCategory : [];
     if (id === "Vending" && vendingType) {
-      return filteredByCategory.filter((m) => m.vendingType === vendingType);
+      result = result.filter((m) => m?.vendingType === vendingType);
     }
-    return filteredByCategory;
+
+    return [...result].sort((a, b) => {
+      const isMaxA = (a?.slug || "").toLowerCase().includes("max") || (a?.name || "").toLowerCase().includes("max");
+      const isMaxB = (b?.slug || "").toLowerCase().includes("max") || (b?.name || "").toLowerCase().includes("max");
+      if (!isMaxA && isMaxB) return -1;
+      if (isMaxA && !isMaxB) return 1;
+      return (a?.basePrice || 0) - (b?.basePrice || 0);
+    });
   }, [id, vendingType, allModels, loadingModels]);
 
   const landingImages = useMemo(() => {
@@ -487,7 +495,7 @@ export default function WizardGeneral() {
                               <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#168387] transition-colors">
                                 ¿Quieres conocer más sobre ósmosis inversa?
                               </p>
-                              <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#168387]/10 text-[#168387] border border-[#168387]/20 group-hover:bg-[#168387] group-hover:text-white transition-colors shrink-0">
+                              <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#168387] text-white shadow-xs shrink-0">
                                 <span className="sm:hidden">Pulse aquí</span>
                                 <span className="hidden sm:inline">Da clic aquí</span>
                               </span>
