@@ -211,8 +211,10 @@ export default function BundleWizard() {
   useEffect(() => {
     if (!wizardContainerRef.current || loadingModels) return;
     const isMobile = window.innerWidth < 640;
+    const isTabletOrMobile = window.innerWidth < 1024;
+    const isExtras = stepsConfig[step]?.type === "extras";
 
-    if (isMobile) {
+    if (isMobile || (isExtras && isTabletOrMobile)) {
       window.scrollTo({ top: 0, behavior: "instant" });
       return;
     }
@@ -404,6 +406,8 @@ export default function BundleWizard() {
     exit: { opacity: 0 },
   };
 
+  const isExtrasStepView = currentStepInfo?.type === "extras";
+
   return (
     <div
       ref={wizardContainerRef}
@@ -417,8 +421,8 @@ export default function BundleWizard() {
         />
       </Helmet>
 
-      {/* Breadcrumbs en Cápsula */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-4 sm:mb-6">
+      {/* Breadcrumbs en Cápsula (Oculto en móvil/tablet durante los pasos configurables) */}
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 mb-4 sm:mb-6 ${isExtrasStepView ? "hidden lg:block" : ""}`}>
         <Breadcrumbs
           steps={breadcrumbSteps}
           currentStepIndex={step + 1}

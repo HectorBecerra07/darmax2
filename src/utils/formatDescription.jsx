@@ -32,7 +32,7 @@ export default function FormattedDescription({ text, className = "" }) {
 
   // Si no contiene caracteres de formato Markdown, renderizado simple y rápido
   if (!text.includes("**") && !text.includes("*") && !text.includes("#") && !text.includes("\n")) {
-    return <p className={`text-slate-500 text-xs sm:text-[13px] leading-relaxed ${className}`}>{text}</p>;
+    return <p className={`text-slate-600 text-[13px] sm:text-sm leading-relaxed ${className}`}>{text}</p>;
   }
 
   const lines = text.split(/\r?\n/);
@@ -44,7 +44,7 @@ export default function FormattedDescription({ text, className = "" }) {
       elements.push(
         <ul
           key={`ul-${elements.length}`}
-          className="my-1.5 space-y-1 pl-4 list-disc marker:text-[#168387] text-xs sm:text-[13px] leading-relaxed"
+          className="my-1.5 space-y-1 pl-4 list-disc marker:text-[#168387] text-[13px] sm:text-sm leading-relaxed"
         >
           {currentList.map((item, idx) => (
             <li key={idx} className="text-slate-600 pl-0.5">
@@ -72,7 +72,7 @@ export default function FormattedDescription({ text, className = "" }) {
       elements.push(
         <h5
           key={`h-${idx}`}
-          className="font-bold text-slate-800 text-xs sm:text-[13px] mt-2 mb-1"
+          className="font-bold text-slate-800 text-[13px] sm:text-sm mt-2 mb-1"
         >
           {parseInlineBold(headingText)}
         </h5>
@@ -92,7 +92,7 @@ export default function FormattedDescription({ text, className = "" }) {
     elements.push(
       <p
         key={`p-${idx}`}
-        className="text-slate-500 text-xs sm:text-[13px] leading-relaxed my-1"
+        className="text-slate-600 text-[13px] sm:text-sm leading-relaxed my-1"
       >
         {parseInlineBold(line)}
       </p>

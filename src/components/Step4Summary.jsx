@@ -29,18 +29,32 @@ const EXTERNAL_COTIZACIONES_FALLBACK_URL =
 const WHATSAPP_PHONE = "525519655369";
 
 /* Utilidades */
-const loadImageAsDataUrl = (src, maxDim = 1200, quality = 0.8) =>
+const drawRoundedRectPath = (ctx, x, y, w, h, r) => {
+  const radius = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + w - radius, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+  ctx.lineTo(x + w, y + h - radius);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+  ctx.lineTo(x + radius, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+};
+
+const loadImageAsDataUrl = (src, maxDim = 1200, quality = 0.8, cropOptions = null) =>
   new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
       try {
         const canvas = document.createElement("canvas");
-        let { naturalWidth: width, naturalHeight: height } = img;
-        if (!width || !height) {
-          width = img.width || 800;
-          height = img.height || 600;
-        }
+        const natW = img.naturalWidth || img.width || 800;
+        const natH = img.naturalHeight || img.height || 600;
+        let width = natW;
+        let height = natH;
 
         if (width > maxDim || height > maxDim) {
           if (width > height) {
@@ -56,13 +70,36 @@ const loadImageAsDataUrl = (src, maxDim = 1200, quality = 0.8) =>
         canvas.height = height;
         const ctx = canvas.getContext("2d");
 
-        // Fondo blanco para manejar transparencias y evitar fondo negro en JPEG
+        const radiusRatio = cropOptions?.borderRadiusRatio ?? 0;
+        if (radiusRatio > 0) {
+          ctx.clearRect(0, 0, width, height);
+          drawRoundedRectPath(ctx, 0, 0, width, height, Math.round(width * radiusRatio));
+          ctx.clip();
+        }
+
+        // Fondo blanco dentro del área visible para manejar transparencias
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, width, height);
 
-        ctx.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL("image/jpeg", quality);
-        resolve({ dataUrl, width, height });
+        const scale = cropOptions?.scale ?? 1;
+        if (scale > 1) {
+          const originX = cropOptions.originX ?? 0.5;
+          const originY = cropOptions.originY ?? 0.5;
+          const srcW = natW / scale;
+          const srcH = natH / scale;
+          const srcX = natW * originX * ((scale - 1) / scale);
+          const srcY = natH * originY * ((scale - 1) / scale);
+          ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, width, height);
+        } else {
+          ctx.drawImage(img, 0, 0, width, height);
+        }
+
+        const format = radiusRatio > 0 ? "PNG" : "JPEG";
+        const dataUrl =
+          format === "PNG"
+            ? canvas.toDataURL("image/png")
+            : canvas.toDataURL("image/jpeg", quality);
+        resolve({ dataUrl, width, height, format });
       } catch (err) {
         reject(err);
       }
@@ -70,6 +107,21 @@ const loadImageAsDataUrl = (src, maxDim = 1200, quality = 0.8) =>
     img.onerror = (err) => reject(err);
     img.src = src;
   });
+
+/** Carga la plantilla membretada en su resolución original sin recomprimirla. */
+const loadTemplateAsDataUrl = async (url) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`No se pudo cargar la plantilla (${response.status})`);
+  }
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
 
 export default function Step4Summary({
   summaryData, // Objeto completo con model, selectedExtras, displayImage, secondaryImage
@@ -173,6 +225,34 @@ export default function Step4Summary({
 
   const modelNameClean = normalizeText(model?.name);
   const modelSlugClean = normalizeText(model?.slug);
+
+  const isCleaning =
+    modelSlugClean.includes("clean") ||
+    modelSlugClean.includes("limpieza") ||
+    modelSlugClean.includes("vending5") ||
+    modelSlugClean.includes("vending8") ||
+    modelNameClean.includes("clean");
+
+  const isMostrador =
+    modelSlugClean.includes("neptuno") ||
+    modelSlugClean.includes("poseidon") ||
+    modelSlugClean.includes("mostrador") ||
+    modelSlugClean.includes("purificadora") ||
+    modelNameClean.includes("mostrador");
+
+  const showGiftInsteadOfCardImage = isCleaning || isMostrador;
+
+  const modelImagesList = model?.images || [];
+  const fallbackModelImage =
+    modelImagesList.find((img) => img.isSecondary && img.url)?.url ||
+    modelImagesList.find((img) => img.context === "CAROUSEL" && img.url)?.url ||
+    modelImagesList.find((img) => img.context === "MODEL_BASE" && img.url)?.url ||
+    modelImagesList.find((img) => img.url)?.url ||
+    null;
+
+  const cardPreviewImage = secondaryImage || displayImage || fallbackModelImage;
+  const vistaEquipoImage = displayImage || secondaryImage || fallbackModelImage;
+  const shouldZoomConfiguredView = Boolean(displayImage && !isCleaning);
 
   const isTouchAtlantis =
     modelSlugClean === "atlantistouch" ||
@@ -346,232 +426,361 @@ export default function Step4Summary({
     window.open(buildWhatsAppUrl(), "_blank");
   };
 
-  /* ====== PDF local con formato original ====== */
+  /* ====== PDF local con diseño de recuadros y membretado en alta calidad ====== */
   const generarPDF = async () => {
     try {
-      const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
-        import("jspdf"),
-        import("jspdf-autotable"),
-      ]);
-      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const { default: jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ unit: "mm", format: "letter" });
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
       const M = 15;
-      const CONTENT_TOP_MARGIN = 48; // Misma altura donde inicia el modelo seleccionado en pagina 1
-      const FOOTER_BOTTOM_MARGIN = 42; // Margen de seguridad para no encimar el pie de pagina
+      const contentW = pageW - M * 2;
+      const PAGE_TOP_FIRST = 47;
+      const PAGE_TOP_NEXT = 43;
+      const FOOTER_BOTTOM_MARGIN = 30;
       const MAX_CONTENT_Y = pageH - FOOTER_BOTTOM_MARGIN;
+      const CARD_RADIUS = 3.5;
 
-      let templateData = null;
+      let templateDataUrl = null;
       try {
-        templateData = await loadImageAsDataUrl("/img/Plantillas/coti_dar.jpg", 1200, 0.75);
+        templateDataUrl = await loadTemplateAsDataUrl("/img/Plantillas/coti_dar.jpg");
       } catch (err) {
         console.warn("No se pudo cargar la plantilla de fondo para el PDF:", err);
       }
 
-      const drawBackground = () => {
-        if (templateData?.dataUrl) {
-          doc.addImage(templateData.dataUrl, "JPEG", 0, 0, pageW, pageH, "bg_template", "FAST");
+      const drawPageChrome = () => {
+        if (templateDataUrl) {
+          doc.addImage(templateDataUrl, "JPEG", 0, 0, pageW, pageH, "bg_template", "NONE");
         }
+
+        // Título y subtítulo junto al logotipo (como en hoja de cotización Darmax Agua)
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(15);
+        doc.setTextColor("#111827");
+        doc.text("Cotización de Equipo", 55, 20.5);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10.5);
+        doc.setTextColor("#4b5563");
+        doc.text("Darmax Agua", 55, 26.5);
       };
 
-      // Dibujar fondo membretado en la primera pagina
-      drawBackground();
-
-      // Garantizar que toda pagina agregada (manual o por autoTable) conserve la hoja membretada
+      // Dibujar fondo y encabezado en la primera página y en cada página adicional
+      drawPageChrome();
       doc.internal.events.subscribe("addPage", () => {
-        drawBackground();
+        drawPageChrome();
       });
 
-      let y = 22;
+      const drawCardSurface = (cardY, cardH) => {
+        doc.setDrawColor(209, 213, 219);
+        doc.setLineWidth(0.35);
+        doc.roundedRect(M, cardY, contentW, cardH, CARD_RADIUS, CARD_RADIUS, "S");
+      };
 
-      const ensureSpace = (need = 8) => {
+      const drawCardHeader = (cardY, title, rightTag = "") => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10.5);
+        doc.setTextColor("#111827");
+        doc.text(title, M + 5, cardY + 7);
+
+        if (rightTag) {
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8.5);
+          doc.setTextColor("#0f766e");
+          doc.text(rightTag, pageW - M - 5, cardY + 7, { align: "right" });
+        }
+
+        doc.setDrawColor(229, 231, 235);
+        doc.setLineWidth(0.25);
+        doc.line(M + 5, cardY + 10.5, pageW - M - 5, cardY + 10.5);
+      };
+
+      // Fecha de emisión debajo de la barra superior
+      const fechaEmision = new Date().toLocaleDateString("es-MX", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      doc.setFontSize(9.5);
+      doc.setTextColor("#111827");
+      const fechaLabel = "Fecha: ";
+      doc.setFont("helvetica", "normal");
+      const fechaDateW = doc.getTextWidth(fechaEmision);
+      doc.text(fechaEmision, pageW - M, 41.5, { align: "right" });
+      doc.setFont("helvetica", "bold");
+      doc.text(fechaLabel, pageW - M - fechaDateW, 41.5, { align: "right" });
+
+      let y = PAGE_TOP_FIRST;
+
+      const ensureSpace = (need = 10) => {
         if (y + need > MAX_CONTENT_Y) {
           doc.addPage();
-          y = CONTENT_TOP_MARGIN;
+          y = PAGE_TOP_NEXT;
         }
       };
 
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(26);
-      doc.setTextColor("#000");
-      doc.text("DARMAX", pageW / 2, y, { align: "center" });
-      y += 10;
-      doc.setFontSize(18);
-      doc.setTextColor("#666");
-      doc.text(
-        cotizacionResult?.folio ? `Cotización #${cotizacionResult.folio}` : "Cotización de Equipo",
-        pageW / 2,
-        y,
-        { align: "center" }
-      );
-      y += 15;
+      const drawListCard = ({ title, items, rightTag = "", bulletColor = BRAND_BLUE }) => {
+        if (!items || items.length === 0) return;
 
-      // Info del Cliente si existe
-      if (cliente.nombre) {
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(BRAND_BLUE);
-        doc.text(`Cliente: ${cliente.nombre}`, M, y);
-        if (cliente.cp) {
-          doc.text(`C.P.: ${cliente.cp}`, pageW - M, y, { align: "right" });
-        }
-        y += 6;
-      }
-
-      doc.setFontSize(14);
-      doc.setTextColor("#111");
-      doc.text("Modelo seleccionado:", M, y);
-      y += 7;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(16);
-      doc.setTextColor(BRAND_BLUE);
-      doc.text(`${model.name}`, M, y);
-      doc.text(`$${toMoney(precioBaseModelo)} MXN`, pageW - M, y, { align: "right" });
-      y += 8;
-
-      if (model?.description) {
+        const textWidth = contentW - 16;
+        const lineH = 4.2;
+        const itemGap = 1.6;
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(10);
-        doc.setTextColor("#444");
-        const descLines = doc.splitTextToSize(model.description, pageW - M * 2);
-        doc.text(descLines, M, y);
-        y += descLines.length * 5 + 5;
-      }
-
-      if (realFeatures.length > 0) {
-        ensureSpace(20);
-        autoTable(doc, {
-          startY: y,
-          head: [[{ content: specsTitle, colSpan: 1 }]],
-          body: realFeatures.map((f) => [f]),
-          theme: "striped",
-          headStyles: { fillColor: BRAND_BLUE, textColor: 255, fontStyle: "bold" },
-          styles: { fontSize: 9, cellPadding: 2 },
-          margin: { left: M, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
-        });
-        y = doc.lastAutoTable.finalY + 8;
-      }
-
-      if (regalosPaquete.length > 0) {
-        ensureSpace(20);
-        autoTable(doc, {
-          startY: y,
-          head: [[{ content: "Regalo incluido en el paquete", colSpan: 1 }]],
-          body: regalosPaquete.map((regalo) => [`• ${regalo}`]),
-          theme: "striped",
-          headStyles: { fillColor: "#0f766e", textColor: 255, fontStyle: "bold" },
-          styles: { fontSize: 8.5, cellPadding: 2 },
-          margin: { left: M, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
-        });
-        y = doc.lastAutoTable.finalY + 8;
-      }
-
-      if (realRequirements.length > 0) {
-        ensureSpace(20);
-        autoTable(doc, {
-          startY: y,
-          head: [["Requerimiento", "Descripción"]],
-          body: realRequirements.map((r) => [r.title, r.desc]),
-          theme: "grid",
-          headStyles: { fillColor: "#333", textColor: 255 },
-          styles: { fontSize: 8, cellPadding: 2 },
-          columnStyles: { 0: { fontStyle: "bold", width: 40 } },
-          margin: { left: M, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
-        });
-        y = doc.lastAutoTable.finalY + 8;
-      }
-
-      if (selectedExtras.length > 0) {
-        ensureSpace(20);
-        autoTable(doc, {
-          startY: y,
-          head: [["Extras Adicionales", "Precio"]],
-          body: selectedExtras.map((e) => [
-            e.extra.name,
-            `$${toMoney(e.priceOverride ?? e.extra.basePrice)} MXN`,
-          ]),
-          theme: "plain",
-          headStyles: { textColor: "#000", fontStyle: "bold", borderBottom: { width: 0.5, color: "#ccc" } },
-          styles: { fontSize: 9 },
-          columnStyles: { 1: { halign: "right" } },
-          margin: { left: M, right: M, top: CONTENT_TOP_MARGIN, bottom: FOOTER_BOTTOM_MARGIN },
-        });
-        y = doc.lastAutoTable.finalY + 6;
-      }
-
-      ensureSpace(38);
-      y += 5;
-      doc.setDrawColor("#eee");
-      doc.line(M, y, pageW - M, y);
-      y += 8;
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      doc.setTextColor("#555");
-      doc.text("Subtotal Equipo:", M, y);
-      doc.text(`$${toMoney(precioBaseModelo)} MXN`, pageW - M, y, { align: "right" });
-      y += 6;
-      doc.text("Total Extras:", M, y);
-      doc.text(`$${toMoney(precioExtras)} MXN`, pageW - M, y, { align: "right" });
-      y += 8;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(16);
-      doc.setTextColor("#000");
-      doc.text("Inversión Total Estimada:", M, y);
-      doc.text(`$${toMoney(precioTotal)} MXN`, pageW - M, y, { align: "right" });
-      y += 12;
-
-      if (importantNote) {
-        ensureSpace(25);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.setTextColor("#d97706");
-        doc.text("Nota Importante:", M, y);
-        y += 5;
-        doc.setFont("helvetica", "italic");
         doc.setFontSize(9);
+
+        const prepared = items.map((item) => {
+          const lines = doc.splitTextToSize(String(item), textWidth);
+          return {
+            lines,
+            height: lines.length * lineH + itemGap,
+          };
+        });
+
+        let idx = 0;
+        let partIndex = 0;
+        while (idx < prepared.length) {
+          const headerSpace = 13.5;
+          const bottomPad = 3.5;
+          if (y + headerSpace + prepared[idx].height + bottomPad > MAX_CONTENT_Y) {
+            doc.addPage();
+            y = PAGE_TOP_NEXT;
+          }
+
+          const available = MAX_CONTENT_Y - y - headerSpace - bottomPad;
+          const chunk = [];
+          let usedH = 0;
+          while (idx < prepared.length && (chunk.length === 0 || usedH + prepared[idx].height <= available)) {
+            chunk.push(prepared[idx]);
+            usedH += prepared[idx].height;
+            idx++;
+          }
+
+          const cardH = headerSpace + usedH + bottomPad;
+          const cardTitle = partIndex === 0 ? title : `${title} (cont.)`;
+          drawCardSurface(y, cardH);
+          drawCardHeader(y, cardTitle, partIndex === 0 ? rightTag : "");
+
+          let rowY = y + 15.5;
+          chunk.forEach((entry) => {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(9.5);
+            doc.setTextColor(bulletColor);
+            doc.text("•", M + 5.5, rowY);
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor("#1f2937");
+            doc.text(entry.lines, M + 9.5, rowY);
+            rowY += entry.height;
+          });
+
+          y += cardH + 5;
+          partIndex++;
+        }
+      };
+
+      // 1. Recuadro: Cotización (Modelo + Extras + Totales)
+      const conceptoRows = [
+        {
+          label: `Modelo: ${model.name}`,
+          detail: model?.description || "",
+          price: `$${toMoney(precioBaseModelo)} MXN`,
+        },
+        ...selectedExtras.map((e) => ({
+          label: e.extra?.name || e.name || "Extra",
+          detail: "",
+          price: `$${toMoney(e.priceOverride ?? e.extra?.basePrice)} MXN`,
+        })),
+      ];
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      const preparedConceptos = conceptoRows.map((row) => {
+        const labelLines = doc.splitTextToSize(row.label, contentW - 46);
+        const detailLines = row.detail
+          ? doc.splitTextToSize(row.detail, contentW - 46)
+          : [];
+        const h =
+          labelLines.length * 4.2 +
+          (detailLines.length > 0 ? detailLines.length * 3.8 + 1 : 0) +
+          2.8;
+        return { ...row, labelLines, detailLines, height: h };
+      });
+
+      const conceptosHeight = preparedConceptos.reduce((acc, r) => acc + r.height, 0);
+      const totalsFooterH = 22;
+      const cotizacionCardH = 18 + conceptosHeight + totalsFooterH;
+      ensureSpace(Math.min(cotizacionCardH + 5, MAX_CONTENT_Y - PAGE_TOP_NEXT));
+
+      // Si toda la tarjeta cabe en la página actual la dibujamos en un solo recuadro elegante
+      if (y + cotizacionCardH <= MAX_CONTENT_Y) {
+        drawCardSurface(y, cotizacionCardH);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10.5);
+        doc.setTextColor("#111827");
+        doc.text("Cotización", M + 5, y + 7);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor("#374151");
+        doc.text("Concepto", M + 5, y + 13);
+        doc.text("Precio", pageW - M - 5, y + 13, { align: "right" });
+
+        doc.setDrawColor(229, 231, 235);
+        doc.setLineWidth(0.25);
+        doc.line(M + 5, y + 15.5, pageW - M - 5, y + 15.5);
+
+        let rowY = y + 20.5;
+        preparedConceptos.forEach((row, index) => {
+          doc.setFont("helvetica", index === 0 ? "bold" : "normal");
+          doc.setFontSize(9);
+          doc.setTextColor("#111827");
+          doc.text(row.labelLines, M + 5, rowY);
+
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor("#0b4e5f");
+          doc.text(row.price, pageW - M - 5, rowY, { align: "right" });
+
+          let nextY = rowY + row.labelLines.length * 4.2;
+          if (row.detailLines.length > 0) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8);
+            doc.setTextColor("#6b7280");
+            doc.text(row.detailLines, M + 5, nextY + 0.5);
+            nextY += row.detailLines.length * 3.8 + 1;
+          }
+          rowY = nextY + 2.8;
+        });
+
+        doc.setDrawColor(209, 213, 219);
+        doc.line(M + 5, rowY - 0.5, pageW - M - 5, rowY - 0.5);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor("#111827");
+        doc.text("Inversión Total Estimada", M + 5, rowY + 6.5);
+        doc.setTextColor("#0f766e");
+        doc.text(`$${toMoney(precioTotal)} MXN`, pageW - M - 5, rowY + 6.5, { align: "right" });
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor("#6b7280");
+        doc.text(
+          "*Fletes y viáticos a cotizar según tu ubicación. Válido por 7 días a partir de la fecha de emisión.",
+          M + 5,
+          rowY + 12.5
+        );
+
+        y += cotizacionCardH + 5;
+      } else {
+        // Fallback paginado si hubiera muchos extras
+        drawListCard({
+          title: "Cotización — Conceptos y Precios",
+          items: conceptoRows.map((r) => `${r.label} — ${r.price}`),
+        });
+        ensureSpace(24);
+        drawCardSurface(y, 20);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor("#111827");
+        doc.text("Inversión Total Estimada", M + 5, y + 8.5);
+        doc.setTextColor("#0f766e");
+        doc.text(`$${toMoney(precioTotal)} MXN`, pageW - M - 5, y + 8.5, { align: "right" });
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor("#6b7280");
+        doc.text(
+          "*Fletes y viáticos a cotizar según tu ubicación. Válido por 7 días a partir de la fecha de emisión.",
+          M + 5,
+          y + 14.5
+        );
+        y += 25;
+      }
+
+      // 3. Recuadro en lista: Características técnicas del gabinete
+      drawListCard({
+        title: specsTitle,
+        items: realFeatures,
+        bulletColor: BRAND_BLUE,
+      });
+
+      // 4. Recuadro en lista: Regalo incluido en el paquete
+      drawListCard({
+        title: "Regalo incluido en el paquete",
+        items: regalosPaquete,
+        rightTag: "100% Bonificado",
+        bulletColor: "#0f766e",
+      });
+
+      // 5. Recuadro en lista: Requerimientos de Instalación
+      drawListCard({
+        title: "Requerimientos de Instalación",
+        items: realRequirements.map((r) => `${r.title}: ${r.desc}`),
+        bulletColor: "#334155",
+      });
+
+      // 6. Nota Importante (si aplica)
+      if (importantNote) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        const noteLines = doc.splitTextToSize(importantNote, contentW - 12);
+        const noteCardH = 14 + noteLines.length * 4;
+        ensureSpace(noteCardH + 5);
+
+        doc.setDrawColor(245, 158, 11);
+        doc.setLineWidth(0.35);
+        doc.roundedRect(M, y, contentW, noteCardH, CARD_RADIUS, CARD_RADIUS, "S");
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.setTextColor("#b45309");
+        doc.text("Nota Importante", M + 5, y + 6.5);
+
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(8.5);
         doc.setTextColor("#92400e");
-        const noteLines = doc.splitTextToSize(importantNote, pageW - M * 2);
-        doc.text(noteLines, M, y);
-        y += noteLines.length * 4 + 8;
+        doc.text(noteLines, M + 5, y + 11.5);
+        y += noteCardH + 5;
       }
 
-      if (displayImage || secondaryImage) {
-        if (displayImage) {
-          try {
-            const img1 = await loadImageAsDataUrl(displayImage, 800, 0.8);
-            const pW = 100;
-            const img1H = (img1.height / img1.width) * pW;
-            ensureSpace(img1H + 10);
-            const pX = (pageW - pW) / 2;
-            doc.addImage(img1.dataUrl, "JPEG", pX, y, pW, img1H, undefined, "FAST");
-            y += img1H + 8;
-          } catch (e) {
-            console.error("Error cargando imagen principal para PDF:", e);
-          }
-        }
-        if (secondaryImage) {
-          try {
-            const img2 = await loadImageAsDataUrl(secondaryImage, 800, 0.8);
-            const sW = 70;
-            const img2H = (img2.height / img2.width) * sW;
-            ensureSpace(img2H + 10);
-            const sX = (pageW - sW) / 2;
-            doc.addImage(img2.dataUrl, "JPEG", sX, y, sW, img2H, undefined, "FAST");
-            y += img2H + 8;
-          } catch (e) {
-            console.error("Error cargando imagen secundaria para PDF:", e);
-          }
+      // 7. Recuadro: Vistas de Equipo
+      if (vistaEquipoImage) {
+        const previewSrc = vistaEquipoImage;
+        const pW = Math.min(155, contentW - 12);
+        const imgRadiusMm = 4.5;
+        const cropOptions = {
+          ...(shouldZoomConfiguredView ? { scale: 1.14, originX: 0.7, originY: 0.9 } : { scale: 1 }),
+          borderRadiusRatio: imgRadiusMm / pW,
+        };
+        try {
+          const img = await loadImageAsDataUrl(previewSrc, 1400, 0.9, cropOptions);
+          const imgH = (img.height / img.width) * pW;
+          const imgCardH = 16 + imgH + 5;
+          ensureSpace(imgCardH + 5);
+
+          drawCardSurface(y, imgCardH);
+          drawCardHeader(y, "Vista de Equipo Configurado", model.name);
+
+          const pX = (pageW - pW) / 2;
+          const imgY = y + 13.5;
+          doc.addImage(img.dataUrl, img.format || "PNG", pX, imgY, pW, imgH, undefined, "MEDIUM");
+          doc.setDrawColor(203, 213, 225);
+          doc.setLineWidth(0.35);
+          doc.roundedRect(pX, imgY, pW, imgH, imgRadiusMm, imgRadiusMm, "S");
+          y += imgCardH + 5;
+        } catch (e) {
+          console.error("Error cargando imagen para PDF:", e);
         }
       }
 
-      // Numeracion de paginas en el pie de pagina
+      // Numeración de páginas en esquina inferior derecha sin encimarse con el pie membretado
       const totalPages = doc.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
         doc.setFont("helvetica", "normal");
         doc.setFontSize(8);
-        doc.setTextColor("#777");
-        doc.text(`Página ${i} de ${totalPages}`, pageW - M, pageH - 10, { align: "right" });
+        doc.setTextColor("#6b7280");
+        doc.text(`Página ${i} de ${totalPages}`, pageW - M, pageH - 11, { align: "right" });
       }
 
       doc.save(
@@ -630,75 +839,89 @@ export default function Step4Summary({
           </p>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {/* Características Técnicas / Gabinete */}
-          <div className="space-y-4">
-            <p className="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider">
-              <span className="w-1.5 h-5 bg-[#168387] rounded-full" />
-              {specsTitle}
-            </p>
-            <ul className="grid grid-cols-1 gap-2.5">
-              {realFeatures.map((c, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600 font-medium">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#24d4da] mt-2 shrink-0" />
-                  <span>{c}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Columna derecha al lado de Características: Imagen secondary de la vending */}
-          <div className="p-6 bg-gradient-to-b from-slate-50/90 to-white rounded-3xl border border-slate-200/80 shadow-sm flex flex-col items-center justify-between text-center space-y-4 h-full">
-            <div className="w-full flex-1 flex items-center justify-center p-2 min-h-[260px]">
-              {(secondaryImage || displayImage) ? (
-                <img
-                  src={optimizeCloudinaryUrl(secondaryImage || displayImage, 800)}
-                  alt={model.name}
-                  loading="lazy"
-                  decoding="async"
-                  className="max-h-72 sm:max-h-80 w-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-300"
-                />
-              ) : (
-                <div className="text-slate-300 text-xs italic">Vista no disponible</div>
-              )}
-            </div>
-
-            {/* Solo se muestra si es Vending Touch Atlantis 300 Max o Vending Touch Atlantis 300 */}
-            {isTouchAtlantis && (
-              <div className="pt-3 border-t border-slate-100 w-full space-y-1.5">
-                <p className="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
-                  Garantiza agua de calidad Premium en cada gota y marca la diferencia con la innovadora pantalla touch.
+        {(() => {
+          const regaloCard = (isCompactCol = false) => (
+            <div className="p-5 sm:p-6 bg-gradient-to-br from-teal-50/70 via-white to-cyan-50/50 border border-teal-100 rounded-3xl space-y-4 shadow-sm h-full">
+              <div className="flex items-center justify-between gap-2 border-b border-teal-100/80 pb-3">
+                <p className="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider">
+                  <span className="w-1.5 h-5 bg-[#24d4da] rounded-full" />
+                  Regalo incluido en el paquete:
                 </p>
-                <p className="text-xs font-black text-blue-600 uppercase tracking-wider">
-                  Nuevo modelo
-                </p>
+                <span className="px-2.5 py-0.5 rounded-full bg-teal-600/10 text-teal-700 text-[10px] font-black uppercase tracking-wider shrink-0">
+                  100% Bonificado
+                </span>
               </div>
-            )}
-          </div>
-        </div>
+              <ul className={`grid grid-cols-1 ${isCompactCol ? "" : "md:grid-cols-2"} gap-3`}>
+                {regalosPaquete.map((regalo, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                    <div className="w-4 h-4 rounded-full bg-teal-100 text-[#168387] flex items-center justify-center shrink-0 mt-0.5">
+                      <CheckIcon className="w-2.5 h-2.5 stroke-[3]" />
+                    </div>
+                    <span>{regalo}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
 
-        {/* Regalo incluido en el paquete */}
-        <div className="p-5 sm:p-6 bg-gradient-to-br from-teal-50/70 via-white to-cyan-50/50 border border-teal-100 rounded-3xl space-y-4 shadow-sm">
-          <div className="flex items-center justify-between gap-2 border-b border-teal-100/80 pb-3">
-            <p className="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider">
-              <span className="w-1.5 h-5 bg-[#24d4da] rounded-full" />
-              Regalo incluido en el paquete:
-            </p>
-            <span className="px-2.5 py-0.5 rounded-full bg-teal-600/10 text-teal-700 text-[10px] font-black uppercase tracking-wider shrink-0">
-              100% Bonificado
-            </span>
-          </div>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {regalosPaquete.map((regalo, idx) => (
-              <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-                <div className="w-4 h-4 rounded-full bg-teal-100 text-[#168387] flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckIcon className="w-2.5 h-2.5 stroke-[3]" />
+          return (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                {/* Características Técnicas / Gabinete */}
+                <div className="space-y-4">
+                  <p className="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider">
+                    <span className="w-1.5 h-5 bg-[#168387] rounded-full" />
+                    {specsTitle}
+                  </p>
+                  <ul className="grid grid-cols-1 gap-2.5">
+                    {realFeatures.map((c, i) => (
+                      <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600 font-medium">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#24d4da] mt-2 shrink-0" />
+                        <span>{c}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <span>{regalo}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+
+                {/* Columna derecha: en limpieza y mostrador muestra Regalo incluido; en vending de agua muestra imagen del equipo */}
+                {showGiftInsteadOfCardImage ? (
+                  regaloCard(true)
+                ) : (
+                  <div className="p-6 bg-gradient-to-b from-slate-50/90 to-white rounded-3xl border border-slate-200/80 shadow-sm flex flex-col items-center justify-between text-center space-y-4 h-full">
+                    <div className="w-full flex-1 flex items-center justify-center p-2 min-h-[260px]">
+                      {cardPreviewImage ? (
+                        <img
+                          src={optimizeCloudinaryUrl(cardPreviewImage, 800)}
+                          alt={model.name}
+                          loading="lazy"
+                          decoding="async"
+                          className="max-h-72 sm:max-h-80 w-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="text-slate-300 text-xs italic">Vista no disponible</div>
+                      )}
+                    </div>
+
+                    {/* Solo se muestra si es Vending Touch Atlantis 300 Max o Vending Touch Atlantis 300 */}
+                    {isTouchAtlantis && (
+                      <div className="pt-3 border-t border-slate-100 w-full space-y-1.5">
+                        <p className="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
+                          Garantiza agua de calidad Premium en cada gota y marca la diferencia con la innovadora pantalla touch.
+                        </p>
+                        <p className="text-xs font-black text-blue-600 uppercase tracking-wider">
+                          Nuevo modelo
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Regalo incluido en el paquete (debajo a ancho completo en vending de agua) */}
+              {!showGiftInsteadOfCardImage && regaloCard(false)}
+            </>
+          );
+        })()}
 
         {realRequirements.length > 0 && (
           <div className="pt-6 border-t border-slate-100">
@@ -716,8 +939,8 @@ export default function Step4Summary({
           </div>
         )}
 
-        {/* Vistas de Equipo: Solo vista frontal a ancho completo, sin tag */}
-        {(displayImage || secondaryImage) && (
+        {/* Vistas de Equipo: Marco ajustado y acercamiento consistente con el Paso 3 */}
+        {vistaEquipoImage && (
           <div className="pt-8 border-t border-slate-100 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <p className="font-bold text-slate-900 flex items-center gap-2 text-sm uppercase tracking-wider">
@@ -730,14 +953,20 @@ export default function Step4Summary({
             </div>
 
             <div className="w-full">
-              <div className="relative group bg-slate-50/80 hover:bg-slate-50 rounded-3xl p-6 sm:p-10 flex flex-col items-center justify-center border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 w-full min-h-[320px] sm:min-h-[420px]">
-                <img
-                  src={optimizeCloudinaryUrl(displayImage || secondaryImage, 1200)}
-                  alt={model.name}
-                  loading="lazy"
-                  decoding="async"
-                  className="max-h-80 sm:max-h-[420px] w-auto object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
-                />
+              <div className="group border-2 border-slate-200/90 rounded-[36px] shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden bg-gradient-to-b from-white via-white to-[#f1f5f9] p-1.5 w-full">
+                <div className="relative w-full overflow-hidden rounded-[28px] flex items-center justify-center">
+                  <img
+                    src={optimizeCloudinaryUrl(vistaEquipoImage, 1200)}
+                    alt={model.name}
+                    loading="lazy"
+                    decoding="async"
+                    className={`w-full h-auto object-contain block transition-transform duration-500 ${
+                      shouldZoomConfiguredView
+                        ? "max-h-[460px] sm:max-h-[620px] scale-[1.14] group-hover:scale-[1.17] origin-[70%_90%]"
+                        : "max-h-[340px] sm:max-h-[420px] scale-100 group-hover:scale-105 origin-center"
+                    }`}
+                  />
+                </div>
               </div>
             </div>
           </div>

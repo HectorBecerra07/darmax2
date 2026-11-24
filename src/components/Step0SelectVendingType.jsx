@@ -75,7 +75,7 @@ function VendingTypeCard({
     >
       {/* FRENTE DE LA TARJETA */}
       <div
-        className={`absolute inset-0 w-full h-full bg-white border border-slate-200/90 rounded-[2rem] p-5 sm:p-6 shadow-sm hover:border-[#24d4da] hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between overflow-hidden ${
+        className={`absolute inset-0 w-full h-full bg-white border border-slate-200/80 rounded-[2rem] p-5 sm:p-6 shadow-sm hover:border-[#199ea5]/60 hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden ${
           isFlipped ? "pointer-events-none" : "pointer-events-auto"
         }`}
         style={{
@@ -83,10 +83,17 @@ function VendingTypeCard({
           WebkitBackfaceVisibility: "hidden",
         }}
       >
+        {/* Badge superior derecho: Nuevo modelo */}
+        <div className="shrink-0 flex items-center justify-end w-full mb-1">
+          <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#b0cd34] text-[#1a2e05] text-[10px] sm:text-[11px] font-black uppercase tracking-wider shadow-2xs">
+            Nuevo modelo
+          </span>
+        </div>
+
         {/* Imagen y Titulo centrados verticalmente en el cuerpo de la tarjeta */}
-        <div className="flex-1 flex flex-col items-center justify-center text-center w-full min-h-0 py-1 sm:py-2">
+        <div className="flex-1 flex flex-col items-center justify-center text-center w-full min-h-0 py-1 sm:py-1.5">
           <div 
-            className="relative w-full h-[235px] sm:h-60 flex items-center justify-center cursor-pointer group/img"
+            className="relative w-full h-[215px] sm:h-[225px] flex items-center justify-center cursor-pointer group/img"
             onClick={(e) => onToggleFlip(type, e)}
             title="Haz clic para ver especificaciones"
           >
@@ -100,30 +107,30 @@ function VendingTypeCard({
           </div>
 
           <div className="mt-2.5 sm:mt-4">
-            <h3 className="text-2xl sm:text-[26px] lg:text-3xl font-semibold text-slate-900 tracking-tight">
+            <h3 className="text-2xl sm:text-[26px] lg:text-3xl font-bold text-slate-900 tracking-tight">
               {displayNames[type]}
             </h3>
-            <p className="text-sm sm:text-xs text-slate-500 font-semibold mt-0.5">
+            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5 capitalize">
               {details.subtitle ? details.subtitle.replace(/[()]/g, "").trim() : ""}
             </p>
           </div>
         </div>
 
         {/* Botones de accion */}
-        <div className="space-y-2 w-full pt-3 shrink-0">
+        <div className="space-y-2.5 w-full pt-3 shrink-0">
           <button
             type="button"
             onClick={(e) => onToggleFlip(type, e)}
-            className="w-full py-2.5 px-4 rounded-full bg-slate-50 hover:bg-cyan-50/70 hover:text-[#168387] text-slate-700 text-xs font-bold border border-slate-200/80 hover:border-cyan-200 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+            className="w-full py-2.5 px-4 rounded-full bg-slate-50 hover:bg-cyan-50/70 hover:text-[#007481] text-slate-700 text-xs font-semibold border border-slate-200/90 hover:border-cyan-200 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
           >
-            <ArrowPathIcon className="w-3.5 h-3.5 text-[#168387]" />
+            <ArrowPathIcon className="w-3.5 h-3.5 text-[#007481]" />
             <span>Ver especificaciones completas</span>
           </button>
 
           <button
             type="button"
             onClick={() => onSelect(type)}
-            className="w-full py-3 sm:py-3.5 px-5 rounded-full bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] hover:brightness-110 text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md shadow-[#022447]/20 hover:shadow-lg hover:shadow-[#01949f]/30 active:scale-98 flex items-center justify-center gap-2 group/btn cursor-pointer"
+            className="w-full py-3 sm:py-3.5 px-5 rounded-full bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] hover:brightness-110 active:scale-98 text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 shadow-md shadow-[#022447]/20 hover:shadow-lg hover:shadow-[#01949f]/30 flex items-center justify-center gap-2 group/btn cursor-pointer"
           >
             <span>Configurar vending</span>
             <ChevronRightIcon className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -131,9 +138,9 @@ function VendingTypeCard({
         </div>
       </div>
 
-      {/* REVERSO DE LA TARJETA */}
+      {/* REVERSO DE LA TARJETA (FICHA TÉCNICA) */}
       <div
-        className={`absolute inset-0 w-full h-full bg-white border border-slate-200/90 rounded-[2rem] p-5 sm:p-6 shadow-2xl flex flex-col justify-between overflow-hidden ${
+        className={`absolute inset-0 w-full h-full bg-white border border-slate-200/80 rounded-[2rem] p-5 sm:p-6 shadow-2xl flex flex-col justify-between overflow-hidden ${
           isFlipped ? "pointer-events-auto" : "pointer-events-none"
         }`}
         style={{
@@ -143,18 +150,15 @@ function VendingTypeCard({
         }}
       >
         {/* Barra superior de la ficha tecnica */}
-        <div className="flex items-center justify-between w-full pb-2 border-b border-slate-100 gap-2 shrink-0">
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#168387] block">
-                Ficha Técnica
-              </span>
-              <span className="w-3.5 h-0.5 rounded-full shrink-0 bg-[#168387]" />
-            </div>
-            <h3 className="text-sm sm:text-base font-semibold text-slate-900 leading-tight whitespace-nowrap truncate">
+        <div className="flex items-start justify-between w-full pb-2.5 border-b border-slate-100 gap-2 shrink-0">
+          <div className="min-w-0 flex-1 text-left">
+            <span className="text-[11px] font-black uppercase tracking-widest text-[#007481] block mb-1">
+              FICHA TÉCNICA
+            </span>
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
               Modelo {displayNames[type]}
             </h3>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 font-semibold leading-tight mt-0.5">
+            <p className="text-xs sm:text-sm font-semibold text-[#007481] mt-0.5">
               {details.subtitle}
             </p>
           </div>
@@ -162,40 +166,51 @@ function VendingTypeCard({
           <button
             type="button"
             onClick={(e) => onToggleFlip(type, e)}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
-            title="Ver foto del modelo"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap mt-1"
+            title="Volver a foto del modelo"
           >
             <ArrowPathIcon className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-            <span>Ver foto</span>
+            <span>Volver a foto</span>
           </button>
         </div>
 
         {/* Contenido scrolleable: Resumen de uso / Perfil recomendado + lista de especificaciones */}
         <div className="flex-1 overflow-y-auto pr-1.5 sm:pr-2 my-2 space-y-2.5 text-left min-h-0 scrollbar-vending-ficha">
           {/* Resumen de uso / Perfil recomendado */}
-          <div className={`p-2.5 sm:p-3 rounded-xl border text-left ${
-            type === VendingTypeEnum.TOUCH
-              ? "bg-cyan-50/70 border-cyan-200/70"
-              : "bg-amber-50/80 border-amber-200/80"
-          }`}>
-            <span className={`text-[10px] font-black uppercase tracking-wider block mb-1 ${
-              type === VendingTypeEnum.TOUCH ? "text-[#168387]" : "text-amber-800"
-            }`}>
+          <div className="p-3 sm:p-3.5 rounded-2xl border text-left bg-[#eefbfb] border-cyan-100">
+            <span className="text-[10px] font-black uppercase tracking-wider block mb-1 text-[#007481]">
               {details.recommendationTitle}
             </span>
-            <p className="text-[11px] sm:text-xs text-slate-700 leading-relaxed font-medium whitespace-pre-line">
+            <p className="text-[10px] sm:text-[11px] text-slate-600 leading-relaxed font-normal whitespace-pre-line">
               {details.recommendation}
             </p>
           </div>
 
           {/* Lista de especificaciones tecnicas */}
           <div className="space-y-1.5 pt-0.5">
-            {details.features.map((feature, idx) => (
-              <div key={idx} className="flex items-start gap-2 text-[11px] sm:text-xs text-slate-700 leading-snug">
-                <CheckCircleIcon className="w-4 h-4 text-[#168387] shrink-0 mt-0.5" />
-                <span className="font-medium">{feature}</span>
-              </div>
-            ))}
+            {details.features.map((feature, idx) => {
+              const regex = /(\((?:opci[óo]nal|opcional)\s+4\s+modos\s+de\s+llenado\s+adicionales\s+para\s+agua\s+alcalina\s+con\s+costo\s+extra\)\.?)/i;
+              const match = feature.match(regex);
+              if (match) {
+                const parts = feature.split(regex);
+                return (
+                  <div key={idx} className="flex items-start gap-2 text-[10px] sm:text-[11px] text-slate-600 leading-snug">
+                    <CheckCircleIcon className="w-4 h-4 text-[#007481] shrink-0 mt-0.5" />
+                    <span className="font-normal text-slate-600">
+                      {parts[0]}
+                      <span className="font-semibold text-slate-800">{parts[1]}</span>
+                      {parts[2]}
+                    </span>
+                  </div>
+                );
+              }
+              return (
+                <div key={idx} className="flex items-start gap-2 text-[10px] sm:text-[11px] text-slate-600 leading-snug">
+                  <CheckCircleIcon className="w-4 h-4 text-[#007481] shrink-0 mt-0.5" />
+                  <span className="font-normal text-slate-600">{feature}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -204,7 +219,7 @@ function VendingTypeCard({
           <button
             type="button"
             onClick={() => onSelect(type)}
-            className="w-full py-3 sm:py-3.5 px-5 rounded-full bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] hover:brightness-110 text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md shadow-[#022447]/20 hover:shadow-lg hover:shadow-[#01949f]/30 active:scale-98 flex items-center justify-center gap-2 group/btn cursor-pointer"
+            className="w-full py-3 sm:py-3.5 px-5 rounded-full bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] hover:brightness-110 active:scale-98 text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 shadow-md shadow-[#022447]/20 hover:shadow-lg hover:shadow-[#01949f]/30 flex items-center justify-center gap-2 group/btn cursor-pointer"
           >
             <span>Configurar vending</span>
             <ChevronRightIcon className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -281,31 +296,29 @@ export default function Step0SelectVendingType({ onSelect, availableVendingTypes
       <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12 xl:gap-16 px-4 sm:px-8">
         
         {/* Titulo a la Izquierda */}
-        <div className="w-full lg:w-[38%] xl:w-[35%] text-center lg:text-left space-y-3 lg:sticky lg:top-40">
-          <h2 className="font-montserrat not-italic text-3xl sm:text-4xl lg:text-[45px] xl:text-[52px] 2xl:text-[57px] font-bold tracking-tight leading-tight text-[#031638]">
-            <span className="block sm:whitespace-nowrap">Selecciona tu</span>
-            <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent block pt-1 pb-1.5 leading-tight">
-              vending
+        <div className="w-full lg:w-[38%] xl:w-[35%] text-center lg:text-left space-y-4 lg:sticky lg:top-40">
+          <h2 className="font-montserrat not-italic text-3xl sm:text-4xl lg:text-[45px] xl:text-[52px] font-extrabold tracking-tight leading-tight text-slate-900">
+            <span className="block">Selecciona</span>
+            <span className="block mt-0.5">
+              tu <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent">vending</span>
             </span>
           </h2>
           <p className="text-slate-600 font-montserrat not-italic text-sm sm:text-base font-normal leading-relaxed max-w-md mx-auto lg:mx-0">
             Cada tecnología está diseñada para objetivos de negocio diferentes. Elige la que mejor se adapte a tu visión.
           </p>
 
-          <div className="p-3.5 sm:p-4 bg-cyan-50/80 border border-cyan-200/80 rounded-2xl flex items-start gap-3 shadow-xs text-left max-w-md mx-auto lg:mx-0">
-            <div className="w-7 h-7 rounded-xl bg-[#168387]/15 text-[#168387] flex items-center justify-center shrink-0 mt-0.5">
-              <InformationCircleIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-              Ambos modelos cuentan con una producción de <strong className="text-[#168387] font-bold">300 garrafones diarios</strong>.
+          <div className="p-3.5 sm:p-4 bg-[#eefbfb] border border-cyan-200/60 rounded-2xl flex items-center gap-3 shadow-xs text-left max-w-md mx-auto lg:mx-0">
+            <InformationCircleIcon className="w-5 h-5 text-[#007481] shrink-0" />
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+              Ambos modelos cuentan con una producción de <span className="text-slate-900 font-semibold">300 garrafones diarios</span>.
             </p>
           </div>
           
           {/* Indicador de progreso visual sutil */}
-          <div className="hidden lg:flex items-center gap-4 pt-6">
-            <div className="h-1 w-20 bg-[#168387] rounded-full" />
-            <div className="h-1 w-10 bg-slate-100 rounded-full" />
-            <div className="h-1 w-10 bg-slate-100 rounded-full" />
+          <div className="hidden lg:flex items-center gap-2 pt-4">
+            <div className="h-1.5 w-14 bg-[#007481] rounded-full" />
+            <div className="h-1.5 w-6 bg-slate-200 rounded-full" />
+            <div className="h-1.5 w-6 bg-slate-200 rounded-full" />
           </div>
         </div>
 

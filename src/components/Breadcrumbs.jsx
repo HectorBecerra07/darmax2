@@ -24,7 +24,7 @@ export default function Breadcrumbs({ steps = [], currentStepIndex = 0, onStepCl
       aria-label="Ruta de navegación" 
       className="inline-flex items-center max-w-full overflow-x-auto no-scrollbar scroll-smooth"
     >
-      <ol className="inline-flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-white/90 backdrop-blur-md rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xs">
+      <ol className="inline-flex items-center gap-1.5 sm:gap-2 py-1">
         {steps.map((step, index) => {
           if (index > currentStepIndex) return null;
 
@@ -35,14 +35,14 @@ export default function Breadcrumbs({ steps = [], currentStepIndex = 0, onStepCl
             <li key={step.label} className="inline-flex items-center">
               {!isFirst && (
                 <ChevronRightIcon 
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-300 mx-0.5 sm:mx-1 shrink-0" 
+                  className="w-3.5 h-3.5 text-slate-400 mx-1 shrink-0" 
                   aria-hidden="true" 
                 />
               )}
 
               {isLast ? (
                 <span 
-                  className="inline-flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl bg-[#168387]/10 text-[#168387] font-black text-[11px] sm:text-xs uppercase tracking-wider whitespace-nowrap"
+                  className="inline-flex items-center gap-1.5 text-[#007481] font-bold text-xs sm:text-[13px] uppercase tracking-wider whitespace-nowrap"
                   aria-current="page"
                 >
                   {isFirst && <HomeIcon className="w-3.5 h-3.5 shrink-0" />}
@@ -52,7 +52,7 @@ export default function Breadcrumbs({ steps = [], currentStepIndex = 0, onStepCl
                 <button
                   type="button"
                   onClick={(e) => handleLinkClick(e, step.path, index)}
-                  className="inline-flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100/80 font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-800 font-semibold text-xs sm:text-[13px] uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer"
                 >
                   {isFirst && <HomeIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />}
                   {step.label}

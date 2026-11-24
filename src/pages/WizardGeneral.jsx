@@ -82,11 +82,12 @@ export default function WizardGeneral() {
     if (!wizardRef.current || loadingModels) return;
 
     const isMobile = window.innerWidth < 640;
+    const isTabletOrMobile = window.innerWidth < 1024;
     const isExtrasStep = (id === "Vending" && step === 2) || (id !== "Vending" && step === 3);
 
     // En el paso de extras en escritorio, no realizar movimiento de scroll al entrar
     if (isExtrasStep) {
-      if (isMobile) {
+      if (isTabletOrMobile) {
         window.scrollTo({ top: 0, behavior: "instant" });
       }
       return;
@@ -277,9 +278,10 @@ export default function WizardGeneral() {
     return [...result].sort((a, b) => {
       const isMaxA = (a?.slug || "").toLowerCase().includes("max") || (a?.name || "").toLowerCase().includes("max");
       const isMaxB = (b?.slug || "").toLowerCase().includes("max") || (b?.name || "").toLowerCase().includes("max");
-      if (!isMaxA && isMaxB) return -1;
-      if (isMaxA && !isMaxB) return 1;
-      return (a?.basePrice || 0) - (b?.basePrice || 0);
+      // Modelo Max siempre a la izquierda (primero)
+      if (isMaxA && !isMaxB) return -1;
+      if (!isMaxA && isMaxB) return 1;
+      return (b?.basePrice || 0) - (a?.basePrice || 0);
     });
   }, [id, vendingType, allModels, loadingModels]);
 
@@ -407,10 +409,13 @@ export default function WizardGeneral() {
     exit: { opacity: 0 },
   };
 
+  const isExtrasStepView =
+    (id === "Vending" && step === 2) || (id !== "Vending" && step === 3);
+
   return (
     <div ref={wizardRef} className="bg-[#fbfbfd] min-h-screen pt-20 sm:pt-22 lg:pt-[86px] pb-6 sm:pb-8 lg:pb-10 font-montserrat not-italic">
-      {/* NAVEGACIÓN Y BREADCRUMBS ADAPTADOS */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-3 sm:mb-5">
+      {/* NAVEGACIÓN Y BREADCRUMBS ADAPTADOS (Oculto en móvil/tablet durante el paso configurable) */}
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 mb-3 sm:mb-5 ${isExtrasStepView ? "hidden lg:block" : ""}`}>
         <Breadcrumbs
           steps={breadcrumbSteps}
           currentStepIndex={actualBreadcrumbStepIndex}
@@ -461,15 +466,27 @@ export default function WizardGeneral() {
             )}
 
             {/* Paso 2 para NO-Vending: Detalles del modelo */}
-            {id !== "Vending" && step === 2 && selectedModel && (
+            {id !== "Vending" && step === 2 && selectedModel && (() => {
+              const carouselImgs = (selectedModel.images || [])
+                .filter((img) => img.context === "CAROUSEL" && img.url)
+                .map((img) => optimizeCloudinaryUrl(img.url, 900))
+                .filter((url) => url && url.trim() !== "");
+              const fallbackImgs =
+                carouselImgs.length > 0
+                  ? carouselImgs
+                  : (selectedModel.images || [])
+                      .filter((img) => img.url)
+                      .sort((a, b) => Number(Boolean(b.isSecondary)) - Number(Boolean(a.isSecondary)))
+                      .map((img) => optimizeCloudinaryUrl(img.url, 900))
+                      .filter((url) => url && url.trim() !== "");
+
+              return (
               <>
-                <div className="w-full lg:sticky lg:top-28 lg:self-start space-y-3">
+                <div className="w-full lg:sticky lg:top-24 lg:self-start space-y-3">
                   <CarouselImages
-                    images={selectedModel.images
-                      .filter(img => img.context === 'CAROUSEL' && img.url)
-                      .map(img => optimizeCloudinaryUrl(img.url, 900))
-                      .filter(url => url && url.trim() !== "")
-                    }
+                    images={[...new Set(fallbackImgs)]}
+                    modelName={selectedModel.name}
+                    isCleaning={id === "Vending-Limpieza"}
                   />
 
                   {/* Botón para conocer más sobre ósmosis inversa */}
@@ -523,7 +540,8 @@ export default function WizardGeneral() {
                   />
                 </div>
               </>
-            )}
+              );
+            })()}
 
             {/* Extras: Paso 2 para Vending, Paso 3 para otras categorías */}
             {((id === "Vending" && step === 2) || (id !== "Vending" && step === 3)) && selectedModel && (

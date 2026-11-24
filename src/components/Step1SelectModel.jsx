@@ -58,14 +58,14 @@ function renderModelTitle(item, vendingType, isCleaning, isCardFront = true) {
   if (raw.includes("atlantis")) {
     const isMax = raw.includes("max");
     const isTouch = vType === VendingTypeEnum.TOUCH || raw.includes("touch");
-    const prefix = isTouch ? "Vending Touch" : "Vending Tradicional";
+    const prefix = isTouch ? "Vending touch" : "Vending tradicional";
     const highlight = isMax ? "Atlantis 300 Max" : "Atlantis 300";
 
     if (isCardFront) {
       return (
         <>
-          <span className="block text-slate-900 font-semibold">{prefix}</span>
-          <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block pb-0.5 font-semibold">
+          <span className="block text-slate-900 font-bold text-xl sm:text-2xl">{prefix}</span>
+          <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent font-bold text-xl sm:text-2xl inline-block pb-0.5">
             {highlight}
           </span>
         </>
@@ -73,8 +73,8 @@ function renderModelTitle(item, vendingType, isCleaning, isCardFront = true) {
     }
     return (
       <>
-        <span className="font-semibold">{prefix} </span>
-        <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent font-semibold">
+        <span className="font-bold text-slate-900">{prefix} </span>
+        <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent font-bold">
           {highlight}
         </span>
       </>
@@ -89,13 +89,10 @@ function renderModelTitle(item, vendingType, isCleaning, isCardFront = true) {
     if (isCardFront) {
       return (
         <>
-          <span className="block text-slate-900 font-semibold">
-            Darmax{" "}
-            <span className="bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] bg-clip-text text-transparent inline-block pb-0.5 font-semibold">
-              Clean
-            </span>
+          <span className="block text-slate-900 font-bold text-xl sm:text-2xl">
+            Darmax Clean
           </span>
-          <span className="block text-slate-600 text-xs sm:text-sm font-semibold mt-0.5">
+          <span className="bg-gradient-to-r from-[#2f8507] via-[#53c406] to-[#7cd413] bg-clip-text text-transparent font-bold text-xl sm:text-2xl inline-block pb-0.5">
             {suffix}
           </span>
         </>
@@ -103,17 +100,52 @@ function renderModelTitle(item, vendingType, isCleaning, isCardFront = true) {
     }
     return (
       <>
-        <span className="font-semibold">Darmax </span>
-        <span className="bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] bg-clip-text text-transparent font-semibold">
-          Clean
+        <span className="font-bold text-slate-900">Darmax Clean </span>
+        <span className="bg-gradient-to-r from-[#2f8507] via-[#53c406] to-[#7cd413] bg-clip-text text-transparent font-bold">
+          {suffix}
         </span>
-        <span className="text-slate-700 ml-1.5 font-semibold">({suffix})</span>
       </>
     );
   }
 
-  // Otros modelos (Purificadora mostrador, etc.)
-  return <span className="font-semibold">{name}</span>;
+  // Caso Purificadora de Mostrador
+  if (
+    raw.includes("mostrador") ||
+    raw.includes("neptuno") ||
+    raw.includes("poseidon") ||
+    raw.includes("purificadora")
+  ) {
+    const isOsmosis =
+      raw.includes("osmosis") ||
+      raw.includes("ósmosis") ||
+      raw.includes("aplus") ||
+      raw.includes("oi");
+    const highlight = isOsmosis ? "Ósmosis inversa" : "Tradicional";
+
+    if (isCardFront) {
+      return (
+        <>
+          <span className="block text-slate-900 font-bold text-xl sm:text-2xl">
+            Mostrador
+          </span>
+          <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent font-bold text-xl sm:text-2xl inline-block pb-0.5">
+            {highlight}
+          </span>
+        </>
+      );
+    }
+    return (
+      <>
+        <span className="font-bold text-slate-900">Mostrador </span>
+        <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent font-bold">
+          {highlight}
+        </span>
+      </>
+    );
+  }
+
+  // Otros modelos
+  return <span className="font-bold text-slate-900">{name}</span>;
 }
 
 // Componente de Tarjeta individual con giro 3D (Front/Back)
@@ -135,8 +167,13 @@ function ModelCard({
   const isCleaning = isLimpieza || rawCat.includes("limpieza") || rawText.includes("limpieza") || rawText.includes("vending5") || rawText.includes("vending8");
   const isWaterVending = rawCat === "vending" || rawCat.includes("agua") || rawText.includes("atlantis") || rawText.includes("vending agua");
   const isMostrador = rawCat.includes("purificadora") || rawCat.includes("mostrador") || rawText.includes("mostrador") || rawText.includes("neptuno") || rawText.includes("poseidon");
-  const hasOsmosisDetected = hasOsmosis || rawText.includes("osmosis") || rawText.includes("ósmosis") || rawText.includes("max");
-  const useTouchColorBadge = isWaterVending || isMostrador || hasOsmosisDetected;
+  const hasOsmosisDetected =
+    hasOsmosis ||
+    rawText.includes("osmosis") ||
+    rawText.includes("ósmosis") ||
+    rawText.includes("max") ||
+    rawText.includes("aplus");
+
 
   return (
     <motion.div
@@ -147,49 +184,52 @@ function ModelCard({
     >
       {/* FRENTE DE LA TARJETA */}
       <div
-        className={`absolute inset-0 w-full h-full bg-white border border-slate-200/90 rounded-[2rem] p-4 sm:p-5 lg:p-6 shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between overflow-hidden ${
-          isCleaning ? "hover:border-[#53c406]" : "hover:border-[#24d4da]"
-        } ${isFlipped ? "pointer-events-none" : "pointer-events-auto"}`}
+        className={`absolute inset-0 w-full h-full bg-white border border-slate-200/80 rounded-[2rem] p-4 sm:p-5 lg:p-6 shadow-sm hover:border-[#199ea5]/60 hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden ${
+          isFlipped ? "pointer-events-none" : "pointer-events-auto"
+        }`}
         style={{
           backfaceVisibility: "hidden",
           WebkitBackfaceVisibility: "hidden",
         }}
       >
         {/* Badge superior de procesos */}
-        <div className="shrink-0 relative flex items-center justify-center w-full">
+        <div className="shrink-0 relative flex items-center justify-center w-full mb-2 sm:mb-2.5">
           {isCleaning ? (
-            <span className="inline-flex items-center justify-center px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] text-white shadow-xs">
+            <span
+              className="inline-flex items-center justify-center px-4 sm:px-4.5 py-1 sm:py-1.5 rounded-full text-xs font-bold text-white shadow-xs"
+              style={{ background: "linear-gradient(180deg, #63d110 0%, #53c406 50%, #3da104 100%)" }}
+            >
               {item?.name?.includes("8") || item?.slug?.includes("8") ? "8 Productos" : "5 Productos"}
             </span>
-          ) : hasOsmosis ? (
-            <span className={`inline-flex items-center justify-center px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-bold shadow-xs ${
-              useTouchColorBadge
-                ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white"
-                : "bg-slate-800 text-white"
-            }`}>
-              7 Procesos • Ósmosis Inversa
+          ) : hasOsmosisDetected ? (
+            <span 
+              className="inline-flex items-center justify-center px-4 sm:px-4.5 py-1 sm:py-1.5 rounded-full text-xs font-bold shadow-xs"
+              style={{ background: "linear-gradient(180deg, #1eb2bb 0%, #1eb2bb 45%, #2398bb 100%)" }}
+            >
+              <span className="text-[#fef0a6] font-extrabold">
+                7 procesos
+              </span>
+              <span className="text-white font-bold">
+                {" "}• Ósmosis inversa
+              </span>
             </span>
           ) : (
-            <span className={`inline-flex items-center justify-center px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-bold shadow-xs ${
-              useTouchColorBadge
-                ? "bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] text-white"
-                : "bg-slate-800 text-white"
-            }`}>
-              6 Procesos de Purificación
+            <span className="inline-flex items-center justify-center px-4 sm:px-4.5 py-1 sm:py-1.5 rounded-full text-xs font-bold bg-[#0e7490] text-white shadow-xs">
+              6 procesos de purificación
             </span>
           )}
 
           {item?.isNew && (
-            <span className="absolute right-0 bg-cyan-500 text-white text-[8px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest shrink-0">
+            <span className="absolute right-0 bg-[#007481] text-white text-[8px] font-bold px-2 py-0.5 rounded-md uppercase tracking-widest shrink-0">
               Nuevo
             </span>
           )}
         </div>
 
-        {/* Imagen del modelo y titulo centrados con espacio optimizado */}
-        <div className="flex-1 min-h-0 flex flex-col items-center justify-center text-center w-full py-0.5">
+        {/* Imagen principal del modelo */}
+        <div className="flex-1 min-h-0 flex flex-col items-center justify-center text-center w-full py-1">
           <div 
-            className={`relative w-full h-40 sm:h-44 lg:h-48 flex items-center justify-center ${isCleaning ? "" : "cursor-pointer group/img"}`}
+            className={`relative w-full h-40 sm:h-44 lg:h-48 flex items-center justify-center group/img ${isCleaning ? "" : "cursor-pointer"}`}
             onClick={(e) => !isCleaning && onToggleFlip(item?.slug, e)}
             title={isCleaning ? item?.name : "Haz clic para ver más detalles"}
           >
@@ -204,34 +244,34 @@ function ModelCard({
 
           <div className="mt-1.5 sm:mt-2 text-center w-full">
             <h3 
-              className="text-base sm:text-lg lg:text-2xl font-semibold text-slate-900 tracking-tight leading-snug line-clamp-2 px-1"
+              className="tracking-tight leading-snug line-clamp-2 px-1"
               title={item?.name}
             >
               {renderModelTitle(item, vendingType, isCleaning, true)}
             </h3>
-            <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-1 line-clamp-2 px-2 leading-tight">
-              {item?.description || "Tecnología de purificación avanzada de alta demanda"}
+            <p className="text-xs text-slate-700 font-medium mt-1 px-2 leading-relaxed min-h-[2.25rem] sm:min-h-[2.5rem] flex flex-col justify-center whitespace-pre-line">
+              {item?.description || "Agua premium con ósmosis inversa con pantalla táctil"}
             </p>
 
-            {/* Inversion entre lineas, inmediatamente despues del subtitulo */}
-            <div className="w-full border-y border-slate-200/80 py-2 sm:py-2.5 mt-2 sm:mt-2.5 flex items-center justify-between px-1">
-              <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest">
-                {priceLabel || "Inversión"}
+            {/* Inversión alineada */}
+            <div className="w-full border-y border-slate-100 py-2 sm:py-2.5 mt-2 sm:mt-2.5 flex items-center justify-between px-2">
+              <span className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">
+                {priceLabel || "INVERSIÓN"}
               </span>
-              <p className="text-base sm:text-lg lg:text-xl font-black text-slate-900 tracking-tight">
+              <p className="text-base sm:text-lg lg:text-xl font-extrabold text-slate-900 tracking-tight">
                 ${(item?.basePrice || 0).toLocaleString()}
-                <span className="text-[10px] sm:text-xs ml-1 text-slate-400 font-bold uppercase">MXN</span>
+                <span className="text-[10px] sm:text-xs ml-1 text-slate-500 font-bold uppercase">MXN</span>
               </p>
             </div>
           </div>
         </div>
 
-        {/* Bloque de Accion en el frente */}
-        <div className="shrink-0 flex flex-col items-center w-full pt-1 sm:pt-2 gap-1.5">
+        {/* Bloque de Acción en el frente */}
+        <div className="shrink-0 flex flex-col items-center w-full pt-1 sm:pt-2 gap-2">
           <button
             type="button"
             onClick={() => onSelect(item)}
-            className={`w-full py-2.5 sm:py-3.5 px-5 rounded-full hover:brightness-110 text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 active:scale-98 flex items-center justify-center gap-2 group/btn cursor-pointer ${
+            className={`w-full py-3 sm:py-3.5 px-5 rounded-full hover:brightness-110 active:scale-98 text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 group/btn cursor-pointer ${
               isCleaning
                 ? "bg-gradient-to-r from-[#133909] via-[#53c406] to-[#90e119] shadow-md shadow-[#133909]/30 hover:shadow-lg hover:shadow-[#90e119]/35"
                 : "bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] shadow-md shadow-[#022447]/20 hover:shadow-lg hover:shadow-[#01949f]/30"
@@ -245,11 +285,11 @@ function ModelCard({
             <button
               type="button"
               onClick={(e) => onToggleFlip(item?.slug, e)}
-              className="inline-flex items-center justify-center gap-1.5 py-1 text-slate-500 hover:text-[#168387] text-xs font-medium transition-colors cursor-pointer group/details"
+              className="inline-flex items-center justify-center gap-1.5 py-0.5 text-slate-500 hover:text-[#007481] text-xs font-medium transition-colors cursor-pointer group/details"
               title="Haz clic para ver más detalles y ficha técnica"
             >
-              <ExclamationCircleIcon className="w-4 h-4 text-slate-400 group-hover:text-[#168387] transition-colors shrink-0" />
-              <span className="underline underline-offset-4 decoration-slate-300 group-hover:decoration-[#168387] transition-colors">
+              <InformationCircleIcon className="w-4 h-4 text-[#007481] transition-colors shrink-0" />
+              <span className="transition-colors">
                 Ver más detalles
               </span>
             </button>
@@ -352,37 +392,40 @@ function PpmAccordion({ isVending, isPpmOpen, setIsPpmOpen }) {
   if (!isVending) return null;
   return (
     <div className="w-full max-w-md mx-auto lg:mx-0">
-      <button
-        type="button"
-        onClick={() => setIsPpmOpen((prev) => !prev)}
-        className={`w-full p-3 sm:p-3.5 bg-amber-50/90 border border-amber-200/80 rounded-2xl shadow-xs text-left cursor-pointer transition-colors duration-200 ${
+      <div
+        className={`w-full p-4 bg-[#fffdf5] border border-amber-200/90 rounded-2xl shadow-xs text-left transition-all duration-200 ${
           isPpmOpen
-            ? "ring-2 ring-amber-400/40 bg-amber-50 shadow-md border-amber-300"
-            : "hover:border-amber-300 hover:bg-amber-100/50"
+            ? "ring-1 ring-amber-300"
+            : "hover:border-amber-300"
         }`}
       >
-        <div className="flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => setIsPpmOpen((prev) => !prev)}
+          className="w-full flex items-center justify-between gap-3 cursor-pointer"
+        >
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-7 h-7 rounded-xl bg-amber-500/15 text-amber-600 flex items-center justify-center shrink-0">
-              <InformationCircleIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
+            <InformationCircleIcon className="w-5 h-5 text-amber-600 shrink-0" />
             <div className="flex items-center gap-2 flex-wrap min-w-0">
-              <span className="font-black text-amber-800 uppercase tracking-wider text-[10px] bg-amber-500/15 px-2 py-0.5 rounded-md shrink-0">
-                Importante
-              </span>
-              <span className="text-xs font-semibold text-slate-700 truncate">
-                Consulta la dureza en ppm de tu estado
+              <span className="font-extrabold text-amber-800 uppercase tracking-wider text-[10px] bg-amber-100/80 px-2 py-0.5 rounded-md shrink-0">
+                IMPORTANTE
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-[11px] font-bold text-amber-800 shrink-0">
-            <span className="hidden sm:inline">{isPpmOpen ? "Ocultar" : "Ver detalle"}</span>
+          <div className="flex items-center gap-1 text-xs font-semibold text-amber-900 shrink-0">
+            <span>{isPpmOpen ? "Ocultar" : "Ver detalle"}</span>
             <ChevronDownIcon
               className={`w-4 h-4 transition-transform duration-200 ${
                 isPpmOpen ? "rotate-180 text-amber-700" : "text-amber-600"
               }`}
             />
           </div>
+        </button>
+
+        <div className="mt-2 text-left">
+          <p className="text-xs sm:text-[13px] font-bold text-slate-800">
+            Consulta la dureza en ppm de tu estado
+          </p>
         </div>
 
         <AnimatePresence initial={false}>
@@ -395,15 +438,15 @@ function PpmAccordion({ isVending, isPpmOpen, setIsPpmOpen }) {
               transition={{ duration: 0.25, ease: "easeInOut" }}
               className="overflow-hidden"
             >
-              <div className="pt-2.5 mt-2.5 border-t border-amber-200/70 text-left">
-                <p className="text-xs text-slate-700 leading-relaxed font-normal">
-                  Consulta la dureza en <strong className="text-slate-900 font-semibold">ppm (partes por millón)</strong> de tu estado para identificar tu modelo ideal. Si el agua supera los <strong className="text-slate-900 font-semibold">500 ppm</strong> la <strong className="text-amber-800 font-bold">COFEPRIS solicita tener ósmosis inversa</strong>.
+              <div className="pt-2 mt-2 border-t border-amber-200/60 text-left">
+                <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  Consulta la dureza en ppm (partes por millón) de tu estado para identificar tu modelo ideal. Si el agua supera los <strong className="text-slate-900 font-semibold">500 ppm</strong> la <strong className="text-amber-900 font-bold">COFEPRIS solicita tener ósmosis inversa</strong>.
                 </p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </button>
+      </div>
     </div>
   );
 }
@@ -416,29 +459,29 @@ function OsmosisBanner({ hasOsmosisInCatalog }) {
       to="/blog/osmosis-inversa-vs-agua-alcalina"
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-center justify-between gap-3 p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-cyan-50/50 to-white border border-[#168387]/25 hover:border-[#168387] hover:shadow-md transition-all duration-300 cursor-pointer max-w-md mx-auto lg:mx-0 text-left"
+      className="group block p-4 rounded-2xl bg-[#eefbfb] border border-cyan-200/70 hover:border-[#007481] hover:shadow-md transition-all duration-300 cursor-pointer max-w-md mx-auto lg:mx-0 text-left"
     >
-      <div className="flex items-center gap-2.5 min-w-0">
-        <div className="w-8 h-8 rounded-xl bg-[#168387] text-white flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-          <SparklesIcon className="w-4 h-4" />
-        </div>
-        <div className="text-left min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#168387] transition-colors">
-              ¿Quieres conocer más sobre ósmosis inversa?
-            </p>
-            <span className="text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#168387] text-white shadow-xs">
-              <span className="hidden sm:inline">Da clic aquí</span>
-              <span className="sm:hidden">Pulsa aquí</span>
+      <div className="flex items-start gap-2.5">
+        <InformationCircleIcon className="w-5 h-5 text-[#007481] shrink-0 mt-0.5" />
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-[#007481] transition-colors">
+            ¿Quieres conocer más sobre ósmosis inversa?
+          </p>
+          
+          <div className="flex items-center gap-2 mt-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#007481] hover:bg-[#00606b] text-white text-[11px] font-bold uppercase tracking-wider shadow-2xs">
+              DA CLICK AQUÍ
+              <ChevronRightIcon className="w-3.5 h-3.5" />
             </span>
+            <div className="p-1 rounded-lg text-slate-400 group-hover:text-[#007481] transition-colors">
+              <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+            </div>
           </div>
-          <span className="text-[10px] sm:text-[11px] text-slate-500 font-medium block truncate">
-            Descubre por qué es el estándar de oro según la normativa
-          </span>
+
+          <p className="text-[11px] text-slate-500 font-normal mt-2 leading-tight">
+            Descubre por qué es el estándar de oro según la normativa.
+          </p>
         </div>
-      </div>
-      <div className="p-1.5 rounded-xl bg-white border border-slate-200 text-slate-400 group-hover:text-[#168387] shrink-0 transition-all">
-        <ArrowTopRightOnSquareIcon className="w-4 h-4" />
       </div>
     </Link>
   );
@@ -463,15 +506,15 @@ export default function Step1SelectModel({
   const [showPpmModal, setShowPpmModal] = useState(false);
   const [isPpmOpen, setIsPpmOpen] = useState(false);
 
-  // Ordenar para garantizar que el modelo base aparezca primero y el Max despues
+  // Ordenar para garantizar que el modelo Max (Atlantis 300 Max) aparezca primero (a la izquierda) en vending de agua
   const sortedModelos = useMemo(() => {
     if (!Array.isArray(modelos) || modelos.length === 0) return [];
     return [...modelos].sort((a, b) => {
       const isMaxA = (a?.slug || "").toLowerCase().includes("max") || (a?.name || "").toLowerCase().includes("max");
       const isMaxB = (b?.slug || "").toLowerCase().includes("max") || (b?.name || "").toLowerCase().includes("max");
-      if (!isMaxA && isMaxB) return -1;
-      if (isMaxA && !isMaxB) return 1;
-      return (a?.basePrice || 0) - (b?.basePrice || 0);
+      if (isMaxA && !isMaxB) return -1;
+      if (!isMaxA && isMaxB) return 1;
+      return (b?.basePrice || 0) - (a?.basePrice || 0);
     });
   }, [modelos]);
 
@@ -572,44 +615,44 @@ export default function Step1SelectModel({
       <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12 xl:gap-16 px-4 sm:px-8">
         
         {/* COLUMNA IZQUIERDA: Titulo, aviso de PPM y banner de osmosis */}
-        <div className="w-full lg:w-[38%] xl:w-[35%] text-center lg:text-left space-y-3 lg:sticky lg:top-40">
-          <div className="flex items-center justify-center lg:justify-start gap-2.5 mb-2">
-            <span className={`font-montserrat not-italic font-bold tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm uppercase ${
-              isCleaningCategory ? "text-[#53c406]" : "text-[#168387]"
+        <div className="w-full lg:w-[38%] xl:w-[35%] text-center lg:text-left space-y-3.5 lg:sticky lg:top-40">
+          <div className="flex items-center justify-center lg:justify-start gap-2.5 mb-1.5">
+            <span className={`font-montserrat not-italic font-bold tracking-[0.2em] sm:tracking-[0.25em] text-xs sm:text-[13px] uppercase ${
+              isCleaningCategory ? "text-[#53c406]" : "text-[#007481]"
             }`}>
               {subtitleOverride || (isCleaningCategory ? "Limpieza 24/7" : "Configuración Inicial")}
             </span>
             <span className={`w-8 sm:w-10 h-0.5 rounded-full shrink-0 ${
-              isCleaningCategory ? "bg-[#53c406]" : "bg-[#168387]"
+              isCleaningCategory ? "bg-[#53c406]" : "bg-[#007481]"
             }`} />
           </div>
-          <h2 className="font-montserrat not-italic text-3xl sm:text-4xl lg:text-[45px] xl:text-[52px] 2xl:text-[57px] font-bold tracking-tight leading-tight text-[#031638]">
+          <h2 className="font-montserrat not-italic text-3xl sm:text-4xl lg:text-[45px] xl:text-[52px] font-extrabold tracking-tight leading-tight text-slate-900">
             {titleOverride ? (
               titleOverride
             ) : isCleaningCategory ? (
               <>
-                <span className="block sm:whitespace-nowrap">Elige tu modelo</span>
-                <span className="block pt-1 pb-1.5 leading-tight">
-                  <span className="text-[#031638]">de Darmax </span>
-                  <span className="bg-gradient-to-r from-[#53c406] via-[#5bc809] to-[#90e119] bg-clip-text text-transparent inline-block">
+                <span className="block">Elige tu modelo</span>
+                <span className="block mt-0.5">
+                  <span className="text-slate-900">de Darmax </span>
+                  <span className="bg-gradient-to-r from-[#2f8507] via-[#53c406] to-[#7cd413] bg-clip-text text-transparent inline-block">
                     Clean
                   </span>
                 </span>
               </>
             ) : (vendingType === VendingTypeEnum.TOUCH || vendingType === VendingTypeEnum.TRADICIONAL) ? (
               <>
-                <span className="block sm:whitespace-nowrap">Elige tu</span>
-                <span className="block pt-1 pb-1.5 leading-tight">
-                  <span className="text-[#031638]">modelo </span>
-                  <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent inline-block">
-                    {vendingType === VendingTypeEnum.TOUCH ? "Touch" : "Tradicional"}
+                <span className="block">Elige tu</span>
+                <span className="block mt-0.5">
+                  <span className="text-slate-900">modelo </span>
+                  <span className="text-[#199ea5] lowercase inline-block">
+                    {vendingType === VendingTypeEnum.TOUCH ? "touch" : "tradicional"}
                   </span>
                 </span>
               </>
             ) : (
               <>
-                <span className="block sm:whitespace-nowrap">Elige tu modelo</span>
-                <span className="bg-gradient-to-r from-[#288EB9] to-[#1DB3BA] bg-clip-text text-transparent block pt-1 pb-1.5 leading-tight">
+                <span className="block">Elige tu modelo</span>
+                <span className="text-[#199ea5] block mt-0.5">
                   {categoryId || "Purificadora"}
                 </span>
               </>
@@ -619,7 +662,7 @@ export default function Step1SelectModel({
             {descriptionOverride || (
               isCleaningCategory
                 ? "Automatiza la venta de productos de limpieza a granel con nuestra tecnología Vending Clean."
-                : "Selecciona la base tecnológica que impulsará tu negocio. Cada modelo está diseñado para máxima eficiencia."
+                : "Selecciona la base tecnológica que impulsará tu negocio. Cada modelo está diseñado para máxima eficiencia y rentabilidad."
             )}
           </p>
 
@@ -648,10 +691,10 @@ export default function Step1SelectModel({
           </div>
 
           {/* Indicador de progreso visual sutil (Paso 2 activo) */}
-          <div className="hidden lg:flex items-center gap-4 pt-4">
-            <div className="h-1 w-10 bg-slate-200 rounded-full" />
-            <div className={`h-1 w-20 rounded-full ${isCleaningCategory ? "bg-gradient-to-r from-[#53c406] to-[#90e119]" : "bg-[#168387]"}`} />
-            <div className="h-1 w-10 bg-slate-100 rounded-full" />
+          <div className="hidden lg:flex items-center gap-2 pt-4">
+            <div className="h-1.5 w-6 bg-slate-200 rounded-full" />
+            <div className={`h-1.5 w-14 rounded-full ${isCleaningCategory ? "bg-[#53c406]" : "bg-[#007481]"}`} />
+            <div className="h-1.5 w-6 bg-slate-200 rounded-full" />
           </div>
         </div>
 
