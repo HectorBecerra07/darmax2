@@ -418,11 +418,11 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
         isSelected ? "ring-2 ring-[#24d4da]" : "",
       ].join(" ")}
     >
-      {/* BADGE DE NIVEL EN LA POSICION SUPERIOR IZQUIERDA (DONDE INICIA LA CURVATURA) */}
+      {/* BADGE DE NIVEL: centrado en móvil y superior izquierdo en escritorio */}
       {levelConfig.label && (
         <div
-          className={`absolute -top-3 sm:-top-3.5 ${
-            isCompact ? "left-6 px-3 py-1 text-[9px]" : "left-7 sm:left-8 px-4 py-1 sm:px-4.5 sm:py-1.5 text-[10px] sm:text-[11px]"
+          className={`absolute -top-3 sm:-top-3.5 left-1/2 -translate-x-1/2 sm:translate-x-0 ${
+            isCompact ? "sm:left-6 px-3 py-1 text-[9px]" : "sm:left-8 px-4 py-1 sm:px-4.5 sm:py-1.5 text-[10px] sm:text-[11px]"
           } z-20 ${levelConfig.badgeBg} text-white font-medium uppercase tracking-[0.18em] sm:tracking-[0.2em] rounded-full shadow-md whitespace-nowrap font-montserrat not-italic pointer-events-none`}
         >
           {levelConfig.label}
@@ -443,7 +443,7 @@ const TarjetaModelo = React.memo(({ modelo, navigate, isSelected, onToggleSelect
               src={optimizeCloudinaryUrl(modelo.imagen, 700)}
               alt={modelo.nombre}
               decoding="async"
-              className="w-full h-full object-cover object-center transition-transform duration-500 group-hover/img:scale-105"
+              className="w-full h-full object-cover object-center scale-[1.08] origin-center transition-transform duration-500 group-hover/img:scale-[1.13]"
               onError={() => setErrorImagen(true)}
             />
           ) : (
