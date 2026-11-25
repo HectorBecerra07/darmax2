@@ -6,9 +6,16 @@ import FormattedDescription from "../utils/formatDescription";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-/** Precarga y decodifica una imagen en memoria antes de mostrarla. */
-function loadImageWithDecode(url, onReady, onError) {
+/** Precarga y decodifica una imagen en memoria manteniendo referencia activa. */
+function loadImageWithDecode(url, onReady, onError, cacheMap = null) {
+  const existing = cacheMap?.get(url);
+  if (existing && existing.complete && existing.naturalWidth > 0) {
+    onReady();
+    return;
+  }
   const img = new Image();
+  img.decoding = "async";
+  if (cacheMap) cacheMap.set(url, img);
   img.src = url;
   const finish = () => {
     if (typeof img.decode === "function") {
@@ -55,14 +62,15 @@ export default function Step3ExtrasConfigurator({
   const [expandedSelectedIds, setExpandedSelectedIds] = useState([]);
   const [currentSubStepIndex, setCurrentSubStepIndex] = useState(0);
   const [activeView, setActiveView] = useState("primary");
-  const [displayedImage, setDisplayedImage] = useState({ url: null, view: "primary" });
-  const [previousImage, setPreviousImage] = useState(null);
+  const [committedPrimaryUrl, setCommittedPrimaryUrl] = useState(null);
+  const [committedSecondaryUrl, setCommittedSecondaryUrl] = useState(null);
+  const [previousPrimary, setPreviousPrimary] = useState(null);
   const [magicSweepKey, setMagicSweepKey] = useState(0);
-  const [isTargetLoading, setIsTargetLoading] = useState(false);
   const [showSlowLoading, setShowSlowLoading] = useState(false);
   const [isAlcalinaZoomed, setIsAlcalinaZoomed] = useState(false);
-  const preloadedUrlsRef = useRef(new Set());
-  const displayedImageRef = useRef({ url: null, view: "primary" });
+  const preloadedImagesRef = useRef(new Map());
+  const readyUrlsRef = useRef(new Set());
+  const committedPrimaryRef = useRef(null);
   const clearPrevTimerRef = useRef(null);
   const prevPrimarySrcRef = useRef(null);
 
@@ -80,10 +88,11 @@ export default function Step3ExtrasConfigurator({
       }
       setLoading(true);
       if (clearPrevTimerRef.current) clearTimeout(clearPrevTimerRef.current);
-      displayedImageRef.current = { url: null, view: "primary" };
+      committedPrimaryRef.current = null;
       prevPrimarySrcRef.current = null;
-      setDisplayedImage({ url: null, view: "primary" });
-      setPreviousImage(null);
+      setCommittedPrimaryUrl(null);
+      setCommittedSecondaryUrl(null);
+      setPreviousPrimary(null);
       try {
         const response = await fetch(
           `${API_URL}/api/configurador/models/${selectedModelId}`
@@ -267,11 +276,10 @@ export default function Step3ExtrasConfigurator({
     setActiveView("primary");
   }, [displayImageSrc]);
 
-  const targetRawImage =
-    activeView === "secondary" && secondaryImageSrc ? secondaryImageSrc : displayImageSrc;
-  const targetImageUrl = targetRawImage ? optimizeCloudinaryUrl(targetRawImage, 800) : null;
+  const primaryTargetUrl = displayImageSrc ? optimizeCloudinaryUrl(displayImageSrc, 800) : null;
+  const secondaryTargetUrl = secondaryImageSrc ? optimizeCloudinaryUrl(secondaryImageSrc, 800) : null;
 
-  // Precargar todas las variantes de imagen del modelo para cambios instantáneos
+  // Precargar y retener todas las variantes de imagen del modelo para cambios instantáneos en móvil
   useEffect(() => {
     if (!modelData?.images?.length) return;
     const urls = [
@@ -284,53 +292,80 @@ export default function Step3ExtrasConfigurator({
 
     const uniqueUrls = [...new Set(urls)];
     uniqueUrls.forEach((url) => {
-      if (preloadedUrlsRef.current.has(url)) return;
-      loadImageWithDecode(url, () => {
-        preloadedUrlsRef.current.add(url);
-      });
+      if (readyUrlsRef.current.has(url)) return;
+      loadImageWithDecode(
+        url,
+        () => {
+          readyUrlsRef.current.add(url);
+        },
+        null,
+        preloadedImagesRef.current
+      );
     });
   }, [modelData, displayImageSrc, secondaryImageSrc]);
 
-  // Esperar a que la nueva imagen cargue y decodifique antes de aplicar blur-reveal
+  // Cargar y confirmar la imagen principal sin parpadeo ni descarga repetida
   useEffect(() => {
-    if (!targetImageUrl) return;
+    if (!primaryTargetUrl) return;
     let cancelled = false;
 
-    const commitImage = () => {
+    const commitPrimary = () => {
       if (cancelled) return;
-      preloadedUrlsRef.current.add(targetImageUrl);
-      const current = displayedImageRef.current;
+      readyUrlsRef.current.add(primaryTargetUrl);
+      const current = committedPrimaryRef.current;
 
-      if (current?.url && current.url !== targetImageUrl) {
-        setPreviousImage({
-          url: current.url,
-          view: current.view,
+      if (current && current !== primaryTargetUrl) {
+        setPreviousPrimary({
+          url: current,
           alcalinaZoomed: isAlcalinaZoomed,
         });
         if (clearPrevTimerRef.current) clearTimeout(clearPrevTimerRef.current);
         clearPrevTimerRef.current = setTimeout(() => {
-          setPreviousImage(null);
+          setPreviousPrimary(null);
         }, 420);
       }
 
-      const nextState = { url: targetImageUrl, view: activeView };
-      displayedImageRef.current = nextState;
-      setDisplayedImage(nextState);
-      setIsTargetLoading(false);
+      committedPrimaryRef.current = primaryTargetUrl;
+      setCommittedPrimaryUrl(primaryTargetUrl);
     };
 
-    if (preloadedUrlsRef.current.has(targetImageUrl)) {
-      commitImage();
+    if (readyUrlsRef.current.has(primaryTargetUrl)) {
+      commitPrimary();
       return;
     }
 
-    setIsTargetLoading(true);
-    loadImageWithDecode(targetImageUrl, commitImage, commitImage);
+    loadImageWithDecode(primaryTargetUrl, commitPrimary, commitPrimary, preloadedImagesRef.current);
 
     return () => {
       cancelled = true;
     };
-  }, [targetImageUrl, activeView, isAlcalinaZoomed]);
+  }, [primaryTargetUrl]);
+
+  // Cargar y mantener montada en DOM la imagen adicional para alternar al instante
+  useEffect(() => {
+    if (!secondaryTargetUrl) {
+      setCommittedSecondaryUrl(null);
+      return;
+    }
+    let cancelled = false;
+
+    const commitSecondary = () => {
+      if (cancelled) return;
+      readyUrlsRef.current.add(secondaryTargetUrl);
+      setCommittedSecondaryUrl(secondaryTargetUrl);
+    };
+
+    if (readyUrlsRef.current.has(secondaryTargetUrl)) {
+      commitSecondary();
+      return;
+    }
+
+    loadImageWithDecode(secondaryTargetUrl, commitSecondary, commitSecondary, preloadedImagesRef.current);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [secondaryTargetUrl]);
 
   // Disparar barrido sutil de luz solo cuando cambia la configuración en la vista principal
   useEffect(() => {
@@ -342,20 +377,26 @@ export default function Step3ExtrasConfigurator({
   }, [displayImageSrc]);
 
   useEffect(() => {
-    if (displayedImageRef.current?.url && activeView === "primary") {
+    if (committedPrimaryRef.current && activeView === "primary") {
       setMagicSweepKey((k) => k + 1);
     }
   }, [isAlcalinaZoomed]);
 
+  const isTargetLoading =
+    (activeView === "primary" && Boolean(primaryTargetUrl) && committedPrimaryUrl !== primaryTargetUrl) ||
+    (activeView === "secondary" && Boolean(secondaryTargetUrl) && committedSecondaryUrl !== secondaryTargetUrl);
+
+  const hasVisibleImage = Boolean(committedPrimaryUrl || committedSecondaryUrl);
+
   // Mostrar indicador sutil solo si el cambio tarda más de 180ms
   useEffect(() => {
-    if (!isTargetLoading || !displayedImage.url) {
+    if (!isTargetLoading || !hasVisibleImage) {
       setShowSlowLoading(false);
       return;
     }
     const timer = setTimeout(() => setShowSlowLoading(true), 180);
     return () => clearTimeout(timer);
-  }, [isTargetLoading, displayedImage.url]);
+  }, [isTargetLoading, hasVisibleImage]);
 
   const currentDisplayString = useMemo(() => {
     if (!modelData) return "Cargando...";
@@ -655,7 +696,7 @@ export default function Step3ExtrasConfigurator({
               {/* Área de la Imagen adaptada como marco en desktop y cuadrado completo en móvil */}
               <div
                 className={`relative w-full overflow-hidden rounded-none lg:rounded-[28px] flex items-center justify-center ${
-                  !displayedImage.url ? "min-h-[190px] sm:min-h-[220px] lg:min-h-[280px]" : ""
+                  !hasVisibleImage ? "min-h-[190px] sm:min-h-[220px] lg:min-h-[280px]" : ""
                 }`}
               >
                 {/* Chip compacto flotante en móvil */}
@@ -665,7 +706,7 @@ export default function Step3ExtrasConfigurator({
                 </span>
 
                 <AnimatePresence>
-                  {!displayedImage.url && (
+                  {!hasVisibleImage && (
                     <motion.div
                       key="image-skeleton"
                       initial={{ opacity: 1 }}
@@ -692,95 +733,119 @@ export default function Step3ExtrasConfigurator({
                   )}
                 </AnimatePresence>
 
-                {displayedImage.url && (() => {
-                  const activePres = getImagePresentation(
-                    displayedImage.view,
+                {hasVisibleImage && (() => {
+                  const showingSecondary =
+                    activeView === "secondary" && Boolean(committedSecondaryUrl);
+                  const primaryPres = getImagePresentation(
+                    "primary",
                     isAlcalinaZoomed,
                     Boolean(secondaryImageSrc),
                     isCleaning
                   );
-                  const prevPres = previousImage
+                  const secondaryPres = getImagePresentation(
+                    "secondary",
+                    false,
+                    Boolean(secondaryImageSrc),
+                    isCleaning
+                  );
+                  const prevPres = previousPrimary
                     ? getImagePresentation(
-                        previousImage.view,
-                        previousImage.alcalinaZoomed,
+                        "primary",
+                        previousPrimary.alcalinaZoomed,
                         Boolean(secondaryImageSrc),
                         isCleaning
                       )
                     : null;
-                  const isViewSwitch =
-                    previousImage && previousImage.view !== displayedImage.view;
 
                   return (
                     <>
-                      {/* Imagen anterior como base para evitar destello blanco al cambiar */}
-                      {previousImage && prevPres && (
+                      {/* Imagen principal anterior como respaldo para evitar destello blanco al cambiar extras */}
+                      {!showingSecondary && previousPrimary && prevPres && (
                         <motion.img
-                          key={`prev-${previousImage.url}`}
-                          initial={{
-                            opacity: 1,
-                            filter: "blur(2px)",
-                            scale: prevPres.scale,
-                          }}
-                          animate={{
-                            opacity: isViewSwitch ? 0 : 1,
-                            filter: "blur(6px)",
-                            scale: prevPres.scale,
-                          }}
-                          transition={{ duration: 0.32, ease: "easeOut" }}
-                          src={previousImage.url}
+                          key={`prev-${previousPrimary.url}`}
+                          initial={{ opacity: 1, scale: prevPres.scale }}
+                          animate={{ opacity: 1, scale: prevPres.scale }}
+                          src={previousPrimary.url}
                           alt=""
                           aria-hidden="true"
-                          style={{
-                            transformOrigin: prevPres.transformOrigin,
-                          }}
+                          style={{ transformOrigin: prevPres.transformOrigin }}
                           className={`absolute inset-0 w-full h-full object-contain pointer-events-none z-0 ${prevPres.heightClass}`}
                         />
                       )}
 
-                      {/* Imagen activa con blur-reveal suave */}
-                      <motion.img
-                        key={displayedImage.url}
-                        initial={
-                          previousImage
-                            ? {
-                                opacity: 0,
-                                filter: "blur(10px)",
-                                scale: activePres.scale * 1.02,
-                              }
-                            : false
-                        }
-                        animate={{
-                          opacity: 1,
-                          filter: isTargetLoading ? "blur(5px)" : "blur(0px)",
-                          scale: activePres.scale,
-                        }}
-                        transition={{
-                          opacity: { duration: 0.34, ease: "easeOut" },
-                          filter: { duration: 0.36, ease: "easeOut" },
-                          scale: {
-                            duration: 0.45,
-                            ease: [0.16, 1, 0.3, 1],
-                            delay: isAlcalinaZoomed ? 0.08 : 0,
-                          },
-                        }}
-                        style={{
-                          transformOrigin: activePres.transformOrigin,
-                          transition: "transform-origin 0.4s ease",
-                        }}
-                        src={displayedImage.url}
-                        alt={`Imagen de ${modelData.name}`}
-                        className={`relative z-10 w-full h-auto object-contain block ${activePres.heightClass}`}
-                        loading="eager"
-                        decoding="sync"
-                      />
+                      {/* Capa Principal: permanece montada en DOM para no volver a decodificar en móvil */}
+                      {committedPrimaryUrl && (
+                        <motion.img
+                          key={committedPrimaryUrl}
+                          initial={
+                            previousPrimary
+                              ? { opacity: 0, scale: primaryPres.scale * 1.015 }
+                              : false
+                          }
+                          animate={{
+                            opacity: showingSecondary ? 0 : 1,
+                            scale: primaryPres.scale,
+                          }}
+                          transition={{
+                            opacity: {
+                              duration: showingSecondary ? 0.2 : 0.24,
+                              delay: showingSecondary ? 0.05 : 0,
+                              ease: "easeOut",
+                            },
+                            scale: {
+                              duration: 0.42,
+                              ease: [0.16, 1, 0.3, 1],
+                              delay: isAlcalinaZoomed ? 0.06 : 0,
+                            },
+                          }}
+                          style={{
+                            transformOrigin: primaryPres.transformOrigin,
+                            transition: "transform-origin 0.4s ease",
+                          }}
+                          src={committedPrimaryUrl}
+                          alt={`Imagen de ${modelData.name}`}
+                          className={`${
+                            showingSecondary
+                              ? "absolute inset-0 m-auto z-0 pointer-events-none"
+                              : "relative z-10"
+                          } w-full h-auto object-contain block ${primaryPres.heightClass}`}
+                          loading="eager"
+                          decoding="async"
+                        />
+                      )}
+
+                      {/* Capa Adicional: permanece montada en DOM para alternar al instante sin recargar */}
+                      {committedSecondaryUrl && (
+                        <motion.img
+                          key={committedSecondaryUrl}
+                          initial={false}
+                          animate={{
+                            opacity: showingSecondary ? 1 : 0,
+                            scale: secondaryPres.scale,
+                          }}
+                          transition={{
+                            opacity: { duration: 0.22, ease: "easeOut" },
+                          }}
+                          style={{ transformOrigin: secondaryPres.transformOrigin }}
+                          src={committedSecondaryUrl}
+                          alt={`Vista adicional de ${modelData.name}`}
+                          className={`${
+                            showingSecondary
+                              ? "relative z-10"
+                              : "absolute inset-0 m-auto z-0 pointer-events-none"
+                          } w-full h-auto object-contain block ${secondaryPres.heightClass}`}
+                          loading="eager"
+                          decoding="async"
+                        />
+                      )}
 
                       {/* Barrido diagonal sutil de luz al actualizar extras en la escena */}
-                      {magicSweepKey > 0 && (
+                      {magicSweepKey > 0 && !showingSecondary && (
                         <motion.div
                           key={`sweep-${magicSweepKey}`}
-                          initial={{ x: "-120%", opacity: 0.7 }}
+                          initial={{ x: "-120%", opacity: 0.65 }}
                           animate={{ x: "140%", opacity: 0 }}
-                          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                          transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
                           className="absolute inset-y-0 w-1/2 z-[15] pointer-events-none bg-gradient-to-r from-transparent via-white/35 to-transparent -skew-x-12"
                         />
                       )}
