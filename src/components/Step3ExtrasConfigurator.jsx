@@ -634,11 +634,11 @@ export default function Step3ExtrasConfigurator({
   const hasAnyPreview = Boolean(displayImageSrc || secondaryImageSrc);
 
   return (
-    <div className={`w-full pb-24 sm:pb-24 lg:pb-24 ${hasAnyPreview ? "lg:flex lg:items-start lg:gap-12" : "flex justify-center"}`}>
+    <div className={`w-full max-w-full overflow-x-clip pb-24 sm:pb-24 lg:pb-24 ${hasAnyPreview ? "lg:flex lg:items-start lg:gap-12" : "flex justify-center"}`}>
       {/* Panel de Vista Previa: FIXED sin bordes en Móvil/Tablet (modo app) y STICKY con marco en Desktop */}
       {hasAnyPreview && (
         <div className="
-          fixed top-[72px] left-0 right-0 z-30 bg-white border-b border-slate-200/80 shadow-md
+          fixed top-[72px] inset-x-0 z-30 w-full max-w-full bg-white border-b border-slate-200/80 shadow-md
           lg:static lg:w-[42%] lg:sticky lg:top-24 lg:self-start lg:mb-0 lg:bg-transparent lg:border-none lg:shadow-none
         ">
           <div className="flex flex-col lg:gap-2 w-full">
@@ -842,13 +842,14 @@ export default function Step3ExtrasConfigurator({
 
       {/* Listado de Extras en Sub-Pasos (Columna derecha, con margen superior en móvil para la vista fija) */}
       <div className={`
-        ${hasAnyPreview ? "lg:w-[58%] pt-[262px] sm:pt-[304px] lg:pt-0" : "w-full max-w-3xl"} 
+        w-full min-w-0
+        ${hasAnyPreview ? "lg:w-[58%] pt-[262px] sm:pt-[304px] lg:pt-0" : "max-w-3xl"} 
         flex flex-col font-montserrat not-italic
       `}>
-        <div id="extras-top-anchor" className="mb-6">
+        <div id="extras-top-anchor" className="mb-6 w-full min-w-0">
           {/* Indicador de progreso de Sub-Pasos (Tabs superiores estilo píldora como en PDF) */}
           {subSteps.length > 1 && (
-            <div className="flex items-center gap-2 mb-6 p-0 bg-transparent">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-6 p-0 bg-transparent w-full min-w-0">
               {subSteps.map((step, idx) => {
                 const isActive = currentSubStepIndex === idx;
                 const isPast = currentSubStepIndex > idx;
@@ -858,14 +859,14 @@ export default function Step3ExtrasConfigurator({
                     key={step.id}
                     type="button"
                     onClick={() => goToSubStep(idx)}
-                    className={`flex-1 py-2 px-3 sm:px-4 rounded-full text-center text-xs sm:text-[13px] font-bold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
+                    className={`flex-1 min-w-0 py-1.5 sm:py-2 px-2 sm:px-4 rounded-full text-center text-[11px] sm:text-[13px] font-bold transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 cursor-pointer ${
                       isActive
                         ? "bg-[#cff5f4] text-[#083344] shadow-xs"
                         : "bg-slate-100 hover:bg-slate-200/80 text-slate-600"
                     }`}
                   >
                     <span
-                      className={`w-5 h-5 rounded-full text-[11px] flex items-center justify-center font-black shrink-0 transition-colors ${
+                      className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full text-[10px] sm:text-[11px] flex items-center justify-center font-black shrink-0 transition-colors ${
                         isActive
                           ? "bg-[#00949f] text-white shadow-xs"
                           : isPast
@@ -1176,8 +1177,8 @@ export default function Step3ExtrasConfigurator({
 
         {/* Barra de Acciones Fija Inferior con gradiente de marca */}
         {!hideFooterActions && (
-          <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.06)] py-3 px-4 sm:px-8">
-            <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
+          <div className="fixed bottom-0 inset-x-0 z-30 w-full max-w-full bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.06)] py-3 px-4 sm:px-8">
+            <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-3 sm:gap-4 min-w-0">
               {/* Información rápida de la configuración actual */}
               <div className="hidden sm:flex items-center gap-2.5 min-w-0 flex-1 pr-4">
                 <span className="w-2 h-2 rounded-full bg-[#00949f] shrink-0 animate-pulse" />
@@ -1192,18 +1193,18 @@ export default function Step3ExtrasConfigurator({
               </div>
 
               {/* Botones de acción */}
-              <div className="flex items-center gap-3 w-full sm:w-auto shrink-0 justify-end">
+              <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto min-w-0 shrink-0 justify-end">
                 <button
                   type="button"
                   onClick={handlePrevSubStep}
-                  className="flex-1 sm:flex-none sm:min-w-[120px] px-4 py-3 rounded-xl border border-slate-200 text-slate-600 text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition cursor-pointer text-center"
+                  className="flex-1 sm:flex-none sm:min-w-[120px] px-3 sm:px-4 py-3 rounded-xl border border-slate-200 text-slate-600 text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition cursor-pointer text-center"
                 >
                   Atrás
                 </button>
                 <button
                   type="button"
                   onClick={handleNextSubStep}
-                  className={`flex-[2] sm:flex-none sm:min-w-[220px] px-6 py-3 rounded-xl text-white text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all shadow-md cursor-pointer text-center ${
+                  className={`flex-[2] sm:flex-none sm:min-w-[220px] px-4 sm:px-6 py-3 rounded-xl text-white text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all shadow-md cursor-pointer text-center ${
                     isCleaning
                       ? "bg-gradient-to-r from-[#133909] via-[#53c406] to-[#90e119] hover:opacity-95"
                       : "bg-gradient-to-r from-[#022447] via-[#02274b] to-[#01949f] hover:opacity-95"

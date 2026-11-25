@@ -492,7 +492,7 @@ export default function BundleWizard() {
 
             {/* 2. PASO DE CONFIGURACIÓN DE EXTRAS */}
             {currentStepInfo?.type === "extras" && (
-              <div className="col-span-1 lg:col-span-2">
+              <div className="col-span-1 lg:col-span-2 min-w-0">
                 {bundleConfig[currentStepInfo.modelType] ? (
                   <Step3ExtrasConfigurator
                     selectedModelId={bundleConfig[currentStepInfo.modelType].slug}

@@ -545,7 +545,7 @@ export default function WizardGeneral() {
 
             {/* Extras: Paso 2 para Vending, Paso 3 para otras categorías */}
             {((id === "Vending" && step === 2) || (id !== "Vending" && step === 3)) && selectedModel && (
-              <div className="col-span-1 lg:col-span-2">
+              <div className="col-span-1 lg:col-span-2 min-w-0">
                 <Step3ExtrasConfigurator
                   selectedModelId={selectedModel.slug}
                   onSelect={(summary) => {
